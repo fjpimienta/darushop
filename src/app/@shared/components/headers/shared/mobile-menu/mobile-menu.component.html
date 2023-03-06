@@ -1,0 +1,156 @@
+<div class="mobile-menu-container mobile-menu-light">
+  <div class="mobile-menu-wrapper">
+    <span class="mobile-menu-close" (click)="hideMobileMenu()"><i class="icon-close"></i></span>
+
+    <form action="#" method="get" class="mobile-search" (submit)="submitSearchForm($event)">
+      <label for="mobile-search" class="sr-only">Buscar</label>
+      <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Buscar..."
+        required>
+      <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+    </form>
+
+    <ul ngbNav #nav="ngbNav" class="nav nav-pills-mobile nav-border-anim">
+      <li ngbNavItem>
+        <a ngbNavLink>Menu</a>
+        <ng-template ngbNavContent>
+          <nav class="mobile-nav">
+            <ul class="mobile-menu">
+              <li>
+                <a routerLink="/" class="sf-with-ul">Inicio</a>
+              </li>
+              <li>
+                <a routerLink="/shop/sidebar/list">Marcas
+                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+                </a>
+                <div class="megamenu megamenu-sm">
+                  <div class="row no-gutters">
+                    <div class="col-md-12">
+                      <div class="menu-col">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <ul>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">DELL</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">HP</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">ACER</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">LENOVO</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">APPLE</a>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="col-md-6">
+                            <ul>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">SAMSUNG</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">LG</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">EPSON</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">NVIDIA</a>
+                              </li>
+                              <li>
+                                <a routerLink="/shop/sidebar/list">KINGSTON</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <a routerLink="/shop/sidebar/list">Tu cuenta
+                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+                </a>
+                <ul>
+                  <li>
+                    <a routerLink="/shop/dashboard">Mi cuenta</a>
+                  </li>
+                  <li>
+                    <a routerLink="/shop/cart">Carrito</a>
+                  </li>
+                  <li>
+                    <a routerLink="/shop/checkout">Verificar</a>
+                  </li>
+                  <li>
+                    <a routerLink="/shop/wishlist">Lista de Deseos</a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="javascript:;" class="sf-with-ul">La Empresa
+                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+                </a>
+                <ul>
+                  <li>
+                    <a routerLink="/pages/about">Acerca de</a>
+                  </li>
+                  <li>
+                    <a routerLink="/pages/services">Servicios</a>
+                  </li>
+                  <li>
+                    <a routerLink="/pages/howtobuy">Cómo comprar</a>
+                  </li>
+                  <li>
+                    <a routerLink="/pages/contact">Contacto</a>
+                  </li>
+                  <li>
+                    <a routerLink="/pages/faq">Preguntas y Respuestas</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </ng-template>
+      </li>
+      <li ngbNavItem>
+        <a ngbNavLink>Categorias</a>
+        <ng-template ngbNavContent>
+          <div class="mobile-cats-nav">
+            <ul class="mobile-cats-menu">
+              <li class="item-cats-lead">
+                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Computers'}">Computadoras</a>
+              </li>
+              <li class="item-cats-lead">
+                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Accessories'}">Accessorios</a>
+              </li>
+              <li>
+                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Camcorders'}">Grabadoras</a>
+              </li>
+              <li>
+                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Cameras'}">Camaras</a>
+              </li>
+              <li>
+                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Tablets'}">Tabletas</a>
+              </li>
+              <li>
+                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Entertainment'}">Entretenimiento</a>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
+      </li>
+    </ul>
+    <div [ngbNavOutlet]="nav"></div>
+
+    <div class="social-icons">
+      <a href="javascript:;" class="social-icon" title="Facebook"><i class="icon-facebook-f"></i></a>
+      <a href="javascript:;" class="social-icon" title="Twitter"><i class="icon-twitter"></i></a>
+      <a href="javascript:;" class="social-icon" title="Instagram"><i class="icon-instagram"></i></a>
+      <a href="javascript:;" class="social-icon" title="Youtube"><i class="icon-youtube"></i></a>
+    </div>
+  </div>
+</div>

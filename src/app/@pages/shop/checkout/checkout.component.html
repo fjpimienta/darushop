@@ -1,0 +1,321 @@
+<main class="main">
+  <app-page-header title="Verificar" subtitle="DaruShop"></app-page-header>
+  <nav class="breadcrumb-nav">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/shop/sidebar/3cols">Shop</a>
+        </li>
+        <li class="breadcrumb-item active">Verificar   {{cartService.priceTotal | async}}</li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="checkout">
+      <div class="container">
+        <!-- <div class="checkout-discount">
+                    <form action="#" id="checkout-discount-form">
+                        <input type="text" class="form-control" required id="checkout-discount-input"
+                            (click)="addOpacity($event)">
+                        <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to
+                                enter your code</span></label>
+                    </form>
+                </div> -->
+        <form (ngSubmit)="onSubmit()" [formGroup]="formData">
+          <div class="row">
+            <div class="col-lg-7">
+              <h2 class="checkout-title">Detalles del Recibo</h2>
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>Nombre(s) *</label>
+                  <input type="text" class="form-control" name="nombres" formControlName="name" required>
+                </div>
+
+                <div class="col-sm-6 form-group">
+                  <label>Apellido(s) *</label>
+                  <input type="text" class="form-control" name="lastname" formControlName="lastname" required>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6">
+                  <label>Teléfono *</label>
+                  <input type="phone" class="form-control" name="phone" formControlName="phone" required>
+                </div>
+                <div class="col-sm-6">
+                  <label>Correo Electrónico *</label>
+                  <input type="email" name="email" class="form-control" formControlName="email" required>
+                </div>
+              </div>
+
+              <!-- <label>Empresa (Optional)</label>
+              <input type="text" class="form-control" name="company"> -->
+
+              <div class="row">
+                <div class="col-sm-6 form-check">
+                  <label>¿Conoces el Código Postal? Activar/Desactivar captura</label>
+                  <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
+                    (change)="onActiveCP()" formControlName="byCodigopostal">
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>Código Postal *</label>
+                  <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
+                    (blur)="onSetCps($event)" [attr.disabled]="!byCodigopostal ? 'true' : null">
+                  <!-- <label *ngIf="!byCodigopostal">Lista Códigos Postales*</label>
+                  <select *ngIf="!byCodigopostal" class="form-control" name="codigoPostal" required
+                    formControlName="codigoPostal" [attr.disabled]="byCodigopostal ? 'true' : null">
+                    <option [ngValue]="''" [selected]="'' == codigoPostal">Elije un CP</option>
+                    <option *ngFor="let cp of codigosPostales" [ngValue]="cp">
+                      {{cp}}
+                    </option>
+                  </select> -->
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-3 form-group">
+                  <label>Pais *</label>
+                  <select class="form-control" name="selectCountry" required formControlName="selectCountry"
+                    (change)="onSetEstados($event.target)">
+                    <option [ngValue]="''" [selected]="'' == selectCountry.c_pais">Elije un País</option>
+                    <option *ngFor="let country of countrys" [ngValue]="country.c_pais">
+                      {{country.d_pais}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-sm-3 form-group">
+                  <label>Estado *</label>
+                  <select class="form-control" name="selectEstado" required formControlName="selectEstado"
+                    (change)="onSetMunicipios($event.target)">
+                    <option [ngValue]="''" [selected]="'' == selectEstado.c_estado">Elije un Estado</option>
+                    <option *ngFor="let estado of estados" [ngValue]="estado.c_estado">
+                      {{estado.d_estado}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>Municipio *</label>
+                  <select class="form-control" name="selectMunicipio" required formControlName="selectMunicipio"
+                    (change)="onSetColonias($event.target)">
+                    <option [ngValue]="''" [selected]="'' == selectMunicipio.c_mnpio">Elije un Municipio</option>
+                    <option *ngFor="let municipio of municipios" [ngValue]="municipio.c_mnpio">
+                      {{municipio.D_mnpio}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6">
+                  <label>Colonia *</label>
+                  <input *ngIf="!byCodigopostal" type="text" name="selectColonia" class="form-control"
+                    formControlName="selectColonia" placeholder="" required>
+                  <select *ngIf="byCodigopostal" class="form-control" name="selectColonia"
+                    formControlName="selectColonia" required (change)="onSetCps(null)">
+                    <option [ngValue]="''" [selected]="'' == selectColonia">Elije la Colonia</option>
+                    <option *ngFor="let colonia of colonias" [ngValue]="colonia">
+                      {{colonia}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <label>Dirección *</label>
+                  <input type="text" class="form-control" name="directions" formControlName="directions"
+                    placeholder="Calle y Número" required>
+                </div>
+              </div>
+
+
+              <div *ngIf="habilitacrearcuenta" class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="crearcuenta" name="crearcuenta"
+                  formControlName="crearcuenta">
+                <label class="custom-control-label" for="crearcuenta">Crear una cuenta?</label>
+              </div>
+
+              <!-- <div class="form-group">
+                <div class="custom-control custom-checkbox mt-0 address-box">
+                  <input type="checkbox" class="custom-control-input" id="checkout-diff-address"
+                    (change)="formToggle($event)">
+                  <label class="custom-control-label" for="checkout-diff-address">Enviar a una dirección
+                    diferente?</label>
+                </div>
+                <div class="shipping-info" style="display: none;">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Nombre(s) <abbr class="required" title="required">*</abbr></label>
+                        <input type="text" class="form-control" />
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Apellido(s) <abbr class="required" title="required">*</abbr></label>
+                        <input type="text" class="form-control" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Empresa (opcional)</label>
+                    <input type="text" class="form-control" />
+                  </div>
+
+                  <div class="select-custom">
+                    <label>Pais <span class="required">*</span></label>
+                    <select name="orderby" class="form-control">
+                      <option value="" defaultValue="selected">México</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group mb-1 pb-2">
+                    <label>Dirección <abbr class="required" title="required">*</abbr></label>
+                    <input type="text" class="form-control" placeholder="Calle y Número" />
+                  </div>
+
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Colonia" />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Ciudad <abbr class="required" title="required">*</abbr></label>
+                    <input type="text" class="form-control" />
+                  </div>
+
+                  <div class="select-custom">
+                    <label>Estado <abbr class="required" title="required">*</abbr></label>
+                    <select name="orderby" class="form-control">
+                      <option value="" defaultValue="selected">Tabasco</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Código Postal <abbr class="required" title="required">*</abbr></label>
+                    <input type="text" class="form-control" />
+                  </div>
+                </div>
+              </div> -->
+
+              <label>Notas (opcional)</label>
+              <textarea class="form-control" cols="30" rows="4" name="references" formControlName="references"
+                placeholder="Referencias de entrega"></textarea>
+            </div>
+            <aside class="col-lg-5">
+              <div class="summary">
+                <h3 class="summary-title">Tu orden</h3>
+
+                <table class="table table-summary">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngFor="let product of cartItems">
+                      <td><a [routerLink]="['/product/default/'+ product.id]">{{ product.name }}</a>
+                      </td>
+                      <td>{{ product.sum.toFixed( 2 ) | currency }}</td>
+                    </tr>
+                    <tr class="summary-subtotal">
+                      <td>Subtotal:</td>
+                      <td>${{ (cartService.priceTotal | async).toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                      <td>Envío:</td>
+                      <td>(costo)</td>
+                    </tr>
+                    <tr class="summary-total">
+                      <td>Total:</td>
+                      <td>${{ (cartService.priceTotal | async).toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <app-accordion adClass="accordion-summary" id="accordion-payment">
+                  <!-- <div class="card">
+                    <div class="card-header" id="heading-1">
+                      <h2 class="card-title">
+                        <a class="toggle-button" role="button" data-toggle="collapse" href="#collapse-1"
+                          aria-expanded="true" aria-controls="collapse-1">
+                          Transferencia Bancaria
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-1" class="collapse show" aria-labelledby="heading-1"
+                      data-parent="#accordion-payment">
+                      <div class="card-body">
+                        Realiza tu pago directamente en nuestra cuenta bancaria. Utilice su ID de pedido como referencia
+                        de pago. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card">
+                    <div class="card-header" id="heading-3">
+                      <h2 class="card-title">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-3"
+                          aria-expanded="false" aria-controls="collapse-3">
+                          Deposito
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
+                      <div class="card-body">Depósitos en efectivo a nuestra cuenta bancaria. Su pedido no se enviará
+                        hasta que los fondos se hayan liquidado en nuestra cuenta.
+                      </div>
+                    </div>
+                  </div> -->
+
+                  <!-- <div class="card">
+                    <div class="card-header" id="heading-4">
+                      <h2 class="card-title">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-4"
+                          aria-expanded="false" aria-controls="collapse-4" (click)="onHabilitaPago()">
+                          PayPal
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
+                      <div class="card-body">
+                        <small class="float-right paypal-link">Paaga con tu cuenta PayPal</small>
+                      </div>
+                    </div>
+                  </div> -->
+
+                  <div class="card">
+                    <div class="card-header" id="heading-5">
+                      <h2 class="card-title">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-5"
+                          aria-expanded="false" aria-controls="collapse-5" (click)="onHabilitaPago()">
+                          Tarjeta de Crédito (Stripe)
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-5" class="collapse" aria-labelledby="heading-5" data-parent="#accordion-payment">
+                      <div class="card-body">
+                        <ng-stripe-pay-form [key]="key" [hidePostalCode]="true" class="text-center">
+                        </ng-stripe-pay-form>
+                      </div>
+                    </div>
+                  </div>
+                </app-accordion>
+
+                <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
+                  [disabled]="!formData.valid">
+                  <span class="btn-text">Realizar Pedido</span>
+                  <span class="btn-hover-text" (click)="onSubmit()">Pagar</span>
+                </button>
+              </div>
+            </aside>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>

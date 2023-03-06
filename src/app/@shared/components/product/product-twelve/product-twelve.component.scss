@@ -1,0 +1,31 @@
+.product-media {
+  background-color: black;
+}
+
+.product-media {
+	transition: opacity 0.5s ease;
+  -webkit-transition: opacity 0.5s ease;
+	-moz-transition: opacity 0.5s ease;
+}
+
+.product-media {
+	position: relative;
+
+}
+
+.product-media:after {
+    content: '\A';
+    position: absolute;
+		width: 25vw;
+		height: 100%;
+    top:0;
+		left:0;
+    background:rgba(0,0,0,0.6);
+    opacity: 1;
+    transition: opacity 0.5s;
+    -webkit-transition: opacity 0.5s;
+	  -moz-transition: opacity 0.5s;
+}
+.product-media:hover:after {
+		opacity: 0;
+}

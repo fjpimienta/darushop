@@ -1,0 +1,39 @@
+<div class="main">
+  <nav class="breadcrumb-nav border-0 mb-0">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/pages/about">Empresa</a>
+        </li>
+        <li class="breadcrumb-item active">Servicios</li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="container" style="background-image: url('assets/images/about-header-bg.jpg')">
+    <div class="page-header page-header-big text-center">
+      <h1 class="page-title text-white">Servicios<span class="text-white">De la Empresa</span></h1>
+      <!-- <h1 class="page-title">Servicios<span>De la Empresa</span></h1> -->
+    </div>
+  </div>
+
+  <div class="page-content pb-0">
+    <div class="container">
+      <owl-carousel [options]="Servicios">
+        <div class="member member-anim text-center" *ngFor="let servicio of Servicios">
+          <figure class="member-media">
+            <app-image [src]="servicio.photo" width="326" height="500" alt="Servicio"></app-image>
+          </figure>
+          <div class="member-content">
+            <h3 class="member-title">{{ servicio.name }}<span>{{ servicio.title }}</span></h3>
+          </div>
+        </div>
+      </owl-carousel>
+    </div>
+
+    <div class="mb-2"></div>
+  </div>
+</div>

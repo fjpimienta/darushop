@@ -1,0 +1,97 @@
+<footer class="footer">
+  <!-- <section class="newsletter">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-10 col-md-8 col-lg-6">
+                    <div class="cta-heading text-center">
+                        <h3 class="cta-title text-white">Get The Latest Deals</h3>
+                        <p class="cta-desc">and receive <span class="font-weight-normal">$20 coupon</span> for first shopping</p>
+                    </div>
+
+                    <form action="#">
+                        <div class="input-group input-group-round">
+                            <input type="email" class="form-control form-control-white" placeholder="Enter your Email Address" aria-label="Email Adress" required="">
+                            <div class="input-group-append">
+                                <button class="btn" type="submit">Subscribe</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+  <div class="footer-middle">
+    <div [ngClass]="containerClass">
+      <div class="row">
+
+        <div class="col-sm-6 col-lg-3">
+          <div class="widget widget-about">
+            <a routerLink="/">
+              <img src="assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="27">
+            </a>
+            <p>Tu mejor opción de compra</p>
+            <div class="widget-call">
+              Alguna Duda? <a routerLink="pages/faq">Resuelve tus dudas</a>
+              <i class="icon-phone"></i>Llámanos... <a href="tel:#">+52 999 999 9999</a>
+            </div>
+            <div class="social-icons">
+              <a href="javascript:;" class="social-icon" title="Facebook"><i class="icon-facebook-f"></i></a>
+              <a href="javascript:;" class="social-icon" title="Twitter"><i class="icon-twitter"></i></a>
+              <a href="javascript:;" class="social-icon" title="Instagram"><i class="icon-instagram"></i></a>
+              <a href="javascript:;" class="social-icon" title="Youtube"><i class="icon-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+          <div class="widget story-box" id="story">
+            <figure>
+              <img class="swipe-up" src="assets/images/payments.png" />
+            </figure>
+          </div>
+          <!-- <div class="widget footerbotton"> -->
+            <!-- <figure>
+              <img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
+            </figure> -->
+          <!-- </div> -->
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+          <div class="widget">
+            <h4 class="widget-title">Enlaces Útiles</h4>
+            <ul class="widget-list">
+              <li><a routerLink="pages/about">La Empresa</a></li>
+              <li><a routerLink="pages/services">Nuestros Servicios</a></li>
+              <li><a routerLink="pages/howtobuy">Cómo comprar en DARU</a></li>
+              <li><a routerLink="pages/faq">Preguntas y Respuestas</a></li>
+              <li><a routerLink="pages/contact">Contáctanos</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+          <div class="widget">
+            <h4 class="widget-title">Mi cuenta</h4>
+            <ul class="widget-list">
+              <li><a routerLink="/shop/dashboard">Ingresar</a></li>
+              <li><a routerLink="/shop/cart">Ver Carrito</a></li>
+              <li><a routerLink="/shop/wishlist">Mis favoritos</a></li>
+              <li><a href="javascript:;">Seguimiento de mi pedido</a></li>
+              <li><a href="javascript:;">Ayuda</a></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div [ngClass]="containerClass">
+      <p class="footer-copyright">Copyright © {{ year }} DARU.</p>
+    </div>
+  </div>
+
+  <div class="mb-10" *ngIf="isBottomSticky"></div>
+</footer>

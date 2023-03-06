@@ -1,0 +1,47 @@
+<main class="main">
+  <app-page-header title="Recuperar Clave" subtitle=""></app-page-header>
+  <div class="page-content">
+    <div class="container">
+      <div class="form-box">
+        <div class="form-choice">
+          <form (ngSubmit)="onSubmit()" #forma="ngForm">
+            <div class="form-group">
+              <label for="recoverEmail">Correo Electrónico *</label>
+              <input type="recoverEmail" class="form-control" id="recoverEmail" name="recoverEmail"
+                #recoverEmail="ngModel" [(ngModel)]="recover.email"
+                [ngClass]="{'is-valid': !recoverEmail.invalid, 'is-invalid': recoverEmail.invalid}"
+                [pattern]="pattern"
+                required>
+              <div class="alert alert-danger"
+                *ngIf="recoverEmail.invalid && (recoverEmail.dirty || recoverEmail.touched)">
+                <div *ngIf="recoverEmail.errors.required">
+                  Introduzca un correo electronico valido por favor.
+                </div>
+                <div *ngIf="recoverEmail.errors && recoverEmail.errors.pattern">
+                  El corrreo electronico no tiene el formato correcto.
+                </div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
+                      <span>Enviar para Recuperar</span>
+                      <i class="icon-long-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-choice">
+            </div>
+          </form>
+          <div class="row">
+            <div class="col-sm-12">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

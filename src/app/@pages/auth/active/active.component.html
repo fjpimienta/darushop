@@ -1,0 +1,67 @@
+<main class="main">
+  <app-page-header [title]="title" [subtitle]="userToken.user.email"></app-page-header>
+  <div class="page-content">
+    <div class="container">
+      <div class="form-box">
+        <form (ngSubmit)="onSubmit()" #forma="ngForm">
+          <div class="form-group">
+            <label for="activePassword">Clave *</label>
+            <input type="password" class="form-control" id="activePassword" name="activePassword"
+              #activePassword="ngModel" [(ngModel)]="active.password"
+              [ngClass]="{'is-valid': !activePassword.invalid, 'is-invalid': activePassword.invalid}" required>
+            <div class="alert alert-danger"
+              *ngIf="activePassword.invalid && (activePassword.dirty || activePassword.touched)">
+              <div *ngIf="activePassword.errors.required">
+                Introduzca una contraseña por favor.
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="activePasswordTwo">Repetir Clave *</label>
+            <input type="password" class="form-control" id="activePasswordTwo" name="activePasswordTwo"
+              #activePasswordTwo="ngModel" [(ngModel)]="active.passwordTwo"
+              [ngClass]="{'is-valid': !activePasswordTwo.invalid, 'is-invalid': activePasswordTwo.invalid}" required>
+            <div class="alert alert-danger"
+              *ngIf="activePasswordTwo.invalid && (activePasswordTwo.dirty || activePasswordTwo.touched)">
+              <div *ngIf="activePasswordTwo.errors.required">
+                Confirme la contraseña por favor.
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
+                    <span>ACTIVAR</span>
+                    <i class="icon-long-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-choice">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <button type="button" [disabled]="forma.valid" class="btn btn-outline-primary-2"
+                    (click)="onActivar()">
+                      <span>Volver a enviar la solicitud</span>
+                      <i class="icon-long-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-choice">
+          </div>
+        </form>
+        <div class="form-choice">
+          <div class="row">
+            <div class="col-sm-12">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

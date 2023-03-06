@@ -1,0 +1,101 @@
+<main class="main">
+  <app-page-header title="Registrar Usuario" subtitle=""></app-page-header>
+  <div class="page-content">
+    <div class="container">
+      <div class="form-box">
+        <form (ngSubmit)="registerUser()" #forma="ngForm">
+          <div class="form-group">
+            <div class="grid">
+              <div class="row">
+                <div class="col-6">
+                  <label for="registerName">Nombre(s) *</label>
+                  <input type="text" class="form-control" id="registerName" name="registerName" #registerName="ngModel"
+                    [(ngModel)]="register.name" required>
+                  <div class="alert alert-danger"
+                    *ngIf="registerName.invalid && (registerName.dirty || registerName.touched)">
+                    <div *ngIf="registerName.errors.required">
+                      Introduzca un nombre valido por favor.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label for="registerName">Apellido(s) *</label>
+                  <input type="text" class="form-control" id="registerLastname" name="registerLastname"
+                    #registerLastname="ngModel" [(ngModel)]="register.lastname" required>
+                  <div class="alert alert-danger"
+                    *ngIf="registerLastname.invalid && (registerLastname.dirty || registerLastname.touched)">
+                    <div *ngIf="registerLastname.errors.required">
+                      Introduzca un apellido valido por favor.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="registerEmail">Correo electrónico *</label>
+                  <input type="text" class="form-control" id="registerEmail" name="registerEmail"
+                    #registerEmail="ngModel" [(ngModel)]="register.email" required>
+                  <div class="alert alert-danger"
+                    *ngIf="registerEmail.invalid && (registerEmail.dirty || registerEmail.touched)">
+                    <div *ngIf="registerEmail.errors.required">
+                      Introduzca un correo electronico valido por favor.
+                    </div>
+                    <div *ngIf="registerEmail.errors && registerEmail.errors.pattern">
+                      El corrreo electronico no tiene el formato correcto.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="col-6">
+                <div class="form-group">
+                  <label for="registerPassword">Clave *</label>
+                  <input type="password" class="form-control" id="registerPassword" name="registerPassword"
+                    #registerPassword="ngModel" [(ngModel)]="register.password" required>
+                  <div class="alert alert-danger"
+                    *ngIf="registerPassword.invalid && (registerPassword.dirty || registerPassword.touched)">
+                    <div *ngIf="registerPassword.errors.required">
+                      Introduzca una contraseña por favor.
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="registerPolicy" name="registerPolicy"
+                #registerPolicy="ngModel" [(ngModel)]="register.policy" required>
+              <label class="custom-control-label" for="registerPolicy">Estoy de acuerdo con las
+                politicas de privacidad</label>
+            </div>
+            <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
+              <span>REGISTRAR</span>
+              <i class="icon-long-arrow-right"></i>
+            </button>
+          </div>
+        </form>
+        <div class="form-choice">
+          <p class="text-center">o iniciar con</p>
+          <div class="row">
+            <div class="col-sm-6">
+              <a href="javascript:;" class="btn btn-login btn-g">
+                <i class="icon-google"></i>
+                Google
+              </a>
+            </div>
+            <div class="col-sm-6">
+              <a href="javascript:;" class="btn btn-login  btn-f">
+                <i class="icon-facebook-f"></i>
+                Facebook
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,13 @@
+<h2 class="title text-center mb-4">También te puede interesar</h2>
+
+<owl-carousel [carouselClasses]="'owl-simple carousel-equal-height carousel-with-shadow'" [options]="options"
+    *ngIf="!loaded else elseBlock">
+    <div class="skel-pro" *ngFor="let item of [1,2,3,4]"></div>
+</owl-carousel>
+
+<ng-template #elseBlock>
+    <owl-carousel [carouselClasses]="'owl-simple carousel-equal-height carousel-with-shadow'"
+        [options]="options">
+        <app-product-six [product]="product" *ngFor="let product of products"></app-product-six>
+    </owl-carousel>
+</ng-template>

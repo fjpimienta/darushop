@@ -1,0 +1,12 @@
+<div class="dropdown category-dropdown">
+  <a href="javascript:;" class="dropdown-toggle" title="Browse Categories">Browse Categories</a>
+  <div class="dropdown-menu">
+    <nav class="side-nav">
+      <ul class="menu-vertical sf-arrows">
+        <li *ngFor="let categorie of categories" routerLinkActive="active">
+          <a routerLink="/shop/sidebar/3cols" [queryParams]="categorie.param">{{categorie.description}}</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

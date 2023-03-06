@@ -1,0 +1,202 @@
+<div class="modal-body">
+  <button type="button" class="close" (click)="closeModal()">
+    <span aria-hidden="true"><i class="icon-close"></i></span>
+  </button>
+
+  <div class="form-box">
+    <div class="form-tab nav-fill">
+      <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="justify-content-center nav nav-pills">
+        <li [ngbNavItem]=1>
+          <a ngbNavLink>Iniciar Sesión</a>
+          <ng-template ngbNavContent>
+            <form (ngSubmit)="onSubmit()" #forma="ngForm">
+              <div class="form-group">
+                <label for="singinEmail">Correo Electrónico *-MODAL</label>
+                <input type="text" class="form-control" id="singinEmail" name="singinEmail" #singinEmail="ngModel"
+                  [(ngModel)]="login.email"
+                  [ngClass]="{'is-valid': !singinEmail.invalid, 'is-invalid': singinEmail.invalid}" [pattern]="pattern"
+                  required>
+                <div class="alert alert-danger"
+                  *ngIf="singinEmail.invalid && (singinEmail.dirty || singinEmail.touched)">
+                  <div *ngIf="singinEmail.errors.required">
+                    Introduzca un correo electronico valido por favor.
+                  </div>
+                  <div *ngIf="singinEmail.errors && singinEmail.errors.pattern">
+                    El corrreo electronico no tiene el formato correcto.
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="singinPassword">Clave *</label>
+                <input type="password" class="form-control" id="singinPassword" name="singinPassword"
+                  #singinPassword="ngModel" [(ngModel)]="login.password"
+                  [ngClass]="{'is-valid': !singinPassword.invalid, 'is-invalid': singinPassword.invalid}" required>
+                <div class="alert alert-danger"
+                  *ngIf="singinPassword.invalid && (singinPassword.dirty || singinPassword.touched)">
+                  <div *ngIf="singinPassword.errors.required">
+                    Introduzca una contraseña por favor.
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
+                        <span>INICIAR</span>
+                        <i class="icon-long-arrow-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-choice">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="signinRemember"
+                        name="signinRemember" #signinRemember="ngModel" [(ngModel)]="login.remember">
+                        <label class="custom-control-label" for="signinRemember">Recuerdame</label>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <a href="javascript:;" (click)="onRecover()">Olvidaste la clave?</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-choice">
+              </div>
+            </form>
+            <!-- <div class="form-choice">
+              <div class="row">
+                <div class="col-sm-12">&nbsp;</div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <p class="text-center">O iniciar sesión con</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">&nbsp;</div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <a href="javascript:;" class="btn btn-login btn-g">
+                    <i class="icon-google"></i>
+                    Iniciar Google
+                  </a>
+                </div>
+                <div class="col-sm-6">
+                  <a href="javascript:;" class="btn btn-login btn-f">
+                    <i class="icon-facebook-f"></i>
+                    Iniciar Facebook
+                  </a>
+                </div>
+              </div>
+            </div> -->
+          </ng-template>
+        </li>
+        <li [ngbNavItem]=2>
+          <a ngbNavLink>Registrarse</a>
+          <ng-template ngbNavContent>
+            <form (ngSubmit)="registerUser()" #forma="ngForm">
+              <div class="form-group">
+                <div class="grid">
+                  <div class="row">
+                    <div class="col-6">
+                      <label for="registerName">Nombre(s) *</label>
+                      <input type="text" class="form-control" id="registerName" name="registerName"
+                        #registerName="ngModel" [(ngModel)]="register.name" required>
+                      <div class="alert alert-danger"
+                        *ngIf="registerName.invalid && (registerName.dirty || registerName.touched)">
+                        <div *ngIf="registerName.errors.required">
+                          Introduzca un nombre valido por favor.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <label for="registerName">Apellido(s) *</label>
+                      <input type="text" class="form-control" id="registerLastname" name="registerLastname"
+                        #registerLastname="ngModel" [(ngModel)]="register.lastname" required>
+                      <div class="alert alert-danger"
+                        *ngIf="registerLastname.invalid && (registerLastname.dirty || registerLastname.touched)">
+                        <div *ngIf="registerLastname.errors.required">
+                          Introduzca un apellido valido por favor.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label for="registerEmail">Correo electrónico *</label>
+                      <input type="text" class="form-control" id="registerEmail" name="registerEmail"
+                        #registerEmail="ngModel" [(ngModel)]="register.email" required>
+                      <div class="alert alert-danger"
+                        *ngIf="registerEmail.invalid && (registerEmail.dirty || registerEmail.touched)">
+                        <div *ngIf="registerEmail.errors.required">
+                          Introduzca un correo electronico valido por favor.
+                        </div>
+                        <div *ngIf="registerEmail.errors && registerEmail.errors.pattern">
+                          El corrreo electronico no tiene el formato correcto.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="col-6">
+                    <div class="form-group">
+                      <label for="registerPassword">Clave *</label>
+                      <input type="password" class="form-control" id="registerPassword" name="registerPassword"
+                        #registerPassword="ngModel" [(ngModel)]="register.password" required>
+                      <div class="alert alert-danger"
+                        *ngIf="registerPassword.invalid && (registerPassword.dirty || registerPassword.touched)">
+                        <div *ngIf="registerPassword.errors.required">
+                          Introduzca una contraseña por favor.
+                        </div>
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="registerPolicy" name="registerPolicy"
+                    #registerPolicy="ngModel" [(ngModel)]="register.policy" required>
+                  <label class="custom-control-label" for="registerPolicy">Estoy de acuerdo con las
+                    politicas de privacidad</label>
+                </div>
+                <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
+                  <span>REGISTRARSE</span>
+                  <i class="icon-long-arrow-right"></i>
+                </button>
+              </div>
+            </form>
+            <div class="form-choice">
+              <p class="text-center">o iniciar con</p>
+              <div class="row">
+                <div class="col-sm-6">
+                  <a href="javascript:;" class="btn btn-login btn-g">
+                    <i class="icon-google"></i>
+                    Google
+                  </a>
+                </div>
+                <div class="col-sm-6">
+                  <a href="javascript:;" class="btn btn-login  btn-f">
+                    <i class="icon-facebook-f"></i>
+                    Facebook
+                  </a>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+</div>

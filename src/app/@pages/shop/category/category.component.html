@@ -1,0 +1,155 @@
+<div class="main">
+  <app-page-header title="" subtitle="Categorias Principales de Productos"></app-page-header>
+
+  <nav class="breadcrumb-nav breadcrumb-with-filter">
+    <div class="container">
+      <button class="sidebar-toggler" (click)="toggleSidebar()">
+        <i class="icon-bars"></i>Filtros
+      </button>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/shop/market">Productos</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/shop/category">Categorias</a>
+        </li>
+        <li class="breadcrumb-item active">Principales</li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="categories-page">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="banner banner-cat banner-badge">
+              <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'accesorios'}">
+                <app-image src="assets/images/home/products/1.jpg" width="580" height="580" alt="Banner">
+                </app-image>
+              </a>
+
+              <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'accesorios'}">
+                <h3 class="banner-title">Accesorios</h3>
+                <h4 class="banner-subtitle"># Productos</h4>
+                <span class="banner-link-text">Comprar Ahora</span>
+              </a>
+            </div>
+
+            <div class="banner banner-cat banner-badge">
+              <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'laptops'}">
+                <app-image src="assets/images/home/products/2.jpg" width="580" height="280" alt="Banner">
+                </app-image>
+              </a>
+
+              <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'laptops'}">
+                <h3 class="banner-title">Laptops</h3>
+                <h4 class="banner-subtitle"># Productos</h4>
+                <span class="banner-link-text">Comprar Ahora</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="banner banner-cat banner-badge">
+                  <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'monitores'}">
+                    <app-image src="assets/images/home/products/3.jpg" width="280" height="280" alt="Banner">
+                    </app-image>
+                  </a>
+
+                  <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'monitores'}">
+                    <h3 class="banner-title">Pantallas | Monitores</h3>
+                    <h4 class="banner-subtitle"># Productos</h4>
+                    <span class="banner-link-text">Comprar Ahora</span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="banner banner-cat banner-badge">
+                  <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'tabletas'}">
+                    <app-image src="assets/images/home/products/4.jpg" width="280" height="280" alt="Banner">
+                    </app-image>
+                  </a>
+
+                  <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'tabletas'}">
+                    <h3 class="banner-title">Tabletas</h3>
+                    <h4 class="banner-subtitle"># Productos</h4>
+                    <span class="banner-link-text">Comprar Ahora</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="banner banner-cat banner-badge">
+              <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'accesorios'}">
+                <app-image src="assets/images/home/products/5.jpg" width="580" height="580" alt="Banner">
+                </app-image>
+              </a>
+
+              <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'accesorios'}">
+                <h3 class="banner-title">Accesorios</h3>
+                <h4 class="banner-subtitle">#3 Productos</h4>
+                <span class="banner-link-text">Comprar Ahora</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-md-3">
+            <div class="banner banner-cat banner-badge">
+              <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'camaras'}">
+                <app-image src="assets/images/home/products/6.jpg" width="280" height="280" alt="Banner">
+                </app-image>
+              </a>
+
+              <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'camaras'}">
+                <h3 class="banner-title">Camaras</h3>
+                <h4 class="banner-subtitle"># Productos</h4>
+                <span class="banner-link-text">Comprar Ahora</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-md-3 order-md-last">
+            <div class="banner banner-cat banner-badge">
+              <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'entretenimiento'}">
+                <app-image src="assets/images/home/products/8.jpg" width="280" height="280" alt="Banner">
+                </app-image>
+              </a>
+
+              <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'entretenimiento'}">
+                <h3 class="banner-title">Entretenimiento</h3>
+                <h4 class="banner-subtitle"># Productos</h4>
+                <span class="banner-link-text">Comprar Ahora</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="banner banner-cat banner-badge">
+              <a routerLink="/shop/sidebar/list" [queryParams]="{category: 'video-juegos'}">
+                <app-image src="assets/images/home/products/7.jpg" width="580" height="280" alt="Banner">
+                </app-image>
+              </a>
+
+              <a class="banner-link" routerLink="/shop/sidebar/list" [queryParams]="{category: 'video-juegos'}">
+                <h3 class="banner-title">Video Juegos</h3>
+                <h4 class="banner-subtitle"># Productos</h4>
+                <span class="banner-link-text">Comprar Ahora</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-filter-overlay" (click)="hideSidebar()"></div>
+    <app-shop-sidebar-two></app-shop-sidebar-two>
+  </div>
+</div>

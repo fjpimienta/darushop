@@ -1,0 +1,9 @@
+:host {
+    ::ng-deep {
+        ngb-tabset {
+            > .nav {
+                display: none;
+            }
+        }
+    }
+}

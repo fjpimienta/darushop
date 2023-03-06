@@ -1,0 +1,89 @@
+<nav class="main-nav">
+  <ul class="menu sf-arrows">
+    <li class="megamenu-container" [class.active]="current=='/'">
+      <a routerLink="/" class="sf-with-ul">Inicio</a>
+    </li>
+    <li class="megamenu-container" [class.active]="current.includes('/offers')">
+      <a routerLink="/shop/offers" class="sf-with-ul">Ofertas</a>
+    </li>
+    <li [class.active]="current.includes('/category')">
+      <a routerLink="/shop/category" class="sf-with-ul">Categorias</a>
+      <div class="megamenu megamenu-sm">
+        <div class="row no-gutters">
+          <div class="col-md-12">
+            <div class="menu-col">
+              <div class="row">
+                <div class="col-md-6">
+                  <ul>
+                    <li *ngFor="let categorie of categories" routerLinkActive="active">
+                      <a routerLink="/shop/sidebar/3cols" [queryParams]="categorie.param">{{categorie.description}}</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li [class.active]="current.includes('/brands')">
+      <a routerLink="/shop/brands" class="sf-with-ul">Marcas</a>
+      <div class="megamenu megamenu-sm">
+        <div class="row no-gutters">
+          <div class="col-md-12">
+            <div class="menu-col">
+              <div class="row">
+                <div class="col-md-6">
+                  <ul>
+                    <li [class.active]="current.includes('shop/sidebar/list')"
+                      *ngFor="let item of brands; let id = index;">
+                      <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{brands: item.slug}">{{
+                        item.description }}</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li [class.active]="current.includes('/shop/dashboard')">
+      <a routerLink="/shop/dashboard" class="sf-with-ul">Tu cuenta</a>
+      <ul>
+        <li [class.active]="current.includes('shop/dashboard')">
+          <a routerLink="/shop/dashboard">Mi cuenta</a>
+        </li>
+        <li [class.active]="current.includes('shop/cart')">
+          <a routerLink="/shop/cart">Carrito</a>
+        </li>
+        <li [class.active]="current.includes('shop/checkout')">
+          <a routerLink="/shop/checkout">Verificar</a>
+        </li>
+        <li [class.active]="current.includes('shop/wishlist')">
+          <a routerLink="/shop/wishlist">Lista de Deseos</a>
+        </li>
+      </ul>
+    </li>
+    <li [class.active]="current.includes('/pages')">
+      <a href="javascript:;" class="sf-with-ul">La Empresa</a>
+      <ul>
+        <li [class.active]="current.includes('pages/about')">
+          <a routerLink="/pages/about">Acerca de</a>
+        </li>
+        <li [class.active]="current.includes('pages/services')">
+          <a routerLink="/pages/services">Servicios</a>
+        </li>
+        <li [class.active]="current.includes('pages/howtobuy')">
+          <a routerLink="/pages/howtobuy">Cómo comprar</a>
+        </li>
+        <li [class.active]="current.includes('pages/contact')">
+          <a routerLink="/pages/contact">Contacto</a>
+        </li>
+        <li [class.active]="current.includes('pages/faq')">
+          <a routerLink="/pages/faq">Preguntas y Respuestas</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>

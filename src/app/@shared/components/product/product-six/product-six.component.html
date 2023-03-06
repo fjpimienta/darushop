@@ -1,0 +1,64 @@
+<div class="product product-5 text-center">
+    <figure class="product-media">
+        <span class="product-label label-new" *ngIf="product.new">New</span>
+        <span class="product-label label-sale" *ngIf="product.sale_price">Sale</span>
+        <span class="product-label label-top" *ngIf="product.top">Top</span>
+        <span class="product-label label-out" *ngIf="!product.stock || product.stock == 0">No Disponible</span>
+
+        <a [routerLink]="['/product/default/'+ product.id]">
+            <app-image [src]="SERVER_URL + product.sm_pictures[0].url" alt="Product" class="product-image">
+            </app-image>
+            <app-image [src]="SERVER_URL + product.sm_pictures[1].url" alt="Product" class="product-image-hover"
+                *ngIf="product.sm_pictures[1]"></app-image>
+        </a>
+
+        <!-- <app-count-down [until]="product.until" *ngIf="product.until"></app-count-down> -->
+
+        <div class="product-action-vertical">
+            <a href="javascript:;" class="btn-product-icon btn-wishlist"
+                [class.added-to-wishlist]="isInWishlist()" (click)="addToWishlist($event)">
+                <span>{{ isInWishlist() ? 'go' : 'add' }} a Lista de Deseos</span>
+            </a>
+
+            <a href="javascript:;" class="btn-product-icon btn-quickview" title="Vista rápida"
+                (click)="quickView($event)"><span>Vista rápida</span></a>
+            <a href="javascript:;" class="btn-product-icon btn-compare" title="Compare"
+                (click)="addToCompare($event)"><span>Compare</span></a>
+        </div>
+
+        <div class="product-action" *ngIf="product.stock && product.stock !== 0">
+            <a [routerLink]="['/product/default/'+ product.id]" class="btn-product btn-cart btn-select"
+                *ngIf="product.variants.length > 0 else cartBlock">
+                <span>elegir opciones</span>
+            </a>
+            <ng-template #cartBlock>
+                <button class="btn-product btn-cart" (click)="addToCart($event)">
+                    <span>agregar al carrito</span>
+                </button>
+            </ng-template>
+        </div>
+    </figure>
+
+    <div class="product-body">
+        <h3 class="product-title">
+            <a [routerLink]="['/product/default/'+ product.id]">{{ product.name }}</a>
+        </h3>
+
+        <div class="product-price" *ngIf="!product.stock || product.stock == 0 else elseBlock">
+            <span class="out-price">${{ product.price.toFixed(2) }}</span>
+        </div>
+
+        <ng-template #elseBlock>
+            <div class="product-price" *ngIf="minPrice == maxPrice else elseBlock">${{ minPrice.toFixed(2) }}</div>
+            <ng-template #elseBlock>
+                <div class="product-price" *ngIf="product.variants.length == 0 else elseBlock">
+                    <span class="new-price">${{ minPrice.toFixed(2) }}</span>
+                    <span class="old-price">${{ maxPrice.toFixed(2) }}</span>
+                </div>
+                <ng-template #elseBlock>
+                    <div class="product-price">${{minPrice.toFixed(2)}}&ndash;${{maxPrice.toFixed(2)}}</div>
+                </ng-template>
+            </ng-template>
+        </ng-template>
+    </div>
+</div>

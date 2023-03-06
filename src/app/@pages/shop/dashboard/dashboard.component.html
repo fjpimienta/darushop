@@ -1,0 +1,266 @@
+<main class="main">
+  <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+    <div class="container">
+      <h1 class="page-title text-white">Mi Cuenta<span class="text-white"></span></h1>
+    </div>
+  </div>
+  <nav class="breadcrumb-nav mb-3">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/shop/sidebar/3cols">Shop</a>
+        </li>
+        <li class="breadcrumb-item active">Mi Cuenta</li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="dashboard">
+      <div class="container">
+        <div class="row">
+          <aside class="col-md-4 col-lg-3">
+            <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist" tabClick>
+              <li class="nav-item">
+                <a class="nav-link active" href="javascript:;" role="tab" (click)="nav.select('tab-1')">Tablero</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" role="tab" (click)="nav.select('tab-2')">Ordenes</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" role="tab" (click)="nav.select('tab-3')">Detalles de la
+                  Cuenta</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" role="tab" (click)="nav.select('tab-4')">Direcci&oacute;n de Env&iacute;o</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" (click)="logout()">Cerrar Sesión</a>
+              </li>
+            </ul>
+          </aside>
+
+          <div class="col-md-8 col-lg-9">
+            <div class="tab-content">
+              <ul ngbNav #nav="ngbNav">
+                <li [ngbNavItem]="'tab-1'">
+                  <ng-template ngbNavContent>
+                    <p>Hola <span class="font-weight-normal text-dark">{{userName}}</span>
+                      <br>
+                      Desde el panel de cuenta puede ver:
+                      <a href="javascript:;" (click)="nav.select('tab-2'); viewTab( $event, 0, 1 );"
+                        class="tab-trigger-link link-underline">Sus &oacute;rdenes recientes</a>,
+                      <br>
+                      Gestionar sus:
+                      <a href="javascript:;" (click)="nav.select('tab-2'); viewTab( $event, 0, 3 );"
+                        class="tab-trigger-link">direcciones de envíos y facturación</a>
+                      <br>
+                      Y adem&aacute;s de:
+                      <a href="javascript:;" (click)="nav.select('tab-2'); viewTab( $event, 0, 4 );"
+                        class="tab-trigger-link">edite su
+                        contraseña y los detalles de su cuenta</a>.
+                    </p>
+                  </ng-template>
+                </li>
+
+                <li [ngbNavItem]="'tab-2'">
+                  <ng-template ngbNavContent *ngIf="charges">
+                    <p>Pedidos del Usuario.</p>
+                    <table class="table table-summary">
+                      <thead>
+                        <tr>
+                          <th>No.</th>
+                          <th>Fecha</th>
+                          <th>Descripcion</th>
+                          <th>Importe</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr *ngFor="let charge of charges">
+                          <td>{{charge.id}}</td>
+                          <td>{{charge.created}}</td>
+                          <td>{{charge.description}}</td>
+                          <td>{{charge.amount}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </ng-template>
+                  <ng-template ngbNavContent *ngIf="!charges">
+                    <p>Aún no se ha realizado pedido.</p>
+                    <a routerLink="/shop/sidebar/list" class="btn btn-outline-primary-2"><span>Ir a la Tienda</span><i
+                        class="icon-long-arrow-right"></i></a>
+                  </ng-template>
+                </li>
+
+                <li [ngbNavItem]="'tab-3'">
+                  <ng-template ngbNavContent>
+                    <form (ngSubmit)="onSubmit()" [formGroup]="formDataMain">
+                      <div class="row">
+                        <div class="col-sm-6 form-group">
+                          <label>Nombre(s) *</label>
+                          <input type="text" class="form-control" name="name" formControlName="name"
+                            [attr.disabled]="'true'" required>
+                        </div>
+
+                        <div class="col-sm-6 form-group">
+                          <label>Apellido(s) *</label>
+                          <input type="text" class="form-control" name="lastname" formControlName="lastname"
+                            [attr.disabled]="'true'" required>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <label>Tel&eacute;fono *</label>
+                          <input type="text" class="form-control" name="phone" formControlName="phone"
+                            [attr.disabled]="'true'" required>
+                        </div>
+
+                        <div class="col-sm-6">
+                          <label>Correo Electr&oacute;nico *</label>
+                          <input type="text" class="form-control" name="email" formControlName="email"
+                            [attr.disabled]="'true'" required>
+                        </div>
+                      </div>
+
+                      <!-- <label>Correo Electrónico *</label>
+                      <input type="email" class="form-control" required>
+
+                      <label>Contraseña actual (déjelo en blanco para dejarlo sin cambios)</label>
+                      <input type="password" class="form-control">
+
+                      <label>Nueva contraseña (dejar en blanco para dejar sin cambios)</label>
+                      <input type="password" class="form-control">
+
+                      <label>Confirmar nueva contraseña</label>
+                      <input type="password" class="form-control mb-2">
+                      -->
+
+                      <!-- <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
+                        [disabled]="!formDataMain.valid">
+                        <span class="btn-text">Guarda los datos</span>
+                        <span class="btn-hover-text" (click)="onSubmit()">Guardar</span>
+                      </button> -->
+                    </form>
+                  </ng-template>
+                </li>
+
+                <li [ngbNavItem]="'tab-4'">
+                  <ng-template ngbNavContent>
+                    <form (ngSubmit)="onSubmit()" [formGroup]="formDataAddress">
+                      <p>La siguiente direcci&oacute;n se utilizará en la página de pago de forma predeterminada.</p>
+
+                      <div class="row">
+                        <div class="col-lg-12">
+                          <div class="card card-dashboard">
+                            <div class="card-body">
+                              <h3 class="card-title">Dirección de Envío</h3>
+                              <p>Nombre del Usuario: <b>{{userName}}</b></p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- <div class="col-lg-6">
+                        <div class="card card-dashboard">
+                          <div class="card-body">
+                            <h3 class="card-title">Dirección de Envío</h3>
+
+                            <p>No has configurado este tipo de dirección.<br>
+                              <a href="javascript:;">Edit <i class="icon-edit"></i></a>
+                            </p>
+                          </div>
+                        </div>
+                      </div> -->
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-6 form-check">
+                          <label>¿Conoces el Código Postal? Activar/Desactivar captura</label>
+                          <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
+                            (change)="onActiveCP()" formControlName="byCodigopostal">
+                        </div>
+                        <div class="col-sm-6 form-group">
+                          <label>Código Postal *</label>
+                          <input type="text" name="codigoPostal" class="form-control" required
+                            formControlName="codigoPostal" (blur)="onSetCps($event)"
+                            [attr.disabled]="!byCodigopostal ? 'true' : null">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-3 form-group">
+                          <label>Pais *</label>
+                          <select class="form-control" name="selectCountry" required formControlName="selectCountry"
+                            (change)="onSetEstados($event.target)">
+                            <option [ngValue]="''" [selected]="'' == selectCountry.c_pais">Elije un País</option>
+                            <option *ngFor="let country of countrys" [ngValue]="country.c_pais">
+                              {{country.d_pais}}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                          <label>Estado *</label>
+                          <select class="form-control" name="selectEstado" required formControlName="selectEstado"
+                            (change)="onSetMunicipios($event.target)">
+                            <option [ngValue]="''" [selected]="'' == selectEstado.c_estado">Elije un Estado</option>
+                            <option *ngFor="let estado of estados" [ngValue]="estado.c_estado">
+                              {{estado.d_estado}}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                          <label>Municipio *</label>
+                          <select class="form-control" name="selectMunicipio" required formControlName="selectMunicipio"
+                            (change)="onSetColonias($event.target)">
+                            <option [ngValue]="''" [selected]="'' == selectMunicipio.c_mnpio">Elije un Municipio
+                            </option>
+                            <option *ngFor="let municipio of municipios" [ngValue]="municipio.c_mnpio">
+                              {{municipio.D_mnpio}}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <label>Colonia *</label>
+                          <input *ngIf="!byCodigopostal" type="text" name="selectColonia" class="form-control"
+                            formControlName="selectColonia" placeholder="" required>
+                          <select *ngIf="byCodigopostal" class="form-control" name="selectColonia"
+                            formControlName="selectColonia" required (change)="onSetCps(null)">
+                            <option [ngValue]="''" [selected]="'' == selectColonia">Elije la Colonia</option>
+                            <option *ngFor="let colonia of colonias" [ngValue]="colonia">
+                              {{colonia}}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-sm-6">
+                          <label>Dirección *</label>
+                          <input type="text" class="form-control" name="directions" formControlName="directions"
+                            placeholder="Calle y Número" required>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <label>Referencias</label>
+                        <textarea class="form-control" cols="30" rows="4" name="references" formControlName="references"
+                          placeholder="Referencias de entrega"></textarea>
+                      </div>
+
+
+                      <!-- <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
+                        [disabled]="!formDataAddress.valid">
+                        <span class="btn-text">Guarda la Direcci&oacute;n</span>
+                        <span class="btn-hover-text" (click)="onSubmit()">Guardar</span>
+                      </button> -->
+                    </form>
+                  </ng-template>
+                </li>
+              </ul>
+              <div [ngbNavOutlet]="nav"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

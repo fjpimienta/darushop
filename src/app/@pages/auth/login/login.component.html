@@ -1,0 +1,93 @@
+<main class="main">
+  <app-page-header title="Iniciar Sesión" subtitle=""></app-page-header>
+  <div class="page-content">
+    <div class="container">
+      <div class="form-box">
+        <form (ngSubmit)="onSubmit()" #forma="ngForm">
+          <div class="form-group">
+            <label for="singinEmail">Correo Electrónico *</label>
+            <input type="text" class="form-control" id="singinEmail" name="singinEmail" #singinEmail="ngModel"
+              [(ngModel)]="login.email"
+              [ngClass]="{'is-valid': !singinEmail.invalid, 'is-invalid': singinEmail.invalid}" [pattern]="pattern"
+              required>
+            <div class="alert alert-danger" *ngIf="singinEmail.invalid && (singinEmail.dirty || singinEmail.touched)">
+              <div *ngIf="singinEmail.errors.required">
+                Introduzca un correo electronico valido por favor.
+              </div>
+              <div *ngIf="singinEmail.errors && singinEmail.errors.pattern">
+                El corrreo electronico no tiene el formato correcto.
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="singinPassword">Clave *</label>
+            <input type="password" class="form-control" id="singinPassword" name="singinPassword"
+              #singinPassword="ngModel" [(ngModel)]="login.password"
+              [ngClass]="{'is-valid': !singinPassword.invalid, 'is-invalid': singinPassword.invalid}" required>
+            <div class="alert alert-danger"
+              *ngIf="singinPassword.invalid && (singinPassword.dirty || singinPassword.touched)">
+              <div *ngIf="singinPassword.errors.required">
+                Introduzca una contraseña por favor.
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
+                    <span>INICIAR</span>
+                    <i class="icon-long-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-choice">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="signinRemember" name="signinRemember"
+                      #signinRemember="ngModel" [(ngModel)]="login.remember">
+                    <label class="custom-control-label" for="signinRemember">Recuerdame</label>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <a href="javascript:;" (click)="onRecover()">Olvidaste la clave?</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-choice">
+          </div>
+        </form>
+        <!-- <div class="form-choice">
+          <div class="row">
+            <div class="col-sm-12">&nbsp;</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <p class="text-center">O iniciar sesión con</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">&nbsp;</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <a href="javascript:;" class="btn btn-login btn-g">
+                <i class="icon-google"></i>
+                Iniciar Google
+              </a>
+            </div>
+            <div class="col-sm-6">
+              <a href="javascript:;" class="btn btn-login btn-f">
+                <i class="icon-facebook-f"></i>
+                Iniciar Facebook
+              </a>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</main>

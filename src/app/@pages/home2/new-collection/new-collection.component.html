@@ -1,0 +1,97 @@
+<div class="container new-collection" *ngIf="byCategory">
+  <div class="heading heading-flex mb-3">
+    <div class="heading-left" contentAnim aniName="blurIn">
+      <h2 class="title">Nuevos Productos</h2>
+    </div>
+    <!-- <div class="heading-center" contentAnim aniName="blurIn">
+      <a href="javascript:;" class="btn btn-link" (click)="changeBrands()"><span>Cambiar a vista por Marcas</span></a>
+    </div> -->
+    <div class="heading-right">
+      <!-- <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist" tabClick>
+        <li class="nav-item">
+          <a class="nav-link active" href="" role="tab" (click)="nav.select('all')">Todos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select('computadoras')">Computadoras</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select('cameras')">Cámaras</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select('laptops')">Laptops</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select('juegos')">Gamers</a>
+        </li>
+      </ul> -->
+    </div>
+  </div>
+
+  <ul ngbNav #nav="ngbNav" class="tab-content-carousel just-action-icons-sm" [destroyOnHide]="false">
+    <li [ngbNavItem]="cat[0]" *ngFor="let cat of categories">
+      <ng-template ngbNavContent>
+        <owl-carousel [options]="sliderOption" carouselClasses="owl-full carousel-equal-height carousel-with-shadow"
+          *ngIf="!loaded else elseBlock">
+          <div class="skel-pro" *ngFor="let item of [1,2,3,4,5]"></div>
+        </owl-carousel>
+        <ng-template #elseBlock>
+          <owl-carousel [options]="sliderOption" carouselClasses="owl-full carousel-equal-height carousel-with-shadow">
+            <app-product-twelve [product]="product" *ngFor="let product of products | catFilter : cat">
+            </app-product-twelve>
+          </owl-carousel>
+        </ng-template>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav"></div>
+</div>
+
+<!--
+<div class="container new-collection" *ngIf="byBrands">
+  <div class="heading heading-flex mb-3">
+    <div class="heading-left" contentAnim aniName="blurIn">
+      <h2 class="title">Nuevos Productos por Marcas</h2>
+    </div>
+    <div class="heading-center" contentAnim aniName="blurIn">
+      <a href="javascript:;" class="btn btn-link" (click)="changeCategrory()"><span>Cambiar a vista por
+          Categorías</span></a>
+    </div>
+    <div class="heading-right">
+      <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist" tabClick>
+        <li class="nav-item">
+          <a class="nav-link active" href="" role="tab" (click)="nav.select('all')">Todas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select(['microsoft'])">Microsoft</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select(['gopro'])">GoPro</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select('canon')">Canon</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="" role="tab" (click)="nav.select('sony')">Sony</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <ul ngbNav #nav="ngbNav" class="tab-content-carousel just-action-icons-sm" [destroyOnHide]="false">
+    <li [ngbNavItem]="bra[0]" *ngFor="let bra of brands">
+      <ng-template ngbNavContent>
+        <owl-carousel [options]="sliderOption" carouselClasses="owl-full carousel-equal-height carousel-with-shadow"
+          *ngIf="!loaded else elseBlock">
+          <div class="skel-pro" *ngFor="let item of [1,2,3,4,5]"></div>
+        </owl-carousel>
+        <ng-template #elseBlock>
+          <owl-carousel [options]="sliderOption" carouselClasses="owl-full carousel-equal-height carousel-with-shadow">
+            <app-product-twelve [product]="product" *ngFor="let product of products | braFilter : bra">
+            </app-product-twelve>
+          </owl-carousel>
+        </ng-template>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav"></div>
+</div> -->
