@@ -11,7 +11,7 @@
           <ng-template ngbNavContent>
             <form (ngSubmit)="onSubmit()" #forma="ngForm">
               <div class="form-group">
-                <label for="singinEmail">Correo Electrónico *-MODAL</label>
+                <label for="singinEmail">Correo Electrónico *</label>
                 <input type="text" class="form-control" id="singinEmail" name="singinEmail" #singinEmail="ngModel"
                   [(ngModel)]="login.email"
                   [ngClass]="{'is-valid': !singinEmail.invalid, 'is-invalid': singinEmail.invalid}" [pattern]="pattern"
