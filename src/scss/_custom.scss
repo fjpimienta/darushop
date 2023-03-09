@@ -607,18 +607,19 @@ p {
     width: 98px;
     height: 98px;
     background: transparent;
-    border: 2px solid white;
+    border: 2px solid transparent;
     border-radius: 50%;
     align-items: center;
     margin-left: auto;
     margin-right: auto;
-    color: white;
+    color: transparent;
     font-size: 3.8rem;
     transition: .3s;
 
     &:hover {
       background-color: $primary-color;
       border-color: $primary-color;
+      opacity: 0.5;
       box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.2);
     }
   }
