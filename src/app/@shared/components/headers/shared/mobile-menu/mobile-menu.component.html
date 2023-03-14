@@ -19,7 +19,10 @@
                 <a routerLink="/" class="sf-with-ul">Inicio</a>
               </li>
               <li>
-                <a routerLink="/shop/sidebar/list">Marcas
+                <a routerLink="/shop/offers">Ofertas</a>
+              </li>
+              <li>
+                <a routerLink="/shop/category">Categorias
                   <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
                 </a>
                 <div class="megamenu megamenu-sm">
@@ -29,39 +32,33 @@
                         <div class="row">
                           <div class="col-md-6">
                             <ul>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">DELL</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">HP</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">ACER</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">LENOVO</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">APPLE</a>
+                              <li *ngFor="let categorie of categories" routerLinkActive="active">
+                                <a routerLink="/shop/sidebar/3cols"
+                                  [queryParams]="categorie.param">{{categorie.description}}</a>
                               </li>
                             </ul>
                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <a routerLink="/shop/brands">Marcas
+                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+                </a>
+                <div class="megamenu megamenu-sm">
+                  <div class="row no-gutters">
+                    <div class="col-md-12">
+                      <div class="menu-col">
+                        <div class="row">
                           <div class="col-md-6">
                             <ul>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">SAMSUNG</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">LG</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">EPSON</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">NVIDIA</a>
-                              </li>
-                              <li>
-                                <a routerLink="/shop/sidebar/list">KINGSTON</a>
+                              <li [class.active]="current.includes('shop/sidebar/list')"
+                                *ngFor="let item of brands; let id = index;">
+                                <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{brands: item.slug}">{{
+                                  item.description }}</a>
                               </li>
                             </ul>
                           </div>
@@ -116,7 +113,7 @@
           </nav>
         </ng-template>
       </li>
-      <li ngbNavItem>
+      <!-- <li ngbNavItem>
         <a ngbNavLink>Categorias</a>
         <ng-template ngbNavContent>
           <div class="mobile-cats-nav">
@@ -142,7 +139,7 @@
             </ul>
           </div>
         </ng-template>
-      </li>
+      </li> -->
     </ul>
     <div [ngbNavOutlet]="nav"></div>
 
