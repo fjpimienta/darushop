@@ -40,3 +40,12 @@
 .sidebar-filter-clear:hover {
   font-weight: 800;
 }
+
+.sidebar-shop .widget {
+  padding-bottom: 2.5rem;
+  margin-bottom: 3rem;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  height: 300px;
+  overflow-y: scroll;
+}
