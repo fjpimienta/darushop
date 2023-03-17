@@ -13,7 +13,7 @@
           <div class="col-md-12">
             <div class="menu-col">
               <div class="row">
-                <div class="col-md-6">
+                <div class="collapse col-md-6">
                   <ul>
                     <li *ngFor="let categorie of categories" routerLinkActive="active">
                       <a routerLink="/shop/sidebar/3cols" [queryParams]="categorie.param">{{categorie.description}}</a>
