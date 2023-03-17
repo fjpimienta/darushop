@@ -101,6 +101,7 @@ export class SupplierProd {
 }
 
 export class BranchOffices {
-  name: string
-  cantidad: number
+  name: string;
+  estado: string;
+  cantidad: number;
 }
