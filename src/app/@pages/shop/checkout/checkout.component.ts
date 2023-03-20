@@ -29,6 +29,8 @@ import { IResultRegister } from '@core/interfaces/register.interface';
 import { AddressInput, UserInput } from '@core/models/user.models';
 import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
+import { WarehousesService } from '@core/services/warehouses.service';
+import { Warehouse } from '@core/models/warehouse.models';
 
 declare var $: any;
 
@@ -41,7 +43,7 @@ declare var $: any;
 export class CheckoutComponent implements OnInit, OnDestroy {
 
   formData: FormGroup;
-  cartItems: CartItem[] = []
+  cartItems: CartItem[] = [];
   countrys: Country[];
   selectCountry: Country;
   estados: Estado[];
@@ -61,6 +63,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   existeMetodoPago: boolean;
   stripeCustomer: string;
   errorSaveUser: boolean;
+  warehouses: Warehouse[];
 
   session: IMeData = {
     status: false
@@ -93,7 +96,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private customersService: CustomersService,
     private chargeService: ChargeService,
     private mailService: MailService,
-    public userService: UsersService
+    public userService: UsersService,
+    private warehousesService: WarehousesService
   ) {
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -213,6 +217,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.cartItems = items;
     });
 
+    this.warehouses = [];
+    this.warehousesService.getWarehouses(1, -1).subscribe(result => {
+      this.warehouses = result.warehouses;
+    });
+
     console.log('this.cartItems: ', this.cartItems);
 
     document.querySelector('body').addEventListener('click', () => this.clearOpacity());
@@ -327,7 +336,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onSetUser(formData: FormGroup, stripeCustomer: string): UserInput {
-    let register = new UserInput();
+    const register = new UserInput();
     register.id = '';
     if (this.session.user) {
       register.id = this.session.user.id;
@@ -362,6 +371,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (event) {
       const cp = $(event.target).val();
       if (cp !== '') {
+        // Cotizar con los proveedores el costo de envio de acuerdo al producto.
+        // Agrupar los productos por proveedor
+
+        // Agrupoar los productos por almacen
+        // Cotizar los productos del mismo proveedor y mismo almacen
+        // Sumar los costos de envios
+
         // Recuperar pais, estado y municipio con el CP
         this.codigopostalsService.getCps(1, -1, cp).subscribe(result => {
           this.cps = result.codigopostals;
