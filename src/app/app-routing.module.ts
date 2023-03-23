@@ -15,7 +15,7 @@ import { Index7Component } from '@pages/home/index/index7.component';
 
 const routes: Routes = [
   {
-    path: 'pages/coming-soon',
+    path: 'soon',
     component: ComingSoonPageComponent
   },
   {
