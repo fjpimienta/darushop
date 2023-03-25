@@ -12,5 +12,7 @@ export const CPS_FRAGMENT = gql`
     d_ciudad
     d_asenta
     d_codigo
+    latitud
+    longitud
   }
 `;
