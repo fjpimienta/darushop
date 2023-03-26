@@ -89,6 +89,7 @@ export const PRODUCT_FRAGMENT = gql`
         name
         estado
         cantidad
+        cp
         latitud
         longitud
       }

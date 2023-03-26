@@ -12,15 +12,15 @@ export class Product {
   top: boolean;
   featured: boolean;
   new: boolean;
-  author: string;
-  sold: string;
+  // author: string;
+  // sold: string;
   category: Categorys[];
-  brands: Brands[];
+  brands?: Brands[];
   pictures: Picture[];
-  sm_pictures?: Picture[];
+  sm_pictures: Picture[];
   variants?: Variant[];
-  active: boolean;
-  suppliersProd?: SupplierProd;
+  // active: boolean;
+  suppliersProd: SupplierProd;
 }
 
 export class Categorys {
@@ -35,9 +35,9 @@ export class PivotCategory {
 }
 
 export class Brands {
-  name: string;
-  slug: string;
-  pivot: PivotBrand;
+  name?: string;
+  slug?: string;
+  // pivot: PivotBrand;
 }
 
 export class PivotBrand {
@@ -49,7 +49,7 @@ export class Picture {
   width: string;
   height: string;
   url: string;
-  pivot: PivotePicture;
+  // pivot: PivotePicture;
 }
 
 export class PivotePicture {
@@ -63,7 +63,7 @@ export class Variant {
   color_name: string;
   price: number;
   pivot: PivoteVariant;
-  size: Size;
+  size: Size[];
 }
 
 export class PivoteVariant {
@@ -104,4 +104,7 @@ export class BranchOffices {
   name: string;
   estado: string;
   cantidad: number;
+  cp: string;
+  latitud: string;
+  longitud: string;
 }
