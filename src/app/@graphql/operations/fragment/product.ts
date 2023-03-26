@@ -89,6 +89,8 @@ export const PRODUCT_FRAGMENT = gql`
         name
         estado
         cantidad
+        latitud
+        longitud
       }
     }
     descuentos {
