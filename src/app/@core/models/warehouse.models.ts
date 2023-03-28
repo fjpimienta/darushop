@@ -1,16 +1,14 @@
+import { Product } from './product.models';
+
 export class Warehouse {
   id?: string;
-  homoclave?: string;
-  active: boolean;
-  almacen?: string;
-  cp?: string;
-  calle: string;
-  colonia: string;
-  ciudad: string;
+  cp: string;
+  name: string;
   estado: string;
-  telefono: string;
-  numero: string;
+  latitud: string;
+  longitud: string;
   suppliersCat: SupplierCat;
+  products: Product[];
 }
 
 export class SupplierCat {

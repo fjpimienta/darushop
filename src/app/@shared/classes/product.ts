@@ -62,6 +62,7 @@ export interface Product {
     price: number;
     moneda: string;
     branchOffices: Array<{
+      id: string;
       name: string;
       estado: string;
       cantidad: number;

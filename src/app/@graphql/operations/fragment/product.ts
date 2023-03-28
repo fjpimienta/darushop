@@ -86,6 +86,7 @@ export const PRODUCT_FRAGMENT = gql`
       price
       moneda
       branchOffices {
+        id
         name
         estado
         cantidad
