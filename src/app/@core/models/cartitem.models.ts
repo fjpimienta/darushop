@@ -1,6 +1,6 @@
-import { Product } from "./product.models";
+import { Product } from './product.models';
 
-export class CartItemInputx extends Product {
+export class CartItemInput extends Product {
   qty: number;
-	sum: number;
+  sum: number;
 }
