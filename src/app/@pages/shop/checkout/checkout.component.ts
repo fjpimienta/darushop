@@ -31,6 +31,14 @@ import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
 import { WarehousesService } from '@core/services/warehouses.service';
 import { Warehouse } from '@core/models/warehouse.models';
+import { Delivery } from '@core/models/delivery.models';
+import { BranchOffices, Product, SupplierProd } from '@core/models/product.models';
+import { CartItemInput } from '@core/models/cartitem.models';
+import { ExternalAuthService } from '@core/services/external-auth.service';
+import { SuppliersService } from '@core/services/supplier.service';
+import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
+import { Catalog } from '@core/models/catalog.models';
+import { ProductShipment } from '@core/models/productShipment.models';
 
 declare var $: any;
 
@@ -64,6 +72,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   stripeCustomer: string;
   errorSaveUser: boolean;
   warehouses: Warehouse[];
+  delivery: Delivery;
+  deliverys: Delivery[];
+  suppliers: [ISupplier];
 
   session: IMeData = {
     status: false
@@ -92,12 +103,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public countrysService: CountrysService,
     public codigopostalsService: CodigopostalsService,
     public authService: AuthenticationService,
+    public suppliersService: SuppliersService,
     private stripePaymentService: StripePaymentService,
     private customersService: CustomersService,
     private chargeService: ChargeService,
     private mailService: MailService,
     public userService: UsersService,
-    private warehousesService: WarehousesService
+    private warehousesService: WarehousesService,
+    private externalAuthService: ExternalAuthService,
   ) {
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -121,7 +134,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               email = this.session.user.email;
               stripeName = `${this.session.user.name} ${this.session.user.lastname}`;
             } else {
-              email = this.formData.controls.email.value
+              email = this.formData.controls.email.value;
               stripeName = `${this.formData.controls.name.value} ${this.formData.controls.lastname.value}`;
             }
             this.customersService.add(
@@ -215,6 +228,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     this.subscr = this.cartService.cartStream.subscribe(items => {
       this.cartItems = items;
+    });
+
+    this.suppliersService.getSuppliers().subscribe(result => {
+      this.suppliers = result.suppliers;
     });
 
     this.warehouses = [];
@@ -371,13 +388,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (event) {
       const cp = $(event.target).val();
       if (cp !== '') {
-        // Cotizar con los proveedores el costo de envio de acuerdo al producto.
-        // Agrupar los productos por proveedor
-
-        // Agrupoar los productos por almacen
-        // Cotizar los productos del mismo proveedor y mismo almacen
-        // Sumar los costos de envios
-
         // Recuperar pais, estado y municipio con el CP
         this.codigopostalsService.getCps(1, -1, cp).subscribe(result => {
           this.cps = result.codigopostals;
@@ -414,6 +424,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.colonias.push(codigo.d_asenta);
                 }
               });
+              // Cotizar con los proveedores el costo de envio de acuerdo al producto.
+              this.onCotizarEnvios(this.selectEstado.d_estado);
             }
           }
         });
@@ -424,6 +436,255 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     }
   }
+
+  onCotizarEnvios(estadoCp: string): void {
+    // Inicializar Arreglo de Envios.
+    const capitalCp = '2700';
+    const delivery = new Delivery();
+    let warehouse = new Warehouse();
+    let id = '1';
+    delivery.id = id;
+    delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+    console.log('this.suppliers: ', this.suppliers);
+    // Verificar productos por proveedor.
+    let i = 0;
+    this.suppliers.forEach(supplier => {
+      const supplierProd = new SupplierProd();                       // Revisar proveedors con apis
+      const warehouseEstado = new Warehouse();
+      const warehouseCapital = new Warehouse();
+      const productsEstado: ProductShipment[] = [];
+      const productsCapital: ProductShipment[] = [];
+      this.cartItems.forEach(cartItem => {                                    // Revisar productos en el carrito
+        if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
+          cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
+            if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {  // Almacenes estado|capital
+              if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
+                if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
+                  const productShipment = new ProductShipment();
+                  productShipment.producto = cartItem.sku;
+                  productShipment.cantidad = cartItem.qty.toString();
+                  productShipment.precio = cartItem.sale_price.toString();
+                  productShipment.moneda = cartItem.suppliersProd.moneda;
+                  productShipment.almacen = branchOffice.id;
+                  productsEstado.push(productShipment);
+                  warehouseEstado.cp = branchOffice.cp;
+                  warehouseEstado.name = branchOffice.name;
+                  warehouseEstado.estado = branchOffice.estado;
+                  warehouseEstado.latitud = branchOffice.latitud;
+                  warehouseEstado.longitud = branchOffice.longitud;
+                }
+                if (capitalCp === branchOffice.cp) {                          // Verificar Existencias en Capital
+                  const productShipment = new ProductShipment();
+                  productShipment.producto = cartItem.sku;
+                  productShipment.cantidad = cartItem.qty.toString();
+                  productShipment.precio = cartItem.sale_price.toString();
+                  productShipment.moneda = cartItem.suppliersProd.moneda;
+                  productShipment.almacen = branchOffice.id;
+                  productsCapital.push(productShipment);
+                  warehouseCapital.cp = branchOffice.cp;
+                  warehouseCapital.name = branchOffice.name;
+                  warehouseCapital.estado = branchOffice.estado;
+                  warehouseCapital.latitud = branchOffice.latitud;
+                  warehouseCapital.longitud = branchOffice.longitud;
+                }
+              }
+            }
+          });
+          let costoEstado = 0;
+          let costoCapital = 0;
+          console.log('productsEstado: ', productsEstado);
+          if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
+            // Cotizar envio
+            console.log('estadoCp: ', estadoCp);
+            console.log('productsEstado: ', productsEstado);
+            costoEstado = 10;
+          } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
+            // Cotizar envio
+            console.log('capitalCp: ', capitalCp);
+            console.log('productsCapital: ', productsCapital);
+            costoCapital = 9;
+          }
+          if (costoEstado <= costoCapital && productsEstado.length === this.cartItems.length) {
+            i += 1;
+            warehouse = warehouseEstado;
+            warehouse.productShipments = productsEstado;
+          } else if (productsCapital.length === this.cartItems.length) {
+            i += 1;
+            warehouse = warehouseCapital;
+            warehouse.productShipments = productsCapital;
+          }
+          supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
+          supplierProd.codigo = cartItem.suppliersProd.codigo;
+          supplierProd.price = cartItem.suppliersProd.price;
+          supplierProd.moneda = cartItem.suppliersProd.moneda;
+          warehouse.suppliersProd = supplierProd;
+        }
+      });
+    });
+    console.log('warehouse: ', warehouse);
+    // // Verificar Existencias en su Estado y Capital del Pais.
+    // const branchOfficeTmp = new BranchOffices();
+    // const branchOfficeTmpCapital = new BranchOffices();
+
+    // this.cartItems.forEach(cartItem => {
+    //   cartItem.suppliersProd.branchOffices.forEach(branchOffice => {
+    //     if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {
+    //       if (branchOffice.cantidad >= cartItem.qty) {
+    //         if (estadoCp === branchOffice.estado) {                 // Mismo Estado
+    //           branchOfficeTmp.name = branchOffice.name;
+    //           branchOfficeTmp.estado = branchOffice.estado;
+    //           branchOfficeTmp.cantidad = branchOffice.cantidad;
+    //           const productShipment = new ProductShipment();
+    //           productShipment.producto = cartItem.sku;
+    //           productShipment.cantidad = cartItem.qty.toString();
+    //           productShipment.precio = cartItem.sale_price.toString();
+    //           productShipment.moneda = cartItem.suppliersProd.moneda;
+    //           productShipment.almacen = branchOffice.id;
+    //           this.productsEstado.push(productShipment);
+    //         }
+    //         if (capitalCp === branchOffice.cp) {                    // Capital
+    //           branchOfficeTmpCapital.name = branchOffice.name;
+    //           branchOfficeTmpCapital.estado = branchOffice.estado;
+    //           branchOfficeTmpCapital.cantidad = branchOffice.cantidad;
+    //           const productShipment = new ProductShipment();
+    //           productShipment.producto = cartItem.sku;
+    //           productShipment.cantidad = cartItem.qty.toString();
+    //           productShipment.precio = cartItem.sale_price.toString();
+    //           productShipment.moneda = cartItem.suppliersProd.moneda;
+    //           productShipment.almacen = branchOffice.id;
+    //           this.productsCapital.push(productShipment);
+    //         }
+    //         // cartItemTmp.suppliersProd.branchOffices.push(branchOffice);
+    //       }
+    //     }
+    //   });
+    // });
+    // console.log('this.productsEstado: ', this.productsEstado);
+    // console.log('this.productsCapital: ', this.productsCapital);
+    // console.log('this.cartItems: ', this.cartItems);
+    // Verificar Existencias en Capital Pais.
+    // let CostoEnvio = 0;
+    // if (this.cartItems.length === this.productsEstado.length) {
+    //   CostoEnvio = 1; // this.onShippingEstimate(estadoCp, this.productsEstado);
+    //   warehouse.productShipments = this.productsEstado;
+    // }
+
+    // delivery.warehouses = [];
+    // delivery.warehouses.push(warehouse);
+
+    // console.log('delivery: ', delivery);
+
+    // id += 1;
+    // warehouse = new Warehouse();
+    // Creamos un nuevo objeto donde vamos a almacenar por ciudades.
+    // let cartItemTmp: CartItemInput;
+    // const cartItemsTmp: CartItemInput[] = [];
+    // const suppliersProd = new SupplierProd();
+    // const branchOfficeTmp = new BranchOffices();
+    // let productsDelivery: Product[] = [];
+    // Agrupar los productos por proveedor
+    // this.cartItems.forEach(cartItem => {
+    //   cartItemTmp = cartItem;
+    //   // // cartItemTmp.suppliersProd.branchOffices = [];
+    //   // // CP para enviar = estadoCp
+    //   // // Buscar el estado en suppliersProd.branchOffices.estado
+    //   // let suppliersProd =  cartItemTmp.suppliersProd;
+    //   // cartItemTmp.suppliersProd = new suppliersProd(
+    //   //   idProveedor:
+    //   // );
+    //   // cartItemTmp.suppliersProd.branchOffices = [];
+    //   // console.log('cartItemTmp: ', cartItemTmp);
+    //   cartItem.suppliersProd.branchOffices.forEach(branchOffice => {
+    //     if (estadoCp === branchOffice.estado) {
+    //       // console.log('cartItem.qty: ', cartItem.qty);
+    //       // console.log('branchOffice.cantidad: ', branchOffice.cantidad);
+    //       // console.log('cartItemTmp.suppliersProd.branchOffices.length: ', cartItemTmp.suppliersProd.branchOffices.length);
+    //       if (branchOffice.cantidad >= cartItem.qty && cartItemTmp.suppliersProd.branchOffices.length === 0) {
+    //         branchOfficeTmp.name = branchOffice.name;
+    //         branchOfficeTmp.estado = branchOffice.estado;
+    //         branchOfficeTmp.cantidad = branchOffice.cantidad;
+    //         // cartItemTmp.suppliersProd.branchOffices.push(branchOffice);
+    //         // console.log('branchOffice: ', branchOffice);
+    //       }
+    //     }
+    //   });
+    //   if (cartItemTmp.suppliersProd.branchOffices.length > 0) {
+    //     cartItemsTmp.push(cartItemTmp);
+    //   }
+    // });
+    // console.log('cartItemsTmp: ', cartItemsTmp);
+    // Agrupar los productos por almacen
+
+    // Cotizar los productos del mismo proveedor y mismo almacen
+    // Sumar los costos de envios
+
+  }
+
+  // async onShippingEstimate(supplier: ISupplier, apiSelect: IApis, token: string, destiny: string, products: Product[]): Promise<any> {
+  //   // if (supplier.token) {
+  //   return await this.externalAuthService.getSyscomToken(supplier, apiSelect)
+  //     .then(
+  //       async result => {
+  //         switch (supplier.slug) {
+  //           case 'ct':
+  //             this.token = result.token;
+  //             break;
+  //           case 'syscom':
+  //             this.token = result.access_token;
+  //             break;
+  //           default:
+  //             break;
+  //         }
+  //         if (this.token) {
+  //           const productos: Product[] = [];
+  //           // this.ctAlmacenes = await this.getAlmacenes();
+  //           // Carga de Productos
+  //           const catalogValues: Catalog[] = [];
+  //           const resultados = await this.externalAuthService.getSyscomCatalogAllBrands(supplier, apiSelect, this.token, catalogValues)
+  //             // tslint:disable-next-line: no-shadowed-variable
+  //             .then(async result => {
+  //               try {
+  //                 if (result.length > 0) {
+  //                   if (supplier.slug === 'ct') {
+  //                     // Carga de Precios y Disponibilidad
+  //                     // const productsJson = await this.getProducts();
+  //                     // result.forEach(item => {
+  //                     //   productsJson.forEach(productJson => {
+  //                     //     if (item.codigo === productJson.clave) {
+  //                     //       let itemData = new Product();
+  //                     //       itemData = this.setProduct(supplier.slug, item, productJson);
+  //                     //       if (itemData.id !== undefined) {
+  //                     //         productos.push(itemData);
+  //                     //       }
+  //                     //     }
+  //                     //   });
+  //                     // });
+  //                   } else {
+  //                     result.forEach(item => {
+  //                       let itemData = new Product();
+  //                       // itemData = this.setProduct(supplier.slug, item);
+  //                       if (itemData.id !== undefined) {
+  //                         productos.push(itemData);
+  //                       }
+  //                     });
+  //                   }
+  //                 }
+  //                 return await productos;
+  //               } catch (error) {
+  //                 throw await new Error(error.message);
+  //               }
+  //             });
+  //           return await resultados;
+  //         } else {
+  //           basicAlert(TYPE_ALERT.WARNING, 'No se encontró el Token de Autorización.');
+  //         }
+  //       },
+  //       error => {
+  //         basicAlert(TYPE_ALERT.ERROR, error.message);
+  //       }
+  //     );
+  //   // }
+  // }
 
   onSetEstados(event): void {
     const estado = event.value.split(':', 2);
@@ -508,11 +769,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   }
 
-  sendEmail(charge: ICharge) {
+  sendEmail(charge: ICharge): void {
     console.log('charge.receipt_email: ', charge.receipt_email);
-    const receipt_email = charge.receipt_email + '; hosting3m@gmail.com';
+    const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
     const mail: IMail = {
-      to: receipt_email,
+      to: receiptEmail,
       subject: 'Confirmacion del pedido',
       html: `
         El pedido se ha realizado correctamente.

@@ -1,4 +1,5 @@
-import { Product } from './product.models';
+import { Product, SupplierProd } from './product.models';
+import { ProductShipment } from './productShipment.models';
 
 export class Warehouse {
   id?: string;
@@ -7,12 +8,8 @@ export class Warehouse {
   estado: string;
   latitud: string;
   longitud: string;
-  suppliersCat: SupplierCat;
+  suppliersProd: SupplierProd;
   products: Product[];
+  productShipments: ProductShipment[];
 }
 
-export class SupplierCat {
-  idProveedor: string;
-  name: string;
-  slug: string;
-}
