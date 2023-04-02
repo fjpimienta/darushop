@@ -25,20 +25,18 @@ import { IMail } from '@core/interfaces/mail.interface';
 import { MailService } from '@core/services/mail.service';
 import { ICharge } from '@core/interfaces/stripe/charge.interface';
 import { UsersService } from '@core/services/users.service';
-import { IResultRegister } from '@core/interfaces/register.interface';
 import { AddressInput, UserInput } from '@core/models/user.models';
 import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
 import { WarehousesService } from '@core/services/warehouses.service';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Delivery } from '@core/models/delivery.models';
-import { BranchOffices, Product, SupplierProd } from '@core/models/product.models';
-import { CartItemInput } from '@core/models/cartitem.models';
+import { Product, SupplierProd } from '@core/models/product.models';
 import { ExternalAuthService } from '@core/services/external-auth.service';
 import { SuppliersService } from '@core/services/supplier.service';
 import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
-import { Catalog } from '@core/models/catalog.models';
 import { ProductShipment } from '@core/models/productShipment.models';
+import { Shipment } from '@core/models/shipment.models';
 
 declare var $: any;
 
@@ -140,18 +138,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.customersService.add(
               stripeName,
               email
-            ).pipe(first()).subscribe((result: { status: boolean, message: string, customer: ICustomer }) => {
-              if (result.status) {
-                this.stripeCustomer = result.customer.id;
-                if (this.session.user) {
-                  this.session.user.stripeCustomer = result.customer.id;
+            ).pipe(first())
+              // tslint:disable-next-line: no-shadowed-variable
+              .subscribe((result: { status: boolean, message: string, customer: ICustomer }) => {
+                if (result.status) {
+                  this.stripeCustomer = result.customer.id;
+                  if (this.session.user) {
+                    this.session.user.stripeCustomer = result.customer.id;
+                  }
+                } else {
+                  infoEventAlert(result.message, '', TYPE_ALERT.WARNING);
+                  this.router.navigate(['/shop/cart']);
+                  this.errorSaveUser = true;
                 }
-              } else {
-                infoEventAlert(result.message, '', TYPE_ALERT.WARNING);
-                this.router.navigate(['/shop/cart']);
-                this.errorSaveUser = true;
-              }
-            });
+              });
           }
         });
 
@@ -276,54 +276,57 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.phone.setValue(this.session.user?.phone);
         this.formData.controls.email.setValue(this.session.user?.email);
         if (this.session.user?.addresses.length > 0) {
-          this.countrysService.countrys$.subscribe((result) => {
-            this.countrys = result;
-            this.session.user?.addresses.forEach(direction => {
-              if (direction.dir_delivery_main === true) {
-                this.formData.controls.codigoPostal.setValue(direction.d_codigo);
-                this.formData.controls.selectColonia.setValue(direction.d_asenta);
-                this.formData.controls.directions.setValue(direction.directions);
-                this.formData.controls.references.setValue(direction.references);
-                if (this.countrys.length > 0) {
-                  this.countrys.forEach(country => {
-                    if (country.c_pais === direction.c_pais) {
-                      this.estados = country.estados;
-                      this.formData.controls.selectCountry.setValue(direction.c_pais);
-                      this.selectCountry.c_pais = direction.c_pais;
-                      this.selectCountry.d_pais = direction.d_pais;
-                      country.estados.forEach(estado => {
-                        if (estado.c_estado === direction.c_estado) {
-                          this.municipios = estado.municipios;
-                          this.formData.controls.selectEstado.setValue(direction.c_estado);
-                          this.selectEstado.c_estado = direction.c_estado;
-                          this.selectEstado.d_estado = direction.d_estado;
-                          estado.municipios.forEach(municipio => {
-                            if (municipio.c_mnpio === direction.c_mnpio) {
-                              this.formData.controls.selectMunicipio.setValue(direction.c_mnpio);
-                              this.selectMunicipio.c_mnpio = direction.c_mnpio;
-                              this.selectMunicipio.D_mnpio = direction.d_mnpio;
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
-                  // Agregar las colonias del CP
-                  this.colonias = [];
-                  this.cps.forEach(codigo => {
-                    if (codigo.d_asenta) {
-                      this.colonias.push(codigo.d_asenta);
-                    }
-                  });
+          this.countrysService.countrys$
+            // tslint:disable-next-line: no-shadowed-variable
+            .subscribe((result) => {
+              this.countrys = result;
+              this.session.user?.addresses.forEach(direction => {
+                if (direction.dir_delivery_main === true) {
+                  this.formData.controls.codigoPostal.setValue(direction.d_codigo);
+                  this.formData.controls.selectColonia.setValue(direction.d_asenta);
+                  this.formData.controls.directions.setValue(direction.directions);
+                  this.formData.controls.references.setValue(direction.references);
+                  if (this.countrys.length > 0) {
+                    this.countrys.forEach(country => {
+                      if (country.c_pais === direction.c_pais) {
+                        this.estados = country.estados;
+                        this.formData.controls.selectCountry.setValue(direction.c_pais);
+                        this.selectCountry.c_pais = direction.c_pais;
+                        this.selectCountry.d_pais = direction.d_pais;
+                        country.estados.forEach(estado => {
+                          if (estado.c_estado === direction.c_estado) {
+                            this.municipios = estado.municipios;
+                            this.formData.controls.selectEstado.setValue(direction.c_estado);
+                            this.selectEstado.c_estado = direction.c_estado;
+                            this.selectEstado.d_estado = direction.d_estado;
+                            estado.municipios.forEach(municipio => {
+                              if (municipio.c_mnpio === direction.c_mnpio) {
+                                this.formData.controls.selectMunicipio.setValue(direction.c_mnpio);
+                                this.selectMunicipio.c_mnpio = direction.c_mnpio;
+                                this.selectMunicipio.D_mnpio = direction.d_mnpio;
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                    // Agregar las colonias del CP
+                    this.colonias = [];
+                    this.cps.forEach(codigo => {
+                      if (codigo.d_asenta) {
+                        this.colonias.push(codigo.d_asenta);
+                      }
+                    });
+                  }
                 }
-              }
+              });
             });
-          });
         }
       }
     });
   }
 
+  // tslint:disable-next-line: typedef
   async notAvailableProducts(withMessage: boolean = true) {
     if (withMessage) {
       await infoEventAlert(
@@ -334,6 +337,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
+  // tslint:disable-next-line: typedef
   async onSubmit() {
     if (this.formData.valid) {
       // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
@@ -425,7 +429,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               });
               // Cotizar con los proveedores el costo de envio de acuerdo al producto.
-              this.onCotizarEnvios(this.selectEstado.d_estado);
+              this.onCotizarEnvios(cp, this.selectEstado.d_estado);
             }
           }
         });
@@ -437,7 +441,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCotizarEnvios(estadoCp: string): void {
+  onCotizarEnvios(cpDestino: string, estadoCp: string): void {
     // Inicializar Arreglo de Envios.
     const capitalCp = '2700';
     const delivery = new Delivery();
@@ -445,7 +449,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     let id = '1';
     delivery.id = id;
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
-    console.log('this.suppliers: ', this.suppliers);
     // Verificar productos por proveedor.
     let i = 0;
     this.suppliers.forEach(supplier => {
@@ -454,7 +457,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const warehouseCapital = new Warehouse();
       const productsEstado: ProductShipment[] = [];
       const productsCapital: ProductShipment[] = [];
-      this.cartItems.forEach(cartItem => {                                    // Revisar productos en el carrito
+      let apiSelect: IApis;
+      supplier.apis.forEach(api => {
+        if (api.type === 'envios') {
+          if (supplier.slug === 'ct' && api.return === 'cotizacion') {
+            apiSelect = api;
+          }
+        }
+      });
+      this.cartItems.forEach(async cartItem => {                                    // Revisar productos en el carrito
         if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
           cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
             if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {  // Almacenes estado|capital
@@ -490,21 +501,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
             }
           });
-          let costoEstado = 0;
+          let shipmentsCost = 0;
           let costoCapital = 0;
-          console.log('productsEstado: ', productsEstado);
           if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
             // Cotizar envio
-            console.log('estadoCp: ', estadoCp);
-            console.log('productsEstado: ', productsEstado);
-            costoEstado = 10;
+            shipmentsCost = 10;
           } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
             // Cotizar envio
-            console.log('capitalCp: ', capitalCp);
-            console.log('productsCapital: ', productsCapital);
             costoCapital = 9;
+            warehouse.cp = cpDestino;
+            warehouse.productShipments = productsCapital;
+            shipmentsCost = await this.onShippingEstimate(supplier, apiSelect, warehouse)
+              .then(
+                async (result) => {
+                  return result;
+                }
+              );
+            console.log('shipmentsCost/result: ', shipmentsCost);
           }
-          if (costoEstado <= costoCapital && productsEstado.length === this.cartItems.length) {
+          if (shipmentsCost <= costoCapital && productsEstado.length === this.cartItems.length) {
             i += 1;
             warehouse = warehouseEstado;
             warehouse.productShipments = productsEstado;
@@ -518,173 +533,91 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           supplierProd.price = cartItem.suppliersProd.price;
           supplierProd.moneda = cartItem.suppliersProd.moneda;
           warehouse.suppliersProd = supplierProd;
+          id += 1;
         }
       });
     });
     console.log('warehouse: ', warehouse);
-    // // Verificar Existencias en su Estado y Capital del Pais.
-    // const branchOfficeTmp = new BranchOffices();
-    // const branchOfficeTmpCapital = new BranchOffices();
-
-    // this.cartItems.forEach(cartItem => {
-    //   cartItem.suppliersProd.branchOffices.forEach(branchOffice => {
-    //     if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {
-    //       if (branchOffice.cantidad >= cartItem.qty) {
-    //         if (estadoCp === branchOffice.estado) {                 // Mismo Estado
-    //           branchOfficeTmp.name = branchOffice.name;
-    //           branchOfficeTmp.estado = branchOffice.estado;
-    //           branchOfficeTmp.cantidad = branchOffice.cantidad;
-    //           const productShipment = new ProductShipment();
-    //           productShipment.producto = cartItem.sku;
-    //           productShipment.cantidad = cartItem.qty.toString();
-    //           productShipment.precio = cartItem.sale_price.toString();
-    //           productShipment.moneda = cartItem.suppliersProd.moneda;
-    //           productShipment.almacen = branchOffice.id;
-    //           this.productsEstado.push(productShipment);
-    //         }
-    //         if (capitalCp === branchOffice.cp) {                    // Capital
-    //           branchOfficeTmpCapital.name = branchOffice.name;
-    //           branchOfficeTmpCapital.estado = branchOffice.estado;
-    //           branchOfficeTmpCapital.cantidad = branchOffice.cantidad;
-    //           const productShipment = new ProductShipment();
-    //           productShipment.producto = cartItem.sku;
-    //           productShipment.cantidad = cartItem.qty.toString();
-    //           productShipment.precio = cartItem.sale_price.toString();
-    //           productShipment.moneda = cartItem.suppliersProd.moneda;
-    //           productShipment.almacen = branchOffice.id;
-    //           this.productsCapital.push(productShipment);
-    //         }
-    //         // cartItemTmp.suppliersProd.branchOffices.push(branchOffice);
-    //       }
-    //     }
-    //   });
-    // });
-    // console.log('this.productsEstado: ', this.productsEstado);
-    // console.log('this.productsCapital: ', this.productsCapital);
-    // console.log('this.cartItems: ', this.cartItems);
-    // Verificar Existencias en Capital Pais.
-    // let CostoEnvio = 0;
-    // if (this.cartItems.length === this.productsEstado.length) {
-    //   CostoEnvio = 1; // this.onShippingEstimate(estadoCp, this.productsEstado);
-    //   warehouse.productShipments = this.productsEstado;
-    // }
-
-    // delivery.warehouses = [];
-    // delivery.warehouses.push(warehouse);
-
-    // console.log('delivery: ', delivery);
-
-    // id += 1;
-    // warehouse = new Warehouse();
-    // Creamos un nuevo objeto donde vamos a almacenar por ciudades.
-    // let cartItemTmp: CartItemInput;
-    // const cartItemsTmp: CartItemInput[] = [];
-    // const suppliersProd = new SupplierProd();
-    // const branchOfficeTmp = new BranchOffices();
-    // let productsDelivery: Product[] = [];
-    // Agrupar los productos por proveedor
-    // this.cartItems.forEach(cartItem => {
-    //   cartItemTmp = cartItem;
-    //   // // cartItemTmp.suppliersProd.branchOffices = [];
-    //   // // CP para enviar = estadoCp
-    //   // // Buscar el estado en suppliersProd.branchOffices.estado
-    //   // let suppliersProd =  cartItemTmp.suppliersProd;
-    //   // cartItemTmp.suppliersProd = new suppliersProd(
-    //   //   idProveedor:
-    //   // );
-    //   // cartItemTmp.suppliersProd.branchOffices = [];
-    //   // console.log('cartItemTmp: ', cartItemTmp);
-    //   cartItem.suppliersProd.branchOffices.forEach(branchOffice => {
-    //     if (estadoCp === branchOffice.estado) {
-    //       // console.log('cartItem.qty: ', cartItem.qty);
-    //       // console.log('branchOffice.cantidad: ', branchOffice.cantidad);
-    //       // console.log('cartItemTmp.suppliersProd.branchOffices.length: ', cartItemTmp.suppliersProd.branchOffices.length);
-    //       if (branchOffice.cantidad >= cartItem.qty && cartItemTmp.suppliersProd.branchOffices.length === 0) {
-    //         branchOfficeTmp.name = branchOffice.name;
-    //         branchOfficeTmp.estado = branchOffice.estado;
-    //         branchOfficeTmp.cantidad = branchOffice.cantidad;
-    //         // cartItemTmp.suppliersProd.branchOffices.push(branchOffice);
-    //         // console.log('branchOffice: ', branchOffice);
-    //       }
-    //     }
-    //   });
-    //   if (cartItemTmp.suppliersProd.branchOffices.length > 0) {
-    //     cartItemsTmp.push(cartItemTmp);
-    //   }
-    // });
-    // console.log('cartItemsTmp: ', cartItemsTmp);
-    // Agrupar los productos por almacen
-
-    // Cotizar los productos del mismo proveedor y mismo almacen
-    // Sumar los costos de envios
-
   }
 
-  // async onShippingEstimate(supplier: ISupplier, apiSelect: IApis, token: string, destiny: string, products: Product[]): Promise<any> {
-  //   // if (supplier.token) {
-  //   return await this.externalAuthService.getSyscomToken(supplier, apiSelect)
-  //     .then(
-  //       async result => {
-  //         switch (supplier.slug) {
-  //           case 'ct':
-  //             this.token = result.token;
-  //             break;
-  //           case 'syscom':
-  //             this.token = result.access_token;
-  //             break;
-  //           default:
-  //             break;
-  //         }
-  //         if (this.token) {
-  //           const productos: Product[] = [];
-  //           // this.ctAlmacenes = await this.getAlmacenes();
-  //           // Carga de Productos
-  //           const catalogValues: Catalog[] = [];
-  //           const resultados = await this.externalAuthService.getSyscomCatalogAllBrands(supplier, apiSelect, this.token, catalogValues)
-  //             // tslint:disable-next-line: no-shadowed-variable
-  //             .then(async result => {
-  //               try {
-  //                 if (result.length > 0) {
-  //                   if (supplier.slug === 'ct') {
-  //                     // Carga de Precios y Disponibilidad
-  //                     // const productsJson = await this.getProducts();
-  //                     // result.forEach(item => {
-  //                     //   productsJson.forEach(productJson => {
-  //                     //     if (item.codigo === productJson.clave) {
-  //                     //       let itemData = new Product();
-  //                     //       itemData = this.setProduct(supplier.slug, item, productJson);
-  //                     //       if (itemData.id !== undefined) {
-  //                     //         productos.push(itemData);
-  //                     //       }
-  //                     //     }
-  //                     //   });
-  //                     // });
-  //                   } else {
-  //                     result.forEach(item => {
-  //                       let itemData = new Product();
-  //                       // itemData = this.setProduct(supplier.slug, item);
-  //                       if (itemData.id !== undefined) {
-  //                         productos.push(itemData);
-  //                       }
-  //                     });
-  //                   }
-  //                 }
-  //                 return await productos;
-  //               } catch (error) {
-  //                 throw await new Error(error.message);
-  //               }
-  //             });
-  //           return await resultados;
-  //         } else {
-  //           basicAlert(TYPE_ALERT.WARNING, 'No se encontró el Token de Autorización.');
-  //         }
-  //       },
-  //       error => {
-  //         basicAlert(TYPE_ALERT.ERROR, error.message);
-  //       }
-  //     );
-  //   // }
-  // }
+  async onShippingEstimate(
+    supplier: ISupplier,
+    apiSelect: IApis,
+    warehouse: Warehouse
+  ): Promise<any> {
+    if (!supplier.token) {
+      switch (supplier.slug) {
+        case 'cva':
+          return await 0;
+          break;
+        case 'exel':
+          return await 0;
+          break;
+        default:
+          return await 0;
+          break;
+      }
+    } else {
+      return await this.externalAuthService.getSyscomToken(supplier, apiSelect)
+        .then(
+          async result => {
+            switch (supplier.slug) {
+              case 'ct':
+                this.token = result.token;
+                break;
+              case 'syscom':
+                this.token = result.access_token;
+                break;
+              default:
+                break;
+            }
+            if (this.token) {
+              const productos: Product[] = [];
+              const shipments: Shipment[] = [];
+              const resultados = await this.externalAuthService.getShipments(supplier, apiSelect, this.token, warehouse)
+                // tslint:disable-next-line: no-shadowed-variable
+                .then(async result => {
+                  try {
+                    if (result.codigo === '2000') {
+                      switch (supplier.slug) {
+                        case 'ct':
+                          if (result.respuesta.cotizaciones.length > 0) {
+                            result.respuesta.cotizaciones.forEach(ship => {
+                              const shipment = new Shipment();
+                              shipment.empresa = ship.empresa;
+                              shipment.costo = ship.total;
+                              shipment.metodoShipping = ship.metodo;
+                              shipments.push(shipment);
+                            });
+                          } else {
+                            // TODO Enviar Costos Internos.
+                          }
+                          break;
+                        default:
+                          // TODO Enviar Costos Internos.
+                          break;
+                      }
+                    } else {
+                      // TODO Enviar Costos Internos.
+                    }
+                    // TODO Enviar Costos Internos.
+                  } catch (error) {
+                    // TODO Enviar Costos Internos.
+                  }
+                });
+              return await shipments;
+            } else {
+              console.log('No se encontró el Token de Autorización.');
+              // TODO Enviar Costos Internos.
+              return await 0;
+            }
+          },
+          error => {
+            console.log('error.message: ', error.message);
+          }
+        );
+    }
+  }
 
   onSetEstados(event): void {
     const estado = event.value.split(':', 2);
@@ -770,7 +703,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   sendEmail(charge: ICharge): void {
-    console.log('charge.receipt_email: ', charge.receipt_email);
     const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
     const mail: IMail = {
       to: receiptEmail,

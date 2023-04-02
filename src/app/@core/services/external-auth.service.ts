@@ -6,6 +6,7 @@ import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
 import axios, { isCancel, AxiosError } from 'axios';
+import { Warehouse } from '@core/models/warehouse.models';
 
 declare const require;
 const xml2js = require('xml2js');
@@ -31,9 +32,9 @@ export class ExternalAuthService {
   }
 
   async getSyscomToken(supplier: ISupplier, apiSelect: IApis): Promise<any> {
-    // application/x-www-form-urlencoded
-    let headers = new HttpHeaders();
-    headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
 
     let params = new HttpParams();
     if (supplier.token.body_parameters.length > 0) {
@@ -42,9 +43,7 @@ export class ExternalAuthService {
       });
     }
 
-    const options = { headers };
-
-    return await this.http.post(supplier.token.url_base_token, params, options).toPromise();
+    return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
   }
 
   async getSyscomCatalog(supplier: ISupplier, apiSelect: IApis, token: string, search: string = ''): Promise<any> {
@@ -186,7 +185,7 @@ export class ExternalAuthService {
                   responseType: 'text'
                 })
                 .pipe(map(async (xml: any) => {
-                  return await this.parseXmlToJson(xml, apiSelect.operation)
+                  return await this.parseXmlToJson(xml, apiSelect.operation);
                 }))
                 .toPromise()
             );
@@ -229,37 +228,36 @@ export class ExternalAuthService {
   }
 
   getCatalogXML(supplier: ISupplier, apiSelect: IApis, search: string = ''): Promise<any> {
-    if (supplier) {
-      const headers = new HttpHeaders();
-      let params = new HttpParams();
-      // Parámetros del token
-      if (supplier.token) {
-        if (supplier.token.body_parameters.length > 0) {
-          supplier.token.body_parameters.forEach(param => {
-            params = params.set(param.name, param.value);
-          });
-        }
-      }
-      // Parámetros de url
-      if (apiSelect.parameters) {
-        apiSelect.parameters.forEach(param => {
-          params = params.set(param.name, param.value || search);
+    const headers = new HttpHeaders();
+    let params = new HttpParams();
+    // Parámetros del token
+    if (supplier.token) {
+      if (supplier.token.body_parameters.length > 0) {
+        supplier.token.body_parameters.forEach(param => {
+          params = params.set(param.name, param.value);
         });
       }
-
-      return this.http.get(
-        supplier.url_base_api + apiSelect.operation,
-        {
-          headers,
-          params,
-          responseType: 'text'
-        }
-      ).pipe(
-        map(async xml => await this.parseXmlToJson(xml, apiSelect.operation))
-      ).toPromise();
     }
+    // Parámetros de url
+    if (apiSelect.parameters) {
+      apiSelect.parameters.forEach(param => {
+        params = params.set(param.name, param.value || search);
+      });
+    }
+
+    return this.http.get(
+      supplier.url_base_api + apiSelect.operation,
+      {
+        headers,
+        params,
+        responseType: 'text'
+      }
+    ).pipe(
+      map(async xml => await this.parseXmlToJson(xml, apiSelect.operation))
+    ).toPromise();
   }
 
+  // tslint:disable-next-line: typedef
   async parseXmlToJson(xml, catalog) {
     switch (catalog) {
       case 'lista_precios.xml':
@@ -290,26 +288,31 @@ export class ExternalAuthService {
       case 'Obtener_Marcas':                                                                // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_MarcasResponse']['Obtener_MarcasResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_Categorias':                                                            // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_Productos_HuellaLogisticaResponse']['Obtener_Productos_HuellaLogisticaResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_Productos_Listado':                                                     // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_Productos_ListadoResponse']['Obtener_Productos_ListadoResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_Productos_PrecioYExistencia':                                           // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_Productos_PrecioYExistenciaResponse']['Obtener_Productos_PrecioYExistenciaResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_GaleriaDeImagenes':                                                     // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_GaleriaDeImagenesResponse']['Obtener_GaleriaDeImagenesResult']))
           .catch(err => new Error(err.message));
       default:
@@ -318,28 +321,27 @@ export class ExternalAuthService {
   }
 
   getCatalogSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
-    if (supplier) {
-      let soapBody = '';
-      switch (apiSelect.operation) {
-        case 'Obtener_Marcas':
-          soapBody = 'Obtener_Marcas';
-          break;
-        case 'Obtener_Categorias':
-          soapBody = 'Obtener_Productos_HuellaLogistica';
-          break;
-        case 'Obtener_Productos_Listado':
-          soapBody = 'Obtener_Productos_Listado';
-          break;
-        case 'Obtener_Productos_PrecioYExistencia':
-          soapBody = 'Obtener_Productos_PrecioYExistencia'
-          break;
-        case 'Obtener_GaleriaDeImagenes':
-          soapBody = 'Obtener_GaleriaDeImagenes'
-          break;
-        default:
-          break;
-      }
-      const body = `<?xml version="1.0" encoding="utf-8"?>
+    let soapBody = '';
+    switch (apiSelect.operation) {
+      case 'Obtener_Marcas':
+        soapBody = 'Obtener_Marcas';
+        break;
+      case 'Obtener_Categorias':
+        soapBody = 'Obtener_Productos_HuellaLogistica';
+        break;
+      case 'Obtener_Productos_Listado':
+        soapBody = 'Obtener_Productos_Listado';
+        break;
+      case 'Obtener_Productos_PrecioYExistencia':
+        soapBody = 'Obtener_Productos_PrecioYExistencia';
+        break;
+      case 'Obtener_GaleriaDeImagenes':
+        soapBody = 'Obtener_GaleriaDeImagenes';
+        break;
+      default:
+        break;
+    }
+    const body = `<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
           <soap:Body>
             <${soapBody} xmlns="http://ws.exel.com.mx:8181/">
@@ -349,37 +351,56 @@ export class ExternalAuthService {
             </${soapBody}>
           </soap:Body>
         </soap:Envelope>`;
-      const searchParams = new axios.AxiosHeaders();
-      const params = new axios.AxiosHeaders();
-      searchParams.set('Content-Type', 'text/xml');
-      if (supplier.token) {
-        if (supplier.token.body_parameters.length > 0) {
-          supplier.token.body_parameters.forEach(param => {
-            params.set(param.name, param.value);
-          });
-        }
-      }
-      // Parámetros de url
-      if (apiSelect.parameters) {
-        apiSelect.parameters.forEach(param => {
-          // params = params.set(param.name, param.value || search);
-          params.set(param.name + '=' + param.value || search);
+    const searchParams = new axios.AxiosHeaders();
+    const params = new axios.AxiosHeaders();
+    searchParams.set('Content-Type', 'text/xml');
+    if (supplier.token) {
+      if (supplier.token.body_parameters.length > 0) {
+        supplier.token.body_parameters.forEach(param => {
+          params.set(param.name, param.value);
         });
       }
-
-      return new Promise((resolve, reject) => {
-        axios.post(supplier.url_base_api,
-          body,
-          {
-            headers: searchParams,
-            params
-          }).then(async response => {
-            const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
-            resolve(datos);
-          }).catch(error => {
-            reject(new Error(error.message));
-          });
+    }
+    // Parámetros de url
+    if (apiSelect.parameters) {
+      apiSelect.parameters.forEach(param => {
+        // params = params.set(param.name, param.value || search);
+        params.set(param.name + '=' + param.value || search);
       });
+    }
+
+    return new Promise((resolve, reject) => {
+      axios.post(supplier.url_base_api,
+        body,
+        {
+          headers: searchParams,
+          params
+        }).then(async response => {
+          const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
+          resolve(datos);
+        }).catch(error => {
+          reject(new Error(error.message));
+        });
+    });
+  }
+
+  async getShipments(supplier: ISupplier, apiSelect: IApis, token: string, warehouse: Warehouse): Promise<any> {
+    if (apiSelect.parameters) {
+      switch (supplier.slug) {
+        case 'ct':
+          const url = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+          const headers = new HttpHeaders({
+            'x-auth': token,
+            'Content-Type': 'application/json'
+          });
+          const fromObject = {
+            destino: warehouse.cp,
+            productos: warehouse.productShipments
+          };
+          return await this.http.post(url, JSON.stringify(fromObject), { headers }).toPromise();
+        default:
+          break;
+      }
     }
   }
 
