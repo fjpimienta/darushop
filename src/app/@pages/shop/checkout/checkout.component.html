@@ -234,7 +234,27 @@
                     </tr>
                     <tr>
                       <td>Envío:</td>
-                      <td>(costo)</td>
+                      <td>(costos)</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        <app-accordion adClass="accordion-summary" id="accordion-shipment">
+                          <div class="card">
+                            <div class="card-header" id="heading-5">
+                              <h2 class="card-title">
+                                <a class="toggle-button" role="button" data-toggle="collapse" href="#collapse-ship"
+                                  aria-expanded="false" aria-controls="collapse-5">
+                                  <span class="text-left">Estafeta: </span><span>Costo Envio 1</span>
+                                </a>
+                              </h2>
+                            </div>
+                            <!-- <div id="collapse-ship" class="collapse" aria-labelledby="heading-5"
+                              data-parent="#accordion-shipment">
+                              Costo Envio 1
+                            </div> -->
+                          </div>
+                        </app-accordion>
+                      </td>
                     </tr>
                     <tr class="summary-total">
                       <td>Total:</td>
@@ -244,7 +264,7 @@
                 </table>
 
                 <app-accordion adClass="accordion-summary" id="accordion-payment">
-                  <!-- <div class="card">
+                  <div class="card">
                     <div class="card-header" id="heading-1">
                       <h2 class="card-title">
                         <a class="toggle-button" role="button" data-toggle="collapse" href="#collapse-1"
@@ -256,8 +276,18 @@
                     <div id="collapse-1" class="collapse show" aria-labelledby="heading-1"
                       data-parent="#accordion-payment">
                       <div class="card-body">
-                        Realiza tu pago directamente en nuestra cuenta bancaria. Utilice su ID de pedido como referencia
-                        de pago. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
+                        <div class="row">
+                          <div class="col-2">Banco</div>
+                          <div class="col-5">Nombre</div>
+                          <div class="col-5">Cuenta</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-12">
+                            Realiza tu pago directamente en nuestra cuenta bancaria. Utilice su ID de pedido como
+                            referencia
+                            de pago. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -272,13 +302,23 @@
                       </h2>
                     </div>
                     <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
-                      <div class="card-body">Depósitos en efectivo a nuestra cuenta bancaria. Su pedido no se enviará
-                        hasta que los fondos se hayan liquidado en nuestra cuenta.
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-2">Banco</div>
+                          <div class="col-5">Nombre</div>
+                          <div class="col-5">Cuenta</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-12">
+                            Depósitos en efectivo a nuestra cuenta bancaria. Su pedido no se enviará
+                            hasta que los fondos se hayan liquidado en nuestra cuenta.
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div> -->
+                  </div>
 
-                  <!-- <div class="card">
+                  <div class="card">
                     <div class="card-header" id="heading-4">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-4"
@@ -289,10 +329,10 @@
                     </div>
                     <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
                       <div class="card-body">
-                        <small class="float-right paypal-link">Paaga con tu cuenta PayPal</small>
+                        <small class="float-right paypal-link">Paga con tu cuenta PayPal</small>
                       </div>
                     </div>
-                  </div> -->
+                  </div>
 
                   <div class="card">
                     <div class="card-header" id="heading-5">
