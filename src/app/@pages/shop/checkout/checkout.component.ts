@@ -161,7 +161,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           // Descripción del pedido (función en el carrito)
           if (!this.errorSaveUser) {
             // Total a Pagar
+            console.log('setTimeout/this.cartService: ', this.cartService);
             this.cartService.priceTotal.subscribe(total => {
+              this.totalPagar = total.toString();
+            });
+
+            this.cartService.priceTotalShipment.subscribe(total => {
               this.totalPagar = total.toString();
             });
 
@@ -555,14 +560,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (!supplier.token) {
       switch (supplier.slug) {
         case 'cva':
-          return await 0;
-          break;
+          return await [];
         case 'exel':
-          return await 0;
-          break;
+          return await [];
         default:
-          return await 0;
-          break;
+          return await [];
       }
     } else {
       return await this.externalAuthService.getSyscomToken(supplier, apiSelect)
@@ -621,6 +623,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   changeShipping(costo): void {
     console.log('costo: ', costo);
+    this.cartService.updateCart(this.cartItems, costo);
   }
 
   onSetEstados(event): void {

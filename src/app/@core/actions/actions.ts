@@ -38,6 +38,14 @@ export class ClearCartAction implements Action {
   constructor() { }
 }
 
+/**
+ * Update Cart Items with qtys
+ */
+export class UpdateShipmentCartAction implements Action {
+  readonly type = types.UPDATE_CART_SHIPMENT;
+  constructor(public payload: { cartItems: CartItem[], costoEnvio: number }) { }
+}
+
 
 /************************** Wishlist Action ***************************/
 

@@ -38,12 +38,12 @@ export class CartComponent implements OnInit, OnDestroy {
     return item.slug;
   }
 
-  updateCart(event: any) {
+  updateCart(event: any, costoEnvio: number = 0) {
     event.preventDefault();
     event.target.parentElement.querySelector('.icon-refresh').classList.add('load-more-rotating');
 
     setTimeout(() => {
-      this.cartService.updateCart(this.cartItems);
+      this.cartService.updateCart(this.cartItems, costoEnvio);
       event.target.parentElement.querySelector('.icon-refresh').classList.remove('load-more-rotating');
       document.querySelector('.btn-cart-update:not(.diabled)') && document.querySelector('.btn-cart-update').classList.add('disabled');
     }, 400);
