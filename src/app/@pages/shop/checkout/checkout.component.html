@@ -232,30 +232,23 @@
                       <td>Subtotal:</td>
                       <td>${{ (cartService.priceTotal | async).toFixed(2) }}</td>
                     </tr>
-                    <tr>
-                      <td>Envío:</td>
-                      <td>(costos)</td>
+
+                    <tr class="summary-shipping">
+                      <td>Envíos Disponibles:</td>
+                      <td>&nbsp;</td>
                     </tr>
-                    <tr>
-                      <td colspan="2">
-                        <app-accordion adClass="accordion-summary" id="accordion-shipment">
-                          <div class="card">
-                            <div class="card-header" id="heading-5">
-                              <h2 class="card-title">
-                                <a class="toggle-button" role="button" data-toggle="collapse" href="#collapse-ship"
-                                  aria-expanded="false" aria-controls="collapse-5">
-                                  <span class="text-left">Estafeta: </span><span>Costo Envio 1</span>
-                                </a>
-                              </h2>
-                            </div>
-                            <!-- <div id="collapse-ship" class="collapse" aria-labelledby="heading-5"
-                              data-parent="#accordion-shipment">
-                              Costo Envio 1
-                            </div> -->
-                          </div>
-                        </app-accordion>
+
+                    <tr *ngFor="let shipment of shipments" class="summary-shipping-row">
+                      <td>
+                        <div class="custom-control custom-radio">
+                          <input type="radio" id="{{shipment.empresa}}" name="shipping" class="custom-control-input"
+                            (change)="changeShipping(shipment.costo)" checked>
+                          <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.empresa}}</label>
+                        </div>
                       </td>
+                      <td>${{shipment.costo.toFixed(2)}}</td>
                     </tr>
+
                     <tr class="summary-total">
                       <td>Total:</td>
                       <td>${{ (cartService.priceTotal | async).toFixed(2) }}</td>
@@ -293,15 +286,15 @@
                   </div>
 
                   <div class="card">
-                    <div class="card-header" id="heading-3">
+                    <div class="card-header" id="heading-2">
                       <h2 class="card-title">
-                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-3"
-                          aria-expanded="false" aria-controls="collapse-3">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-2"
+                          aria-expanded="false" aria-controls="collapse-2">
                           Deposito
                         </a>
                       </h2>
                     </div>
-                    <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
+                    <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
                       <div class="card-body">
                         <div class="row">
                           <div class="col-2">Banco</div>
@@ -319,17 +312,33 @@
                   </div>
 
                   <div class="card">
+                    <div class="card-header" id="heading-3">
+                      <h2 class="card-title">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-3"
+                          aria-expanded="false" aria-controls="collapse-3" (click)="onHabilitaPago()">
+                          PayPal
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
+                      <div class="card-body">
+                        <small class="float-right paypal-link">Paga con tu cuenta PayPal</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card">
                     <div class="card-header" id="heading-4">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-4"
                           aria-expanded="false" aria-controls="collapse-4" (click)="onHabilitaPago()">
-                          PayPal
+                          Mercado Pago
                         </a>
                       </h2>
                     </div>
                     <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
                       <div class="card-body">
-                        <small class="float-right paypal-link">Paga con tu cuenta PayPal</small>
+                        <small class="float-right paypal-link">Paga con tu cuenta de Mercado Pago</small>
                       </div>
                     </div>
                   </div>
@@ -339,11 +348,27 @@
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-5"
                           aria-expanded="false" aria-controls="collapse-5" (click)="onHabilitaPago()">
-                          Tarjeta de Crédito (Stripe)
+                          PayU
                         </a>
                       </h2>
                     </div>
                     <div id="collapse-5" class="collapse" aria-labelledby="heading-5" data-parent="#accordion-payment">
+                      <div class="card-body">
+                        <small class="float-right paypal-link">Paga con tu cuenta PayU</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card">
+                    <div class="card-header" id="heading-6">
+                      <h2 class="card-title">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-6"
+                          aria-expanded="false" aria-controls="collapse-6" (click)="onHabilitaPago()">
+                          Tarjeta de Crédito (Stripe)
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-6" class="collapse" aria-labelledby="heading-6" data-parent="#accordion-payment">
                       <div class="card-body">
                         <ng-stripe-pay-form [key]="key" [hidePostalCode]="true" class="text-center">
                         </ng-stripe-pay-form>

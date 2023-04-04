@@ -9,7 +9,7 @@
     <div class="dropdown-menu dropdown-menu-right" *ngIf="(compareService.compareQty | async) > 0 else elseBlock">
         <ul class="compare-products">
             <li class="compare-product" *ngFor="let product of (compareService.compareStream | async)">
-                <a href="javascript:;" class="btn-remove" title="Remove Product" (click)="removeFromCompare( $event, product )"><i class="icon-close"></i></a>
+                <a href="javascript:;" class="btn-remove" title="Quitar Producto" (click)="removeFromCompare( $event, product )"><i class="icon-close"></i></a>
                 <h4 class="compare-product-title"><a [routerLink]="['/product/default/'+ product.id]">{{ product.name }}</a></h4>
             </li>
         </ul>

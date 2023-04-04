@@ -31,7 +31,7 @@ import { CartItem } from '@shared/classes/cart-item';
 import { WarehousesService } from '@core/services/warehouses.service';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Delivery } from '@core/models/delivery.models';
-import { Product, SupplierProd } from '@core/models/product.models';
+import { SupplierProd } from '@core/models/product.models';
 import { ExternalAuthService } from '@core/services/external-auth.service';
 import { SuppliersService } from '@core/services/supplier.service';
 import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
@@ -93,6 +93,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   private subscr: Subscription;
 
   register: UserInput = new UserInput();
+
+  shipments: Shipment[] = [];
 
   constructor(
     private router: Router,
@@ -501,25 +503,30 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
             }
           });
-          let shipmentsCost = 0;
-          let costoCapital = 0;
+          // Cotizar envio
+          warehouse.cp = cpDestino;
           if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
-            // Cotizar envio
-            shipmentsCost = 10;
-          } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
-            // Cotizar envio
-            costoCapital = 9;
-            warehouse.cp = cpDestino;
             warehouse.productShipments = productsCapital;
-            shipmentsCost = await this.onShippingEstimate(supplier, apiSelect, warehouse)
-              .then(
-                async (result) => {
-                  return result;
-                }
-              );
-            console.log('shipmentsCost/result: ', shipmentsCost);
+          } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
+            warehouse.productShipments = productsCapital;
           }
-          if (shipmentsCost <= costoCapital && productsEstado.length === this.cartItems.length) {
+          const shipmentsCost = await this.onShippingEstimate(supplier, apiSelect, warehouse)
+            .then(
+              async (result) => {
+                const shipments: Shipment[] = [];
+                // tslint:disable-next-line: forin
+                for (const key in result) {
+                  const shipment = new Shipment();
+                  shipment.empresa = result[key].empresa;
+                  shipment.costo = result[key].total;
+                  shipment.metodoShipping = result[key].metodo;
+                  shipments.push(shipment);
+                }
+                return shipments;
+              }
+            );
+          this.shipments = shipmentsCost;
+          if (productsEstado.length === this.cartItems.length) {
             i += 1;
             warehouse = warehouseEstado;
             warehouse.productShipments = productsEstado;
@@ -572,8 +579,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 break;
             }
             if (this.token) {
-              const productos: Product[] = [];
-              const shipments: Shipment[] = [];
               const resultados = await this.externalAuthService.getShipments(supplier, apiSelect, this.token, warehouse)
                 // tslint:disable-next-line: no-shadowed-variable
                 .then(async result => {
@@ -582,34 +587,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       switch (supplier.slug) {
                         case 'ct':
                           if (result.respuesta.cotizaciones.length > 0) {
-                            result.respuesta.cotizaciones.forEach(ship => {
-                              const shipment = new Shipment();
-                              shipment.empresa = ship.empresa;
-                              shipment.costo = ship.total;
-                              shipment.metodoShipping = ship.metodo;
-                              shipments.push(shipment);
-                            });
+                            return result.respuesta.cotizaciones;
                           } else {
                             // TODO Enviar Costos Internos.
+                            return await [];
                           }
-                          break;
                         default:
                           // TODO Enviar Costos Internos.
-                          break;
+                          return await [];
                       }
                     } else {
                       // TODO Enviar Costos Internos.
+                      return await [];
                     }
-                    // TODO Enviar Costos Internos.
                   } catch (error) {
                     // TODO Enviar Costos Internos.
+                    return await [];
                   }
                 });
-              return await shipments;
+              return await resultados;
             } else {
               console.log('No se encontró el Token de Autorización.');
               // TODO Enviar Costos Internos.
-              return await 0;
+              return await [];
             }
           },
           error => {
@@ -617,6 +617,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         );
     }
+  }
+
+  changeShipping(costo): void {
+    console.log('costo: ', costo);
   }
 
   onSetEstados(event): void {
