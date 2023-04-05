@@ -394,7 +394,7 @@ export class ExternalAuthService {
             'Content-Type': 'application/json'
           });
           const fromObject = {
-            destino: warehouse.cp,
+            destino: warehouse.cp.padStart(5, '0'),
             productos: warehouse.productShipments
           };
           return await this.http.post(url, JSON.stringify(fromObject), { headers }).toPromise();
