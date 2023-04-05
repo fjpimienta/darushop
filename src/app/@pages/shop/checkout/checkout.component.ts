@@ -521,7 +521,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 // tslint:disable-next-line: forin
                 for (const key in result) {
                   const shipment = new Shipment();
-                  shipment.empresa = result[key].empresa;
+                  shipment.empresa = result[key].empresa.toString().toUpperCase();
                   shipment.costo = result[key].total;
                   shipment.metodoShipping = result[key].metodo;
                   shipments.push(shipment);
