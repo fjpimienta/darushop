@@ -8,7 +8,7 @@ import { Store, select } from '@ngrx/store';
 import { Product } from '@shared/classes/product';
 import { CartItem } from '@shared/classes/cart-item';
 import { cartItemsSelector } from '@core/selectors/selectors';
-import { AddToCartAction, ClearCartAction, RefreshStoreAction, RemoveFromCartAction, UpdateCartAction, UpdateShipmentCartAction } from '@core/actions/actions';
+import { AddToCartAction, ClearCartAction, RefreshStoreAction, RemoveFromCartAction, UpdateCartAction } from '@core/actions/actions';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,6 @@ export class CartService {
   public cartStream: Subject<any> = new BehaviorSubject([]);
   public qtyTotal: Subject<number> = new BehaviorSubject(0);
   public priceTotal: Subject<number> = new BehaviorSubject(0);
-  public priceTotalShipment: Subject<number> = new BehaviorSubject(0);
 
   constructor(private store: Store<any>, private toastrService: ToastrService) {
     store.pipe(select(cartItemsSelector)).subscribe(items => {
@@ -113,13 +112,6 @@ export class CartService {
     });
     console.log('orderDescription/description: ', description);
     return description;
-  }
-
-  // Cart update
-  addShipment(cartItems: CartItem[], costoEnvio: number = 0): void {
-    console.log('addShipment/cartItems: ', cartItems, '; costoEnvio: ', costoEnvio);
-    this.store.dispatch(new UpdateShipmentCartAction({ cartItems, costoEnvio }));
-    this.toastrService.success('Se agreg&oacute; el Costo de Envio.');
   }
 
 }

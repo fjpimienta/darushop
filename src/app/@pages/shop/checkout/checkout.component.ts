@@ -117,6 +117,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.countrysService.getCountrys().subscribe(result => {
       this.countrys = result.countrys;
     });
+    this.cartService.priceTotal.subscribe(total => {
+      this.totalPagar = total.toFixed(2).toString();
+    });
     // Observable para obtener el token
     this.stripePaymentService.cardTokenVar$.pipe(first()).subscribe((token: string) => {
       if (token.indexOf('tok_') > -1) {
@@ -163,10 +166,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             // Total a Pagar
             console.log('setTimeout/this.cartService: ', this.cartService);
             this.cartService.priceTotal.subscribe(total => {
-              this.totalPagar = total.toString();
-            });
-
-            this.cartService.priceTotalShipment.subscribe(total => {
               this.totalPagar = total.toString();
             });
 
@@ -621,9 +620,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeShipping(costo): void {
-    console.log('costo: ', costo);
-    this.cartService.updateCart(this.cartItems, costo);
+  changeShipping(costo: number): void {
+    this.cartService.priceTotal.subscribe(total => {
+      this.totalPagar = (total + costo).toFixed(2).toString();
+    });
   }
 
   onSetEstados(event): void {

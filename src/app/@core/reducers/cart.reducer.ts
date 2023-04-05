@@ -5,8 +5,7 @@ import {
   REMOVE_FROM_CART,
   UPDATE_CART,
   CLEAR_CART,
-  REFRESH_STORE,
-  UPDATE_CART_SHIPMENT
+  REFRESH_STORE
 } from '../constants/constants';
 
 import { CartItem } from '@shared/classes/cart-item';
@@ -76,13 +75,6 @@ export function cartReducer(state = getState('molla'), action) {
       }
 
     case UPDATE_CART:
-      return {
-        data: [
-          ...action.payload.cartItems
-        ]
-      };
-
-    case UPDATE_CART_SHIPMENT:
       return {
         data: [
           ...action.payload.cartItems
