@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CartService } from '@core/services/cart.service';
 
 import { environment } from 'src/environments/environment';
+import { Shipment } from '@core/models/shipment.models';
 
 @Component({
   selector: 'app-cart-page',
@@ -17,6 +18,8 @@ export class CartComponent implements OnInit, OnDestroy {
   cartItems = [];
   SERVER_URL = environment.SERVER_URL;
   shippingCost = 0;
+
+  shipments: Shipment[] = [];
 
   private subscr: Subscription;
 

@@ -9,7 +9,7 @@
         <li class="breadcrumb-item">
           <a routerLink="/shop/sidebar/3cols">Shop</a>
         </li>
-        <li class="breadcrumb-item active">Monto a Verificar ${{ (cartService.priceTotal | async).toFixed(2) }}</li>
+        <li class="breadcrumb-item active">Monto a Verificar {{ (cartService.priceTotal | async).toFixed(2) | currency}}</li>
       </ol>
     </div>
   </nav>
@@ -230,7 +230,7 @@
                     </tr>
                     <tr class="summary-subtotal">
                       <td>Subtotal:</td>
-                      <td>${{ (cartService.priceTotal | async).toFixed(2) }}</td>
+                      <td>{{ (cartService.priceTotal | async).toFixed(2) | currency }}</td>
                     </tr>
 
                     <tr class="summary-shipping">
@@ -246,12 +246,12 @@
                           <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.empresa}}</label>
                         </div>
                       </td>
-                      <td>${{shipment.costo.toFixed(2)}}</td>
+                      <td>{{shipment.costo.toFixed(2) | currency}}</td>
                     </tr>
 
                     <tr class="summary-total">
                       <td>Total:</td>
-                      <td>${{ totalPagar }}</td>
+                      <td>{{ totalPagar | currency }}</td>
                     </tr>
                   </tbody>
                 </table>

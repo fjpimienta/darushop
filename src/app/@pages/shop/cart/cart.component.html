@@ -100,46 +100,24 @@
                   <tbody>
                     <tr class="summary-subtotal">
                       <td>Subtotal:</td>
-                      <td>${{ (cartService.priceTotal | async).toFixed(2) }}
+                      <td>{{ (cartService.priceTotal | async).toFixed(2) | currency}}
                       </td>
                     </tr>
 
                     <tr class="summary-shipping">
-                      <td>Envío:</td>
+                      <td>Envíos Disponibles:</td>
                       <td>&nbsp;</td>
                     </tr>
 
-                    <tr class="summary-shipping-row">
+                    <tr *ngFor="let shipment of shipments" class="summary-shipping-row">
                       <td>
                         <div class="custom-control custom-radio">
-                          <input type="radio" id="free-shipping" name="shipping" class="custom-control-input"
-                            (change)="changeShipping(0)" checked>
-                          <label class="custom-control-label" for="free-shipping">Envío Gratuito</label>
+                          <input type="radio" id="{{shipment.empresa}}" name="shipping" class="custom-control-input"
+                            (change)="changeShipping(shipment.costo)">
+                          <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.empresa}}</label>
                         </div>
                       </td>
-                      <td>$0.00</td>
-                    </tr>
-
-                    <tr class="summary-shipping-row">
-                      <td>
-                        <div class="custom-control custom-radio">
-                          <input type="radio" id="standart-shipping" name="shipping" class="custom-control-input"
-                            (change)="changeShipping(10)">
-                          <label class="custom-control-label" for="standart-shipping">Standard:</label>
-                        </div>
-                      </td>
-                      <td>$10.00</td>
-                    </tr>
-
-                    <tr class="summary-shipping-row">
-                      <td>
-                        <div class="custom-control custom-radio">
-                          <input type="radio" id="express-shipping" name="shipping" class="custom-control-input"
-                            (change)="changeShipping(20)">
-                          <label class="custom-control-label" for="express-shipping">Express:</label>
-                        </div>
-                      </td>
-                      <td>$20.00</td>
+                      <td>{{shipment.costo.toFixed(2) | currency}}</td>
                     </tr>
 
                     <tr class="summary-shipping-estimate">
@@ -149,7 +127,7 @@
 
                     <tr class="summary-total">
                       <td>Total:</td>
-                      <td>${{ ((cartService.priceTotal | async) + shippingCost).toFixed(2) }}</td>
+                      <td>{{ ((cartService.priceTotal | async) + shippingCost).toFixed(2) | currency }}</td>
                     </tr>
                   </tbody>
                 </table>

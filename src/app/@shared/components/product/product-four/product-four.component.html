@@ -48,18 +48,18 @@
         </h3>
 
         <div class="product-price" *ngIf="!product.stock || product.stock == 0 else elseBlock">
-            <span class="out-price">${{ product.price.toFixed(2) }}</span>
+            <span class="out-price">{{ product.price.toFixed(2) | currency }}</span>
         </div>
 
         <ng-template #elseBlock>
-            <div class="product-price" *ngIf="minPrice == maxPrice else elseBlock">${{ minPrice.toFixed(2) }}</div>
+            <div class="product-price" *ngIf="minPrice == maxPrice else elseBlock">{{ minPrice.toFixed(2) | currency }}</div>
             <ng-template #elseBlock>
                 <div class="product-price" *ngIf="product.variants.length == 0 else elseBlock">
-                    <span class="new-price">${{ minPrice.toFixed(2) }}</span>
-                    <span class="old-price">${{ maxPrice.toFixed(2) }}</span>
+                    <span class="new-price">{{ minPrice.toFixed(2) | currency }}</span>
+                    <span class="old-price">{{ maxPrice.toFixed(2) | currency }}</span>
                 </div>
                 <ng-template #elseBlock>
-                    <div class="product-price">${{minPrice.toFixed(2)}}&ndash;${{maxPrice.toFixed(2)}}</div>
+                    <div class="product-price">{{minPrice.toFixed(2) | currency}}&ndash; | currency{{maxPrice.toFixed(2) | currency}}</div>
                 </ng-template>
             </ng-template>
         </ng-template>

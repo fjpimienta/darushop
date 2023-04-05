@@ -1,14 +1,14 @@
 <div class="dropdown cart-dropdown">
   <a href="javascript:;" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true"
     aria-expanded="false" data-display="static">
-      <i class="icon-shopping-cart"></i>
-      <span class="cart-count">{{ cartService.qtyTotal | async }}</span>
-      <span class="cart-txt">${{ (cartService.priceTotal | async).toFixed(2) }}</span>
-</a>
+    <i class="icon-shopping-cart"></i>
+    <span class="cart-count">{{ cartService.qtyTotal | async }}</span>
+    <span class="cart-txt">{{ (cartService.priceTotal | async).toFixed(2) | currency }}</span>
+  </a>
 
-<div class="dropdown-menu dropdown-menu-right mt-0"
-[ngClass]="{'text-center': (cartService.cartStream | async).length == 0}">
-<p *ngIf="(cartService.cartStream | async).length == 0 else elseBlock">No hay productos en el carrito.</p>
+  <div class="dropdown-menu dropdown-menu-right mt-0"
+    [ngClass]="{'text-center': (cartService.cartStream | async).length == 0}">
+    <p *ngIf="(cartService.cartStream | async).length == 0 else elseBlock">No hay productos en el carrito.</p>
 
     <ng-template #elseBlock>
       <div class="dropdown-cart-products">
@@ -20,7 +20,7 @@
 
             <span class="cart-product-info">
               <span class="cart-product-qty">{{ product.qty }}</span>
-              x ${{ product.sale_price ? product.sale_price.toFixed(2): product.price.toFixed(2) }}
+              x {{ product.sale_price ? (product.sale_price.toFixed(2) | currency): (product.price.toFixed(2) | currency) }}
             </span>
           </div>
 
@@ -38,7 +38,7 @@
       <div class="dropdown-cart-total">
         <span>Total</span>
 
-        <span class="cart-total-price">${{ (cartService.priceTotal | async).toFixed(2) }}</span>
+        <span class="cart-total-price">{{ (cartService.priceTotal | async).toFixed(2) | currency }}</span>
       </div>
 
       <div class="dropdown-cart-action">

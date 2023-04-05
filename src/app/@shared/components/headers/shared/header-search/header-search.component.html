@@ -26,11 +26,11 @@
                             ${{ product.minPrice.toFixed(2) }}</div>
                         <ng-template #priceBlock>
                             <div class="product-price mb-0" *ngIf="product.variants.length == 0 else limitBlock">
-                                <span class="new-price">${{ product.minPrice.toFixed(2) }}</span>
-                                <span class="old-price">${{ product.maxPrice.toFixed(2) }}</span>
+                                <span class="new-price">{{ product.minPrice.toFixed(2) | currency }}</span>
+                                <span class="old-price">{{ product.maxPrice.toFixed(2) | currency }}</span>
                             </div>
                             <ng-template #limitBlock>
-                                <div class="product-price mb-0">${{product.minPrice.toFixed(2)}} -
+                                <div class="product-price mb-0">{{product.minPrice.toFixed(2) | currency}} -
                                     ${{product.maxPrice.toFixed(2)}}</div>
                             </ng-template>
                         </ng-template>
