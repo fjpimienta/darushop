@@ -31,11 +31,16 @@ export class ExternalAuthService {
   ) {
   }
 
-  async getSyscomToken(supplier: ISupplier, apiSelect: IApis): Promise<any> {
+  async getToken(
+    supplier: ISupplier,
+    apiSelect: IApis,
+    tokenJson: boolean = false
+  ): Promise<any> {
+    const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
     const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': contentType
     });
-
+    console.log('contentType: ', contentType);
     let params = new HttpParams();
     if (supplier.token.body_parameters.length > 0) {
       supplier.token.body_parameters.forEach(param => {
@@ -404,4 +409,79 @@ export class ExternalAuthService {
     }
   }
 
+  async onShippingEstimate(
+    supplier: ISupplier,
+    apiSelect: IApis,
+    warehouse: Warehouse,
+    tokenJson: boolean
+  ): Promise<any> {
+    let token: string;
+    if (!supplier.token) {
+      switch (supplier.slug) {
+        case 'cva':
+          return await [];
+        case 'exel':
+          return await [];
+        default:
+          return await [];
+      }
+    } else {
+      console.log('onShippingEstimate/apiSelect', apiSelect);
+      return await this.getToken(supplier, apiSelect, tokenJson)
+        .then(
+          async result => {
+            switch (supplier.slug) {
+              case 'ct':
+                token = result.token;
+                break;
+              case 'syscom':
+                token = result.access_token;
+                break;
+              case '99minutos':
+                token = result.access_token;
+                console.log('token: ', token);
+                break;
+              default:
+                break;
+            }
+            if (token) {
+              const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+                // tslint:disable-next-line: no-shadowed-variable
+                .then(async result => {
+                  try {
+                    if (result.codigo === '2000') {
+                      switch (supplier.slug) {
+                        case 'ct':
+                          if (result.respuesta.cotizaciones.length > 0) {
+                            return result.respuesta.cotizaciones;
+                          } else {
+                            // TODO Enviar Costos Internos.
+                            return await [];
+                          }
+                        default:
+                          // TODO Enviar Costos Internos.
+                          return await [];
+                      }
+                    } else {
+                      // TODO Enviar Costos Internos.
+                      return await [];
+                    }
+                  } catch (error) {
+                    // TODO Enviar Costos Internos.
+                    return await [];
+                  }
+                });
+              return await resultados;
+            } else {
+              console.log('No se encontró el Token de Autorización.');
+              // TODO Enviar Costos Internos.
+              return await [];
+            }
+          },
+          error => {
+            console.log('error.message: ', error.message);
+          }
+        );
+    }
+  }
 }

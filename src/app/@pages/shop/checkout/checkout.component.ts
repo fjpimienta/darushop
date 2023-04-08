@@ -37,6 +37,8 @@ import { SuppliersService } from '@core/services/supplier.service';
 import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
+import { ShippingsService } from '@core/services/shipping.service';
+import { IShipping } from '@core/interfaces/shipping.interface';
 
 declare var $: any;
 
@@ -73,6 +75,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   delivery: Delivery;
   deliverys: Delivery[];
   suppliers: [ISupplier];
+  shippings: [IShipping];
 
   session: IMeData = {
     status: false
@@ -111,6 +114,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public userService: UsersService,
     private warehousesService: WarehousesService,
     private externalAuthService: ExternalAuthService,
+    public shippingsService: ShippingsService,
   ) {
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -238,6 +242,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     this.suppliersService.getSuppliers().subscribe(result => {
       this.suppliers = result.suppliers;
+      console.log('this.suppliers', this.suppliers);
+    });
+
+    this.shippingsService.getShippings().subscribe(result => {
+      this.shippings = result.shippings;
+      console.log('this.shippings', this.shippings);
     });
 
     this.warehouses = [];
@@ -457,7 +467,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
     // Verificar productos por proveedor.
     let i = 0;
-    this.suppliers.forEach(supplier => {
+    this.suppliers.forEach(async supplier => {
       const supplierProd = new SupplierProd();                       // Revisar proveedors con apis
       const warehouseEstado = new Warehouse();
       const warehouseCapital = new Warehouse();
@@ -507,29 +517,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
             }
           });
-          // Cotizar envio
-          warehouse.cp = cpDestino;
-          if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
-            warehouse.productShipments = productsCapital;
-          } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
-            warehouse.productShipments = productsCapital;
-          }
-          const shipmentsCost = await this.onShippingEstimate(supplier, apiSelect, warehouse)
-            .then(
-              async (result) => {
-                const shipments: Shipment[] = [];
-                // tslint:disable-next-line: forin
-                for (const key in result) {
-                  const shipment = new Shipment();
-                  shipment.empresa = result[key].empresa.toString().toUpperCase();
-                  shipment.costo = result[key].total;
-                  shipment.metodoShipping = result[key].metodo;
-                  shipments.push(shipment);
-                }
-                return shipments;
-              }
-            );
-          this.shipments = shipmentsCost;
           if (productsEstado.length === this.cartItems.length) {
             i += 1;
             warehouse = warehouseEstado;
@@ -547,77 +534,57 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           id += 1;
         }
       });
-    });
-    console.log('warehouse: ', warehouse);
-  }
-
-  async onShippingEstimate(
-    supplier: ISupplier,
-    apiSelect: IApis,
-    warehouse: Warehouse
-  ): Promise<any> {
-    if (!supplier.token) {
-      switch (supplier.slug) {
-        case 'cva':
-          return await [];
-        case 'exel':
-          return await [];
-        default:
-          return await [];
+      // Cotizar envio
+      warehouse.cp = cpDestino;
+      if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
+        warehouse.productShipments = productsCapital;
+      } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
+        warehouse.productShipments = productsCapital;
       }
-    } else {
-      return await this.externalAuthService.getSyscomToken(supplier, apiSelect)
+      console.log('onCotizarEnvios/apiSelect: ', apiSelect);
+      const shipmentsCost = await this.externalAuthService.onShippingEstimate(supplier, apiSelect, warehouse, false)
         .then(
-          async result => {
-            switch (supplier.slug) {
-              case 'ct':
-                this.token = result.token;
-                break;
-              case 'syscom':
-                this.token = result.access_token;
-                break;
-              default:
-                break;
+          async (result) => {
+            const shipments: Shipment[] = [];
+            // tslint:disable-next-line: forin
+            for (const key in result) {
+              const shipment = new Shipment();
+              shipment.empresa = result[key].empresa.toString().toUpperCase();
+              shipment.costo = result[key].total;
+              shipment.metodoShipping = result[key].metodo;
+              shipments.push(shipment);
             }
-            if (this.token) {
-              const resultados = await this.externalAuthService.getShipments(supplier, apiSelect, this.token, warehouse)
-                // tslint:disable-next-line: no-shadowed-variable
-                .then(async result => {
-                  try {
-                    if (result.codigo === '2000') {
-                      switch (supplier.slug) {
-                        case 'ct':
-                          if (result.respuesta.cotizaciones.length > 0) {
-                            return result.respuesta.cotizaciones;
-                          } else {
-                            // TODO Enviar Costos Internos.
-                            return await [];
-                          }
-                        default:
-                          // TODO Enviar Costos Internos.
-                          return await [];
-                      }
-                    } else {
-                      // TODO Enviar Costos Internos.
-                      return await [];
-                    }
-                  } catch (error) {
-                    // TODO Enviar Costos Internos.
-                    return await [];
-                  }
-                });
-              return await resultados;
-            } else {
-              console.log('No se encontró el Token de Autorización.');
-              // TODO Enviar Costos Internos.
-              return await [];
-            }
-          },
-          error => {
-            console.log('error.message: ', error.message);
+            return shipments;
           }
         );
+      this.shipments = shipmentsCost;
+    });
+    // Cotizar con las paqueterias
+    if (this.shippings.length > 0) {
+      this.shippings.forEach(async shipping => {
+        console.log('shiping: ', shipping);
+        const apiSelect = shipping.apis.filter(api => api.operation === 'pricing')[0];
+        const shippingsCost = await this.externalAuthService.onShippingEstimate(
+          shipping, apiSelect, warehouse, false)
+          .then(
+            async (result) => {
+              console.log('result', result);
+              const shipments: Shipment[] = [];
+              // tslint:disable-next-line: forin
+              for (const key in result) {
+                const shipment = new Shipment();
+                shipment.empresa = result[key].empresa.toString().toUpperCase();
+                shipment.costo = result[key].total;
+                shipment.metodoShipping = result[key].metodo;
+                shipments.push(shipment);
+              }
+              return shipments;
+            }
+          );
+        console.log('shippingsCost: ', shippingsCost);
+      });
     }
+    console.log('warehouse: ', warehouse);
   }
 
   changeShipping(costo: number): void {
