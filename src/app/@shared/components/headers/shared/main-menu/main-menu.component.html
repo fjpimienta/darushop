@@ -13,10 +13,12 @@
           <div class="col-md-12">
             <div class="menu-col">
               <div class="row">
-                <div class="collapse col-md-6">
+                <div class="col-md-12">
                   <ul>
-                    <li *ngFor="let categorie of categories" routerLinkActive="active">
-                      <a routerLink="/shop/sidebar/3cols" [queryParams]="categorie.param">{{categorie.description}}</a>
+                    <li [class.active]="current.includes('shop/sidebar/list')"
+                      *ngFor="let item of categories; let id = index;">
+                      <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{category: item.slug}">{{
+                        item.description }}</a>
                     </li>
                   </ul>
                 </div>
@@ -33,7 +35,7 @@
           <div class="col-md-12">
             <div class="menu-col">
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                   <ul>
                     <li [class.active]="current.includes('shop/sidebar/list')"
                       *ngFor="let item of brands; let id = index;">
