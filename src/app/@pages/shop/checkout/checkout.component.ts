@@ -168,7 +168,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           // Descripción del pedido (función en el carrito)
           if (!this.errorSaveUser) {
             // Total a Pagar
-            console.log('setTimeout/this.cartService: ', this.cartService);
             this.cartService.priceTotal.subscribe(total => {
               this.totalPagar = total.toString();
             });
@@ -242,20 +241,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     this.suppliersService.getSuppliers().subscribe(result => {
       this.suppliers = result.suppliers;
-      console.log('this.suppliers', this.suppliers);
     });
 
     this.shippingsService.getShippings().subscribe(result => {
       this.shippings = result.shippings;
-      console.log('this.shippings', this.shippings);
     });
 
     this.warehouses = [];
     this.warehousesService.getWarehouses(1, -1).subscribe(result => {
       this.warehouses = result.warehouses;
     });
-
-    console.log('this.cartItems: ', this.cartItems);
 
     document.querySelector('body').addEventListener('click', () => this.clearOpacity());
 
@@ -467,105 +462,111 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
     // Verificar productos por proveedor.
     let i = 0;
+    let apiSelect: IApis;
     this.suppliers.forEach(async supplier => {
       const supplierProd = new SupplierProd();                       // Revisar proveedors con apis
       const warehouseEstado = new Warehouse();
       const warehouseCapital = new Warehouse();
       const productsEstado: ProductShipment[] = [];
       const productsCapital: ProductShipment[] = [];
-      let apiSelect: IApis;
       supplier.apis.forEach(api => {
         if (api.type === 'envios') {
           if (supplier.slug === 'ct' && api.return === 'cotizacion') {
             apiSelect = api;
+          } else {
+            apiSelect = {
+              type: '', name: '', method: '', operation: '', suboperation: '', use: '', return: '',
+              headers: { authorization: false }, parameters: [],
+              requires_token: false
+            };
           }
         }
       });
-      this.cartItems.forEach(async cartItem => {                                    // Revisar productos en el carrito
-        if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
-          cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
-            if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {  // Almacenes estado|capital
-              if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
-                if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
-                  const productShipment = new ProductShipment();
-                  productShipment.producto = cartItem.sku;
-                  productShipment.cantidad = cartItem.qty.toString();
-                  productShipment.precio = cartItem.sale_price.toString();
-                  productShipment.moneda = cartItem.suppliersProd.moneda;
-                  productShipment.almacen = branchOffice.id;
-                  productsEstado.push(productShipment);
-                  warehouseEstado.cp = branchOffice.cp;
-                  warehouseEstado.name = branchOffice.name;
-                  warehouseEstado.estado = branchOffice.estado;
-                  warehouseEstado.latitud = branchOffice.latitud;
-                  warehouseEstado.longitud = branchOffice.longitud;
-                }
-                if (capitalCp === branchOffice.cp) {                          // Verificar Existencias en Capital
-                  const productShipment = new ProductShipment();
-                  productShipment.producto = cartItem.sku;
-                  productShipment.cantidad = cartItem.qty.toString();
-                  productShipment.precio = cartItem.sale_price.toString();
-                  productShipment.moneda = cartItem.suppliersProd.moneda;
-                  productShipment.almacen = branchOffice.id;
-                  productsCapital.push(productShipment);
-                  warehouseCapital.cp = branchOffice.cp;
-                  warehouseCapital.name = branchOffice.name;
-                  warehouseCapital.estado = branchOffice.estado;
-                  warehouseCapital.latitud = branchOffice.latitud;
-                  warehouseCapital.longitud = branchOffice.longitud;
+      if (apiSelect) {
+        this.cartItems.forEach(async cartItem => {                                    // Revisar productos en el carrito
+          if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
+            cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
+              if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {  // Almacenes estado|capital
+                if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
+                  if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
+                    const productShipment = new ProductShipment();
+                    productShipment.producto = cartItem.sku;
+                    productShipment.cantidad = cartItem.qty.toString();
+                    productShipment.precio = cartItem.sale_price.toString();
+                    productShipment.moneda = cartItem.suppliersProd.moneda;
+                    productShipment.almacen = branchOffice.id;
+                    productsEstado.push(productShipment);
+                    warehouseEstado.cp = branchOffice.cp;
+                    warehouseEstado.name = branchOffice.name;
+                    warehouseEstado.estado = branchOffice.estado;
+                    warehouseEstado.latitud = branchOffice.latitud;
+                    warehouseEstado.longitud = branchOffice.longitud;
+                  }
+                  if (capitalCp === branchOffice.cp) {                          // Verificar Existencias en Capital
+                    const productShipment = new ProductShipment();
+                    productShipment.producto = cartItem.sku;
+                    productShipment.cantidad = cartItem.qty.toString();
+                    productShipment.precio = cartItem.sale_price.toString();
+                    productShipment.moneda = cartItem.suppliersProd.moneda;
+                    productShipment.almacen = branchOffice.id;
+                    productsCapital.push(productShipment);
+                    warehouseCapital.cp = branchOffice.cp;
+                    warehouseCapital.name = branchOffice.name;
+                    warehouseCapital.estado = branchOffice.estado;
+                    warehouseCapital.latitud = branchOffice.latitud;
+                    warehouseCapital.longitud = branchOffice.longitud;
+                  }
                 }
               }
+            });
+            if (productsEstado.length === this.cartItems.length) {
+              i += 1;
+              warehouse = warehouseEstado;
+              warehouse.productShipments = productsEstado;
+            } else if (productsCapital.length === this.cartItems.length) {
+              i += 1;
+              warehouse = warehouseCapital;
+              warehouse.productShipments = productsCapital;
             }
-          });
-          if (productsEstado.length === this.cartItems.length) {
-            i += 1;
-            warehouse = warehouseEstado;
-            warehouse.productShipments = productsEstado;
-          } else if (productsCapital.length === this.cartItems.length) {
-            i += 1;
-            warehouse = warehouseCapital;
-            warehouse.productShipments = productsCapital;
+            supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
+            supplierProd.codigo = cartItem.suppliersProd.codigo;
+            supplierProd.price = cartItem.suppliersProd.price;
+            supplierProd.moneda = cartItem.suppliersProd.moneda;
+            warehouse.suppliersProd = supplierProd;
+            id += 1;
           }
-          supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
-          supplierProd.codigo = cartItem.suppliersProd.codigo;
-          supplierProd.price = cartItem.suppliersProd.price;
-          supplierProd.moneda = cartItem.suppliersProd.moneda;
-          warehouse.suppliersProd = supplierProd;
-          id += 1;
+        });
+        // Cotizar envio
+        warehouse.cp = cpDestino;
+        if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
+          warehouse.productShipments = productsCapital;
+        } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
+          warehouse.productShipments = productsCapital;
         }
-      });
-      // Cotizar envio
-      warehouse.cp = cpDestino;
-      if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
-        warehouse.productShipments = productsCapital;
-      } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
-        warehouse.productShipments = productsCapital;
-      }
-      console.log('onCotizarEnvios/apiSelect: ', apiSelect);
-      const shipmentsCost = await this.externalAuthService.onShippingEstimate(supplier, apiSelect, warehouse, false)
-        .then(
-          async (result) => {
-            const shipments: Shipment[] = [];
-            // tslint:disable-next-line: forin
-            for (const key in result) {
-              const shipment = new Shipment();
-              shipment.empresa = result[key].empresa.toString().toUpperCase();
-              shipment.costo = result[key].total;
-              shipment.metodoShipping = result[key].metodo;
-              shipments.push(shipment);
+        const shipmentsCost = await this.externalAuthService.onShippingEstimate(supplier, apiSelect, warehouse, false)
+          .then(
+            async (result) => {
+              const shipments: Shipment[] = [];
+              // tslint:disable-next-line: forin
+              for (const key in result) {
+                const shipment = new Shipment();
+                shipment.empresa = result[key].empresa.toString().toUpperCase();
+                shipment.costo = result[key].total;
+                shipment.metodoShipping = result[key].metodo;
+                shipments.push(shipment);
+              }
+              return shipments;
             }
-            return shipments;
-          }
-        );
-      this.shipments = shipmentsCost;
+          );
+        this.shipments = shipmentsCost;
+      }
     });
     // Cotizar con las paqueterias
     if (this.shippings.length > 0) {
       this.shippings.forEach(async shipping => {
-        console.log('shiping: ', shipping);
-        const apiSelect = shipping.apis.filter(api => api.operation === 'pricing')[0];
+        const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
         const shippingsCost = await this.externalAuthService.onShippingEstimate(
-          shipping, apiSelect, warehouse, false)
+          shipping, apiSelectShip, warehouse, true)
           .then(
             async (result) => {
               console.log('result', result);
@@ -584,7 +585,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         console.log('shippingsCost: ', shippingsCost);
       });
     }
-    console.log('warehouse: ', warehouse);
+    // console.log('warehouse: ', warehouse);
   }
 
   changeShipping(costo: number): void {

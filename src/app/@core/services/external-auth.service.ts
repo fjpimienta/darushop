@@ -33,22 +33,96 @@ export class ExternalAuthService {
 
   async getToken(
     supplier: ISupplier,
-    apiSelect: IApis,
     tokenJson: boolean = false
   ): Promise<any> {
-    const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
-    const headers = new HttpHeaders({
-      'Content-Type': contentType
-    });
-    console.log('contentType: ', contentType);
-    let params = new HttpParams();
-    if (supplier.token.body_parameters.length > 0) {
-      supplier.token.body_parameters.forEach(param => {
-        params = params.set(param.name, param.value);
-      });
-    }
+    let headers = new HttpHeaders();
+    switch (supplier.slug) {
+      case 'ct':
+        const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
+        headers = new HttpHeaders({
+          'Content-Type': contentType
+        });
+        let params = new HttpParams();
+        if (supplier.token.body_parameters.length > 0) {
+          supplier.token.body_parameters.forEach(param => {
+            params = params.set(param.name, param.value);
+          });
+        }
+        return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
+      case '99minutos':
+        // Opcion 1
+        // tslint:disable-next-line: no-shadowed-variable
+        const axios = require('axios');
+        const data = JSON.stringify({
+          'client_id': '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+          'client_secret': 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+        });
 
-    return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
+        const config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'https://sandbox.99minutos.com/api/v3/oauth/token',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Cross-Origin-Resource-Policy': '%s"cross-origin"'
+          },
+          data
+        };
+        console.log('getToken/config: ', config);
+        axios.request(config)
+          .then((response) => {
+            console.log('getToken: JSON.stringify(response.data): ', JSON.stringify(response.data));
+          })
+          .catch((error) => {
+            console.log('getToken/error: ', error);
+          });
+
+
+
+      // Opcion 2
+      // const rawBody = JSON.stringify({
+      //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+      //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+      // });
+      // const httpHeaders = {
+      //   accept: 'application/json',
+      //   'content-type': 'application/json',
+      //   origin: 'x-requested-with',
+      //   'Access-Control-Allow-Origin': '*',
+      //   'Cross-Origin-Resource-Policy': '%s"cross-origin"'
+      // };
+      // console.log('httpHeaders: ', httpHeaders);
+      // const myHeaders = new Headers(httpHeaders);
+      // const requestOptions: RequestInit = {
+      //   body: rawBody,
+      //   headers: myHeaders,
+      //   method: 'POST',
+      //   mode: 'cors',
+      //   redirect: 'follow'
+      // };
+      // console.log('fetch/rawBody: ', rawBody);
+      // console.log('fetch/myHeaders: ', myHeaders);
+      // console.log('fetch/requestOptions: ', requestOptions);
+      // fetch('https://sandbox.99minutos.com/api/v3/oauth/token', requestOptions)
+      //   .then(response => response.text())
+      //   .then(result => console.log('fetch/result: ', result))
+      //   .catch(error => console.log('fetch/error', error));
+
+      // Opcion 3
+      // const url = supplier.token.url_base_token;
+      // headers = new HttpHeaders({
+      //   'accept': 'application/json',
+      //   'Content-Type': 'application/json'
+      // });
+      // const fromObject = {
+      //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+      //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+      // };
+      // console.log('JSON.stringify(fromObject): ', JSON.stringify(fromObject), '; headers', headers);
+      // return await this.http.post(url, JSON.stringify(fromObject), { headers }).toPromise();
+    }
   }
 
   async getSyscomCatalog(supplier: ISupplier, apiSelect: IApis, token: string, search: string = ''): Promise<any> {
@@ -426,8 +500,7 @@ export class ExternalAuthService {
           return await [];
       }
     } else {
-      console.log('onShippingEstimate/apiSelect', apiSelect);
-      return await this.getToken(supplier, apiSelect, tokenJson)
+      return await this.getToken(supplier, tokenJson)
         .then(
           async result => {
             switch (supplier.slug) {
@@ -438,8 +511,8 @@ export class ExternalAuthService {
                 token = result.access_token;
                 break;
               case '99minutos':
-                token = result.access_token;
-                console.log('token: ', token);
+                console.log('getToken/result: ', result);
+                token = result;
                 break;
               default:
                 break;
