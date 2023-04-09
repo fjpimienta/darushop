@@ -43,7 +43,7 @@ export interface IApis {
   use: string;
   return: string;
   headers: IHeaders;
-  parameters: IBodyParameters[];
+  parameters: IParameters[];
   requires_token: boolean;
 }
 

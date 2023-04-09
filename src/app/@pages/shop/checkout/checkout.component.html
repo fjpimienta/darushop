@@ -9,7 +9,8 @@
         <li class="breadcrumb-item">
           <a routerLink="/shop/sidebar/3cols">Shop</a>
         </li>
-        <li class="breadcrumb-item active">Monto a Verificar {{ (cartService.priceTotal | async).toFixed(2) | currency}}</li>
+        <li class="breadcrumb-item active">Monto a Verificar {{ (cartService.priceTotal | async).toFixed(2) | currency}}
+        </li>
       </ol>
     </div>
   </nav>
@@ -377,11 +378,18 @@
                   </div>
                 </app-accordion>
 
-                <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
+                <!-- <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
+                  [disabled]="!formData.valid">
+                  <span class="btn-text">Realizar Pedido</span>
+                  <span class="btn-hover-text" (click)="onSubmit()">Pagar</span>
+                </button> -->
+
+                <button type="submit" class="btn btn-primary btn-order btn-block btn-round"
                   [disabled]="!formData.valid">
                   <span class="btn-text">Realizar Pedido</span>
                   <span class="btn-hover-text" (click)="onSubmit()">Pagar</span>
                 </button>
+
               </div>
             </aside>
           </div>
