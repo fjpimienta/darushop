@@ -473,12 +473,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         if (api.type === 'envios') {
           if (supplier.slug === 'ct' && api.return === 'cotizacion') {
             apiSelect = api;
-          } else {
-            apiSelect = {
-              type: '', name: '', method: '', operation: '', suboperation: '', use: '', return: '',
-              headers: { authorization: false }, parameters: [],
-              requires_token: false
-            };
+            // } else {
+            //   apiSelect = {
+            //     type: '', name: '', method: '', operation: '', suboperation: '', use: '', return: '',
+            //     headers: { authorization: false }, parameters: [],
+            //     requires_token: false
+            //   };
           }
         }
       });
@@ -562,30 +562,33 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     });
     // Cotizar con las paqueterias
-    if (this.shippings.length > 0) {
-      this.shippings.forEach(async shipping => {
-        const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
-        const shippingsCost = await this.externalAuthService.onShippingEstimate(
-          shipping, apiSelectShip, warehouse, true)
-          .then(
-            async (result) => {
-              console.log('result', result);
-              const shipments: Shipment[] = [];
-              // tslint:disable-next-line: forin
-              for (const key in result) {
-                const shipment = new Shipment();
-                shipment.empresa = result[key].empresa.toString().toUpperCase();
-                shipment.costo = result[key].total;
-                shipment.metodoShipping = result[key].metodo;
-                shipments.push(shipment);
+    console.log('this.shippings: ', this.shippings);
+    if (this.shippings) {
+      if (this.shippings.length > 0) {
+        this.shippings.forEach(async shipping => {
+          const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
+          const shippingsCost = await this.externalAuthService.onShippingEstimate(
+            shipping, apiSelectShip, warehouse, false)
+            .then(
+              async (result) => {
+                console.log('result', result);
+                const shipments: Shipment[] = [];
+                // tslint:disable-next-line: forin
+                for (const key in result) {
+                  const shipment = new Shipment();
+                  shipment.empresa = result[key].empresa.toString().toUpperCase();
+                  shipment.costo = result[key].total;
+                  shipment.metodoShipping = result[key].metodo;
+                  shipments.push(shipment);
+                }
+                return shipments;
               }
-              return shipments;
-            }
-          );
-        console.log('shippingsCost: ', shippingsCost);
-      });
+            );
+          console.log('shippingsCost: ', shippingsCost);
+        });
+      }
     }
-    // console.log('warehouse: ', warehouse);
+    console.log('warehouse: ', warehouse);
   }
 
   changeShipping(costo: number): void {
