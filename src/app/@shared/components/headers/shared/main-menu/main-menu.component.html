@@ -16,9 +16,9 @@
                 <div class="col-md-12">
                   <ul>
                     <li [class.active]="current.includes('shop/sidebar/list')"
-                      *ngFor="let item of categorysGroup; let id = index;">
+                      *ngFor="let item of categories; let id = index;">
                       <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{category: item.slug}">{{
-                        item.name }}</a>
+                        item.description }}</a>
                     </li>
                   </ul>
                 </div>
@@ -38,9 +38,9 @@
                 <div class="col-md-12">
                   <ul>
                     <li [class.active]="current.includes('shop/sidebar/list')"
-                      *ngFor="let item of brandsGroup; let id = index;">
+                      *ngFor="let item of brands; let id = index;">
                       <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{brands: item.slug}">{{
-                        item.name }}</a>
+                        item.description }}</a>
                     </li>
                   </ul>
                 </div>

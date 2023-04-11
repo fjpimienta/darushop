@@ -15,11 +15,11 @@
       <div class="collapse show" id="widget-4">
         <div class="widget-body pt-0">
           <div class="filter-items">
-            <div class="filter-item" *ngFor="let item of brandsGroup; let id = index;">
+            <div class="filter-item" *ngFor="let item of brands; let id = index;">
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" [id]="'brand-' + id"
                   (click)="onAttrClick('brand', item.slug)" [checked]="containsAttrInUrl('brand', item.slug)">
-                <label class="custom-control-label" [for]="'brand-' + id">{{ item.name }}</label>
+                <label class="custom-control-label" [for]="'brand-' + id">{{ item.description }}</label>
               </div>
             </div>
           </div>
@@ -37,9 +37,8 @@
       <div class="collapse show" id="widget-1">
         <div class="widget-body pt-0">
           <div class="filter-items filter-items-count">
-            <div class="filter-item" *ngFor="let item of categorysGroup">
-              <a [routerLink]="" [queryParams]="{category: item.slug}" routerLinkActive="active">{{ item.name
-                }}</a>
+            <div class="filter-item" *ngFor="let item of categories">
+              <a [routerLink]="" [queryParams]="{category: item.slug}" routerLinkActive="active">{{ item.description}}</a>
               <!-- <span class="item-count">{{ item.count }}</span> -->
             </div>
           </div>
