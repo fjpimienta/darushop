@@ -13,6 +13,7 @@ export class ProductsService extends ApiService {
     super(apollo);
   }
 
+  // tslint:disable-next-line: typedef
   getProducts(
     page: number = 1,
     itemsPage: number = 10,
@@ -22,11 +23,11 @@ export class ProductsService extends ApiService {
     return this.get(PRODUCTS_LIST_QUERY, {
       itemsPage, page, filterName, offer
     }).pipe(map((result: any) => {
-      console.log('result.products', result.products);
       return result.products;
     }));
   }
 
+  // tslint:disable-next-line: typedef
   getProduct(id: string) {
     return this.get(PRODUCT_QUERY, {
       id

@@ -53,7 +53,7 @@ export class AppComponent {
       if (event.url === '/') {
         document.querySelector('.sticky-wrapper').classList.remove('bg-black');
       } else {
-        console.log('event.url: ', event.url);
+        console.log('navigationEnd/event.url: ', event.url);
         if (event.url !== '/soon') {
           document.querySelector('.sticky-wrapper').classList.add('bg-black');
         }

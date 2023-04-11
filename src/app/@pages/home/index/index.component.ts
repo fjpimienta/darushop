@@ -13,14 +13,14 @@ import { introSlider, brandSlider, reviewSlider } from '../data';
 import demo30 from '@assets/demo30.json';
 
 @Component({
-	selector: 'app-index',
-	templateUrl: './index.component.html',
-	styleUrls: ['./index.component.scss']
+  selector: 'app-index',
+  templateUrl: './index.component.html',
+  styleUrls: ['./index.component.scss']
 })
 
 export class IndexComponent implements OnInit {
 
-	itemsProducts: any = demo30;
+  itemsProducts: any = demo30;
 
   products = [];
   topProducts = [];
@@ -33,22 +33,22 @@ export class IndexComponent implements OnInit {
   brandSlider = brandSlider;
   reviewSlider = reviewSlider;
   saleToday: Product;
-  existSaleToday: boolean = false;
-	index = 0;
+  existSaleToday = false;
+  index = 0;
 
-	SERVER_URL = environment.SERVER_URL;
+  SERVER_URL = environment.SERVER_URL;
 
-	@ViewChild('singleSlider') singleSlider: any;
-	@ViewChild('customDots') customDots: any;
+  @ViewChild('singleSlider') singleSlider: any;
+  @ViewChild('customDots') customDots: any;
 
-	constructor(
-		public apiService: ApiService,
-		public utilsService: UtilsService,
-		private modalService: ModalService,
-		private cartService: CartService,
+  constructor(
+    public apiService: ApiService,
+    public utilsService: UtilsService,
+    private modalService: ModalService,
+    private cartService: CartService,
     public productService: ProductsService
-	) {
-		// Mostrar el modal inicial
+  ) {
+    // Mostrar el modal inicial
     this.productService.getProducts(1, -1).subscribe(result => {
       this.products = result.products;
       this.products.forEach(p => {
@@ -59,7 +59,9 @@ export class IndexComponent implements OnInit {
       this.topProducts = utilsService.attrFilter(result.products, 'top');
       this.newProducts = utilsService.attrFilter(result.products, 'new');
       this.saleProducts = utilsService.attrFilter(result.products, 'sale');
-      console.log('this.products: ', this.products);
+      console.log('this.productService.getProducts/this.topProducts: ', this.topProducts);
+      console.log('this.productService.getProducts/this.newProducts: ', this.newProducts);
+      console.log('this.productService.getProducts/this.saleProducts: ', this.saleProducts);
       let i = 0;
       let j = 0;
       this.saleProducts.forEach(sale => {
@@ -82,7 +84,7 @@ export class IndexComponent implements OnInit {
       });
       this.loaded = true;
     });
-	}
+  }
 
   today(): string {
     const fecha = new Date(Date.now());
@@ -97,45 +99,45 @@ export class IndexComponent implements OnInit {
     delete obj[oldKey];
   }
 
-	ngOnInit(): void {
-	}
+  ngOnInit(): void {
+  }
 
-	addCart(event: Event) {
-		event.preventDefault();
-		if ((event.currentTarget as HTMLElement).classList.contains('btn-disabled')) return;
-		let newProduct = { ...this.products[0] };
+  addCart(event: Event): void {
+    event.preventDefault();
+    if ((event.currentTarget as HTMLElement).classList.contains('btn-disabled')) { return; }
+    let newProduct = { ...this.products[0] };
 
-		if (this.products[0].variants.length > 0) {
-			newProduct = {
-				...this.products[0],
-				name:
-					this.products[ 0 ].name +
-					' - ' +
-					this.products[ 0 ].variants[ this.index ].color_name,
-				price: this.products[ 0 ].variants[ this.index ].price
-			};
-		}
+    if (this.products[0].variants.length > 0) {
+      newProduct = {
+        ...this.products[0],
+        name:
+          this.products[0].name +
+          ' - ' +
+          this.products[0].variants[this.index].color_name,
+        price: this.products[0].variants[this.index].price
+      };
+    }
 
-		this.cartService.addToCart(
-			newProduct, 1
-		);
-	}
+    this.cartService.addToCart(
+      newProduct, 1
+    );
+  }
 
-	itemChange(e: any, self: any) {
-		this.customDots.nativeElement.querySelector('.custom-dot.active').classList.remove('active');
-		this.customDots.nativeElement.querySelectorAll('.custom-dot')[e.item.index].classList.add('active');
+  itemChange(e: any, self: any): void {
+    this.customDots.nativeElement.querySelector('.custom-dot.active').classList.remove('active');
+    this.customDots.nativeElement.querySelectorAll('.custom-dot')[e.item.index].classList.add('active');
 
-		self.index = e.item.index;
-	}
+    self.index = e.item.index;
+  }
 
-	changeImage($event: Event, i = 0) {
-		this.index = i;
-		this.singleSlider.to(i);
-		$event.preventDefault();
-	}
+  changeImage($event: Event, i = 0): void {
+    this.index = i;
+    this.singleSlider.to(i);
+    $event.preventDefault();
+  }
 
-	showModal(event: Event) {
-		event.preventDefault();
-		this.modalService.showVideoModal();
-	}
+  showModal(event: Event): void {
+    event.preventDefault();
+    this.modalService.showVideoModal();
+  }
 }
