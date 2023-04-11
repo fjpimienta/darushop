@@ -4,14 +4,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { LayoutComponent } from '@shared/layout/layout.component';
 import { ComingSoonPageComponent } from '@pages/others/coming-soon/coming-soon.component';
 import { IndexComponent } from '@pages/home/index/index.component';
-import { Index2Component } from '@pages/home2/index2/index2.component';
-import { LoginPageComponent } from '@pages/others/login/login.component';
-import { RegisterComponent } from '@pages/auth/register/register.component';
-import { Index3Component } from '@pages/home/index/index3.component';
-import { Index4Component } from '@pages/home/index/index4.component';
-import { Index5Component } from '@pages/home/index/index5.component';
-import { Index6Component } from '@pages/home/index/index6.component';
-import { Index7Component } from '@pages/home/index/index7.component';
 
 const routes: Routes = [
   {
@@ -26,26 +18,6 @@ const routes: Routes = [
         path: '',
         pathMatch: 'full',
         component: IndexComponent
-      },
-      {
-        path: 'index3',
-        component: Index3Component
-      },
-      {
-        path: 'index4',
-        component: Index4Component
-      },
-      {
-        path: 'index5',
-        component: Index5Component
-      },
-      {
-        path: 'index2',
-        component: Index6Component
-      },
-      {
-        path: 'index7',
-        component: Index7Component
       },
       {
         path: 'login',

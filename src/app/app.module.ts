@@ -19,7 +19,6 @@ import { SharedModule } from '@shared/shared.module';
 import { ElementsModule } from '@pages/elements/elements.module';
 import { PagesModule } from '@pages/others/pages.module';
 import { HomeModule } from '@pages/home/home.module';
-import { Home2Module } from '@pages/home2/home2.module';
 
 // reducers
 import { appReducers, metaReducers } from '@core/reducers/app.reducer';
@@ -49,7 +48,6 @@ import { GraphqlModule } from './@graphql/modules/graphql.module';
     PagesModule,
     SharedModule,
     HomeModule,
-    Home2Module,
     BrowserAnimationsModule,
     ToastrModule.forRoot({
       timeOut: 2000,
