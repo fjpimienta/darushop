@@ -21,6 +21,8 @@ export class SidebarPageComponent implements OnInit {
   searchTerm = '';
   loaded = false;
   firstLoad = false;
+  brands = [];
+  categories = [];
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -49,7 +51,19 @@ export class SidebarPageComponent implements OnInit {
         this.orderBy = 'default';
       }
 
-      this.productService.getProducts(1, -1, this.searchTerm.toLowerCase()).subscribe(result => {
+      this.brands = null;
+      if (params.brands) {
+        this.brands = [];
+        this.brands.push(params.brands);
+      }
+      this.categories = null;
+      if (params.category) {
+        this.categories = [];
+        this.categories.push(params.category);
+      }
+      this.productService.getProducts(
+        1, -1, this.searchTerm.toLowerCase(), null, this.brands, this.categories
+      ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
         let brands: string[] = [];
