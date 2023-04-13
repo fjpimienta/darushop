@@ -37,9 +37,9 @@
               <div class="row">
                 <div class="col-md-12">
                   <ul>
-                    <li [class.active]="current.includes('shop/sidebar/list')"
+                    <li [class.active]="current.includes('shop/brand/list')"
                       *ngFor="let item of brands; let id = index;">
-                      <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{brands: item.slug}">{{
+                      <a [routerLink]="['/shop/brand/list']" [queryParams]="{brands: item.slug}">{{
                         item.description }}</a>
                     </li>
                   </ul>

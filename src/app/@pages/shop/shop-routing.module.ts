@@ -12,6 +12,7 @@ import { AuthGuard } from '@core/guards/auth.guard';
 import { CategoryComponent } from './category/category.component';
 import { BrandsComponent } from './brands/brands.component';
 import { OffersComponent } from './offers/offers.component';
+import { BrandComponent } from './brand/brand.component';
 
 const routes: Routes = [
   {
@@ -65,6 +66,19 @@ const routes: Routes = [
   {
     path: 'offers',
     component: OffersComponent
+  },
+  {
+    path: 'brand/:slug',
+    component: BrandComponent
+  },
+  {
+    path: 'brand/:type',
+    component: BrandComponent
+  },
+  {
+    path: 'brand',
+    pathMatch: 'full',
+    redirectTo: 'brand/list'
   },
   {
     path: 'brands',

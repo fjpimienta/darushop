@@ -28,6 +28,7 @@ import { StripePaymentFormModule } from '@mugan86/stripe-payment-form';
 import { CategoryComponent } from './category/category.component';
 import { OffersComponent } from './offers/offers.component';
 import { BrandsComponent } from './brands/brands.component';
+import { BrandComponent } from './brand/brand.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { BrandsComponent } from './brands/brands.component';
     CategoryComponent,
     OffersComponent,
     BrandsComponent,
+    BrandComponent,
   ],
   imports: [
     CommonModule,
