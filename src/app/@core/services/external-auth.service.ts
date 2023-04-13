@@ -50,97 +50,30 @@ export class ExternalAuthService {
         }
         return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
       case '99minutos':
-
-        const url = supplier.token.url_base_token;
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        const body = new URLSearchParams({
-          client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
-          client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
-        });
-        xhr.onload = () => {
-          if (xhr.readyState === 4 && xhr.status === 201) {
-            console.log('JSON.parse(xhr.responseText): ', JSON.parse(xhr.responseText));
-          } else {
-            console.log(`Error: ${xhr.status}`);
-          }
-        };
-        xhr.send(body);
-
-
-      // // Opcion 1
-      // // tslint:disable-next-line: no-shadowed-variable
-      // const axios = require('axios');
-      // const data = JSON.stringify({
-      //   'client_id': '18b99050-5cb7-4e67-928d-3f16d109b8c5',
-      //   'client_secret': 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
-      // });
-
-      // const config = {
-      //   method: 'post',
-      //   maxBodyLength: Infinity,
-      //   url: 'https://sandbox.99minutos.com/api/v3/oauth/token',
-      //   headers: {
-      //     accept: 'application/json',
-      //     'content-type': 'application/json',
-      //     'Access-Control-Allow-Origin': '*',
-      //     'Cross-Origin-Resource-Policy': '%s"cross-origin"'
-      //   },
-      //   data
-      // };
-      // console.log('getToken/config: ', config);
-      // axios.request(config)
-      //   .then((response) => {
-      //     console.log('getToken: JSON.stringify(response.data): ', JSON.stringify(response.data));
-      //   })
-      //   .catch((error) => {
-      //     console.log('getToken/error: ', error);
-      //   });
+        // const sdk = require('api')('@example-99mxn/v3.0#9vsruhlfkf5dst');
+        // sdk.server('https://sandbox.99minutos.com');
+        // sdk.oauth_token_create({
+        //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+        //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+        // })
+        //   .then(({ data }) => console.log(data))
+        //   .catch(err => console.error(err));
 
 
 
-      // Opcion 2
-      // const rawBody = JSON.stringify({
-      //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
-      //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
-      // });
-      // const httpHeaders = {
-      //   'Accept': 'application/x-www-form-urlencoded, text/plain',
-      //   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      // };
-      // console.log('httpHeaders: ', httpHeaders);
-      // const myHeaders = new Headers(httpHeaders);
-      // const requestOptions: RequestInit = {
-      //   body: rawBody,
-      //   headers: myHeaders,
-      //   method: 'POST',
-      //   mode: 'no-cors'
-      // };
-      // console.log('fetch/rawBody: ', rawBody);
-      // console.log('fetch/myHeaders: ', myHeaders);
-      // console.log('fetch/requestOptions: ', requestOptions);
-      // fetch('https://sandbox.99minutos.com/api/v3/oauth/token', requestOptions)
-      //   .then(response => response.text())
-      //   .then(result => console.log('fetch/result: ', result))
-      //   .catch(error => console.log('fetch/error', error));
-
-      // // Opcion 3
-      // // const url = supplier.token.url_base_token;
-      // const url = 'https://sandbox.99minutos.com/api/v3/oauth/token';
-      // headers = new HttpHeaders({
-      //   'Content-Type': 'application/json'
-      // });
-      // const fromObject = {
-      //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
-      //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd',
-      //   // headers: {
-      //   //   accept: 'text/plain',
-      //   //   'Content-Type': 'text/plain'
-      //   // }
-      // };
-      // console.log('JSON.stringify(fromObject): ', JSON.stringify(fromObject), '; headers', headers);
-      // return await this.http.post(url, fromObject, { headers }).toPromise();
+        // const options = {
+        //   method: 'POST',
+        //   headers: { accept: 'application/json', 'content-type': 'application/json' },
+        //   body: JSON.stringify({
+        //     client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+        //     client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+        //   })
+        // };
+        // console.log('options: ', options);
+        // fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
+        //   .then(response => response.json())
+        //   .then(response => console.log(response))
+        //   .catch(err => console.error(err));
     }
   }
 

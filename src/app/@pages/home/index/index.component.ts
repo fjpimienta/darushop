@@ -59,9 +59,6 @@ export class IndexComponent implements OnInit {
       this.topProducts = utilsService.attrFilter(result.products, 'top');
       this.newProducts = utilsService.attrFilter(result.products, 'new');
       this.saleProducts = utilsService.attrFilter(result.products, 'sale');
-      console.log('this.productService.getProducts/this.topProducts: ', this.topProducts);
-      console.log('this.productService.getProducts/this.newProducts: ', this.newProducts);
-      console.log('this.productService.getProducts/this.saleProducts: ', this.saleProducts);
       let i = 0;
       let j = 0;
       this.saleProducts.forEach(sale => {
