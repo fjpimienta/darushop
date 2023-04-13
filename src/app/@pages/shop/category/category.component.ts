@@ -11,11 +11,11 @@ import { UtilsService } from '@core/services/utils.service';
 import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
 
 @Component({
-  selector: 'app-brand',
-  templateUrl: './brand.component.html',
-  styleUrls: ['./brand.component.scss']
+  selector: 'app-category',
+  templateUrl: './category.component.html',
+  styleUrls: ['./category.component.scss']
 })
-export class BrandComponent implements OnInit {
+export class CategoryComponent implements OnInit {
 
   brandsJson = brandsJson;
   cats = cats;

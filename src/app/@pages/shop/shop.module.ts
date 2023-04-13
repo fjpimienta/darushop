@@ -29,6 +29,7 @@ import { CategorysComponent } from './categorys/categorys.component';
 import { OffersComponent } from './offers/offers.component';
 import { BrandsComponent } from './brands/brands.component';
 import { BrandComponent } from './brand/brand.component';
+import { CategoryComponent } from './category/category.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { BrandComponent } from './brand/brand.component';
     OffersComponent,
     BrandsComponent,
     BrandComponent,
+    CategoryComponent,
   ],
   imports: [
     CommonModule,

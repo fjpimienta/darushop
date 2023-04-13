@@ -13,6 +13,7 @@ import { CategorysComponent } from './categorys/categorys.component';
 import { BrandsComponent } from './brands/brands.component';
 import { OffersComponent } from './offers/offers.component';
 import { BrandComponent } from './brand/brand.component';
+import { CategoryComponent } from './category/category.component';
 
 const routes: Routes = [
   {
@@ -60,7 +61,20 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'category/:slug',
+    component: CategoryComponent
+  },
+  {
+    path: 'category/:type',
+    component: CategoryComponent
+  },
+  {
     path: 'category',
+    pathMatch: 'full',
+    redirectTo: 'category/list'
+  },
+  {
+    path: 'categorys',
     component: CategorysComponent
   },
   {

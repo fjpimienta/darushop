@@ -6,8 +6,8 @@
     <li class="megamenu-container" [class.active]="current.includes('/offers')">
       <a routerLink="/shop/offers" class="sf-with-ul">Ofertas</a>
     </li>
-    <li [class.active]="current.includes('/category')">
-      <a routerLink="/shop/category" class="sf-with-ul">Categorias</a>
+    <li [class.active]="current.includes('/categorys')">
+      <a routerLink="/shop/categorys" class="sf-with-ul">Categorias</a>
       <div class="megamenu megamenu-sm">
         <div class="row no-gutters">
           <div class="col-md-12">
@@ -15,9 +15,9 @@
               <div class="row">
                 <div class="col-md-12">
                   <ul>
-                    <li [class.active]="current.includes('shop/sidebar/list')"
+                    <li [class.active]="current.includes('shop/category/list')"
                       *ngFor="let item of categories; let id = index;">
-                      <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{category: item.slug}">{{
+                      <a [routerLink]="['/shop/category/list']" [queryParams]="{category: item.slug}">{{
                         item.description }}</a>
                     </li>
                   </ul>
