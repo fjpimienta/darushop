@@ -9,7 +9,7 @@ import { WishlistComponent } from './wishlist/wishlist.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthGuard } from '@core/guards/auth.guard';
-import { CategoryComponent } from './category/category.component';
+import { CategorysComponent } from './categorys/categorys.component';
 import { BrandsComponent } from './brands/brands.component';
 import { OffersComponent } from './offers/offers.component';
 import { BrandComponent } from './brand/brand.component';
@@ -61,7 +61,7 @@ const routes: Routes = [
   },
   {
     path: 'category',
-    component: CategoryComponent
+    component: CategorysComponent
   },
   {
     path: 'offers',
