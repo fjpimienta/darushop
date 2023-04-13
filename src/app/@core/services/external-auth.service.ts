@@ -50,30 +50,19 @@ export class ExternalAuthService {
         }
         return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
       case '99minutos':
-        // const sdk = require('api')('@example-99mxn/v3.0#9vsruhlfkf5dst');
-        // sdk.server('https://sandbox.99minutos.com');
-        // sdk.oauth_token_create({
-        //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
-        //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
-        // })
-        //   .then(({ data }) => console.log(data))
-        //   .catch(err => console.error(err));
+        const options = {
+          method: 'POST',
+          headers: { accept: 'application/json', 'content-type': 'application/json' },
+          body: JSON.stringify({
+            client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+            client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+          })
+        };
 
-
-
-        // const options = {
-        //   method: 'POST',
-        //   headers: { accept: 'application/json', 'content-type': 'application/json' },
-        //   body: JSON.stringify({
-        //     client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
-        //     client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
-        //   })
-        // };
-        // console.log('options: ', options);
-        // fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
-        //   .then(response => response.json())
-        //   .then(response => console.log(response))
-        //   .catch(err => console.error(err));
+        fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
+          .then(response => response.json())
+          .then(response => console.log(response))
+          .catch(err => console.error(err));
     }
   }
 

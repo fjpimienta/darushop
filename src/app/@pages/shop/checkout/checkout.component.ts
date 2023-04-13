@@ -492,7 +492,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     const productShipment = new ProductShipment();
                     productShipment.producto = cartItem.sku;
                     productShipment.cantidad = cartItem.qty.toString();
-                    productShipment.precio = cartItem.sale_price.toString();
+                    productShipment.precio = cartItem.price.toString();
                     productShipment.moneda = cartItem.suppliersProd.moneda;
                     productShipment.almacen = branchOffice.id;
                     productsEstado.push(productShipment);
@@ -506,7 +506,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     const productShipment = new ProductShipment();
                     productShipment.producto = cartItem.sku;
                     productShipment.cantidad = cartItem.qty.toString();
-                    productShipment.precio = cartItem.sale_price.toString();
+                    productShipment.precio = cartItem.price.toString();
                     productShipment.moneda = cartItem.suppliersProd.moneda;
                     productShipment.almacen = branchOffice.id;
                     productsCapital.push(productShipment);
