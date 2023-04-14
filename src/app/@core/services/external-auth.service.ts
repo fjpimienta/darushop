@@ -7,6 +7,7 @@ import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
 import axios, { isCancel, AxiosError } from 'axios';
 import { Warehouse } from '@core/models/warehouse.models';
+import { Shipment } from '@core/models/shipment.models';
 
 declare const require;
 const xml2js = require('xml2js');
@@ -58,10 +59,11 @@ export class ExternalAuthService {
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-
-        fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
+        return fetch('99minutos/api/v3/oauth/token', options)
           .then(response => response.json())
-          .then(response => console.log(response))
+          .then(async response => {
+            return await response;
+          })
           .catch(err => console.error(err));
     }
   }
@@ -418,6 +420,22 @@ export class ExternalAuthService {
             productos: warehouse.productShipments
           };
           return await this.http.post(url, JSON.stringify(fromObject), { headers }).toPromise();
+        case '99minutos':
+          const options = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'content-type': 'application/json',
+              authorization: 'Bearer ' + token
+            },
+            body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
+          };
+          return fetch('99minutos/api/v3/pricing', options)
+            .then(response => response.json())
+            .then(async response => {
+              return await response;
+            })
+            .catch(err => console.error(err));
         default:
           break;
       }
@@ -431,6 +449,7 @@ export class ExternalAuthService {
     tokenJson: boolean
   ): Promise<any> {
     let token: string;
+    let shipments: Shipment[] = [];
     if (!supplier.token) {
       switch (supplier.slug) {
         case 'cva':
@@ -452,7 +471,7 @@ export class ExternalAuthService {
                 token = result.access_token;
                 break;
               case '99minutos':
-                token = result;
+                token = result.access_token;
                 break;
               default:
                 break;
@@ -462,22 +481,26 @@ export class ExternalAuthService {
                 // tslint:disable-next-line: no-shadowed-variable
                 .then(async result => {
                   try {
-                    if (result.codigo === '2000') {
-                      switch (supplier.slug) {
-                        case 'ct':
-                          if (result.respuesta.cotizaciones.length > 0) {
-                            return result.respuesta.cotizaciones;
-                          } else {
-                            // TODO Enviar Costos Internos.
-                            return await [];
-                          }
-                        default:
+                    switch (supplier.slug) {
+                      case 'ct':
+                        if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
+                          shipments = result.respuesta.cotizaciones;
+                          return shipments;
+                        } else {
                           // TODO Enviar Costos Internos.
                           return await [];
-                      }
-                    } else {
-                      // TODO Enviar Costos Internos.
-                      return await [];
+                        }
+                      case 'syscom':
+                        return await [];
+                      case '99minutos':
+                        const shipment = new Shipment();
+                        shipment.empresa = supplier.slug;
+                        shipment.costo = result.data.price;
+                        shipment.metodoShipping = '';
+                        shipments.push(shipment);
+                        return await shipments;
+                      default:
+                        return await [];
                     }
                   } catch (error) {
                     // TODO Enviar Costos Internos.

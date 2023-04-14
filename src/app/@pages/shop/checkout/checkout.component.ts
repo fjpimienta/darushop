@@ -469,7 +469,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const warehouseCapital = new Warehouse();
       const productsEstado: ProductShipment[] = [];
       const productsCapital: ProductShipment[] = [];
-      supplier.apis.forEach(api => {
+      supplier.apis.forEach(async api => {
         if (api.type === 'envios') {
           if (supplier.slug === 'ct' && api.return === 'cotizacion') {
             apiSelect = api;
@@ -558,12 +558,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               return shipments;
             }
           );
-        this.shipments = shipmentsCost;
+        // this.shipments = shipmentsCost;
+        shipmentsCost.forEach(ship => {
+          this.shipments.push(ship);
+        });
+        console.log(`${supplier.slug} - this.shipments: ${this.shipments}`);
+        // console.log('1 - this.shipments: ', this.shipments);
       }
     });
     // Cotizar con las paqueterias
-    console.log('this.shippings: ', this.shippings);
-    if (this.shippings) {
+    if (this.shipments) {
       if (this.shippings.length > 0) {
         this.shippings.forEach(async shipping => {
           const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
@@ -571,24 +575,26 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             shipping, apiSelectShip, warehouse, false)
             .then(
               async (result) => {
-                console.log('result', result);
                 const shipments: Shipment[] = [];
-                // tslint:disable-next-line: forin
                 for (const key in result) {
+                  // tslint:disable-next-line: forin
                   const shipment = new Shipment();
-                  shipment.empresa = result[key].empresa.toString().toUpperCase();
-                  shipment.costo = result[key].total;
-                  shipment.metodoShipping = result[key].metodo;
+                  shipment.empresa = '99MINUTOS';
+                  shipment.costo = result[key].costo;
+                  shipment.metodoShipping = '';
                   shipments.push(shipment);
                 }
                 return shipments;
               }
             );
-          console.log('shippingsCost: ', shippingsCost);
+          console.log('2 - shippingsCost: ', shippingsCost);
+          shippingsCost.forEach(ship => {
+            this.shipments.push(ship);
+          });
         });
       }
     }
-    console.log('warehouse: ', warehouse);
+    // console.log('warehouse: ', warehouse);
   }
 
   changeShipping(costo: number): void {
