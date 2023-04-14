@@ -460,6 +460,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     let id = '1';
     delivery.id = id;
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+    this.shipments = [];
     // Verificar productos por proveedor.
     let i = 0;
     let apiSelect: IApis;
@@ -562,8 +563,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         shipmentsCost.forEach(ship => {
           this.shipments.push(ship);
         });
-        console.log(`${supplier.slug} - this.shipments: ${this.shipments}`);
-        // console.log('1 - this.shipments: ', this.shipments);
       }
     });
     // Cotizar con las paqueterias
@@ -587,14 +586,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return shipments;
               }
             );
-          console.log('2 - shippingsCost: ', shippingsCost);
           shippingsCost.forEach(ship => {
             this.shipments.push(ship);
           });
         });
       }
     }
-    // console.log('warehouse: ', warehouse);
   }
 
   changeShipping(costo: number): void {
