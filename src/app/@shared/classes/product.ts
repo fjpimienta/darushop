@@ -27,6 +27,8 @@ export interface Product {
     name?: string;
     slug?: string;
   }>;
+  model: string;
+  peso: number;
   pictures: Array<{
     width: string;
     height: string;

@@ -16,6 +16,8 @@ export class Product {
   // sold: string;
   category: Categorys[];
   brands?: Brands[];
+  model: string;
+  peso: number;
   pictures: Picture[];
   sm_pictures: Picture[];
   variants?: Variant[];

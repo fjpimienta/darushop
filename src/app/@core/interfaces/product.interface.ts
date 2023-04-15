@@ -16,6 +16,8 @@ export interface IProduct {
   sold: string;
   category: ICategorys[];
   brands: IBrands[];
+  model: string;
+  peso: number;
   pictures: IPicture[];
   sm_pictures?: IPicture[];
   variants?: IVariant[];
