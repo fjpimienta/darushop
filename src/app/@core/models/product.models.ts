@@ -12,17 +12,24 @@ export class Product {
   top: boolean;
   featured: boolean;
   new: boolean;
-  // author: string;
-  // sold: string;
+  author: string;
+  sold: string;
+  partnumber: string;
+  sku: string;
+  upc: string;
   category: Categorys[];
+  brand: string;
   brands?: Brands[];
   model: string;
   peso: number;
   pictures: Picture[];
   sm_pictures: Picture[];
   variants?: Variant[];
-  // active: boolean;
+  unidadDeMedida?: UnidadDeMedida;
+  active: boolean;
   suppliersProd: SupplierProd;
+  descuentos: Descuentos;
+  promociones: Promociones;
 }
 
 export class Categorys {
@@ -39,7 +46,7 @@ export class PivotCategory {
 export class Brands {
   name?: string;
   slug?: string;
-  // pivot: PivotBrand;
+  pivot: PivotBrand;
 }
 
 export class PivotBrand {
@@ -51,7 +58,7 @@ export class Picture {
   width: string;
   height: string;
   url: string;
-  // pivot: PivotePicture;
+  pivot: PivotePicture;
 }
 
 export class PivotePicture {
@@ -85,13 +92,10 @@ export class PivoteSize {
   component_id: string;
 }
 
-
-export class AddProduct {
-  tipo: string;
-  item: Product;
-  list: Product[];
-  suppliersProd?: SupplierProd;
-  files?: File[];
+export class UnidadDeMedida {
+  id: string;
+  name: string;
+  slug: string;
 }
 
 export class SupplierProd {
@@ -110,4 +114,25 @@ export class BranchOffices {
   cp: string;
   latitud: string;
   longitud: string;
+}
+
+export class Descuentos {
+  total_descuento: number;
+  moneda_descuento: string;
+  precio_descuento: number;
+}
+
+export class Promociones {
+  clave_promocion: string;
+  descripcion_promocion: string;
+  vencimiento_promocion: string;
+  disponible_en_promocion: number;
+}
+
+export class AddProduct {
+  tipo: string;
+  item: Product;
+  list: Product[];
+  suppliersProd?: SupplierProd;
+  files?: File[];
 }
