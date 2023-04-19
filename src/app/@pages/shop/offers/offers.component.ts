@@ -25,7 +25,8 @@ export class OffersComponent implements OnInit {
   brands: Catalog[];
   categories: Catalog[];
   products = [];
-  perPage = 0;
+  page = 1;
+  perPage = 12;
   type: 'list';
   totalCount = 0;
   orderBy = 'default';
@@ -60,9 +61,24 @@ export class OffersComponent implements OnInit {
         this.orderBy = 'default';
       }
 
+      this.brands = null;
+      if (params.brands) {
+        this.brands = [];
+        this.brands.push(params.brands);
+      }
+      this.categories = null;
+      if (params.category) {
+        this.categories = [];
+        this.categories.push(params.category);
+      }
+      if (params.page) {
+        this.page = parseInt(params.page, 10);
+      } else {
+        this.page = 1;
+      }
       this.configsService.getConfig('1').subscribe((result) => {
         this.offer = result.offer;
-        this.productService.getProducts(1, -1,
+        this.productService.getProducts(this.page, this.perPage,
           this.searchTerm.toLowerCase(),
           this.offer).subscribe(result => {
             this.products = result.products;
@@ -81,7 +97,7 @@ export class OffersComponent implements OnInit {
               this.products = utilsService.catFilter(this.products, category);
             }
             this.loaded = true;
-            this.totalCount = this.products.length;
+            this.totalCount = result.info.total;
             this.perPage = 12;
             if (this.perPage >= this.totalCount) {
               this.perPage = this.totalCount;
@@ -93,20 +109,20 @@ export class OffersComponent implements OnInit {
           });
       });
 
-      this.brands = [];
-      this.brandsService.getBrands(1, -1).subscribe(result => {
-        this.brands = result.brands;
-      });
-      this.categories = [];
-      this.categoriesService.getCategories(1, -1).subscribe(result => {
-        result.categories.forEach(cat => {
-          cat.param = {
-            category: cat.slug,
-            description: cat.description
-          };
-        });
-        this.categories = result.categories;
-      });
+      // this.brands = [];
+      // this.brandsService.getBrands(1, -1).subscribe(result => {
+      //   this.brands = result.brands;
+      // });
+      // this.categories = [];
+      // this.categoriesService.getCategories(1, -1).subscribe(result => {
+      //   result.categories.forEach(cat => {
+      //     cat.param = {
+      //       category: cat.slug,
+      //       description: cat.description
+      //     };
+      //   });
+      //   this.categories = result.categories;
+      // });
     });
   }
 

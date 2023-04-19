@@ -16,7 +16,7 @@ export class ProductsService extends ApiService {
   // tslint:disable-next-line: typedef
   getProducts(
     page: number = 1,
-    itemsPage: number = 10,
+    itemsPage: number = 12,
     filterName: string = '',
     offer: number = 0,
     brands: string[] = null,
