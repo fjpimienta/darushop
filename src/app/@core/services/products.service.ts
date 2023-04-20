@@ -18,7 +18,7 @@ export class ProductsService extends ApiService {
     page: number = 1,
     itemsPage: number = 12,
     filterName: string = '',
-    offer: number = 0,
+    offer: boolean = false,
     brands: string[] = null,
     categories: string[] = null
   ) {

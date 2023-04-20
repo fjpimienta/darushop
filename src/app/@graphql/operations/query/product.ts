@@ -8,7 +8,7 @@ export const PRODUCTS_LIST_QUERY = gql`
     $itemsPage: Int,
     $active: ActiveFilterEnum,
     $filterName: String = "",
-    $offer: Int = 0,
+    $offer: Boolean = false,
     $brands: [String] = null,
     $categories: [String] = null
   ) {
