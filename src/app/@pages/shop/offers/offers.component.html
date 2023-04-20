@@ -118,8 +118,8 @@
             <div class="skel-widget"></div>
           </div>
           <ng-template #sidebarLoaded>
-            <app-shop-sidebar-three [toggle]="toggle">
-            </app-shop-sidebar-three>
+            <app-shop-sidebar [toggle]="toggle" [brandsProd]="brandsProd" [categoriesProd]="categoriesProd" >
+            </app-shop-sidebar>
 
             <button class="sidebar-fixed-toggler" (click)="toggleSidebar()" *ngIf="toggle">
               <i class="icon-cog"></i>

@@ -1,0 +1,12 @@
+.sidebar-filter-clear {
+  text-transform: capitalize;
+  margin-left: auto;
+  background-color: transparent;
+  color: darkblue;
+
+  &:hover,
+  &:focus {
+    color: blue;
+    font-weight: 800;
+  }
+}
