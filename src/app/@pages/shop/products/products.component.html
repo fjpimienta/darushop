@@ -1,0 +1,71 @@
+<div class="main">
+  <app-page-header [title]="pageTitle" subtitle="MarketPlace"></app-page-header>
+  <nav class="breadcrumb-nav mb-2">
+    <div [class]="containerClass">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/shop/sidebar/list">Shop</a>
+        </li>
+        <li class="breadcrumb-item active">{{ pageTitle }}</li>
+        <li class="breadcrumb-item" *ngIf="searchTerm != ''">
+          <span>Busqueda - {{ searchTerm }}</span>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div [class]="containerClass">
+      <div class="toolbox">
+        <div class="toolbox-left d-none d-lg-flex">
+          <a href="javascript:;" class="sidebar-toggler mr-0 mr-md-5" (click)="toggleSidebar()">
+            <i class="icon-bars"></i>Filtros
+          </a>
+        </div>
+
+        <div class="toolbox-center">
+          <div class="toolbox-info">
+            Mostrando
+            <span>{{ perPage }} de {{ totalCount }}</span> Productos
+          </div>
+        </div>
+
+        <div class="toolbox-right">
+          <div class="toolbox-sort">
+            <label for="sortby">Ordenar por:</label>
+            <div class="select-custom">
+              <select name="sortby" id="sortby" class="form-control" (change)="changeOrderBy($event)" [value]="orderBy">
+                <option value="default">Alfabético</option>
+                <option value="featured">Más Popular</option>
+                <option value="rating">Más Valorado</option>
+                <option value="new">Fecha</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <app-shop-list-three [products]="products" [loaded]="loaded" [cols]="cols">
+      </app-shop-list-three>
+
+      <div class="load-more-container text-center" [class.d-none]="totalCount <= products.length && !moreLoading">
+        <a href="javascript:;" class="btn btn-outline-darker btn-load-more" (click)="loadMore($event)">
+          Más Productos
+          <i class="icon-refresh" [class.load-more-rotating]="moreLoading"></i>
+        </a>
+      </div>
+
+      <app-shop-sidebar-three [toggle]="true">
+      </app-shop-sidebar-three>
+
+      <button class="sidebar-fixed-toggler d-lg-none" (click)="toggleSidebar()">
+        <i class="icon-cog"></i>
+      </button>
+
+      <div class="sidebar-filter-overlay" (click)="hideSidebar()"></div>
+    </div>
+  </div>
+</div>

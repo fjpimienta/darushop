@@ -31,6 +31,7 @@ import { BrandsComponent } from './brands/brands.component';
 import { BrandComponent } from './brand/brand.component';
 import { CategoryComponent } from './category/category.component';
 import { ShopSidebarComponent } from './shared/sidebar/shop-sidebar/shop-sidebar.component';
+import { ProductsComponent } from './products/products.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { ShopSidebarComponent } from './shared/sidebar/shop-sidebar/shop-sidebar
     BrandComponent,
     CategoryComponent,
     ShopSidebarComponent,
+    ProductsComponent,
   ],
   imports: [
     CommonModule,

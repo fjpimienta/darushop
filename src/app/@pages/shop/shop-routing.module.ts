@@ -14,6 +14,7 @@ import { BrandsComponent } from './brands/brands.component';
 import { OffersComponent } from './offers/offers.component';
 import { BrandComponent } from './brand/brand.component';
 import { CategoryComponent } from './category/category.component';
+import { ProductsComponent } from './products/products.component';
 
 const routes: Routes = [
   {
@@ -97,6 +98,10 @@ const routes: Routes = [
   {
     path: 'brands',
     component: BrandsComponent
+  },
+  {
+    path: 'products',
+    component: ProductsComponent
   }
 ];
 
