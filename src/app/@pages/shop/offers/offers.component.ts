@@ -24,7 +24,7 @@ export class OffersComponent implements OnInit {
   brandSlider = brandSlider;
   products = [];
   page = 1;
-  perPage = 12;
+  perPage = 48;
   type: 'list';
   totalCount = 0;
   orderBy = 'default';
@@ -35,9 +35,7 @@ export class OffersComponent implements OnInit {
   firstLoad = false;
   brands = [];
   categories = [];
-  offer = 0;
-  brandsFilter: Catalog[] = [];
-  categoriesFilter: Catalog[] = [];
+  offer: boolean;
   brandsProd: Catalog[] = [];
   categoriesProd: Catalog[] = [];
 
@@ -57,6 +55,7 @@ export class OffersComponent implements OnInit {
 
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
+      this.offer = true;
 
       this.pageTitle = params.description;
 
@@ -73,9 +72,9 @@ export class OffersComponent implements OnInit {
       }
 
       this.brands = null;
-      if (params.brands) {
+      if (params.brand) {
         this.brands = [];
-        this.brands.push(params.brands);
+        this.brands = params.brand.split(',');
       }
       this.categories = null;
       if (params.category) {
@@ -87,77 +86,34 @@ export class OffersComponent implements OnInit {
       } else {
         this.page = 1;
       }
-      this.configsService.getConfig('1').subscribe((result) => {
-        this.offer = result.offer;
-        this.productService.getProducts(
-          this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
-        ).subscribe(result => {
-          this.products = result.products;
-          const category = [[]];
-          let brands: string[] = [];
-          if (params.brand) {
-            brands = params.brand.split(',');
-            this.products = utilsService.braFilter(this.products, brands);
-          }
-          if (params.brands) {
-            brands.push(params.brands);
-            this.products = utilsService.braFilter(this.products, brands);
-          }
-          if (params.category) {
-            category.push(params.category);
-            this.products = utilsService.catFilter(this.products, category);
-          }
-          this.loaded = true;
-          this.totalCount = result.info.total;
-          this.perPage = 12;
-          if (this.perPage >= this.totalCount) {
-            this.perPage = this.totalCount;
-          }
-          if (!this.firstLoad) {
-            this.firstLoad = true;
-          }
-          this.utilsService.scrollToPageContent();
-        });
-
-        this.productService.getProducts(
-          this.page, -1, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
-        ).subscribe(result => {
-          let resultBrand = result;
-          let resultCategorie = result;
-          const brandsProd = resultBrand.products.reduce((products, product) => {
-            if (!products[product.brands[0].slug]) {
-              products[product.brands[0].slug] = [];
-            }
-            products[product.brands[0].slug].push({ brands: product.brands[0].name, slug: product.brands[0].slug });
-            return products;
-          }, {});
-          let i = 0;
-          Object.keys(brandsProd).forEach((brand) => {
-            i += 1;
-            const br = new Catalog();
-            br.id = i.toString();
-            br.slug = brand;
-            br.description = brand.toUpperCase();
-            this.brandsProd.push(br);
-          });
-
-          const categoriesProd = resultCategorie.products.reduce((products, product) => {
-            if (!products[product.category[0].slug]) {
-              products[product.category[0].slug] = [];
-            }
-            products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
-            return products;
-          }, {});
-          let j = 0;
-          Object.keys(categoriesProd).forEach((categorie) => {
-            j += 1;
-            const br = new Catalog();
-            br.id = j.toString();
-            br.slug = categorie;
-            br.description = categorie.toUpperCase();
-            this.categoriesProd.push(br);
-          });
-        });
+      this.perPage = 48;
+      this.productService.getProducts(
+        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+      ).subscribe(result => {
+        this.products = result.products;
+        const category = [[]];
+        let brands: string[] = [];
+        if (params.brand) {
+          brands = params.brand.split(',');
+          this.products = utilsService.braFilter(this.products, brands);
+        }
+        if (params.brands) {
+          brands.push(params.brands);
+          this.products = utilsService.braFilter(this.products, brands);
+        }
+        if (params.category) {
+          category.push(params.category);
+          this.products = utilsService.catFilter(this.products, category);
+        }
+        this.loaded = true;
+        this.totalCount = result.info.total;
+        if (this.perPage >= this.totalCount) {
+          this.perPage = this.totalCount;
+        }
+        if (!this.firstLoad) {
+          this.firstLoad = true;
+        }
+        this.utilsService.scrollToPageContent();
       });
     });
   }

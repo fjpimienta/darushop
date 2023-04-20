@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Catalog } from '@core/models/catalog.models';
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
+import { ProductsService } from '@core/services/products.service';
 import { shopData } from '../../data';
 
 @Component({
@@ -16,26 +17,72 @@ export class ShopSidebarComponent implements OnInit {
 
   shopData = shopData;
   params = {};
-  @Input() brandsProd: Catalog[] = [];
-  @Input() categoriesProd: Catalog[] = [];
+  @Input() offer: boolean;
+  brands: Catalog[] = [];
+  categories: Catalog[] = [];
+  brandsProd: Catalog[] = [];
+  categoriesProd: Catalog[] = [];
 
   constructor(
     public activeRoute: ActivatedRoute,
     public router: Router,
     public brandsService: BrandsService,
-    public categoriesService: CategoriesService
+    public categoriesService: CategoriesService,
+    public productService: ProductsService
   ) {
     activeRoute.queryParams.subscribe(params => {
       this.params = params;
+      this.brands = [];
+      this.categories = [];
+      this.productService.getProducts(1, -1, '', this.offer)
+        .subscribe(result => {
+          const resultBrand = result;
+          const resultCategorie = result;
+          const brandsProd = resultBrand.products.reduce((products, product) => {
+            if (!products[product.brands[0].slug]) {
+              products[product.brands[0].slug] = [];
+            }
+            products[product.brands[0].slug].push({ brands: product.brands[0].name, slug: product.brands[0].slug });
+            return products;
+          }, {});
+          let i = 0;
+          Object.keys(brandsProd).forEach((brand) => {
+            i += 1;
+            const br = new Catalog();
+            br.id = i.toString();
+            br.slug = brand;
+            br.description = brand.toUpperCase();
+            this.brands.push(br);
+          });
+
+          const categoriesProd = resultCategorie.products.reduce((products, product) => {
+            if (!products[product.category[0].slug]) {
+              products[product.category[0].slug] = [];
+            }
+            products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
+            return products;
+          }, {});
+          let j = 0;
+          Object.keys(categoriesProd).forEach((categorie) => {
+            j += 1;
+            const br = new Catalog();
+            br.id = j.toString();
+            br.slug = categorie;
+            br.description = categorie.toUpperCase();
+            this.categories.push(br);
+          });
+
+          if (this.brands.length !== this.brandsProd.length) {
+            this.brandsProd = this.brands;
+          }
+          if (this.categories.length !== this.categoriesProd.length) {
+            this.categoriesProd = this.categories;
+          }
+        });
     });
   }
 
   ngOnInit(): void {
-  }
-
-  onReload(): void {
-    console.log('onReload');
-    window.location.reload();
   }
 
   containsAttrInUrl(type: string, value: string): any {
