@@ -472,19 +472,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const productsCapital: ProductShipment[] = [];
       supplier.apis.forEach(async api => {
         if (api.type === 'envios') {
-          if (supplier.slug === 'ct' && api.return === 'cotizacion') {
-            apiSelect = api;
-            // } else {
-            //   apiSelect = {
-            //     type: '', name: '', method: '', operation: '', suboperation: '', use: '', return: '',
-            //     headers: { authorization: false }, parameters: [],
-            //     requires_token: false
-            //   };
+          switch (supplier.slug) {
+            case 'ct':
+              if (api.return === 'cotizacion') {
+                apiSelect = api;
+              }
+              break;
+            case 'cva':
+              if (api.return === 'cotizacion') {
+                apiSelect = api;
+              }
+              break;
           }
         }
       });
       if (apiSelect) {
-        this.cartItems.forEach(async cartItem => {                                    // Revisar productos en el carrito
+        console.log('supplier: ', supplier);
+        console.log('apiSelect: ', apiSelect);
+        console.log('this.cartItems: ', this.cartItems);
+        this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
           if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
             cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
               if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {  // Almacenes estado|capital

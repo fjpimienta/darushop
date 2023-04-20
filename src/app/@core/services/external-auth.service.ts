@@ -37,19 +37,22 @@ export class ExternalAuthService {
     tokenJson: boolean = false
   ): Promise<any> {
     let headers = new HttpHeaders();
+    let params = new HttpParams();
     switch (supplier.slug) {
       case 'ct':
         const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
         headers = new HttpHeaders({
           'Content-Type': contentType
         });
-        let params = new HttpParams();
         if (supplier.token.body_parameters.length > 0) {
           supplier.token.body_parameters.forEach(param => {
             params = params.set(param.name, param.value);
           });
         }
         return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
+      case 'cva':
+        const tokenBearer = '7ee694a5bae5098487a5a8b9d8392666';
+        return tokenBearer;
       case '99minutos':
         const options = {
           method: 'POST',
@@ -410,16 +413,34 @@ export class ExternalAuthService {
     if (apiSelect.parameters) {
       switch (supplier.slug) {
         case 'ct':
-          const url = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
-          const headers = new HttpHeaders({
+          const urlCT = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+          const headersCT = new HttpHeaders({
             'x-auth': token,
             'Content-Type': 'application/json'
           });
-          const fromObject = {
+          const fromObjectCT = {
             destino: warehouse.cp.padStart(5, '0'),
             productos: warehouse.productShipments
           };
-          return await this.http.post(url, JSON.stringify(fromObject), { headers }).toPromise();
+          return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
+        case 'cva':
+          console.log('supplier', supplier);
+          console.log('apiSelect', apiSelect);
+          console.log('token', token);
+          console.log('warehouse', warehouse);
+          const urlCVA = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+          const headersCVA = new HttpHeaders({
+            'x-auth': token,
+            'Content-Type': 'application/json'
+          });
+          const fromObjectCVA = {
+            paqueteria: 4,
+            cp: warehouse.cp.padStart(5, '0'),
+            colonia: 'Gil y Saenz',
+            cp_sucursal: 44900,
+            productos: warehouse.productShipments
+          };
+          return await this.http.post(urlCVA, JSON.stringify(fromObjectCVA), { headers: headersCVA }).toPromise();
         case '99minutos':
           const options = {
             method: 'POST',
@@ -452,8 +473,6 @@ export class ExternalAuthService {
     let shipments: Shipment[] = [];
     if (!supplier.token) {
       switch (supplier.slug) {
-        case 'cva':
-          return await [];
         case 'exel':
           return await [];
         default:
@@ -467,6 +486,9 @@ export class ExternalAuthService {
               case 'ct':
                 token = result.token;
                 break;
+              case 'cva':
+                console.log('getToken/result: ', result);
+                return result;
               case 'syscom':
                 token = result.access_token;
                 break;
