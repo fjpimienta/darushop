@@ -1,13 +1,8 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-
-import { BrandsService } from '@core/services/brand.service';
-import { CategoriesService } from '@core/services/categorie.service';
-import { ConfigsService } from '@core/services/config.service';
 import { ProductsService } from '@core/services/products.service';
 import { UtilsService } from '@core/services/utils.service';
-
-import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
+import { ApiService } from '@graphql/services/api.service';
 
 @Component({
   selector: 'app-brand',
@@ -16,41 +11,51 @@ import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
 })
 export class BrandComponent implements OnInit {
 
-  brandsJson = brandsJson;
-  cats = cats;
-  introSlider = bannerSlider;
-  brandSlider = brandSlider;
   products = [];
-  page = 1;
-  perPage = 12;
-  type: 'list';
+  perPage = 0;
+  type = 'boxed';
   totalCount = 0;
   orderBy = 'default';
-  pageTitle = 'List';
-  toggle = false;
+  pageTitle: string;
   searchTerm = '';
+  containerClass = 'container';
+  cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
   loaded = false;
-  firstLoad = false;
+  moreLoading = false;
+  params = {};
+  toggle: boolean;
+  page = 1;
   brands = [];
   categories = [];
+  offer: boolean;
 
   constructor(
     public activeRoute: ActivatedRoute,
     public router: Router,
     public utilsService: UtilsService,
-    public brandsService: BrandsService,
-    public categoriesService: CategoriesService,
-    public productService: ProductsService,
-    public configsService: ConfigsService
+    public apiService: ApiService,
+    public productService: ProductsService
   ) {
+    this.toggle = false;
     this.activeRoute.params.subscribe(params => {
       this.type = params.type;
+      if (this.type === 'boxed') {
+        this.containerClass = 'container';
+        this.cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
+      } else {
+        this.containerClass = 'container-fluid';
+        this.cols = 'col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2';
+      }
     });
 
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
+      this.offer = false;
 
-      this.pageTitle = params.description;
+      this.pageTitle = 'Marca';
+      if (params.description) {
+        this.pageTitle = params.description;
+      }
 
       if (params.searchTerm) {
         this.searchTerm = params.searchTerm;
@@ -65,9 +70,10 @@ export class BrandComponent implements OnInit {
       }
 
       this.brands = null;
-      if (params.brands) {
+      if (params.brand) {
         this.brands = [];
-        this.brands.push(params.brands);
+        this.brands = params.brand.split(',');
+        this.pageTitle += ' (' + params.brand + ')';
       }
       this.categories = null;
       if (params.category) {
@@ -79,8 +85,12 @@ export class BrandComponent implements OnInit {
       } else {
         this.page = 1;
       }
+      this.perPage = 8;
+      console.log('params.brand: ', params.brand);
+      console.log('this.brands: ', this.brands);
+      console.log('this.categories: ', this.categories);
       this.productService.getProducts(
-        this.page, this.perPage, this.searchTerm.toLowerCase(), null, this.brands, this.categories
+        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
@@ -99,12 +109,8 @@ export class BrandComponent implements OnInit {
         }
         this.loaded = true;
         this.totalCount = result.info.total;
-        this.perPage = 12;
         if (this.perPage >= this.totalCount) {
           this.perPage = this.totalCount;
-        }
-        if (!this.firstLoad) {
-          this.firstLoad = true;
         }
         this.utilsService.scrollToPageContent();
       });
@@ -112,14 +118,6 @@ export class BrandComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (window.innerWidth > 991) { this.toggle = false; }
-    else { this.toggle = true; }
-  }
-
-  @HostListener('window: resize', ['$event'])
-  onResize(event: Event): void {
-    if (window.innerWidth > 991) { this.toggle = false; }
-    else { this.toggle = true; }
   }
 
   changeOrderBy(event: any): void {
@@ -137,5 +135,23 @@ export class BrandComponent implements OnInit {
 
   hideSidebar(): void {
     document.querySelector('body').classList.remove('sidebar-filter-active');
+  }
+
+  loadMore(e: Event): void {
+    e.preventDefault();
+    if (this.products.length < this.totalCount) {
+      this.moreLoading = true;
+
+      setTimeout(() => {
+        this.perPage += 4;
+        this.productService.getProducts(
+          this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+        ).subscribe(result => {
+          this.products = result.products;
+          this.totalCount = result.info.total;
+          this.moreLoading = false;
+        });
+      }, 500);
+    }
   }
 }

@@ -1,13 +1,12 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Catalog } from '@core/models/catalog.models';
 
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
 import { ConfigsService } from '@core/services/config.service';
 import { ProductsService } from '@core/services/products.service';
 import { UtilsService } from '@core/services/utils.service';
-
-import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
 
 @Component({
   selector: 'app-category',
@@ -16,13 +15,9 @@ import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
 })
 export class CategoryComponent implements OnInit {
 
-  brandsJson = brandsJson;
-  cats = cats;
-  introSlider = bannerSlider;
-  brandSlider = brandSlider;
   products = [];
   page = 1;
-  perPage = 12;
+  perPage = 48;
   type: 'list';
   totalCount = 0;
   orderBy = 'default';
@@ -33,6 +28,9 @@ export class CategoryComponent implements OnInit {
   firstLoad = false;
   brands = [];
   categories = [];
+  offer: boolean;
+  brandsProd: Catalog[] = [];
+  categoriesProd: Catalog[] = [];
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -49,6 +47,7 @@ export class CategoryComponent implements OnInit {
 
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
+      this.offer = false;
 
       this.pageTitle = params.description;
 
@@ -65,9 +64,9 @@ export class CategoryComponent implements OnInit {
       }
 
       this.brands = null;
-      if (params.brands) {
+      if (params.brand) {
         this.brands = [];
-        this.brands.push(params.brands);
+        this.brands = params.brand.split(',');
       }
       this.categories = null;
       if (params.category) {
@@ -79,9 +78,11 @@ export class CategoryComponent implements OnInit {
       } else {
         this.page = 1;
       }
-      this.perPage = 12;
+      this.perPage = 48;
+      console.log('this.brands: ', this.brands);
+      console.log('this.categories: ', this.categories);
       this.productService.getProducts(
-        this.page, this.perPage, this.searchTerm.toLowerCase(), null, this.brands, this.categories
+        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];

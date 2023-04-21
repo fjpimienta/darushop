@@ -10,7 +10,7 @@
         <li class="breadcrumb-item">
           <a routerLink="/shop/sidebar/list">Productos</a>
         </li>
-        <li class="breadcrumb-item active">Categoria</li>
+        <li class="breadcrumb-item active">Ofertas</li>
         <li class="breadcrumb-item" *ngIf="searchTerm != ''">
           <span>Search - {{ searchTerm }}</span>
         </li>
@@ -22,62 +22,6 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-9 col-xl-4-5col">
-          <!-- <owl-carousel carouselClasses="category-banners-slider owl-simple owl-nav-inside" [options]="introSlider">
-            <div class="banner banner-poster bg-gray">
-              <a href="javascript:;">
-                <img src="assets/images/market/slider/slider-1.jpg" alt="Banner">
-              </a>
-
-              <div class="banner-content banner-content-right">
-                <h3 class="banner-subtitle"><a routerLink="/shop/sidebar/list">Subtítulo</a>
-                </h3>
-                <h2 class="banner-title"><a routerLink="/shop/sidebar/list">Título</a></h2>
-                <a routerLink="/shop/sidebar/list" class="banner-link">Comprar ahora <i
-                    class="icon-long-arrow-right"></i></a>
-              </div>
-            </div>
-
-            <div class="banner banner-poster bg-gray">
-              <a routerLink="/shop/sidebar/list">
-                <img src="assets/images/market/slider/slider-2.jpg" alt="Banner">
-              </a>
-
-              <div class="banner-content">
-                <h3 class="banner-subtitle"><a routerLink="/shop/sidebar/list">Subtítulo</a></h3>
-                <h2 class="banner-title"><a routerLink="/shop/sidebar/list">Título</a>
-                </h2>
-                <a routerLink="/shop/sidebar/list" class="banner-link">Comprar ahora <i
-                    class="icon-long-arrow-right"></i></a>
-              </div>
-            </div>
-          </owl-carousel>
-
-          <div class="mb-3"></div>
-
-          <owl-carousel carouselClasses="owl-simple owl-nav-align brand-carousel" [options]="brandSlider">
-            <a href="javascript:;" class="brand" *ngFor="let brand of brandsJson">
-              <img [src]="brand" alt="Brand Name">
-            </a>
-          </owl-carousel>
-
-          <div class="mb-3 mb-lg-5"></div>
-
-          <div class="cat-blocks-container">
-            <div class="row">
-              <div class="col-6 col-md-4 col-lg-3" *ngFor="let cat of cats">
-                <a routerLink="/shop/offers" [queryParams]="{category: cat.query}" class="cat-block">
-                  <figure>
-                    <span>
-                      <img [src]="cat.image" alt="desc">
-                    </span>
-                  </figure>
-
-                  <h3 class="cat-block-title">{{ cat.name }}</h3>
-                </a>
-              </div>
-            </div>
-          </div> -->
-
           <div class="mb-2"></div>
 
           <div class="toolbox">
@@ -101,10 +45,57 @@
                   </select>
                 </div>
               </div>
+              <div class="toolbox-layout">
+                <a routerLink="/shop/category/list" queryParamsHandling="merge" class="btn-layout"
+                  routerLinkActive="active">
+                  <svg width="16" height="10">
+                    <rect x="0" y="0" width="4" height="4" />
+                    <rect x="6" y="0" width="10" height="4" />
+                    <rect x="0" y="6" width="4" height="4" />
+                    <rect x="6" y="6" width="10" height="4" />
+                  </svg>
+                </a>
+
+                <a routerLink="/shop/category/2cols" queryParamsHandling="merge" class="btn-layout"
+                  routerLinkActive="active">
+                  <svg width="10" height="10">
+                    <rect x="0" y="0" width="4" height="4" />
+                    <rect x="6" y="0" width="4" height="4" />
+                    <rect x="0" y="6" width="4" height="4" />
+                    <rect x="6" y="6" width="4" height="4" />
+                  </svg>
+                </a>
+
+                <a routerLink="/shop/category/3cols" queryParamsHandling="merge" class="btn-layout"
+                  routerLinkActive="active">
+                  <svg width="16" height="10">
+                    <rect x="0" y="0" width="4" height="4" />
+                    <rect x="6" y="0" width="4" height="4" />
+                    <rect x="12" y="0" width="4" height="4" />
+                    <rect x="0" y="6" width="4" height="4" />
+                    <rect x="6" y="6" width="4" height="4" />
+                    <rect x="12" y="6" width="4" height="4" />
+                  </svg>
+                </a>
+
+                <a routerLink="/shop/category/4cols" queryParamsHandling="merge" class="btn-layout"
+                  routerLinkActive="active">
+                  <svg width="22" height="10">
+                    <rect x="0" y="0" width="4" height="4" />
+                    <rect x="6" y="0" width="4" height="4" />
+                    <rect x="12" y="0" width="4" height="4" />
+                    <rect x="18" y="0" width="4" height="4" />
+                    <rect x="0" y="6" width="4" height="4" />
+                    <rect x="6" y="6" width="4" height="4" />
+                    <rect x="12" y="6" width="4" height="4" />
+                    <rect x="18" y="6" width="4" height="4" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
 
-          <app-shop-list-two [products]="products" [loaded]="loaded"></app-shop-list-two>
+          <app-shop-list-one [type]="type" [products]="products" [loaded]="loaded"></app-shop-list-one>
 
           <app-pagination [perPage]="perPage" [total]="totalCount" *ngIf="totalCount > perPage">
           </app-pagination>
@@ -118,8 +109,8 @@
             <div class="skel-widget"></div>
           </div>
           <ng-template #sidebarLoaded>
-            <app-shop-sidebar-three [toggle]="toggle">
-            </app-shop-sidebar-three>
+            <app-shop-sidebar [toggle]="toggle" [offer]="offer">
+            </app-shop-sidebar>
 
             <button class="sidebar-fixed-toggler" (click)="toggleSidebar()" *ngIf="toggle">
               <i class="icon-cog"></i>

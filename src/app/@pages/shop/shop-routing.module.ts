@@ -17,29 +17,15 @@ import { CategoryComponent } from './category/category.component';
 import { ProductsComponent } from './products/products.component';
 
 const routes: Routes = [
-  {
-    path: 'sidebar/:type',
-    component: SidebarPageComponent
-  },
-  {
-    path: 'sidebar',
-    pathMatch: 'full',
-    redirectTo: 'sidebar/list'
-  },
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'sidebar/list'
-  },
-  {
-    path: 'nosidebar/:type',
-    component: NosidebarPageComponent
-  },
-  {
-    path: 'nosidebar',
-    pathMatch: 'full',
-    redirectTo: 'nosidebar/boxed'
-  },
+  // {
+  //   path: 'nosidebar/:type',
+  //   component: NosidebarPageComponent
+  // },
+  // {
+  //   path: 'nosidebar',
+  //   pathMatch: 'full',
+  //   redirectTo: 'nosidebar/boxed'
+  // },
   {
     path: 'market',
     component: MarketPageComponent
@@ -61,10 +47,10 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard]
   },
-  {
-    path: 'category/:slug',
-    component: CategoryComponent
-  },
+  // {
+  //   path: 'category/:slug',
+  //   component: CategoryComponent
+  // },
   {
     path: 'category/:type',
     component: CategoryComponent
@@ -72,20 +58,30 @@ const routes: Routes = [
   {
     path: 'category',
     pathMatch: 'full',
-    redirectTo: 'category/list'
+    redirectTo: 'category/4cols'
   },
   {
     path: 'categorys',
     component: CategorysComponent
   },
   {
-    path: 'offers',
+    path: 'offers/:type',
     component: OffersComponent
   },
   {
-    path: 'brand/:slug',
-    component: BrandComponent
+    path: 'offers',
+    pathMatch: 'full',
+    redirectTo: 'offers/4cols'
   },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'offers/4cols'
+  },
+  // {
+  //   path: 'brand/:slug',
+  //   component: BrandComponent
+  // },
   {
     path: 'brand/:type',
     component: BrandComponent
@@ -93,15 +89,29 @@ const routes: Routes = [
   {
     path: 'brand',
     pathMatch: 'full',
-    redirectTo: 'brand/list'
+    redirectTo: 'brand/4cols'
   },
   {
     path: 'brands',
     component: BrandsComponent
   },
   {
-    path: 'products',
+    path: 'products/:type',
     component: ProductsComponent
+  },
+  {
+    path: 'products',
+    pathMatch: 'full',
+    redirectTo: 'products/4cols'
+  },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'products/4cols'
+  // },
+  // {
+  //   path: 'products',
+  //   component: ProductsComponent
   }
 ];
 

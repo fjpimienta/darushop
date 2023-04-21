@@ -16,7 +16,7 @@ export class ProductsComponent implements OnInit {
   type = 'boxed';
   totalCount = 0;
   orderBy = 'default';
-  pageTitle = 'Boxed No Sidebar';
+  pageTitle = 'MarkePlace';
   searchTerm = '';
   containerClass = 'container';
   cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
@@ -54,7 +54,9 @@ export class ProductsComponent implements OnInit {
       this.loaded = false;
       this.offer = true;
 
-      this.pageTitle = params.description;
+      if (params.description) {
+        this.pageTitle = params.description;
+      }
 
       if (params.searchTerm) {
         this.searchTerm = params.searchTerm;

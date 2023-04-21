@@ -7,9 +7,6 @@ import { CategoriesService } from '@core/services/categorie.service';
 import { ConfigsService } from '@core/services/config.service';
 import { ProductsService } from '@core/services/products.service';
 import { UtilsService } from '@core/services/utils.service';
-import { ApiService } from '@graphql/services/api.service';
-
-import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
 
 @Component({
   selector: 'app-offers',
@@ -18,10 +15,6 @@ import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
 })
 export class OffersComponent implements OnInit {
 
-  brandsJson = brandsJson;
-  cats = cats;
-  introSlider = bannerSlider;
-  brandSlider = brandSlider;
   products = [];
   page = 1;
   perPage = 48;
@@ -42,7 +35,6 @@ export class OffersComponent implements OnInit {
   constructor(
     public activeRoute: ActivatedRoute,
     public router: Router,
-    public apiService: ApiService,
     public utilsService: UtilsService,
     public brandsService: BrandsService,
     public categoriesService: CategoriesService,

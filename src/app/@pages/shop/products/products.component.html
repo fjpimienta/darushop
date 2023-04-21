@@ -7,7 +7,7 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/shop/sidebar/list">Shop</a>
+          <a routerLink="/shop/products">MarketPlace</a>
         </li>
         <li class="breadcrumb-item active">{{ pageTitle }}</li>
         <li class="breadcrumb-item" *ngIf="searchTerm != ''">
@@ -45,11 +45,53 @@
               </select>
             </div>
           </div>
+          <div class="toolbox-layout">
+            <a routerLink="/shop/products/list" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+              <svg width="16" height="10">
+                <rect x="0" y="0" width="4" height="4" />
+                <rect x="6" y="0" width="10" height="4" />
+                <rect x="0" y="6" width="4" height="4" />
+                <rect x="6" y="6" width="10" height="4" />
+              </svg>
+            </a>
+
+            <a routerLink="/shop/products/2cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+              <svg width="10" height="10">
+                <rect x="0" y="0" width="4" height="4" />
+                <rect x="6" y="0" width="4" height="4" />
+                <rect x="0" y="6" width="4" height="4" />
+                <rect x="6" y="6" width="4" height="4" />
+              </svg>
+            </a>
+
+            <a routerLink="/shop/products/3cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+              <svg width="16" height="10">
+                <rect x="0" y="0" width="4" height="4" />
+                <rect x="6" y="0" width="4" height="4" />
+                <rect x="12" y="0" width="4" height="4" />
+                <rect x="0" y="6" width="4" height="4" />
+                <rect x="6" y="6" width="4" height="4" />
+                <rect x="12" y="6" width="4" height="4" />
+              </svg>
+            </a>
+
+            <a routerLink="/shop/products/4cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+              <svg width="22" height="10">
+                <rect x="0" y="0" width="4" height="4" />
+                <rect x="6" y="0" width="4" height="4" />
+                <rect x="12" y="0" width="4" height="4" />
+                <rect x="18" y="0" width="4" height="4" />
+                <rect x="0" y="6" width="4" height="4" />
+                <rect x="6" y="6" width="4" height="4" />
+                <rect x="12" y="6" width="4" height="4" />
+                <rect x="18" y="6" width="4" height="4" />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
 
-      <app-shop-list-three [products]="products" [loaded]="loaded" [cols]="cols">
-      </app-shop-list-three>
+      <app-shop-list-one [type]="type" [products]="products" [loaded]="loaded"></app-shop-list-one>
 
       <div class="load-more-container text-center" [class.d-none]="totalCount <= products.length && !moreLoading">
         <a href="javascript:;" class="btn btn-outline-darker btn-load-more" (click)="loadMore($event)">
