@@ -1,7 +1,7 @@
 {
   "name": "daru",
   "version": "0.1.0",
-  "homepage": "https://daru.hosting3m.com/",
+  "homepage": "https://daru.mx/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json --open --port 4200",
