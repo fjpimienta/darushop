@@ -2,7 +2,7 @@
   <div [ngClass]="toggle ? 'sidebar-filter-wrapper' : ''">
     <div class="widget-clean">
       <label>Filtros:</label>
-      <a [routerLink]="" [queryParams]="" class="sidebar-filter-clear">Limpiar Todo</a>
+      <a [routerLink]="" class="sidebar-filter-clear">Limpiar Todo</a>
     </div>
     <div class="widget">
       <h3 class="widget-title mb-2"><span>Categorias</span></h3>
@@ -10,8 +10,8 @@
         <div class="widget-body">
           <div class="filter-items filter-items-count">
             <div class="filter-item" *ngFor="let categorie of categories">
-              <a [routerLink]="" [queryParams]="categorie.param" routerLinkActive="active">{{ categorie.description
-                }}</a>
+              <a [routerLink]="" [queryParams]="{category: categorie.slug}" routerLinkActive="active">{{
+                categorie.description }}</a>
               <!-- <span class="item-count">{{ item.count }}</span> -->
             </div>
           </div>
