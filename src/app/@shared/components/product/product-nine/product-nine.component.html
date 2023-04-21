@@ -22,7 +22,7 @@
       <div class="product-body product-action-inner">
         <div class="product-cat">
           <span *ngFor="let cat of product.category; let i =index">
-            <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{category: cat.slug}">{{ cat.name }}</a>
+            <a [routerLink]="['/shop/products']" [queryParams]="{category: cat.slug}">{{ cat.name }}</a>
             {{ i < product.category.length - 1 ? ',' : '' }} </span>
         </div>
 
