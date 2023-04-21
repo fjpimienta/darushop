@@ -1,5 +1,9 @@
 <div class="sidebar-shop" [ngClass]="toggle ? 'sidebar-filter' : 'sidebar'">
   <div [ngClass]="toggle ? 'sidebar-filter-wrapper' : ''">
+    <div class="widget-clean">
+      <label>Filtros:</label>
+      <a [routerLink]="" [queryParams]="" class="sidebar-filter-clear">Limpiar Todo</a>
+    </div>
     <div class="widget">
       <h3 class="widget-title mb-2"><span>Categorias</span></h3>
       <div class="collapse show" id="widget-1">

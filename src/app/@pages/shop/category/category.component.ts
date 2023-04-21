@@ -81,6 +81,7 @@ export class CategoryComponent implements OnInit {
       } else {
         this.page = 1;
       }
+      this.perPage = 12;
       this.productService.getProducts(
         this.page, this.perPage, this.searchTerm.toLowerCase(), null, this.brands, this.categories
       ).subscribe(result => {
@@ -101,7 +102,6 @@ export class CategoryComponent implements OnInit {
         }
         this.loaded = true;
         this.totalCount = result.info.total;
-        this.perPage = 12;
         if (this.perPage >= this.totalCount) {
           this.perPage = this.totalCount;
         }
