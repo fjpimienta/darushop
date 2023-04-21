@@ -3,113 +3,115 @@ import { ActivatedRoute } from '@angular/router';
 
 import { Post } from '@shared/classes/post';
 
-import { ApiService } from '@core/services/api.service';
 import { UtilsService } from '@core/services/utils.service';
 import { getPostsAmount, gridOption, itemsPerRowOption, pageTitles1 } from '../shared/data';
 
 @Component({
-	selector: 'blog-grid-page',
-	templateUrl: './grid.component.html',
-	styleUrls: ['./grid.component.scss']
+  selector: 'blog-grid-page',
+  templateUrl: './grid.component.html',
+  styleUrls: ['./grid.component.scss']
 })
 
 export class GridPageComponent implements OnInit {
 
-	posts: Post[] = [];
-	totalCount = 0;
-	blogCategories = [];
-	counts = [];
-	loaded = false;
-	toggle = false;
-	firstLoad = false;
-	gridType: string = '';
-	isotopeOptions = gridOption;
-	itemsPerRow: number;
-	itemsPerRowOption = itemsPerRowOption;
-	pageDesc = pageTitles1;
-	withSidebar = false;
-	postsAmount: number;
-	getPostsAmount = getPostsAmount;
-	params = {};
+  posts: Post[] = [];
+  totalCount = 0;
+  blogCategories = [];
+  counts = [];
+  loaded = false;
+  toggle = false;
+  firstLoad = false;
+  gridType: string = '';
+  isotopeOptions = gridOption;
+  itemsPerRow: number;
+  itemsPerRowOption = itemsPerRowOption;
+  pageDesc = pageTitles1;
+  withSidebar = false;
+  postsAmount: number;
+  getPostsAmount = getPostsAmount;
+  params = {};
 
-	constructor(public activeRoute: ActivatedRoute, private apiService: ApiService, public utilsService: UtilsService) {
-		this.activeRoute.params.subscribe(param => {
-			this.gridType = param['type'];
-			if (this.gridType.includes('sidebar')) {
-				this.withSidebar = true;
-			} else {
-				this.withSidebar = false;
-			}
-			this.params = {};
+  constructor(
+    public activeRoute: ActivatedRoute,
+    public utilsService: UtilsService
+  ) {
+    this.activeRoute.params.subscribe(param => {
+      this.gridType = param['type'];
+      if (this.gridType.includes('sidebar')) {
+        this.withSidebar = true;
+      } else {
+        this.withSidebar = false;
+      }
+      this.params = {};
 
-			this.activeRoute.queryParams.subscribe(params => {
-				this.params = params;
-				this.getPosts();
-			})
-		});
-	}
+      this.activeRoute.queryParams.subscribe(params => {
+        this.params = params;
+        this.getPosts();
+      })
+    });
+  }
 
-	ngOnInit(): void {
-		this.resizeHandle();
-	}
+  ngOnInit(): void {
+    this.resizeHandle();
+  }
 
-	@HostListener('window:resize', ['$event'])
-	resizeHandler(event: Event) {
-		this.resizeHandle()
-	}
+  @HostListener('window:resize', ['$event'])
+  resizeHandler(event: Event) {
+    this.resizeHandle()
+  }
 
-	getPosts() {
-		this.postsAmount = getPostsAmount[this.gridType];
-		this.itemsPerRow = itemsPerRowOption[this.gridType];
-		this.loaded = false;
+  getPosts() {
+    this.postsAmount = getPostsAmount[this.gridType];
+    this.itemsPerRow = itemsPerRowOption[this.gridType];
+    this.loaded = false;
 
-		this.apiService.fetchBlogData(this.params, 'blogs/' + this.gridType, this.postsAmount).subscribe(result => {
-			this.posts = result.blogs;
-			this.blogCategories = result.categories;
+    // this.apiService.fetchBlogData(this.params, 'blogs/' + this.gridType, this.postsAmount).subscribe(result => {
+    //   this.posts = result.blogs;
+    //   this.blogCategories = result.categories;
 
-			this.counts = [];
-			this.counts.push(this.posts.length);
+    //   this.counts = [];
+    //   this.counts.push(this.posts.length);
 
-			this.blogCategories.map((item, index) => {
-				this.counts.push(item.count);
-			});
+    //   this.blogCategories.map((item, index) => {
+    //     this.counts.push(item.count);
+    //   });
 
-			if (!this.firstLoad) {
-				this.firstLoad = true;
-			}
+    //   if (!this.firstLoad) {
+    //     this.firstLoad = true;
+    //   }
 
-			this.totalCount = result.totalCount;
-			this.loaded = true;
+    //   this.totalCount = result.totalCount;
+    //   this.loaded = true;
 
-			this.utilsService.scrollToPageContent();
-		});
-	}
+    //   this.utilsService.scrollToPageContent();
+    // });
+  }
 
-	trackByFn(index: number, item: any) {
-		if (!item) return null;
-		return item.slug;
-	}
+  trackByFn(index: number, item: any) {
+    if (!item) return null;
+    return item.slug;
+  }
 
-	resizeHandle() {
-		if (window.innerWidth < 992)
-			this.toggle = true;
-		else
-			this.toggle = false;
-	}
+  resizeHandle() {
+    if (window.innerWidth < 992)
+      this.toggle = true;
+    else
+      this.toggle = false;
+  }
 
-	toggleSidebar() {
-		if (
-			document.querySelector('body')?.classList.contains('sidebar-filter-active')
-		) {
-			document.querySelector('body')?.classList.remove('sidebar-filter-active');
-		} else {
-			document.querySelector('body')?.classList.add('sidebar-filter-active');
-		}
-	}
+  toggleSidebar() {
+    if (
+      document.querySelector('body')?.classList.contains('sidebar-filter-active')
+    ) {
+      document.querySelector('body')?.classList.remove('sidebar-filter-active');
+    } else {
+      document.querySelector('body')?.classList.add('sidebar-filter-active');
+    }
+  }
 
-	hideSidebar() {
-		document
-			.querySelector('body')
-			.classList.remove('sidebar-filter-active');
-	}
+  hideSidebar() {
+    document
+      .querySelector('body')
+      .classList.remove('sidebar-filter-active');
+  }
 }

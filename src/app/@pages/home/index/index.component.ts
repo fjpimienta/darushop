@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { ModalService } from '@core/services/modal.service';
-import { ApiService } from '@core/services/api.service';
 import { UtilsService } from '@core/services/utils.service';
 import { CartService } from '@core/services/cart.service';
 
@@ -42,7 +41,6 @@ export class IndexComponent implements OnInit {
   @ViewChild('customDots') customDots: any;
 
   constructor(
-    public apiService: ApiService,
     public utilsService: UtilsService,
     private modalService: ModalService,
     private cartService: CartService,

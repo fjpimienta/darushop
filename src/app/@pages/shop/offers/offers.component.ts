@@ -2,12 +2,12 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Catalog } from '@core/models/catalog.models';
 
-import { ApiService } from '@core/services/api.service';
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
 import { ConfigsService } from '@core/services/config.service';
 import { ProductsService } from '@core/services/products.service';
 import { UtilsService } from '@core/services/utils.service';
+import { ApiService } from '@graphql/services/api.service';
 
 import { cats, brandsJson, bannerSlider, brandSlider } from '../market/data';
 
@@ -87,6 +87,8 @@ export class OffersComponent implements OnInit {
         this.page = 1;
       }
       this.perPage = 48;
+      console.log('this.brands: ', this.brands);
+      console.log('this.categories: ', this.categories);
       this.productService.getProducts(
         this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
       ).subscribe(result => {

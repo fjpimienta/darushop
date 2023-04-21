@@ -1,7 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { ApiService } from '@core/services/api.service';
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
 import { ConfigsService } from '@core/services/config.service';
@@ -38,7 +37,6 @@ export class CategoryComponent implements OnInit {
   constructor(
     public activeRoute: ActivatedRoute,
     public router: Router,
-    public apiService: ApiService,
     public utilsService: UtilsService,
     public brandsService: BrandsService,
     public categoriesService: CategoriesService,
