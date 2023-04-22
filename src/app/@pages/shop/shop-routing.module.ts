@@ -26,10 +26,10 @@ const routes: Routes = [
   //   pathMatch: 'full',
   //   redirectTo: 'nosidebar/boxed'
   // },
-  {
-    path: 'market',
-    component: MarketPageComponent
-  },
+  // {
+  //   path: 'market',
+  //   component: MarketPageComponent
+  // },
   {
     path: 'cart',
     component: CartComponent
