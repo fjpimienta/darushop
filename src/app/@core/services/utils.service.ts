@@ -129,7 +129,7 @@ export class UtilsService {
 
     return products.filter(item => {
       for (let i = 0; i < brands.length; i++) {
-        if (item.brands.find(cat => cat.slug == brands[i])) {
+        if (item.brands.find(cat => cat.slug === brands[i])) {
           if (!flag) { return true; }
         } else {
           if (flag) { return false; }

@@ -18,7 +18,7 @@
         </ul>
         <ng-template #listBlock>
             <ul>
-                <li *ngFor="let cat of categories"><a [routerLink]="" [queryParams]="{category: cat.slug}"
+                <li *ngFor="let cat of categories"><a [routerLink]="[]" [queryParams]="{category: cat.slug}"
                         routerLinkActive="active"
                         queryParamsHandling="merge">{{ cat.name }}<span>{{ cat.count }}</span></a>
                 </li>

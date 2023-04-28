@@ -5,7 +5,6 @@ import imagesLoaded from 'imagesloaded';
 import { Product } from '@shared/classes/product';
 import { environment } from 'src/environments/environment';
 
-import { ApiService } from '@core/services/api.service';
 import { CartService } from '@core/services/cart.service';
 import { CompareService } from '@core/services/compare.service';
 import { UtilsService } from '@core/services/utils.service';
@@ -56,7 +55,6 @@ export class QuickViewComponent implements OnInit {
   @ViewChild('singleSlider') singleSlider: any;
 
   constructor(
-    public apiService: ApiService,
     public cartService: CartService,
     public wishlistService: WishlistService,
     public compareService: CompareService,

@@ -6,6 +6,8 @@ import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
 import axios, { isCancel, AxiosError } from 'axios';
+import { Warehouse } from '@core/models/warehouse.models';
+import { Shipment } from '@core/models/shipment.models';
 
 declare const require;
 const xml2js = require('xml2js');
@@ -30,21 +32,43 @@ export class ExternalAuthService {
   ) {
   }
 
-  async getSyscomToken(supplier: ISupplier, apiSelect: IApis): Promise<any> {
-    // application/x-www-form-urlencoded
+  async getToken(
+    supplier: ISupplier,
+    tokenJson: boolean = false
+  ): Promise<any> {
     let headers = new HttpHeaders();
-    headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
     let params = new HttpParams();
-    if (supplier.token.body_parameters.length > 0) {
-      supplier.token.body_parameters.forEach(param => {
-        params = params.set(param.name, param.value);
-      });
+    switch (supplier.slug) {
+      case 'ct':
+        const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
+        headers = new HttpHeaders({
+          'Content-Type': contentType
+        });
+        if (supplier.token.body_parameters.length > 0) {
+          supplier.token.body_parameters.forEach(param => {
+            params = params.set(param.name, param.value);
+          });
+        }
+        return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
+      case 'cva':
+        const tokenBearer = '7ee694a5bae5098487a5a8b9d8392666';
+        return tokenBearer;
+      case '99minutos':
+        const options = {
+          method: 'POST',
+          headers: { accept: 'application/json', 'content-type': 'application/json' },
+          body: JSON.stringify({
+            client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+            client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+          })
+        };
+        return fetch('99minutos/api/v3/oauth/token', options)
+          .then(response => response.json())
+          .then(async response => {
+            return await response;
+          })
+          .catch(err => console.error(err));
     }
-
-    const options = { headers };
-
-    return await this.http.post(supplier.token.url_base_token, params, options).toPromise();
   }
 
   async getSyscomCatalog(supplier: ISupplier, apiSelect: IApis, token: string, search: string = ''): Promise<any> {
@@ -186,7 +210,7 @@ export class ExternalAuthService {
                   responseType: 'text'
                 })
                 .pipe(map(async (xml: any) => {
-                  return await this.parseXmlToJson(xml, apiSelect.operation)
+                  return await this.parseXmlToJson(xml, apiSelect.operation);
                 }))
                 .toPromise()
             );
@@ -229,37 +253,36 @@ export class ExternalAuthService {
   }
 
   getCatalogXML(supplier: ISupplier, apiSelect: IApis, search: string = ''): Promise<any> {
-    if (supplier) {
-      const headers = new HttpHeaders();
-      let params = new HttpParams();
-      // Parámetros del token
-      if (supplier.token) {
-        if (supplier.token.body_parameters.length > 0) {
-          supplier.token.body_parameters.forEach(param => {
-            params = params.set(param.name, param.value);
-          });
-        }
-      }
-      // Parámetros de url
-      if (apiSelect.parameters) {
-        apiSelect.parameters.forEach(param => {
-          params = params.set(param.name, param.value || search);
+    const headers = new HttpHeaders();
+    let params = new HttpParams();
+    // Parámetros del token
+    if (supplier.token) {
+      if (supplier.token.body_parameters.length > 0) {
+        supplier.token.body_parameters.forEach(param => {
+          params = params.set(param.name, param.value);
         });
       }
-
-      return this.http.get(
-        supplier.url_base_api + apiSelect.operation,
-        {
-          headers,
-          params,
-          responseType: 'text'
-        }
-      ).pipe(
-        map(async xml => await this.parseXmlToJson(xml, apiSelect.operation))
-      ).toPromise();
     }
+    // Parámetros de url
+    if (apiSelect.parameters) {
+      apiSelect.parameters.forEach(param => {
+        params = params.set(param.name, param.value || search);
+      });
+    }
+
+    return this.http.get(
+      supplier.url_base_api + apiSelect.operation,
+      {
+        headers,
+        params,
+        responseType: 'text'
+      }
+    ).pipe(
+      map(async xml => await this.parseXmlToJson(xml, apiSelect.operation))
+    ).toPromise();
   }
 
+  // tslint:disable-next-line: typedef
   async parseXmlToJson(xml, catalog) {
     switch (catalog) {
       case 'lista_precios.xml':
@@ -290,26 +313,31 @@ export class ExternalAuthService {
       case 'Obtener_Marcas':                                                                // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_MarcasResponse']['Obtener_MarcasResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_Categorias':                                                            // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_Productos_HuellaLogisticaResponse']['Obtener_Productos_HuellaLogisticaResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_Productos_Listado':                                                     // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_Productos_ListadoResponse']['Obtener_Productos_ListadoResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_Productos_PrecioYExistencia':                                           // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_Productos_PrecioYExistenciaResponse']['Obtener_Productos_PrecioYExistenciaResult']))
           .catch(err => new Error(err.message));
       case 'Obtener_GaleriaDeImagenes':                                                     // SOAP Exel
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_GaleriaDeImagenesResponse']['Obtener_GaleriaDeImagenesResult']))
           .catch(err => new Error(err.message));
       default:
@@ -318,28 +346,27 @@ export class ExternalAuthService {
   }
 
   getCatalogSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
-    if (supplier) {
-      let soapBody = '';
-      switch (apiSelect.operation) {
-        case 'Obtener_Marcas':
-          soapBody = 'Obtener_Marcas';
-          break;
-        case 'Obtener_Categorias':
-          soapBody = 'Obtener_Productos_HuellaLogistica';
-          break;
-        case 'Obtener_Productos_Listado':
-          soapBody = 'Obtener_Productos_Listado';
-          break;
-        case 'Obtener_Productos_PrecioYExistencia':
-          soapBody = 'Obtener_Productos_PrecioYExistencia'
-          break;
-        case 'Obtener_GaleriaDeImagenes':
-          soapBody = 'Obtener_GaleriaDeImagenes'
-          break;
-        default:
-          break;
-      }
-      const body = `<?xml version="1.0" encoding="utf-8"?>
+    let soapBody = '';
+    switch (apiSelect.operation) {
+      case 'Obtener_Marcas':
+        soapBody = 'Obtener_Marcas';
+        break;
+      case 'Obtener_Categorias':
+        soapBody = 'Obtener_Productos_HuellaLogistica';
+        break;
+      case 'Obtener_Productos_Listado':
+        soapBody = 'Obtener_Productos_Listado';
+        break;
+      case 'Obtener_Productos_PrecioYExistencia':
+        soapBody = 'Obtener_Productos_PrecioYExistencia';
+        break;
+      case 'Obtener_GaleriaDeImagenes':
+        soapBody = 'Obtener_GaleriaDeImagenes';
+        break;
+      default:
+        break;
+    }
+    const body = `<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
           <soap:Body>
             <${soapBody} xmlns="http://ws.exel.com.mx:8181/">
@@ -349,38 +376,170 @@ export class ExternalAuthService {
             </${soapBody}>
           </soap:Body>
         </soap:Envelope>`;
-      const searchParams = new axios.AxiosHeaders();
-      const params = new axios.AxiosHeaders();
-      searchParams.set('Content-Type', 'text/xml');
-      if (supplier.token) {
-        if (supplier.token.body_parameters.length > 0) {
-          supplier.token.body_parameters.forEach(param => {
-            params.set(param.name, param.value);
-          });
-        }
-      }
-      // Parámetros de url
-      if (apiSelect.parameters) {
-        apiSelect.parameters.forEach(param => {
-          // params = params.set(param.name, param.value || search);
-          params.set(param.name + '=' + param.value || search);
+    const searchParams = new axios.AxiosHeaders();
+    const params = new axios.AxiosHeaders();
+    searchParams.set('Content-Type', 'text/xml');
+    if (supplier.token) {
+      if (supplier.token.body_parameters.length > 0) {
+        supplier.token.body_parameters.forEach(param => {
+          params.set(param.name, param.value);
         });
       }
-
-      return new Promise((resolve, reject) => {
-        axios.post(supplier.url_base_api,
-          body,
-          {
-            headers: searchParams,
-            params
-          }).then(async response => {
-            const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
-            resolve(datos);
-          }).catch(error => {
-            reject(new Error(error.message));
-          });
+    }
+    // Parámetros de url
+    if (apiSelect.parameters) {
+      apiSelect.parameters.forEach(param => {
+        // params = params.set(param.name, param.value || search);
+        params.set(param.name + '=' + param.value || search);
       });
+    }
+
+    return new Promise((resolve, reject) => {
+      axios.post(supplier.url_base_api,
+        body,
+        {
+          headers: searchParams,
+          params
+        }).then(async response => {
+          const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
+          resolve(datos);
+        }).catch(error => {
+          reject(new Error(error.message));
+        });
+    });
+  }
+
+  async getShipments(supplier: ISupplier, apiSelect: IApis, token: string, warehouse: Warehouse): Promise<any> {
+    if (apiSelect.parameters) {
+      switch (supplier.slug) {
+        case 'ct':
+          const urlCT = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+          const headersCT = new HttpHeaders({
+            'x-auth': token,
+            'Content-Type': 'application/json'
+          });
+          const fromObjectCT = {
+            destino: warehouse.cp.padStart(5, '0'),
+            productos: warehouse.productShipments
+          };
+          return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
+        case 'cva':
+          console.log('supplier', supplier);
+          console.log('apiSelect', apiSelect);
+          console.log('token', token);
+          console.log('warehouse', warehouse);
+          const urlCVA = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+          const headersCVA = new HttpHeaders({
+            'x-auth': token,
+            'Content-Type': 'application/json'
+          });
+          const fromObjectCVA = {
+            paqueteria: 4,
+            cp: warehouse.cp.padStart(5, '0'),
+            colonia: 'Gil y Saenz',
+            cp_sucursal: 44900,
+            productos: warehouse.productShipments
+          };
+          return await this.http.post(urlCVA, JSON.stringify(fromObjectCVA), { headers: headersCVA }).toPromise();
+        case '99minutos':
+          const options = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'content-type': 'application/json',
+              authorization: 'Bearer ' + token
+            },
+            body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
+          };
+          return fetch('99minutos/api/v3/pricing', options)
+            .then(response => response.json())
+            .then(async response => {
+              return await response;
+            })
+            .catch(err => console.error(err));
+        default:
+          break;
+      }
     }
   }
 
+  async onShippingEstimate(
+    supplier: ISupplier,
+    apiSelect: IApis,
+    warehouse: Warehouse,
+    tokenJson: boolean
+  ): Promise<any> {
+    let token: string;
+    let shipments: Shipment[] = [];
+    if (!supplier.token) {
+      switch (supplier.slug) {
+        case 'exel':
+          return await [];
+        default:
+          return await [];
+      }
+    } else {
+      return await this.getToken(supplier, tokenJson)
+        .then(
+          async result => {
+            switch (supplier.slug) {
+              case 'ct':
+                token = result.token;
+                break;
+              case 'cva':
+                console.log('getToken/result: ', result);
+                return result;
+              case 'syscom':
+                token = result.access_token;
+                break;
+              case '99minutos':
+                token = result.access_token;
+                break;
+              default:
+                break;
+            }
+            if (token) {
+              const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+                // tslint:disable-next-line: no-shadowed-variable
+                .then(async result => {
+                  try {
+                    switch (supplier.slug) {
+                      case 'ct':
+                        if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
+                          shipments = result.respuesta.cotizaciones;
+                          return shipments;
+                        } else {
+                          // TODO Enviar Costos Internos.
+                          return await [];
+                        }
+                      case 'syscom':
+                        return await [];
+                      case '99minutos':
+                        const shipment = new Shipment();
+                        shipment.empresa = supplier.slug;
+                        shipment.costo = result.data.price;
+                        shipment.metodoShipping = '';
+                        shipments.push(shipment);
+                        return await shipments;
+                      default:
+                        return await [];
+                    }
+                  } catch (error) {
+                    // TODO Enviar Costos Internos.
+                    return await [];
+                  }
+                });
+              return await resultados;
+            } else {
+              console.log('No se encontró el Token de Autorización.');
+              // TODO Enviar Costos Internos.
+              return await [];
+            }
+          },
+          error => {
+            console.log('error.message: ', error.message);
+          }
+        );
+    }
+  }
 }

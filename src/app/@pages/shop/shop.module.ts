@@ -25,9 +25,13 @@ import { ShopListTwoComponent } from './shared/list/shop-list-two/shop-list-two.
 import { ShopListThreeComponent } from './shared/list/shop-list-three/shop-list-three.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StripePaymentFormModule } from '@mugan86/stripe-payment-form';
-import { CategoryComponent } from './category/category.component';
+import { CategorysComponent } from './categorys/categorys.component';
 import { OffersComponent } from './offers/offers.component';
 import { BrandsComponent } from './brands/brands.component';
+import { BrandComponent } from './brand/brand.component';
+import { CategoryComponent } from './category/category.component';
+import { ShopSidebarComponent } from './shared/sidebar/shop-sidebar/shop-sidebar.component';
+import { ProductsComponent } from './products/products.component';
 
 @NgModule({
   declarations: [
@@ -46,9 +50,13 @@ import { BrandsComponent } from './brands/brands.component';
     ShopListTwoComponent,
     ShopListThreeComponent,
     MarketPageComponent,
-    CategoryComponent,
+    CategorysComponent,
     OffersComponent,
     BrandsComponent,
+    BrandComponent,
+    CategoryComponent,
+    ShopSidebarComponent,
+    ProductsComponent,
   ],
   imports: [
     CommonModule,

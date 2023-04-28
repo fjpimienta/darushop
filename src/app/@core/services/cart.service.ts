@@ -41,7 +41,7 @@ export class CartService {
   }
 
   // Product Add to Cart
-  addToCart(product: Product, qty = 1) {
+  addToCart(product: Product, qty = 1): void {
     if (this.canAddToCart(product, qty)) {
       this.store.dispatch(new AddToCartAction({ product, qty }));
       this.toastrService.success('Producto agregado al Carrito.');
@@ -51,38 +51,44 @@ export class CartService {
   }
 
   // Product Removed from the Cart
-  removeFromCart(product: CartItem) {
+  removeFromCart(product: CartItem): void {
+    console.log('removeFromCart/producto: ', product);
     this.store.dispatch(new RemoveFromCartAction({ product }));
     this.toastrService.success('Producto removido del Carrito.');
   }
 
   // Cart update
-  updateCart(cartItems: CartItem[]) {
+  updateCart(cartItems: CartItem[], costoEnvio: number = 0): void {
+    console.log('updateCart/cartItems: ', cartItems, '; costoEnvio: ', costoEnvio);
     this.store.dispatch(new UpdateCartAction({ cartItems }));
     this.toastrService.success('Carrito Actualizado.');
   }
 
   // Clear Cart
-  clearCart(withMessage: boolean = true) {
+  clearCart(withMessage: boolean = true): void {
+    console.log('clearCart/withMessage: ', withMessage);
     this.store.dispatch(new ClearCartAction());
-    if (withMessage){
+    if (withMessage) {
       this.toastrService.success('Se limpió el carrito.');
     }
   }
 
   // Refresh Store
-  refreshStore() {
+  refreshStore(): void {
+    console.log('refreshStore');
     this.store.dispatch(new RefreshStoreAction());
     this.toastrService.success('Carrito vaciado.');
   }
 
   // Check whether product is in Cart or not
   isInCart(product: Product): boolean {
+    console.log('isInCart/product: ', product);
     return this.cartItems.find(item => item.id === product.id) ? true : false;
   }
 
   // Check where product could be added to the cart
-  canAddToCart(product: Product, qty = 1) {
+  canAddToCart(product: Product, qty = 1): boolean {
+    console.log('canAddToCart/product: ', product, '; qty: ', qty);
     const find = this.cartItems.find(item => item.id === product.id);
 
     if (find) {
@@ -94,7 +100,7 @@ export class CartService {
     }
   }
 
-  orderDescription() {
+  orderDescription(): string {
     let i = 0;
     let description = '';
     this.cartItems.map((product: CartItem) => {
@@ -104,6 +110,7 @@ export class CartService {
       description += `${product.price}; `;
       description += `${product.sum} \n`;
     });
+    console.log('orderDescription/description: ', description);
     return description;
   }
 

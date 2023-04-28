@@ -80,6 +80,8 @@ export const ORDER_FRAGMENT = gql`
           brand_id
         }
       }
+      model
+      peso
       pictures {
         width
         height

@@ -1,6 +1,6 @@
-import { UserInput } from "./user.models";
-import { ChargeInput } from "./charge.models";
-import { CartItem } from "@shared/classes/cart-item";
+import { UserInput } from './user.models';
+import { ChargeInput } from './charge.models';
+import { CartItem } from '@shared/classes/cart-item';
 
 export class OrderInput {
   id: string;

@@ -13,20 +13,23 @@ export class ProductsService extends ApiService {
     super(apollo);
   }
 
+  // tslint:disable-next-line: typedef
   getProducts(
     page: number = 1,
-    itemsPage: number = 10,
+    itemsPage: number = 12,
     filterName: string = '',
-    offer: number = 0
+    offer: boolean = false,
+    brands: string[] = null,
+    categories: string[] = null
   ) {
     return this.get(PRODUCTS_LIST_QUERY, {
-      itemsPage, page, filterName, offer
+      itemsPage, page, filterName, offer, brands, categories
     }).pipe(map((result: any) => {
-      console.log('result.products', result.products);
       return result.products;
     }));
   }
 
+  // tslint:disable-next-line: typedef
   getProduct(id: string) {
     return this.get(PRODUCT_QUERY, {
       id

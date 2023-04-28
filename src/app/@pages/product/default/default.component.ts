@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Product } from '@shared/classes/product';
-import { ApiService } from '@core/services/api.service';
 import { ProductsService } from '@core/services/products.service';
 
 @Component({
@@ -20,7 +19,6 @@ export class DefaultPageComponent implements OnInit {
   loaded = false;
 
   constructor(
-    public apiService: ApiService,
     private activeRoute: ActivatedRoute,
     public router: Router,
     public productService: ProductsService

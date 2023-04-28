@@ -3,7 +3,7 @@
         <span class="product-label label-circle label-new" *ngIf="product.new">Nuevo</span>
         <span class="product-label label-circle label-sale" *ngIf="product.sale_price">Oferta</span>
         <span class="product-label label-circle label-top" *ngIf="product.top">Top</span>
-        <span class="product-label label-circle label-out" *ngIf="!product.stock || product.stock == 0">Agotado</span>
+        <span class="product-label label-circle label-out" *ngIf="!product.stock || product.stock === 0">Agotado</span>
 
         <a [routerLink]="['/product/default/'+ product.id]">
             <app-image [src]="SERVER_URL + product.sm_pictures[0].url" alt="Product" class="product-image">
@@ -43,18 +43,18 @@
         </h3>
 
         <div class="product-price" *ngIf="!product.stock || product.stock == 0 else elseBlock">
-            <span class="out-price">${{ product.price.toFixed(2) }}</span>
+            <span class="out-price">{{ product.price.toFixed(2) | currency }}</span>
         </div>
 
         <ng-template #elseBlock>
-            <div class="product-price" *ngIf="minPrice == maxPrice else elseBlock">${{ minPrice.toFixed(2) }}</div>
+            <div class="product-price" *ngIf="minPrice == maxPrice else elseBlock">{{ minPrice.toFixed(2) | currency }}</div>
             <ng-template #elseBlock>
                 <div class="product-price" *ngIf="product.variants.length == 0 else elseBlock">
-                    <span class="new-price">${{ minPrice.toFixed(2) }}</span>
-                    <span class="old-price">${{ maxPrice.toFixed(2) }}</span>
+                    <span class="new-price">{{ minPrice.toFixed(2) | currency }}</span>
+                    <span class="old-price">{{ maxPrice.toFixed(2) | currency }}</span>
                 </div>
                 <ng-template #elseBlock>
-                    <div class="product-price">${{minPrice.toFixed(2)}}&ndash;${{maxPrice.toFixed(2)}}</div>
+                    <div class="product-price">{{minPrice.toFixed(2) | currency}}&ndash;{{maxPrice.toFixed(2) | currency}}</div>
                 </ng-template>
             </ng-template>
         </ng-template>

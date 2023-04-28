@@ -86,6 +86,6 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
   submitSearchForm(e: any): void {
     e.preventDefault();
     this.searchTerm = e.currentTarget.querySelector('.form-control').value;
-    this.router.navigate(['/shop/sidebar/list'], { queryParams: { searchTerm: this.searchTerm } });
+    this.router.navigate(['/shop/products'], { queryParams: { searchTerm: this.searchTerm } });
   }
 }

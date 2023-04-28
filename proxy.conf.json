@@ -1,0 +1,10 @@
+{
+  "/99minutos/*" : {
+    "target": "https://sandbox.99minutos.com",
+    "secure": false,
+    "pathRewrite":{
+      "^/99minutos":""
+    },
+    "changeOrigin": true
+  }
+}

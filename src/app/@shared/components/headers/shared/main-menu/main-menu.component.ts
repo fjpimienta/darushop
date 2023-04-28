@@ -4,6 +4,9 @@ import { Subscription } from 'rxjs';
 import { Catalog } from '@core/models/catalog.models';
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
+import { BrandsGroupsService } from '@core/services/brandgroup.service';
+import { CategorysGroupsService } from '@core/services/categorygroup.service';
+import { CatalogGroup } from '@core/models/cataloggroup.models';
 
 @Component({
   selector: 'app-main-menu',
@@ -15,13 +18,17 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   current = '/';
   brands: Catalog[];
   categories: Catalog[];
+  brandsGroup: CatalogGroup[] = [];
+  categorysGroup: CatalogGroup[] = [];
 
   private subscr: Subscription;
 
   constructor(
     private router: Router,
     public brandsService: BrandsService,
-    public categoriesService: CategoriesService
+    public categoriesService: CategoriesService,
+    public brandsgroupService: BrandsGroupsService,
+    public categorysgroupService: CategorysGroupsService
   ) {
     this.subscr = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -30,6 +37,25 @@ export class MainMenuComponent implements OnInit, OnDestroy {
         this.current = event.url;
       }
     });
+    this.brandsgroupService.getBrandsGroup().subscribe(result => {
+      result.brandsgroups.forEach(brand => {
+        const brandGroup = new CatalogGroup();
+        brandGroup.total = brand.total;
+        brandGroup.name = brand._id[0].name;
+        brandGroup.slug = brand._id[0].slug;
+        this.brandsGroup.push(brandGroup);
+      });
+    });
+    this.categorysgroupService.getCategorysGroup().subscribe(result => {
+      result.categorysgroups.forEach(category => {
+        const categoryGroup = new CatalogGroup();
+        categoryGroup.total = category.total;
+        categoryGroup.name = category._id[0].name;
+        categoryGroup.slug = category._id[0].slug;
+        this.categorysGroup.push(categoryGroup);
+      });
+    });
+
     this.brands = [];
     this.brandsService.getBrands(1, -1).subscribe(result => {
       this.brands = result.brands;
