@@ -15,63 +15,67 @@ import { environment } from 'src/environments/environment';
 declare var $: any;
 
 @Component({
-	selector: 'app-root',
-	templateUrl: './app.component.html',
-	styleUrls: ['./app.component.scss']
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 
 export class AppComponent {
 
-	constructor(
-		public store: Store<any>,
-		public router: Router,
-		public viewPort: ViewportScroller,
-		public storeService: StoreService,
-		public utilsService: UtilsService,
-		public modalService: NgbModal
-	) {
-		const navigationEnd = this.router.events.pipe(
-			filter(event => event instanceof NavigationEnd)
-		);
+  constructor(
+    public store: Store<any>,
+    public router: Router,
+    public viewPort: ViewportScroller,
+    public storeService: StoreService,
+    public utilsService: UtilsService,
+    public modalService: NgbModal
+  ) {
+    const navigationEnd = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    );
 
-		navigationEnd.pipe(first()).subscribe(() => {
-			document.querySelector('body')?.classList.add('loaded');
-			var timer = setInterval(() => {
-				if( window.getComputedStyle( document.querySelector('body') ).visibility == 'visible') {
-					clearInterval(timer);
-					$('.owl-carousel').trigger('refresh.owl.carousel');
-				}
-			}, 300);
-		});
+    navigationEnd.pipe(first()).subscribe(() => {
+      document.querySelector('body')?.classList.add('loaded');
+      const timer = setInterval(() => {
+        if (window.getComputedStyle(document.querySelector('body')).visibility === 'visible') {
+          clearInterval(timer);
+          $('.owl-carousel').trigger('refresh.owl.carousel');
+        }
+      }, 300);
+    });
 
-		navigationEnd.subscribe((event: any) => {
-			if (!event.url.includes('/shop/sidebar') && !event.url.includes('/shop/nosidebar') && !event.url.includes('/shop/market') && !event.url.includes('/blog')) {
-				this.viewPort.scrollToPosition([0, 0]);
-			}
+    navigationEnd.subscribe((event: any) => {
+      if (!event.url.includes('/shop/sidebar') && !event.url.includes('/shop/nosidebar')
+        && !event.url.includes('/shop/market') && !event.url.includes('/blog')) {
+        this.viewPort.scrollToPosition([0, 0]);
+      }
 
-			if (event.url == '/') {
-				document.querySelector('.sticky-wrapper').classList.remove('bg-black');
-			} else {
-				document.querySelector('.sticky-wrapper').classList.add('bg-black');
-			}
+      if (event.url === '/') {
+        document.querySelector('.sticky-wrapper').classList.remove('bg-black');
+      } else {
+        console.log('navigationEnd/event.url: ', event.url);
+        if (event.url !== '/soon') {
+          document.querySelector('.sticky-wrapper').classList.add('bg-black');
+        }
+      }
 
-			this.modalService.dismissAll();
-		})
+      this.modalService.dismissAll();
+    });
 
-		if (localStorage.getItem("app-angular-demo") !== environment.demo) {
-			this.store.dispatch(new RefreshStoreAction());
-		}
+    if (localStorage.getItem('app-angular-demo') !== environment.demo) {
+      this.store.dispatch(new RefreshStoreAction());
+    }
 
-		localStorage.setItem("app-angular-demo", environment.demo);
-	}
+    localStorage.setItem('app-angular-demo', environment.demo);
+  }
 
-	@HostListener('window: scroll', ['$event'])
-	onWindowScroll(e: Event) {
-		this.utilsService.setStickyHeader();
-	}
+  @HostListener('window: scroll', ['$event'])
+  onWindowScroll(e: Event): void {
+    this.utilsService.setStickyHeader();
+  }
 
-	hideMobileMenu() {
-		document.querySelector('body').classList.remove('mmenu-active');
-		document.querySelector('html').style.overflowX = 'unset';
-	}
+  hideMobileMenu(): void {
+    document.querySelector('body').classList.remove('mmenu-active');
+    document.querySelector('html').style.overflowX = 'unset';
+  }
 }

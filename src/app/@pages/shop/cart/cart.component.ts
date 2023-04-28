@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CartService } from '@core/services/cart.service';
 
 import { environment } from 'src/environments/environment';
+import { Shipment } from '@core/models/shipment.models';
 
 @Component({
   selector: 'app-cart-page',
@@ -17,6 +18,8 @@ export class CartComponent implements OnInit, OnDestroy {
   cartItems = [];
   SERVER_URL = environment.SERVER_URL;
   shippingCost = 0;
+
+  shipments: Shipment[] = [];
 
   private subscr: Subscription;
 
@@ -38,12 +41,12 @@ export class CartComponent implements OnInit, OnDestroy {
     return item.slug;
   }
 
-  updateCart(event: any) {
+  updateCart(event: any, costoEnvio: number = 0) {
     event.preventDefault();
     event.target.parentElement.querySelector('.icon-refresh').classList.add('load-more-rotating');
 
     setTimeout(() => {
-      this.cartService.updateCart(this.cartItems);
+      this.cartService.updateCart(this.cartItems, costoEnvio);
       event.target.parentElement.querySelector('.icon-refresh').classList.remove('load-more-rotating');
       document.querySelector('.btn-cart-update:not(.diabled)') && document.querySelector('.btn-cart-update').classList.add('disabled');
     }, 400);

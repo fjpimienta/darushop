@@ -5,6 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CategoriesService } from '@core/services/categorie.service';
 import { BrandsService } from '@core/services/brand.service';
 import { Catalog } from '@core/models/catalog.models';
+import { BrandsGroupsService } from '@core/services/brandgroup.service';
+import { CategorysGroupsService } from '@core/services/categorygroup.service';
+import { CatalogGroup } from '@core/models/cataloggroup.models';
 
 @Component({
   selector: 'app-shop-sidebar-one',
@@ -20,6 +23,8 @@ export class ShopSidebarOneComponent implements OnInit {
   priceRange: any = [0, 100];
   brands: Catalog[];
   categories: Catalog[];
+  brandsGroup: CatalogGroup[] = [];
+  categorysGroup: CatalogGroup[] = [];
 
   @ViewChild('priceSlider') priceSlider: any;
 
@@ -27,7 +32,9 @@ export class ShopSidebarOneComponent implements OnInit {
     public activeRoute: ActivatedRoute,
     public router: Router,
     public brandsService: BrandsService,
-    public categoriesService: CategoriesService
+    public categoriesService: CategoriesService,
+    public brandsgroupService: BrandsGroupsService,
+    public categorysgroupService: CategorysGroupsService
   ) {
     this.brands = [];
     this.brandsService.getBrands(1, -1).subscribe(result => {
@@ -42,6 +49,25 @@ export class ShopSidebarOneComponent implements OnInit {
         };
       });
       this.categories = result.categories;
+    });
+
+    this.brandsgroupService.getBrandsGroup().subscribe(result => {
+      result.brandsgroups.forEach(brand => {
+        const brandGroup = new CatalogGroup();
+        brandGroup.total = brand.total;
+        brandGroup.name = brand._id[0].name;
+        brandGroup.slug = brand._id[0].slug;
+        this.brandsGroup.push(brandGroup);
+      });
+    });
+    this.categorysgroupService.getCategorysGroup().subscribe(result => {
+      result.categorysgroups.forEach(category => {
+        const categoryGroup = new CatalogGroup();
+        categoryGroup.total = category.total;
+        categoryGroup.name = category._id[0].name;
+        categoryGroup.slug = category._id[0].slug;
+        this.categorysGroup.push(categoryGroup);
+      });
     });
 
     activeRoute.queryParams.subscribe(params => {

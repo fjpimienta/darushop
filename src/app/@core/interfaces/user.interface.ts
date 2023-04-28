@@ -8,6 +8,7 @@ export interface IUser {
   stripeCustomer?: string;
   phone?: string;
   addresses?: IAddress[];
+  policy: boolean;
 }
 
 export interface IAddress {

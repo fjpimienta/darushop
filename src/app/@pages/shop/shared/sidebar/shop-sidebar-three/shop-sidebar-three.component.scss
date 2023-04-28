@@ -5,6 +5,19 @@
     }
 }
 
+.sidebar-filter-clear {
+  text-transform: capitalize;
+  margin-left: auto;
+  background-color: transparent;
+  color: darkblue;
+
+  &:hover,
+  &:focus {
+    color: blue;
+    font-weight: 800;
+  }
+}
+
 .sidebar-shop .widget {
   padding-bottom: 2.5rem;
   margin-bottom: 3rem;

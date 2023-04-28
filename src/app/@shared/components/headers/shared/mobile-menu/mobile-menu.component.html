@@ -55,9 +55,9 @@
                         <div class="row">
                           <div class="col-md-6">
                             <ul>
-                              <li [class.active]="current.includes('shop/sidebar/list')"
+                              <li [class.active]="current.includes('shop/products')"
                                 *ngFor="let item of brands; let id = index;">
-                                <a [routerLink]="['/shop/sidebar/list']" [queryParams]="{brands: item.slug}">{{
+                                <a [routerLink]="['/shop/products']" [queryParams]="{brands: item.slug}">{{
                                   item.description }}</a>
                               </li>
                             </ul>
@@ -69,7 +69,7 @@
                 </div>
               </li>
               <li>
-                <a routerLink="/shop/sidebar/list">Tu cuenta
+                <a routerLink="/shop/products">Tu cuenta
                   <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
                 </a>
                 <ul>

@@ -2,11 +2,11 @@ import gql from 'graphql-tag';
 import { SUPPLIER_FRAGMENT } from '../fragment/supplier';
 
 export const ADD_SUPPLIER = gql`
-   mutation addSupplier($suppiler: CatalogInput!) {
-      addSupplier(suppiler: $suppiler) {
+   mutation addSupplier($supplier: CatalogInput!) {
+      addSupplier(supplier: $supplier) {
          status
          message
-         suppiler {
+         supplier {
             ...SupplierObject
          }
       }
@@ -15,11 +15,11 @@ export const ADD_SUPPLIER = gql`
 `;
 
 export const ADD_SUPPLIER_LIST = gql`
-   mutation addSuppliers($suppilers: [CatalogInput!]!) {
-      addSuppliers(suppilers: $suppilers) {
+   mutation addSuppliers($suppliers: [CatalogInput!]!) {
+      addSuppliers(suppliers: $suppliers) {
          status
          message
-         suppilers {
+         suppliers {
             ...SupplierObject
          }
       }
@@ -28,11 +28,11 @@ export const ADD_SUPPLIER_LIST = gql`
 `;
 
 export const UPDATE_SUPPLIER = gql`
-   mutation updateSupplier($suppiler: CatalogInput!) {
-      updateSupplier(suppiler: $suppiler) {
+   mutation updateSupplier($supplier: CatalogInput!) {
+      updateSupplier(supplier: $supplier) {
          status
          message
-         suppiler {
+         supplier {
             ...SupplierObject
          }
       }

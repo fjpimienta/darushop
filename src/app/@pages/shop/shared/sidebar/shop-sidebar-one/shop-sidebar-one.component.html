@@ -1,8 +1,8 @@
 <div class="sidebar-shop" [ngClass]="toggle ? 'sidebar-filter' : 'sidebar'">
   <div [class.sidebar-filter-wrapper]="toggle">
-    <div class="widget widget-clean">
+    <div class="widget-clean">
       <label>Filtros:</label>
-      <a [routerLink]="" class="sidebar-filter-clear">Limpiar Todo</a>
+      <a [routerLink]="[]" class="sidebar-filter-clear">Limpiar Todo</a>
     </div>
 
     <div class="widget widget-collapsible">
@@ -38,8 +38,7 @@
         <div class="widget-body pt-0">
           <div class="filter-items filter-items-count">
             <div class="filter-item" *ngFor="let item of categories">
-              <a [routerLink]="" [queryParams]="{category: item.slug}" routerLinkActive="active">{{ item.description
-                }}</a>
+              <a [routerLink]="[]" [queryParams]="{category: item.slug}" routerLinkActive="active">{{ item.description}}</a>
               <!-- <span class="item-count">{{ item.count }}</span> -->
             </div>
           </div>

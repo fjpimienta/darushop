@@ -19,7 +19,7 @@ export class CartMenuComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  removeFromCart(event: Event, product: any) {
+  removeFromCart(event: Event, product: any): void {
     event.preventDefault();
     this.cartService.removeFromCart(product);
   }

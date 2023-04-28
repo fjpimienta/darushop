@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit {
   userName = '';
   moneda = 'MXN';
   exchangeRate: string;
-  offer: number;
+  offer: boolean;
 
   constructor(
     public router: Router,

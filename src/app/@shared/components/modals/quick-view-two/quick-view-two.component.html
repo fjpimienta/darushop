@@ -20,7 +20,7 @@
                     <span class="product-label label-new" *ngIf="product.new">Nuevo</span>
                     <span class="product-label label-sale" *ngIf="product.sale_price">Oferta</span>
                     <span class="product-label label-top" *ngIf="product.top">Top</span>
-                    <span class="product-label label-out" *ngIf="!product.stock || product.stock == 0">Agotado</span>
+                    <span class="product-label label-out" *ngIf="!product.stock || product.stock === 0">Agotado</span>
 
                     <owl-carousel carouselClasses="product-gallery-carousel owl-full owl-nav-dark" [options]="options"
                         id="owl-quickview" #singleSlider>
@@ -52,7 +52,7 @@
                     </div>
 
                     <div class="product-price" *ngIf="!product.stock || product.stock == 0 else elseBlock">
-                        <span class="out-price">${{ product.price.toFixed(2) }}</span>
+                        <span class="out-price">{{ product.price.toFixed(2) | currency }}</span>
                     </div>
 
                     <ng-template #elseBlock>
@@ -60,11 +60,11 @@
                             ${{ minPrice.toFixed(2) }}</div>
                         <ng-template #elseBlock>
                             <div class="product-price" *ngIf="product.variants.length == 0 else elseBlock">
-                                <span class="new-price">${{ minPrice.toFixed(2) }}</span>
-                                <span class="old-price">${{ maxPrice.toFixed(2) }}</span>
+                                <span class="new-price">{{ minPrice.toFixed(2) | currency }}</span>
+                                <span class="old-price">{{ maxPrice.toFixed(2) | currency }}</span>
                             </div>
                             <ng-template #elseBlock>
-                                <div class="product-price">${{minPrice.toFixed(2)}}&ndash;${{maxPrice.toFixed(2)}}</div>
+                                <div class="product-price">{{minPrice.toFixed(2) | currency}}&ndash;{{maxPrice.toFixed(2) | currency}}</div>
                             </ng-template>
                         </ng-template>
                     </ng-template>
@@ -129,7 +129,7 @@
                         <div class="product-cat w-100 text-truncate">
                             <span>Categoría(s)</span>
                             <span *ngFor="let cat of product.category; let i =index">
-                                <a [routerLink]="['/shop/sidebar/list']" (click)="closeQuickView()"
+                                <a [routerLink]="['/shop/products']" (click)="closeQuickView()"
                                     [queryParams]="{category: cat.slug}">{{ cat.name }}</a>{{ i < product.category.length - 1 ? ',' : '' }}</span>
                         </div>
 

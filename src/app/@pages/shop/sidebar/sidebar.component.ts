@@ -12,7 +12,8 @@ import { UtilsService } from '@core/services/utils.service';
 
 export class SidebarPageComponent implements OnInit {
   products = [];
-  perPage = 0;
+  page = 1;
+  perPage = 12;
   type = 'list';
   totalCount = 0;
   orderBy = 'default';
@@ -21,6 +22,8 @@ export class SidebarPageComponent implements OnInit {
   searchTerm = '';
   loaded = false;
   firstLoad = false;
+  brands = [];
+  categories = [];
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -49,7 +52,24 @@ export class SidebarPageComponent implements OnInit {
         this.orderBy = 'default';
       }
 
-      this.productService.getProducts(1, -1, this.searchTerm.toLowerCase()).subscribe(result => {
+      this.brands = null;
+      if (params.brands) {
+        this.brands = [];
+        this.brands.push(params.brands);
+      }
+      this.categories = null;
+      if (params.category) {
+        this.categories = [];
+        this.categories.push(params.category);
+      }
+      if (params.page) {
+        this.page = parseInt(params.page, 10);
+      } else {
+        this.page = 1;
+      }
+      this.productService.getProducts(
+        this.page, this.perPage, this.searchTerm.toLowerCase(), null, this.brands, this.categories
+      ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
         let brands: string[] = [];
@@ -66,7 +86,7 @@ export class SidebarPageComponent implements OnInit {
           this.products = utilsService.catFilter(this.products, category);
         }
         this.loaded = true;
-        this.totalCount = this.products.length;
+        this.totalCount = result.info.total;
         this.perPage = 12;
         if (this.perPage >= this.totalCount) {
           this.perPage = this.totalCount;
