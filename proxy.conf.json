@@ -1,10 +1,25 @@
 {
-  "/99minutos/*" : {
+  "/99minutos/*": {
     "target": "https://sandbox.99minutos.com",
     "secure": false,
-    "pathRewrite":{
-      "^/99minutos":""
+    "pathRewrite": {
+      "^/99minutos": ""
     },
+    "changeOrigin": true
+  },
+  "/x14.asmx": {
+    "target": "http://ws.exel.com.mx:8181",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/catalogo_clientes_xml/*": {
+    "target": "http://www.grupocva.com",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/pedidos_web/*": {
+    "target": "http://www.grupocva.com",
+    "secure": false,
     "changeOrigin": true
   }
 }
