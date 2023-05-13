@@ -12,6 +12,8 @@ export const SHIPPING_FRAGMENT = gql`
     phone
     web
     url_base_api
+    url_base_api_order
+    url_base_api_shipments
     token {
       type
       method
