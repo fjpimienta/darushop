@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
-import { SUPPLIER_FRAGMENT } from '../fragment/supplier';
+import { APISUPPLIER_FRAGMENT } from '../../fragment/suppliers/apisupplier';
+import { SUPPLIER_FRAGMENT } from '../../fragment/suppliers/supplier';
 
 export const SUPPLIERS_LIST_QUERY = gql`
 query suppliersList($page: Int, $itemsPage: Int, $active: ActiveFilterEnum, $filterName: String) {
@@ -41,4 +42,17 @@ query {
       supplierId
    }
 }
+`;
+
+export const APISUPPLIER_QUERY = gql`
+  query apiSupplier($name: String, $typeApi: String, $nameApi: String) {
+    apiSupplier(name: $name, typeApi: $typeApi, nameApi: $nameApi) {
+      status
+      message
+      apiSupplier{
+        ...ApiSupplierObject
+      }
+    }
+  }
+  ${APISUPPLIER_FRAGMENT}
 `;

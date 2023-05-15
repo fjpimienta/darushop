@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { ApiService } from 'src/app/@graphql/services/api.service';
 import { map } from 'rxjs/operators';
-import { ADD_SUPPLIER, ADD_SUPPLIER_LIST, BLOCK_SUPPLIER, UPDATE_SUPPLIER } from '@graphql/operations/mutation/suppliers';
-import { SUPPLIERS_LIST_QUERY, SUPPLIER_ID_QUERY } from '@graphql/operations/query/suppliers';
+import { ADD_SUPPLIER, ADD_SUPPLIER_LIST, BLOCK_SUPPLIER, UPDATE_SUPPLIER } from '@graphql/operations/mutation/suppliers/suppliers';
+import { APISUPPLIER_QUERY, SUPPLIERS_LIST_QUERY, SUPPLIER_ID_QUERY } from '@graphql/operations/query/suppliers/suppliers';
 import { ISupplier } from '@core/interfaces/supplier.interface';
 
 @Injectable({
@@ -74,6 +74,14 @@ export class SuppliersService extends ApiService {
       SUPPLIER_ID_QUERY, {}, {}, false
     ).pipe(map((result: any) => {
       return result.supplierId.supplierId;
+    }));
+  }
+
+  getApiSupplier(name: string, typeApi: string, nameApi: string) {
+    return this.get(APISUPPLIER_QUERY, {
+      name, typeApi, nameApi
+    }).pipe(map((result: any) => {
+      return result.apiSupplier;
     }));
   }
 }
