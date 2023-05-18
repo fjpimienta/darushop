@@ -32,6 +32,7 @@ export class ExternalAuthService {
   ) {
   }
 
+  //#region Token
   async getToken(
     supplier: ISupplier,
     tokenJson: boolean = false
@@ -70,7 +71,9 @@ export class ExternalAuthService {
           .catch(err => console.error(err));
     }
   }
+  //#endregion Token
 
+  //#region Catalogos
   async getSyscomCatalog(supplier: ISupplier, apiSelect: IApis, token: string, search: string = ''): Promise<any> {
     if (apiSelect.parameters) {
       switch (supplier.slug) {
@@ -340,12 +343,18 @@ export class ExternalAuthService {
           // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_GaleriaDeImagenesResponse']['Obtener_GaleriaDeImagenesResult']))
           .catch(err => new Error(err.message));
+      case 'pedidos_ws_cva.php':                                                                  // SOAP CVA
+        return await xml2js
+          .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos'])
+          .catch(err => new Error(err.message));
       default:
         break;
     }
   }
 
-  getCatalogSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
+  async getCatalogSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
     let soapBody = '';
     switch (apiSelect.operation) {
       case 'Obtener_Marcas':
@@ -363,10 +372,27 @@ export class ExternalAuthService {
       case 'Obtener_GaleriaDeImagenes':
         soapBody = 'Obtener_GaleriaDeImagenes';
         break;
+      case 'pedidos_ws_cva.php':
+        soapBody = 'ListaPedidos';
+        break;
       default:
         break;
     }
-    const body = `<?xml version="1.0" encoding="utf-8"?>
+    let body: string;
+    switch (supplier.slug) {
+      case 'cva':
+        body = `<?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <${soapBody} xmlns="https://www.grupocva.com/pedidos_web/">
+              <Usuario>admin73766</Usuario>
+              <PWD>nga4iCEDFswN</PWD>
+            </${soapBody}>
+          </soap:Body>
+        </soap:Envelope>`;
+        break;
+      case 'exel':
+        body = `<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
           <soap:Body>
             <${soapBody} xmlns="http://ws.exel.com.mx:8181/">
@@ -376,6 +402,11 @@ export class ExternalAuthService {
             </${soapBody}>
           </soap:Body>
         </soap:Envelope>`;
+        break;
+      default:
+        break;
+    }
+
     const searchParams = new axios.AxiosHeaders();
     const params = new axios.AxiosHeaders();
     searchParams.set('Content-Type', 'text/xml');
@@ -394,8 +425,9 @@ export class ExternalAuthService {
       });
     }
 
-    return new Promise((resolve, reject) => {
-      axios.post(supplier.url_base_api,
+    return await new Promise((resolve, reject) => {
+      const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=ListaPedidos';
+      axios.post(url,
         body,
         {
           headers: searchParams,
@@ -408,7 +440,9 @@ export class ExternalAuthService {
         });
     });
   }
+  //#endregion Catalogos
 
+  //#region Envios
   async getShipments(supplier: ISupplier, apiSelect: IApis, token: string, warehouse: Warehouse): Promise<any> {
     if (apiSelect.parameters) {
       switch (supplier.slug) {
@@ -424,15 +458,27 @@ export class ExternalAuthService {
           };
           return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
         case 'cva':
-          console.log('supplier', supplier);
-          console.log('apiSelect', apiSelect);
-          console.log('token', token);
-          console.log('warehouse', warehouse);
-          const urlCVA = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
-          const headersCVA = new HttpHeaders({
-            'x-auth': token,
-            'Content-Type': 'application/json'
-          });
+          const urlCVA = supplier.url_base_api_shipments + apiSelect.operation;
+          // const headersCVA = new HttpHeaders({
+          //   authorization: 'Bearer ' + token,
+          //   'Content-Type': 'application/json'
+          // });
+          // const fromObjectCVA = {
+          //   paqueteria: 4,
+          //   cp: warehouse.cp.padStart(5, '0'),
+          //   colonia: 'Gil y Saenz',
+          //   cp_sucursal: 44900,
+          //   productos: warehouse.productShipments
+          // };
+          // return await this.http.post(urlCVA, JSON.stringify(fromObjectCVA), { headers: headersCVA }).toPromise();
+          // Idem Exel
+          const searchParams = new axios.AxiosHeaders();
+          const params = new axios.AxiosHeaders();
+          searchParams.set('Content-Type', 'text/xml');
+          searchParams.set('Access-Control-Allow-Origin', '*');
+          searchParams.set('Access-Control-Allow-Methods', '*');
+          searchParams.set('authorization', 'Bearer ' + token);
+          searchParams.set('Content-Type', 'application/json');
           const fromObjectCVA = {
             paqueteria: 4,
             cp: warehouse.cp.padStart(5, '0'),
@@ -440,7 +486,21 @@ export class ExternalAuthService {
             cp_sucursal: 44900,
             productos: warehouse.productShipments
           };
-          return await this.http.post(urlCVA, JSON.stringify(fromObjectCVA), { headers: headersCVA }).toPromise();
+          return new Promise((resolve, reject) => {
+            axios.post(urlCVA,
+              fromObjectCVA,
+              {
+                headers: searchParams,
+                params
+              }).then(async response => {
+                // const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
+                const datos = response;
+                console.log('response: ', response);
+                resolve(datos);
+              }).catch(error => {
+                reject(new Error(error.message));
+              });
+          });
         case '99minutos':
           const options = {
             method: 'POST',
@@ -487,8 +547,8 @@ export class ExternalAuthService {
                 token = result.token;
                 break;
               case 'cva':
-                console.log('getToken/result: ', result);
-                return result;
+                token = result;
+                break;
               case 'syscom':
                 token = result.access_token;
                 break;
@@ -512,6 +572,9 @@ export class ExternalAuthService {
                           // TODO Enviar Costos Internos.
                           return await [];
                         }
+                      case 'cva':
+                        console.log('result: ', result);
+                        return await [];
                       case 'syscom':
                         return await [];
                       case '99minutos':
@@ -542,4 +605,68 @@ export class ExternalAuthService {
         );
     }
   }
+  //#endregion
+
+  //#region Pedidos
+  getPedidosSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
+    let soapBody = '';
+    switch (apiSelect.operation) {
+      case 'ListaPedidos':
+        soapBody = 'ListaPedidos';
+        break;
+      case 'ConsultaPedido':
+        soapBody = 'ConsultaPedido';
+        break;
+      case 'PedidoWeb':
+        soapBody = 'PedidoWeb';
+        break;
+      default:
+        break;
+    }
+    const body = `<?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <${soapBody} xmlns="https://www.grupocva.com/pedidos_web/">
+              <Usuario>admin73766</Usuario>
+              <PWD>nga4iCEDFswN</PWD>
+            </${soapBody}>
+          </soap:Body>
+        </soap:Envelope>`;
+    const searchParams = new axios.AxiosHeaders();
+    const params = new axios.AxiosHeaders();
+    searchParams.set('Content-Type', 'text/xml');
+    if (supplier.token) {
+      if (supplier.token.body_parameters.length > 0) {
+        supplier.token.body_parameters.forEach(param => {
+          params.set(param.name, param.value);
+        });
+      }
+    }
+    // Parámetros de url
+    if (apiSelect.parameters) {
+      apiSelect.parameters.forEach(param => {
+        // params = params.set(param.name, param.value || search);
+        params.set(param.name + '=' + param.value || search);
+      });
+    }
+    return new Promise((resolve, reject) => {
+      axios.post(supplier.url_base_api,
+        body,
+        {
+          headers: searchParams,
+          params
+        }).then(async response => {
+          console.log('getPedidosSOAP/response: ', response);
+          const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
+          resolve(datos);
+        }).catch(error => {
+          reject(new Error(error.message));
+        });
+    });
+  }
+  //#endregion Pedidos
+
+  //#region Facturacion
+
+  //#endregion Facturacion
 }

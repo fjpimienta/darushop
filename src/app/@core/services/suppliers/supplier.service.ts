@@ -77,11 +77,19 @@ export class SuppliersService extends ApiService {
     }));
   }
 
-  getApiSupplier(name: string, typeApi: string, nameApi: string) {
-    return this.get(APISUPPLIER_QUERY, {
-      name, typeApi, nameApi
-    }).pipe(map((result: any) => {
-      return result.apiSupplier;
-    }));
+  async getApiSupplier(name: string, typeApi: string, nameApi: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(APISUPPLIER_QUERY, {
+        name, typeApi, nameApi
+      }).subscribe(
+        (result: any) => {
+          resolve(result.apiSupplier);
+        },
+        (error: any) => {
+          reject(error);
+        }
+      );
+    });
   }
+
 }
