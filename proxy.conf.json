@@ -18,7 +18,7 @@
     "changeOrigin": true
   },
   "/pedidos_web/*": {
-    "target": "http://www.grupocva.com",
+    "target": "https://www.grupocva.com",
     "secure": false,
     "changeOrigin": true
   },
