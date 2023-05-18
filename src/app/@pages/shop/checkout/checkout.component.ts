@@ -240,10 +240,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.cartItems = items;
     });
 
-    this.suppliersService.getSuppliers().subscribe(result => {
-      this.suppliers = result.suppliers;
-    });
-
     this.shippingsService.getShippings().subscribe(result => {
       this.shippings = result.shippings;
     });
@@ -466,7 +462,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.shipments = [];
     // Verificar productos por proveedor.
     let i = 0;
-    await this.suppliers.forEach(async supplier => {
+    const suppliers = await this.suppliersService.getSuppliers()
+      .then(async result => {
+        return await result.suppliers;
+      });
+    console.log('suppliers: ', suppliers);
+    suppliers.forEach(async supplier => {
       const supplierProd = new SupplierProd();                       // Revisar proveedors con apis
       const warehouseEstado = new Warehouse();
       const warehouseCapital = new Warehouse();

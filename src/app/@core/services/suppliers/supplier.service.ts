@@ -61,12 +61,18 @@ export class SuppliersService extends ApiService {
       );
   }
 
-  getSuppliers(page: number = 1, itemsPage: number = 10) {
-    return this.get(SUPPLIERS_LIST_QUERY, {
-      itemsPage, page
-    }).pipe(map((result: any) => {
-      return result.suppliers;
-    }));
+  async getSuppliers(page: number = 1, itemsPage: number = 10): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SUPPLIERS_LIST_QUERY, {
+        itemsPage, page
+      }).subscribe(
+        (result: any) => {
+          resolve(result.suppliers);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
   next() {
@@ -87,8 +93,7 @@ export class SuppliersService extends ApiService {
         },
         (error: any) => {
           reject(error);
-        }
-      );
+        });
     });
   }
 
