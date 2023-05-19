@@ -28,7 +28,7 @@ import { UsersService } from '@core/services/users.service';
 import { AddressInput, UserInput } from '@core/models/user.models';
 import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
-import { WarehousesService } from '@core/services/warehouses.service';
+// import { WarehousesService } from '@core/services/warehouses.service';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Delivery } from '@core/models/delivery.models';
 import { SupplierProd } from '@core/models/product.models';
@@ -70,7 +70,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   existeMetodoPago: boolean;
   stripeCustomer: string;
   errorSaveUser: boolean;
-  warehouses: Warehouse[];
+  // warehouses: Warehouse[];
   delivery: Delivery;
   deliverys: Delivery[];
   suppliers: [ISupplier];
@@ -111,7 +111,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private chargeService: ChargeService,
     private mailService: MailService,
     public userService: UsersService,
-    private warehousesService: WarehousesService,
+    // private warehousesService: WarehousesService,
     private externalAuthService: ExternalAuthService,
     public shippingsService: ShippingsService,
   ) {
@@ -240,10 +240,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.cartItems = items;
     });
 
-    this.warehouses = [];
-    this.warehousesService.getWarehouses(1, -1).subscribe(result => {
-      this.warehouses = result.warehouses;
-    });
+    // this.warehouses = [];
+    // this.warehousesService.getWarehouses(1, -1).subscribe(result => {
+    //   this.warehouses = result.warehouses;
+    // });
 
     document.querySelector('body').addEventListener('click', () => this.clearOpacity());
 
@@ -446,10 +446,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onCotizarEnvios(cpDestino: string, estadoCp: string) {
+  async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<void> {
     // Inicializar Arreglo de Envios.
-    const capitalCp = '2700';
+    const capitalCpCT = '2700';
     const capitalCpCva = '06820';
+    // const capitalCpIng = '';
     const delivery = new Delivery();
     let warehouse = new Warehouse();
     let id = '1';
@@ -462,7 +463,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       .then(async result => {
         return await result.suppliers;
       });
-    console.log('suppliers: ', suppliers);
     suppliers.forEach(async supplier => {
       const supplierProd = new SupplierProd();                       // Revisar proveedors con apis
       const warehouseEstado = new Warehouse();
@@ -476,37 +476,33 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (result.status) {
             const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, result.apiSupplier, '')
               .then(
-                async result => {
+                async resultPedido => {
                   try {
-                    if (result) {
-                      return await result;
+                    if (resultPedido) {
+                      return await resultPedido;
                     }
                   } catch (error) {
                     throw await new Error(error.message);
                   }
                 }
               );
-            console.log('pedidos: ', pedidos);
           }
           return await result.apiSupplier;
         })
         .catch(err => console.error(err));
-      // console.log('apiOrder: ', apiOrder);
 
       // Set Api para Envios
       const apiShipment = await this.suppliersService.getApiSupplier(supplier.slug, 'envios', 'paqueterias')
         .then(async result => {
           if (result.status) {
-            console.log('getApiSupplier/result: ', result);
             // Agrupar Productos Por Proveedor
             // ==> TODO
             // Si hay Api para el Proveedor.
-            console.log('this.cartItems[0].suppliersProd.idProveedor: ', this.cartItems[0].suppliersProd.idProveedor);
             if (supplier.slug === this.cartItems[0].suppliersProd.idProveedor) {
               this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
                 if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
                   cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
-                    if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp
+                    if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
                       || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
                       if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
                         if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
@@ -523,7 +519,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                           warehouseEstado.latitud = branchOffice.latitud;
                           warehouseEstado.longitud = branchOffice.longitud;
                         }
-                        if (capitalCp === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
+                        if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
                           const productShipment = new ProductShipment();
                           productShipment.producto = cartItem.sku;
                           productShipment.cantidad = cartItem.qty.toString();
@@ -566,15 +562,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               const shipmentsCost = await this.externalAuthService.onShippingEstimate(supplier, result.apiSupplier, warehouse, false)
                 .then(
-                  async (result) => {
-                    console.log('this.externalAuthService.onShippingEstimate/result: ', result);
+                  async (resultShip) => {
                     const shipments: Shipment[] = [];
                     // tslint:disable-next-line: forin
-                    for (const key in result) {
+                    for (const key in resultShip) {
                       const shipment = new Shipment();
-                      shipment.empresa = result[key].empresa.toString().toUpperCase();
-                      shipment.costo = result[key].total;
-                      shipment.metodoShipping = result[key].metodo;
+                      shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
+                      shipment.costo = resultShip[key].total;
+                      shipment.metodoShipping = resultShip[key].metodo;
                       shipments.push(shipment);
                     }
                     return shipments;
@@ -585,13 +580,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.shipments.push(ship);
               });
             }
-            return await result.apiSupplier;
-            // console.log('apiShipment: ', apiShipment);
+            return await result.shipmentsCost;
           }
         });
     });
-    // Cotizar con las paqueterias
-    console.log('Cotizacion de Envios Paqueterias Externas.');
+    // Cotizar con las paqueterias Externas a Proveedores
     const shipmentsExt = this.shippingsService.getShippings()
       .then(async result => {
         // this.shippings = result.shippings;
@@ -623,7 +616,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       });
     // Elaborar Pedido Previo a facturacion.
-    console.log('Elaborar Pedidos.');
   }
 
   changeShipping(costo: number): void {
@@ -735,11 +727,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     //   switch (supplier.slug) {
     //     case 'cva':
     //       resultados = [];
-    //       console.log('productos/resultados: ', resultados);
     //       return await resultados;
     //     case 'exel':
     //       resultados = [];
-    //       console.log('productos/resultados: ', resultados);
     //       return await resultados;
     //     default:
     //       break;
@@ -761,7 +751,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     //         if (this.token) {
     //           let resultados;
     //           resultados = [];
-    //           console.log('productos/resultados: ', resultados);
     //           return await resultados;
     //         } else {
     //           basicAlert(TYPE_ALERT.WARNING, 'No se encontró el Token de Autorización.');
