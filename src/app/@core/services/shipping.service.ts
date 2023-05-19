@@ -61,12 +61,18 @@ export class ShippingsService extends ApiService {
       );
   }
 
-  getShippings(page: number = 1, itemsPage: number = 10) {
-    return this.get(SHIPPINGS_LIST_QUERY, {
-      itemsPage, page
-    }).pipe(map((result: any) => {
-      return result.shippings;
-    }));
+  async getShippings(page: number = 1, itemsPage: number = 10): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SHIPPINGS_LIST_QUERY, {
+        itemsPage, page
+      }).subscribe(
+        (result: any) => {
+          resolve(result.shippings);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
   next() {

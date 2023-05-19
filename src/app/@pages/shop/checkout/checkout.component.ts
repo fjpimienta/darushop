@@ -240,10 +240,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.cartItems = items;
     });
 
-    this.shippingsService.getShippings().subscribe(result => {
-      this.shippings = result.shippings;
-    });
-
     this.warehouses = [];
     this.warehousesService.getWarehouses(1, -1).subscribe(result => {
       this.warehouses = result.warehouses;
@@ -596,32 +592,36 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
     // Cotizar con las paqueterias
     console.log('Cotizacion de Envios Paqueterias Externas.');
-    if (this.shipments) {
-      if (this.shippings.length > 0) {
-        this.shippings.forEach(async shipping => {
-          const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
-          const shippingsCost = await this.externalAuthService.onShippingEstimate(
-            shipping, apiSelectShip, warehouse, false)
-            .then(
-              async (result) => {
-                const shipments: Shipment[] = [];
-                for (const key in result) {
-                  // tslint:disable-next-line: forin
-                  const shipment = new Shipment();
-                  shipment.empresa = '99MINUTOS';
-                  shipment.costo = result[key].costo;
-                  shipment.metodoShipping = '';
-                  shipments.push(shipment);
-                }
-                return shipments;
-              }
-            );
-          shippingsCost.forEach(ship => {
-            this.shipments.push(ship);
-          });
-        });
-      }
-    }
+    const shipmentsExt = this.shippingsService.getShippings()
+      .then(async result => {
+        // this.shippings = result.shippings;
+        if (result.status) {
+          if (result.shippings.length > 0) {
+            result.shippings.forEach(async shipping => {
+              const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
+              const shippingsCost = await this.externalAuthService.onShippingEstimate(
+                shipping, apiSelectShip, warehouse, false)
+                .then(
+                  async (resultShipment) => {
+                    const shipments: Shipment[] = [];
+                    for (const key in resultShipment) {
+                      // tslint:disable-next-line: forin
+                      const shipment = new Shipment();
+                      shipment.empresa = '99MINUTOS';
+                      shipment.costo = resultShipment[key].costo;
+                      shipment.metodoShipping = '';
+                      shipments.push(shipment);
+                    }
+                    return shipments;
+                  }
+                );
+              shippingsCost.forEach(ship => {
+                this.shipments.push(ship);
+              });
+            });
+          }
+        }
+      });
     // Elaborar Pedido Previo a facturacion.
     console.log('Elaborar Pedidos.');
   }
