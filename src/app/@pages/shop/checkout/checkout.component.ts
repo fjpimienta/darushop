@@ -478,9 +478,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     .then(
                       async resultPedido => {
                         try {
-                          if (resultPedido) {
-                            return await resultPedido;
-                          }
+                          // console.log('resultPedido: ', resultPedido);
+                          return await resultPedido;
                         } catch (error) {
                           throw await new Error(error.message);
                         }
@@ -490,6 +489,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await result.apiSupplier;
               })
               .catch(err => console.error(err));
+            console.log('apiOrder: ', apiOrder);
             // Set Api para Envios
             const apiShipment = await this.suppliersService.getApiSupplier(supplier.slug, 'envios', 'paqueterias')
               .then(async resultApiShipment => {

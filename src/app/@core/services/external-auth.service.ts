@@ -5,12 +5,15 @@ import { ILoginCTForm, ILoginSyscomForm } from '@core/interfaces/extern-login.in
 import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
-import axios, { isCancel, AxiosError } from 'axios';
+// import axios, { isCancel, AxiosError } from 'axios';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
 
 declare const require;
+const axios = require('axios');
 const xml2js = require('xml2js');
+const he = require('he');
+
 
 @Injectable({
   providedIn: 'root'
@@ -347,7 +350,7 @@ export class ExternalAuthService {
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
           // tslint:disable-next-line: no-string-literal
-          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos'])
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos']['PEDIDOS'])
           .catch(err => new Error(err.message));
       default:
         break;
@@ -386,7 +389,7 @@ export class ExternalAuthService {
           <soap:Body>
             <${soapBody} xmlns="https://www.grupocva.com/pedidos_web/">
               <Usuario>admin73766</Usuario>
-              <PWD>nga4iCEDFswN</PWD>
+              <PWD>VCTRNZ1EFOmR</PWD>
             </${soapBody}>
           </soap:Body>
         </soap:Envelope>`;
@@ -407,38 +410,39 @@ export class ExternalAuthService {
         break;
     }
 
-    const searchParams = new axios.AxiosHeaders();
-    const params = new axios.AxiosHeaders();
-    searchParams.set('Content-Type', 'text/xml');
+    const searchParams = {
+      'Content-Type': 'text/xml'
+    };
+    const params = {};
     if (supplier.token) {
       if (supplier.token.body_parameters.length > 0) {
         supplier.token.body_parameters.forEach(param => {
-          params.set(param.name, param.value);
+          params[param.name] = param.value;
         });
       }
     }
     // Parámetros de url
     if (apiSelect.parameters) {
       apiSelect.parameters.forEach(param => {
-        // params = params.set(param.name, param.value || search);
-        params.set(param.name + '=' + param.value || search);
+        params[param.name] = param.value || search;
       });
     }
 
-    return await new Promise((resolve, reject) => {
+    try {
       const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=ListaPedidos';
-      axios.post(url,
-        body,
-        {
-          headers: searchParams,
-          params
-        }).then(async response => {
-          const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
-          resolve(datos);
-        }).catch(error => {
-          reject(new Error(error.message));
-        });
-    });
+      const response = await axios.post(url, body, {
+        headers: searchParams,
+        params
+      });
+      const Content = he.decode(response.data.toString('utf-8'));
+      console.log('Content: ', Content);
+      console.log('apiSelect.operation: ', apiSelect.operation);
+      const datos = await this.parseXmlToJson(Content, apiSelect.operation);
+      console.log('datos: ', datos);
+
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
   //#endregion Catalogos
 
@@ -656,8 +660,10 @@ export class ExternalAuthService {
           headers: searchParams,
           params
         }).then(async response => {
-          console.log('getPedidosSOAP/response: ', response);
-          const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
+          const Content = he.decode(response.data.toString('utf-8'));
+          console.log('Content: ', Content);
+          console.log('apiSelect.operation: ', apiSelect.operation);
+          const datos = await this.parseXmlToJson(Content, apiSelect.operation);
           resolve(datos);
         }).catch(error => {
           reject(new Error(error.message));
