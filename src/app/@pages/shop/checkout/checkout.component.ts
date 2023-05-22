@@ -34,7 +34,7 @@ import { Delivery } from '@core/models/delivery.models';
 import { SupplierProd } from '@core/models/product.models';
 import { ExternalAuthService } from '@core/services/external-auth.service';
 import { SuppliersService } from '@core/services/suppliers/supplier.service';
-import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
+import { ISupplier } from '@core/interfaces/supplier.interface';
 import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
@@ -49,6 +49,7 @@ declare var $: any;
 })
 
 export class CheckoutComponent implements OnInit, OnDestroy {
+
   formData: FormGroup;
   cartItems: CartItem[] = [];
   countrys: Country[];
@@ -214,6 +215,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
+  //#region Metodos Componente
   ngOnInit(): void {
     console.clear();
     this.countrys = [];
@@ -331,8 +333,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   }
 
-  // tslint:disable-next-line: typedef
-  async notAvailableProducts(withMessage: boolean = true) {
+  async notAvailableProducts(withMessage: boolean = true): Promise<void> {
     if (withMessage) {
       await infoEventAlert(
         'Accion no disponible',
@@ -342,8 +343,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  // tslint:disable-next-line: typedef
-  async onSubmit() {
+  async onSubmit(): Promise<any> {
     if (this.formData.valid) {
       // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
       if (this.existeMetodoPago) {
@@ -360,7 +360,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.subscr.unsubscribe();
     document.querySelector('body').removeEventListener('click', () => this.clearOpacity());
   }
+  //#endregion Metodos Componentes
 
+  //#region Metodos
   onSetUser(formData: FormGroup, stripeCustomer: string): UserInput {
     const register = new UserInput();
     register.id = '';
@@ -628,41 +630,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSetEstados(event): void {
-    const estado = event.value.split(':', 2);
-    this.estados = [];
-    this.municipios = [];
-    this.selectEstado = new Estado();
-    this.selectMunicipio = new Municipio();
-    this.selectColonia = '';
-    this.countrys.forEach(country => {
-      if (country.c_pais === estado[1].split(' ').join('')) {
-        this.estados = country.estados;
-        this.formData.controls.selectEstado.setValue('');
-        this.formData.controls.selectMunicipio.setValue('');
-        this.formData.controls.selectColonia.setValue('');
-        this.formData.controls.directions.setValue('');
-      }
-    });
-  }
-
-  onSetMunicipios(event): void {
-    const municipio = event.value.split(':', 2);
-    this.municipios = [];
-    this.colonias = [];
-    this.selectMunicipio = new Municipio();
-    this.selectColonia = '';
-    this.estados.forEach(estado => {
-      if (estado.c_estado === municipio[1].split(' ').join('')) {
-        this.municipios = estado.municipios;
-        this.formData.controls.selectMunicipio.setValue('');
-      }
-    });
-  }
-
-  onSetColonias(event): void {
-  }
-
   onHabilitaPago(): void {
     this.existeMetodoPago = true;
   }
@@ -710,20 +677,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
   }
+  //#endregion Metodos
 
-  sendEmail(charge: ICharge): void {
-    const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
-    const mail: IMail = {
-      to: receiptEmail,
-      subject: 'Confirmacion del pedido',
-      html: `
-        El pedido se ha realizado correctamente.
-        Puedes consultarlo en <a href="${charge.receipt_url}" target="_blank"> esta url</a>
-      `
-    };
-    this.mailService.send(mail).pipe(first()).subscribe();
-  }
-
+  //#region  Enviar Ordenes
   async sendOrderSupplier(): Promise<any> {
     // Cuando la consulta externa no requiere token
     // if (!supplier.token) {
@@ -769,5 +725,58 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     return await 'Resultado';
   }
+  //#endregion Enviar Ordenes
+
+  //#region Emails
+  sendEmail(charge: ICharge): void {
+    const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
+    const mail: IMail = {
+      to: receiptEmail,
+      subject: 'Confirmacion del pedido',
+      html: `
+        El pedido se ha realizado correctamente.
+        Puedes consultarlo en <a href="${charge.receipt_url}" target="_blank"> esta url</a>
+      `
+    };
+    this.mailService.send(mail).pipe(first()).subscribe();
+  }
+  //#endregion Emails
+
+  //#region Direccion
+  onSetEstados(event): void {
+    const estado = event.value.split(':', 2);
+    this.estados = [];
+    this.municipios = [];
+    this.selectEstado = new Estado();
+    this.selectMunicipio = new Municipio();
+    this.selectColonia = '';
+    this.countrys.forEach(country => {
+      if (country.c_pais === estado[1].split(' ').join('')) {
+        this.estados = country.estados;
+        this.formData.controls.selectEstado.setValue('');
+        this.formData.controls.selectMunicipio.setValue('');
+        this.formData.controls.selectColonia.setValue('');
+        this.formData.controls.directions.setValue('');
+      }
+    });
+  }
+
+  onSetMunicipios(event): void {
+    const municipio = event.value.split(':', 2);
+    this.municipios = [];
+    this.colonias = [];
+    this.selectMunicipio = new Municipio();
+    this.selectColonia = '';
+    this.estados.forEach(estado => {
+      if (estado.c_estado === municipio[1].split(' ').join('')) {
+        this.municipios = estado.municipios;
+        this.formData.controls.selectMunicipio.setValue('');
+      }
+    });
+  }
+
+  onSetColonias(event): void {
+  }
+  //#endregion Direccion
 
 }
