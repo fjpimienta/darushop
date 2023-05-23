@@ -1,3 +1,6 @@
+/**
+ * Clase de Productos Enviados.
+ */
 export class ProductShipment {
   producto: string;
   cantidad: string;

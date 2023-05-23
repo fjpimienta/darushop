@@ -1,3 +1,6 @@
+/**
+ * Clase para pedidos CVA
+ */
 export class OrderCva {
   NumOC: string;
   Paqueteria: string;
@@ -15,6 +18,24 @@ export class OrderCva {
   Atencion: string;
 }
 
+/**
+ * Clase de Envios para CVA
+ */
+export class EnvioCVA {
+  nombre: string;
+  direccion: string;
+  entreCalles: string;
+  noExterior: string;
+  colonia: string;
+  estado: string;
+  ciudad: string;
+  codigoPostal: number;
+  telefono: string;
+}
+
+/**
+ * Clase interna de Productos CVA
+ */
 export class ProductoCva {
   clave: string;
   cantidad: string;

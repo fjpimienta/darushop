@@ -1,3 +1,6 @@
+/**
+ * Clase para el codigo postal general.
+ */
 export class Codigopostal {
   c_pais?: string;
   d_pais?: string;

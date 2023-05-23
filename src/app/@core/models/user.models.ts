@@ -1,3 +1,6 @@
+/**
+ * Clase de los datos de entrada del usuario.
+ */
 export class UserInput {
   id: string;
   name: string;
@@ -11,6 +14,9 @@ export class UserInput {
   policy?: boolean;
 }
 
+/**
+ * Clase de las direcciones del usuario.
+ */
 export class AddressInput {
   c_pais: string;
   d_pais: string;

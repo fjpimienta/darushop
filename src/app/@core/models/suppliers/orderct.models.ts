@@ -1,3 +1,6 @@
+/**
+ * Clase de Ordenes para CT
+ */
 export class OrderCt {
   idPedido: number;
   almacen: string;
@@ -6,6 +9,9 @@ export class OrderCt {
   producto: ProductoCt[];
 }
 
+/**
+ * Clase de Envios para CT
+ */
 export class EnvioCt {
   nombre: string;
   direccion: string;
@@ -18,6 +24,9 @@ export class EnvioCt {
   telefono: string;
 }
 
+/**
+ * Clase interna de Productos CT
+ */
 export class ProductoCt {
   cantidad: number;
   clave: string;
