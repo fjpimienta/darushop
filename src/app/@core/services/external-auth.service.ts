@@ -435,11 +435,8 @@ export class ExternalAuthService {
         params
       });
       const Content = he.decode(response.data.toString('utf-8'));
-      console.log('Content: ', Content);
-      console.log('apiSelect.operation: ', apiSelect.operation);
       const datos = await this.parseXmlToJson(Content, apiSelect.operation);
-      console.log('datos: ', datos);
-
+      return await datos;
     } catch (error) {
       throw new Error(error.message);
     }

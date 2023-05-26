@@ -213,6 +213,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         basicAlert(TYPE_ALERT.ERROR, 'No hay datos de la tarjeta');
       }
     });
+
   }
 
   //#region Metodos Componente
@@ -455,6 +456,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // const capitalCpIng = '';
     const delivery = new Delivery();
     let warehouse = new Warehouse();
+    warehouse.shipments = [];
     let id = '1';
     delivery.id = id;
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
@@ -462,164 +464,156 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     // Verificar productos por proveedor.
     let i = 0;
-    const suppliers = await this.suppliersService.getSuppliers()
+    const suppliers = await this.suppliersService.getSuppliers()          // Recuperar la lista de Proveedores
       .then(async result => {
-        if (result.status) {
-          result.suppliers.forEach(async supplier => {
-            const supplierProd = new SupplierProd();                       // Revisar proveedors con apis
-            const warehouseEstado = new Warehouse();
-            const warehouseCapital = new Warehouse();
-            const productsEstado: ProductShipment[] = [];
-            const productsCapital: ProductShipment[] = [];
-            // Set Api Para Ordenes
-            const apiOrder = await this.suppliersService.getApiSupplier(supplier.slug, 'order', 'PedidoWeb')
-              .then(async resultApiOrder => {
-                // TODO - Solo prueba Listar Pedidos
-                if (resultApiOrder.status) {
-                  const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, resultApiOrder.apiSupplier, '')
-                    .then(
-                      async resultPedido => {
-                        try {
-                          // console.log('resultPedido: ', resultPedido);
-                          return await resultPedido;
-                        } catch (error) {
-                          throw await new Error(error.message);
-                        }
-                      }
-                    );
-                }
-                return await result.apiSupplier;
-              })
-              .catch(err => console.error(err));
-            console.log('apiOrder: ', apiOrder);
-            // Set Api para Envios
-            const apiShipment = await this.suppliersService.getApiSupplier(supplier.slug, 'envios', 'paqueterias')
-              .then(async resultApiShipment => {
-                if (resultApiShipment.status) {
-                  // Agrupar Productos Por Proveedor
-                  // ==> TODO
-                  // Si hay Api para el Proveedor.
-                  if (supplier.slug === this.cartItems[0].suppliersProd.idProveedor) {
-                    this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
-                      if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
-                        cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
-                          if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
-                            || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
-                            if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
-                              if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
-                                const productShipment = new ProductShipment();
-                                productShipment.producto = cartItem.sku;
-                                productShipment.cantidad = cartItem.qty.toString();
-                                productShipment.precio = cartItem.price;
-                                productShipment.moneda = cartItem.suppliersProd.moneda;
-                                productShipment.almacen = branchOffice.id;
-                                productsEstado.push(productShipment);
-                                warehouseEstado.cp = branchOffice.cp;
-                                warehouseEstado.name = branchOffice.name;
-                                warehouseEstado.estado = branchOffice.estado;
-                                warehouseEstado.latitud = branchOffice.latitud;
-                                warehouseEstado.longitud = branchOffice.longitud;
-                              }
-                              if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
-                                const productShipment = new ProductShipment();
-                                productShipment.producto = cartItem.sku;
-                                productShipment.cantidad = cartItem.qty.toString();
-                                productShipment.precio = cartItem.price;
-                                productShipment.moneda = cartItem.suppliersProd.moneda;
-                                productShipment.almacen = branchOffice.id;
-                                productsCapital.push(productShipment);
-                                warehouseCapital.cp = branchOffice.cp;
-                                warehouseCapital.name = branchOffice.name;
-                                warehouseCapital.estado = branchOffice.estado;
-                                warehouseCapital.latitud = branchOffice.latitud;
-                                warehouseCapital.longitud = branchOffice.longitud;
-                              }
-                            }
-                          }
-                        });
-                        if (productsEstado.length === this.cartItems.length) {
-                          i += 1;
-                          warehouse = warehouseEstado;
-                          warehouse.productShipments = productsEstado;
-                        } else if (productsCapital.length === this.cartItems.length) {
-                          i += 1;
-                          warehouse = warehouseCapital;
-                          warehouse.productShipments = productsCapital;
-                        }
-                        supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
-                        supplierProd.codigo = cartItem.suppliersProd.codigo;
-                        supplierProd.price = cartItem.suppliersProd.price;
-                        supplierProd.moneda = cartItem.suppliersProd.moneda;
-                        warehouse.suppliersProd = supplierProd;
-                        id += 1;
-                      }
-                    });
-                    // Cotizar envio
-                    warehouse.cp = cpDestino;
-                    if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
-                      warehouse.productShipments = productsEstado;
-                    } else if (productsCapital.length <= this.cartItems.length) {      // Si hay disponibilidad en capital
-                      warehouse.productShipments = productsCapital;
-                    }
-                    const shipmentsCost = await this.externalAuthService.onShippingEstimate(
-                      supplier, resultApiShipment.apiSupplier, warehouse, false)
-                      .then(
-                        async (resultShip) => {
-                          const shipments: Shipment[] = [];
-                          // tslint:disable-next-line: forin
-                          for (const key in resultShip) {
-                            const shipment = new Shipment();
-                            shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
-                            shipment.costo = resultShip[key].total;
-                            shipment.metodoShipping = resultShip[key].metodo;
-                            shipments.push(shipment);
-                          }
-                          return shipments;
-                        }
-                      );
-                    // this.shipments = shipmentsCost;
-                    shipmentsCost.forEach(ship => {
-                      this.shipments.push(ship);
-                    });
-                  }
-                  return await resultApiShipment.shipmentsCost;
-                }
-              });
-          });
-        }
         return await result.suppliers;
       });
-
-    // Cotizar con las paqueterias Externas a Proveedores
-    const shipmentsExt = await this.shippingsService.getShippings()
+    const shippings = await this.shippingsService.getShippings()          // Recuperar la lista de Paqueterias
       .then(async result => {
-        if (result.status && result.shippings.length > 0) {
-          result.shippings.forEach(async shipping => {
-            const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
-            const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
-              shipping, apiSelectShip, warehouse, false)
-              .then(
-                async (resultShipment) => {
-                  const shipments: Shipment[] = [];
-                  // tslint:disable-next-line: forin
-                  for (const key in resultShipment) {
-                    const shipment = new Shipment();
-                    shipment.empresa = resultShipment[key].empresa.toUpperCase();
-                    shipment.costo = resultShipment[key].costo;
-                    shipment.metodoShipping = '';
-                    shipments.push(shipment);
-                  }
-                  return await shipments;
-                }
-              );
-            shippingsEstimate.forEach(ship => {
-              this.shipments.push(ship);
-            });
-          });
-        }
-        return await this.shipments;
+        return await result.shippings;
       });
-    console.log('shipmentsExt: ', shipmentsExt);
+
+    if (suppliers.length > 1) {
+      suppliers.forEach(async supplier => {
+        const supplierProd = new SupplierProd();                          // Revisar proveedors con apis
+        const warehouseEstado = new Warehouse();
+        const warehouseCapital = new Warehouse();
+        const productsEstado: ProductShipment[] = [];
+        const productsCapital: ProductShipment[] = [];
+
+        // Set Api para Envios
+        const apiShipment = await this.suppliersService.getApiSupplier(supplier.slug, 'envios', 'paqueterias')
+          .then(async result => {
+            if (result.status) {
+              return await result.apiSupplier;
+            }
+          });
+        if (apiShipment) {                                                          // Si hay Api para el Proveedor.
+          // Agrupar Productos Por Proveedor
+          // ==> TODO
+          if (supplier.slug === this.cartItems[0].suppliersProd.idProveedor) {
+            this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
+              if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
+                cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
+                  if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
+                    || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
+                    if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
+                      if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
+                        const productShipment = new ProductShipment();
+                        productShipment.producto = cartItem.sku;
+                        productShipment.cantidad = cartItem.qty.toString();
+                        productShipment.precio = cartItem.price;
+                        productShipment.moneda = cartItem.suppliersProd.moneda;
+                        productShipment.almacen = branchOffice.id;
+                        productsEstado.push(productShipment);
+                        warehouseEstado.cp = branchOffice.cp;
+                        warehouseEstado.name = branchOffice.name;
+                        warehouseEstado.estado = branchOffice.estado;
+                        warehouseEstado.latitud = branchOffice.latitud;
+                        warehouseEstado.longitud = branchOffice.longitud;
+                      }
+                      if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
+                        const productShipment = new ProductShipment();
+                        productShipment.producto = cartItem.sku;
+                        productShipment.cantidad = cartItem.qty.toString();
+                        productShipment.precio = cartItem.price;
+                        productShipment.moneda = cartItem.suppliersProd.moneda;
+                        productShipment.almacen = branchOffice.id;
+                        productsCapital.push(productShipment);
+                        warehouseCapital.cp = branchOffice.cp;
+                        warehouseCapital.name = branchOffice.name;
+                        warehouseCapital.estado = branchOffice.estado;
+                        warehouseCapital.latitud = branchOffice.latitud;
+                        warehouseCapital.longitud = branchOffice.longitud;
+                      }
+                    }
+                  }
+                });
+                if (productsEstado.length === this.cartItems.length) {
+                  i += 1;
+                  warehouse = warehouseEstado;
+                  warehouse.productShipments = productsEstado;
+                } else if (productsCapital.length === this.cartItems.length) {
+                  i += 1;
+                  warehouse = warehouseCapital;
+                  warehouse.productShipments = productsCapital;
+                }
+                supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
+                supplierProd.codigo = cartItem.suppliersProd.codigo;
+                supplierProd.price = cartItem.suppliersProd.price;
+                supplierProd.moneda = cartItem.suppliersProd.moneda;
+                warehouse.suppliersProd = supplierProd;
+                id += 1;
+              }
+            });
+            // Cotizar envio
+            warehouse.cp = cpDestino;
+            if (productsEstado.length === this.cartItems.length) {                  // Si hay disponibilidad en estado
+              warehouse.productShipments = productsEstado;
+            } else if (productsCapital.length <= this.cartItems.length) {           // Si hay disponibilidad en capital
+              warehouse.productShipments = productsCapital;
+            }
+            const shipmentsCost = await this.externalAuthService.onShippingEstimate(
+              supplier, apiShipment, warehouse, false)
+              .then(async (resultShip) => {
+                const shipments: Shipment[] = [];
+                // tslint:disable-next-line: forin
+                for (const key in resultShip) {
+                  const shipment = new Shipment();
+                  shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
+                  shipment.costo = resultShip[key].total;
+                  shipment.metodoShipping = resultShip[key].metodo;
+                  shipments.push(shipment);
+                }
+                return shipments;
+              }
+              );
+            const shipmentsTemp: Shipment[] = [];
+            shipmentsCost.forEach(ship => {
+              shipmentsTemp.push(ship);
+            });
+            warehouse.shipments = shipmentsTemp;
+            this.shipments = warehouse.shipments;
+
+            // Cotizar con las paqueterias Externas a Proveedores
+            if (warehouse.shipments.length <= 0) {
+              const shipmentsExt = await this.shippingsService.getShippings()
+                .then(async result => {
+                  if (result.status && result.shippings.length > 0) {
+                    result.shippings.forEach(async shipping => {
+                      const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
+                      const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
+                        shipping, apiSelectShip, warehouse, false)
+                        .then(
+                          async (resultShipment) => {
+                            const shipments: Shipment[] = [];
+                            // tslint:disable-next-line: forin
+                            for (const key in resultShipment) {
+                              const shipment = new Shipment();
+                              shipment.empresa = resultShipment[key].empresa.toUpperCase();
+                              shipment.costo = resultShipment[key].costo;
+                              shipment.metodoShipping = '';
+                              shipments.push(shipment);
+                            }
+                            return await shipments;
+                          }
+                        );
+                      shippingsEstimate.forEach(ship => {
+                        this.shipments.push(ship);
+                      });
+                    });
+                  }
+                  return await this.shipments;
+                });
+            }
+
+          }
+        }
+      });
+    }
+
+
+
 
     // Elaborar Pedido Previo a facturacion.
   }
@@ -779,4 +773,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
   //#endregion Direccion
 
+  //#region Pedidos
+  async PedidosEjemplo(supplier: ISupplier): Promise<any> {
+    // Set Api Para Ordenes
+    const apiOrder = await this.suppliersService.getApiSupplier(supplier.slug, 'order', 'PedidoWeb')
+      .then(async resultApiOrder => {
+        // TODO - Solo prueba Listar Pedidos
+        if (resultApiOrder.status) {
+          return await resultApiOrder.apiSupplier;
+        }
+      })
+      .catch(err => console.error(err));
+    if (apiOrder) {
+      const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
+        .then(async resultPedido => {
+          try {
+            console.log('resultPedido: ', resultPedido);
+            return await resultPedido;
+          } catch (error) {
+            throw await new Error(error.message);
+          }
+        });
+      console.log('pedidos: ', pedidos);
+    }
+  }
+  //#endregion
 }
