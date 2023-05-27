@@ -69,6 +69,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   referencias: string;
   codigosPostales: string[];
   existeMetodoPago: boolean;
+  existePaqueteria: boolean;
   stripeCustomer: string;
   errorSaveUser: boolean;
   // warehouses: Warehouse[];
@@ -98,6 +99,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   register: UserInput = new UserInput();
 
   shipments: Shipment[] = [];
+  warehouse: Warehouse = new Warehouse();
+  warehouses: Warehouse[] = [];
 
   constructor(
     private router: Router,
@@ -196,7 +199,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.sendEmail(result.charge);
                   this.cartService.clearCart(false);
                   // Elaborar Pedido Proveedor
-                  await this.sendOrderSupplier();
+                  const OrderSupplier = await this.sendOrderSupplier();
                   // Enviar correo electronico
                   await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
                   this.router.navigate(['/shop/dashboard']);
@@ -236,6 +239,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.referencias = '';
     this.codigosPostales = [];
     this.existeMetodoPago = false;
+    this.existePaqueteria = false;
 
     this.authService.start();
 
@@ -264,7 +268,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       email: ['', Validators.required],
       crearcuenta: [false],
       references: [''],
-      existeMetodoPago: [false]
+      existeMetodoPago: [false],
+      existePaqueteria: [false]
     });
 
     // Obtiene los datos de la sesión
@@ -346,11 +351,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onSubmit(): Promise<any> {
     if (this.formData.valid) {
+      const OrderSupplier = await this.sendOrderSupplier();
+      console.log('OrderSupplier: ', OrderSupplier);
+      // return await infoEventAlert('Se detiene por debug.', '');
       // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
-      if (this.existeMetodoPago) {
+      if (this.existeMetodoPago && this.existePaqueteria) {
         return await this.stripePaymentService.takeCardToken(true);
+      } else if (this.existePaqueteria) {
+        return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
       } else {
-        return await infoEventAlert('Se requiere definir un método de pago.', '');
+        return await infoEventAlert('Se requiere definir una Paqueteria para el Env&iacute;o.', '');
       }
     } else {
       return await infoEventAlert('Verificar los campos requeridos.', '');
@@ -454,12 +464,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const capitalCpCT = '2700';
     const capitalCpCva = '06820';
     // const capitalCpIng = '';
-    const delivery = new Delivery();
-    let warehouse = new Warehouse();
-    warehouse.shipments = [];
-    let id = '1';
-    delivery.id = id;
-    delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+    this.warehouse = new Warehouse();
+    this.warehouse.shipments = [];
     this.shipments = [];
 
     // Verificar productos por proveedor.
@@ -468,6 +474,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       .then(async result => {
         return await result.suppliers;
       });
+    this.suppliers = suppliers;
     const shippings = await this.shippingsService.getShippings()          // Recuperar la lista de Paqueterias
       .then(async result => {
         return await result.shippings;
@@ -531,30 +538,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 });
                 if (productsEstado.length === this.cartItems.length) {
                   i += 1;
-                  warehouse = warehouseEstado;
-                  warehouse.productShipments = productsEstado;
+                  this.warehouse = warehouseEstado;
+                  this.warehouse.productShipments = productsEstado;
                 } else if (productsCapital.length === this.cartItems.length) {
                   i += 1;
-                  warehouse = warehouseCapital;
-                  warehouse.productShipments = productsCapital;
+                  this.warehouse = warehouseCapital;
+                  this.warehouse.productShipments = productsCapital;
                 }
                 supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
                 supplierProd.codigo = cartItem.suppliersProd.codigo;
                 supplierProd.price = cartItem.suppliersProd.price;
                 supplierProd.moneda = cartItem.suppliersProd.moneda;
-                warehouse.suppliersProd = supplierProd;
-                id += 1;
+                this.warehouse.suppliersProd = supplierProd;
               }
             });
             // Cotizar envio
-            warehouse.cp = cpDestino;
+            this.warehouse.cp = cpDestino;
             if (productsEstado.length === this.cartItems.length) {                  // Si hay disponibilidad en estado
-              warehouse.productShipments = productsEstado;
+              this.warehouse.productShipments = productsEstado;
             } else if (productsCapital.length <= this.cartItems.length) {           // Si hay disponibilidad en capital
-              warehouse.productShipments = productsCapital;
+              this.warehouse.productShipments = productsCapital;
             }
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(
-              supplier, apiShipment, warehouse, false)
+              supplier, apiShipment, this.warehouse, false)
               .then(async (resultShip) => {
                 const shipments: Shipment[] = [];
                 // tslint:disable-next-line: forin
@@ -572,18 +578,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             shipmentsCost.forEach(ship => {
               shipmentsTemp.push(ship);
             });
-            warehouse.shipments = shipmentsTemp;
-            this.shipments = warehouse.shipments;
+            this.warehouse.shipments = shipmentsTemp;
+            this.shipments = this.warehouse.shipments;
 
             // Cotizar con las paqueterias Externas a Proveedores
-            if (warehouse.shipments.length <= 0) {
+            if (this.warehouse.shipments.length <= 0) {
               const shipmentsExt = await this.shippingsService.getShippings()
                 .then(async result => {
                   if (result.status && result.shippings.length > 0) {
                     result.shippings.forEach(async shipping => {
                       const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
                       const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
-                        shipping, apiSelectShip, warehouse, false)
+                        shipping, apiSelectShip, this.warehouse, false)
                         .then(
                           async (resultShipment) => {
                             const shipments: Shipment[] = [];
@@ -606,7 +612,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   return await this.shipments;
                 });
             }
-
+            this.warehouses.push(this.warehouse);
           }
         }
       });
@@ -619,6 +625,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   changeShipping(costo: number): void {
+    // console.log(this.shipping;)
+    this.existePaqueteria = true;
     this.cartService.priceTotal.subscribe(total => {
       this.totalPagar = (total + costo).toFixed(2).toString();
     });
@@ -676,6 +684,27 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#region  Enviar Ordenes
   async sendOrderSupplier(): Promise<any> {
     // Cuando la consulta externa no requiere token
+    const delivery = new Delivery();
+    const id = '1';
+    delivery.id = id;
+    delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+    delivery.warehouses = this.warehouses;
+    // Generar modelo de cada proveedor
+    this.suppliers.forEach(supplier => {
+      this.warehouses.forEach(warehouse => {
+        if (supplier.slug === warehouse.suppliersProd.idProveedor) {
+          console.log('supplier: ', supplier);
+        }
+      });
+    });
+
+
+    // Levantar la Orden al Proveedor
+
+
+    // Confirmar Pedido
+
+
     // if (!supplier.token) {
     //   let resultados;
     //   switch (supplier.slug) {
@@ -796,6 +825,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         });
       console.log('pedidos: ', pedidos);
     }
+  }
+
+  async EfectuarPedidos(): Promise<any> {
+    return await 'Pedido Elaborado';
   }
   //#endregion
 }
