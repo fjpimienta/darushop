@@ -658,32 +658,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onHabilitaPago(payMent: string): void {
-    switch (payMent) {
-      case PAY_STRIPE:
-        this.typePay = PAY_STRIPE;
-        break;
-      case PAY_OPENPAY:
-        this.typePay = PAY_OPENPAY;
-        break;
-      case PAY_DEPOSIT:
-        this.typePay = PAY_DEPOSIT;
-        break;
-      case PAY_PAYPAL:
-        this.typePay = PAY_PAYPAL;
-        break;
-      case PAY_MERCADO_PAGO:
-        this.typePay = PAY_MERCADO_PAGO;
-        break;
-      case PAY_PAYU:
-        this.typePay = PAY_PAYU;
-        break;
-      case PAY_FREE:
-        this.typePay = PAY_FREE;
-        break;
-      default:
-        this.typePay = PAY_TRANSFER;
-        break;
-    }
+    this.typePay = payMent;
     this.existeMetodoPago = true;
   }
 
