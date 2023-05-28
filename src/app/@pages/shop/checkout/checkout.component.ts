@@ -39,6 +39,8 @@ import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
+import { PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
+
 
 declare var $: any;
 
@@ -101,6 +103,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   shipments: Shipment[] = [];
   warehouse: Warehouse = new Warehouse();
   warehouses: Warehouse[] = [];
+  typePay: string;
+  PAY_STRIPE: string = PAY_STRIPE;
+  PAY_OPENPAY: string = PAY_OPENPAY;
+  PAY_TRANSFER: string = PAY_TRANSFER;
+  PAY_DEPOSIT: string = PAY_DEPOSIT;
+  PAY_PAYPAL: string = PAY_PAYPAL;
+  PAY_PAYU: string = PAY_PAYU;
+  PAY_FREE: string = PAY_FREE;
 
   constructor(
     private router: Router,
@@ -196,7 +206,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 charge: ICharge
               }) => {
                 if (result.status) {
-                  this.sendEmail(result.charge);
+                  this.sendEmail(result.charge, '', '');
                   this.cartService.clearCart(false);
                   // Elaborar Pedido Proveedor
                   const OrderSupplier = await this.sendOrderSupplier();
@@ -351,12 +361,26 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onSubmit(): Promise<any> {
     if (this.formData.valid) {
-      const OrderSupplier = await this.sendOrderSupplier();
-      console.log('OrderSupplier: ', OrderSupplier);
-      // return await infoEventAlert('Se detiene por debug.', '');
       // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
       if (this.existeMetodoPago && this.existePaqueteria) {
-        return await this.stripePaymentService.takeCardToken(true);
+        switch (this.typePay) {
+          case PAY_STRIPE:
+            return await this.stripePaymentService.takeCardToken(true);
+            break;
+          case PAY_OPENPAY:
+            break;
+          case PAY_TRANSFER:
+            break;
+          case PAY_DEPOSIT:
+            break;
+          case PAY_FREE:
+            const OrderSupplier = await this.sendOrderSupplier();
+            const NewProperty = 'receipt_email';
+            OrderSupplier[NewProperty] = 'fjpimienta@gmail.com';
+            this.sendEmail(OrderSupplier, 'Mensaje de Prueba', 'Hola Mundo');
+            console.log('OrderSupplier: ', OrderSupplier);
+            break;
+        }
       } else if (this.existePaqueteria) {
         return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
       } else {
@@ -464,9 +488,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const capitalCpCT = '2700';
     const capitalCpCva = '06820';
     // const capitalCpIng = '';
+    this.shipments = [];
+    this.warehouses = [];
     this.warehouse = new Warehouse();
     this.warehouse.shipments = [];
-    this.shipments = [];
 
     // Verificar productos por proveedor.
     let i = 0;
@@ -632,7 +657,33 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  onHabilitaPago(): void {
+  onHabilitaPago(payMent: string): void {
+    switch (payMent) {
+      case PAY_STRIPE:
+        this.typePay = PAY_STRIPE;
+        break;
+      case PAY_OPENPAY:
+        this.typePay = PAY_OPENPAY;
+        break;
+      case PAY_DEPOSIT:
+        this.typePay = PAY_DEPOSIT;
+        break;
+      case PAY_PAYPAL:
+        this.typePay = PAY_PAYPAL;
+        break;
+      case PAY_MERCADO_PAGO:
+        this.typePay = PAY_MERCADO_PAGO;
+        break;
+      case PAY_PAYU:
+        this.typePay = PAY_PAYU;
+        break;
+      case PAY_FREE:
+        this.typePay = PAY_FREE;
+        break;
+      default:
+        this.typePay = PAY_TRANSFER;
+        break;
+    }
     this.existeMetodoPago = true;
   }
 
@@ -746,20 +797,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // }
 
 
-    return await 'Resultado';
+    return await delivery;
   }
   //#endregion Enviar Ordenes
 
-  //#region Emails
-  sendEmail(charge: ICharge): void {
+  //#region Emails  //ICharge
+  sendEmail(charge: any, issue: string = '', message: string = ''): void {
     const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
+    const subject = issue !== '' ? issue : 'Confirmacion del pedido';
+    const html = message !== '' ? message : `El pedido se ha realizado correctamente.
+            Puedes consultarlo en <a href="${charge.receipt_url}" target="_blank"> esta url</a>`;
+    console.log('receiptEmail: ', receiptEmail);
+    console.log('subject: ', subject);
+    console.log('html: ', html);
     const mail: IMail = {
       to: receiptEmail,
-      subject: 'Confirmacion del pedido',
-      html: `
-        El pedido se ha realizado correctamente.
-        Puedes consultarlo en <a href="${charge.receipt_url}" target="_blank"> esta url</a>
-      `
+      subject,
+      html
     };
     this.mailService.send(mail).pipe(first()).subscribe();
   }
