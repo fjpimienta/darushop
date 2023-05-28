@@ -379,6 +379,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             OrderSupplier[NewProperty] = 'fjpimienta@gmail.com';
             this.sendEmail(OrderSupplier, 'Mensaje de Prueba', 'Hola Mundo');
             console.log('OrderSupplier: ', OrderSupplier);
+            this.cartService.clearCart(false);
+            await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
+            this.router.navigate(['/shop/dashboard']);
             break;
         }
       } else if (this.existePaqueteria) {
@@ -719,7 +722,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.suppliers.forEach(supplier => {
       this.warehouses.forEach(warehouse => {
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
-          console.log('supplier: ', supplier);
+
         }
       });
     });
@@ -782,9 +785,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const subject = issue !== '' ? issue : 'Confirmacion del pedido';
     const html = message !== '' ? message : `El pedido se ha realizado correctamente.
             Puedes consultarlo en <a href="${charge.receipt_url}" target="_blank"> esta url</a>`;
-    console.log('receiptEmail: ', receiptEmail);
-    console.log('subject: ', subject);
-    console.log('html: ', html);
     const mail: IMail = {
       to: receiptEmail,
       subject,
