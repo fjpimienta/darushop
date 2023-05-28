@@ -365,7 +365,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.existeMetodoPago && this.existePaqueteria) {
         switch (this.typePay) {
           case PAY_STRIPE:
-            return await this.stripePaymentService.takeCardToken(true);
+            // return await this.stripePaymentService.takeCardToken(true);
+            this.payStripe();
             break;
           case PAY_OPENPAY:
             break;
@@ -710,6 +711,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
   //#endregion Metodos
 
+  //#region Cobros
+  async payStripe(): Promise<any> {
+    await this.stripePaymentService.takeCardToken(true);
+    return await true;
+  }
+  //#endregion Cobros
+
   //#region  Enviar Ordenes
   async sendOrderSupplier(): Promise<any> {
     // Cuando la consulta externa no requiere token
@@ -722,7 +730,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.suppliers.forEach(supplier => {
       this.warehouses.forEach(warehouse => {
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
-
+          console.log('supplier.slug: ', supplier.slug);
         }
       });
     });
