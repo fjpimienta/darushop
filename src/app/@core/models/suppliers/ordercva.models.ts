@@ -38,5 +38,5 @@ export class EnvioCVA {
  */
 export class ProductoCva {
   clave: string;
-  cantidad: string;
+  cantidad: number;
 }

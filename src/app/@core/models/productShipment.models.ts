@@ -3,7 +3,7 @@
  */
 export class ProductShipment {
   producto: string;
-  cantidad: string;
+  cantidad: number;
   precio: number;
   moneda: string;
   almacen: string;
