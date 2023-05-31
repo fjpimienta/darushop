@@ -25,3 +25,8 @@ export const PAY_PAYPAL = 'PAGO A TRAVES DE PAYPAL';
 export const PAY_MERCADO_PAGO = 'PAGO A TRAVES DE PAYPAL';
 export const PAY_PAYU = 'PAGO A TRAVES DE PAYU';
 export const PAY_FREE = 'SIN PAGO';
+
+// TipoFlete CVA
+export const SF = 'Sin Flete';
+export const FF = 'Flete cobrado en la factura de CVA';
+export const FS = 'Flete cobrado en la factura de CVA Asegurado';
