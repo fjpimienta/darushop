@@ -34,6 +34,19 @@ export const SUPPLIER_QUERY = gql`
   ${SUPPLIER_FRAGMENT}
 `;
 
+export const SUPPLIER_NAME_QUERY = gql`
+  query supplierName($name: String!){
+    supplierName (name: $name) {
+      status
+      message
+      supplierName {
+        ...SupplierObject
+      }
+    }
+  }
+  ${SUPPLIER_FRAGMENT}
+`;
+
 export const SUPPLIER_ID_QUERY = gql`
 query {
    supplierId{
