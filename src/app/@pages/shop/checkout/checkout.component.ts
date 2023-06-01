@@ -28,7 +28,6 @@ import { UsersService } from '@core/services/users.service';
 import { AddressInput, UserInput } from '@core/models/user.models';
 import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
-// import { WarehousesService } from '@core/services/warehouses.service';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Delivery } from '@core/models/delivery.models';
 import { SupplierProd } from '@core/models/product.models';
@@ -39,7 +38,10 @@ import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
-import { PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
+import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
+import { EnvioCt, OrderCt, ProductoCt } from '@core/models/suppliers/orderct.models';
+import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
+import { Apis, Supplier } from '@core/models/suppliers/supplier';
 
 
 declare var $: any;
@@ -74,7 +76,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   existePaqueteria: boolean;
   stripeCustomer: string;
   errorSaveUser: boolean;
-  // warehouses: Warehouse[];
   delivery: Delivery;
   deliverys: Delivery[];
   suppliers: [ISupplier];
@@ -109,6 +110,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   PAY_TRANSFER: string = PAY_TRANSFER;
   PAY_DEPOSIT: string = PAY_DEPOSIT;
   PAY_PAYPAL: string = PAY_PAYPAL;
+  PAY_MERCADO_PAGO: string = PAY_MERCADO_PAGO;
   PAY_PAYU: string = PAY_PAYU;
   PAY_FREE: string = PAY_FREE;
 
@@ -125,7 +127,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private chargeService: ChargeService,
     private mailService: MailService,
     public userService: UsersService,
-    // private warehousesService: WarehousesService,
     private externalAuthService: ExternalAuthService,
     public shippingsService: ShippingsService,
   ) {
@@ -257,11 +258,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.cartItems = items;
     });
 
-    // this.warehouses = [];
-    // this.warehousesService.getWarehouses(1, -1).subscribe(result => {
-    //   this.warehouses = result.warehouses;
-    // });
-
     document.querySelector('body').addEventListener('click', () => this.clearOpacity());
 
     this.formData = this.formBuilder.group({
@@ -365,7 +361,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.existeMetodoPago && this.existePaqueteria) {
         switch (this.typePay) {
           case PAY_STRIPE:
-            // return await this.stripePaymentService.takeCardToken(true);
             this.payStripe();
             break;
           case PAY_OPENPAY:
@@ -374,15 +369,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             break;
           case PAY_DEPOSIT:
             break;
+          case PAY_PAYPAL:
+            break;
+          case PAY_MERCADO_PAGO:
+            break;
           case PAY_FREE:
             const OrderSupplier = await this.sendOrderSupplier();
             const NewProperty = 'receipt_email';
             OrderSupplier[NewProperty] = 'fjpimienta@gmail.com';
-            this.sendEmail(OrderSupplier, 'Mensaje de Prueba', 'Hola Mundo');
-            console.log('OrderSupplier: ', OrderSupplier);
-            this.cartService.clearCart(false);
-            await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
-            this.router.navigate(['/shop/dashboard']);
+            // this.sendEmail(OrderSupplier, 'Mensaje de Prueba', 'Hola Mundo');
+            // this.cartService.clearCart(false);
+            // await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
+            // this.router.navigate(['/shop/dashboard']);
             break;
         }
       } else if (this.existePaqueteria) {
@@ -537,7 +535,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
                         const productShipment = new ProductShipment();
                         productShipment.producto = cartItem.sku;
-                        productShipment.cantidad = cartItem.qty.toString();
+                        productShipment.cantidad = cartItem.qty;
                         productShipment.precio = cartItem.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
@@ -551,7 +549,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
                         const productShipment = new ProductShipment();
                         productShipment.producto = cartItem.sku;
-                        productShipment.cantidad = cartItem.qty.toString();
+                        productShipment.cantidad = cartItem.qty;
                         productShipment.precio = cartItem.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
@@ -642,6 +640,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 });
             }
             this.warehouses.push(this.warehouse);
+            console.log('this.warehouses: ', this.warehouses);
           }
         }
       });
@@ -654,7 +653,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   changeShipping(costo: number): void {
-    // console.log(this.shipping;)
     this.existePaqueteria = true;
     this.cartService.priceTotal.subscribe(total => {
       this.totalPagar = (total + costo).toFixed(2).toString();
@@ -719,6 +717,83 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Cobros
 
   //#region  Enviar Ordenes
+
+  setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse): any {
+    const user = delivery.user;
+    const dir = delivery.user.addresses[0];
+    switch (supplier.slug) {
+      case 'ct':
+        const enviosCt: EnvioCt[] = [];
+        const envioCt: EnvioCt = new EnvioCt();
+        envioCt.nombre = user.name + ' ' + user.lastname;
+        envioCt.direccion = dir.directions;
+        envioCt.entreCalles = dir.references;
+        envioCt.colonia = dir.d_asenta;
+        envioCt.estado = dir.d_estado;
+        envioCt.ciudad = dir.d_estado;
+        envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
+        envioCt.telefono = dir.phone;
+        enviosCt.push(envioCt);
+        const ProductosCt: ProductoCt[] = [];
+        warehouse.productShipments.forEach(prod => {
+          const productCt: ProductoCt = new ProductoCt();
+          productCt.cantidad = prod.cantidad;
+          productCt.clave = prod.producto;
+          productCt.moneda = prod.moneda;
+          productCt.precio = prod.precio;
+          ProductosCt.push(productCt);
+        });
+        const orderCtSupplier: OrderCt = {
+          idPedido: 1,
+          almacen: warehouse.productShipments[0].almacen,
+          tipoPago: '04',
+          envio: enviosCt,
+          producto: ProductosCt
+        };
+        return orderCtSupplier;
+      case 'cva':
+        const enviosCva: EnvioCVA[] = [];
+        const envioCva: EnvioCVA = new EnvioCVA();
+        envioCva.nombre = user.name + ' ' + user.lastname;
+        envioCva.direccion = dir.directions;
+        envioCva.entreCalles = dir.references;
+        envioCva.noExterior = dir.d_asenta;
+        envioCva.colonia = dir.d_asenta;
+        envioCva.estado = dir.d_estado;
+        envioCva.ciudad = dir.d_mnpio;
+        envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
+        envioCva.telefono = dir.phone;
+        enviosCva.push(envioCva);
+        const ProductosCva: ProductoCva[] = [];
+        warehouse.productShipments.forEach(prod => {
+          const productCva: ProductoCva = new ProductoCva();
+          productCva.clave = prod.producto;
+          productCva.cantidad = prod.cantidad;
+          ProductosCva.push(productCva);
+        });
+        const orderCvaSupplier: OrderCva = {
+          NumOC: '1',
+          Paqueteria: warehouse.productShipments[0].almacen,
+          CodigoSucursal: '',
+          PedidoBO: 'N',
+          Observaciones: 'Pedido de Prueba',
+          productos: ProductosCva,
+          TipoFlete: FF,
+          Calle: dir.directions,
+          Numero: '',
+          NumeroInt: '',
+          Colonia: dir.d_asenta,
+          Estado: dir.d_estado,
+          Ciudad: dir.d_mnpio,
+          Atencion: user.name + ' ' + user.lastname,
+        };
+        return orderCvaSupplier;
+      case 'ingram':
+        return '';
+    }
+    return '';
+  }
+
   async sendOrderSupplier(): Promise<any> {
     // Cuando la consulta externa no requiere token
     const delivery = new Delivery();
@@ -726,16 +801,33 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.id = id;
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
     delivery.warehouses = this.warehouses;
+    const ordersCt: OrderCt[] = [];
+    const ordersCva: OrderCva[] = [];
     // Generar modelo de cada proveedor
     this.suppliers.forEach(supplier => {
       this.warehouses.forEach(warehouse => {
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
-          console.log('supplier.slug: ', supplier.slug);
+          const order = this.setOrder(supplier, delivery, warehouse);
+          switch (warehouse.suppliersProd.idProveedor) {
+            case 'ct':
+              ordersCt.push(order);
+              break;
+            case 'cva':
+              ordersCva.push(order);
+              break;
+            case 'ingram':
+              break;
+          }
+          const orderNew = this.PedidosEjemplo(warehouse.suppliersProd.idProveedor)
+            .then(async (result) => {
+              console.log('PedidosEjemplo/result: ', result);
+            });
         }
       });
     });
-
-
+    delivery.ordersCt = ordersCt;
+    delivery.ordersCva = ordersCva;
+    console.log('delivery: ', delivery);
     // Levantar la Orden al Proveedor
 
 
@@ -781,8 +873,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     //       }
     //     );
     // }
-
-
     return await delivery;
   }
   //#endregion Enviar Ordenes
@@ -840,32 +930,63 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Direccion
 
   //#region Pedidos
-  async PedidosEjemplo(supplier: ISupplier): Promise<any> {
+  async PedidosEjemplo(supplierName: string): Promise<any> {
+    // get supplier
+    const supplier = await this.suppliersService.getSupplierByName(supplierName)
+      .then(async (result) => {
+        return await result;
+      });
+    let apiOrder: Apis = new Apis();
     // Set Api Para Ordenes
-    const apiOrder = await this.suppliersService.getApiSupplier(supplier.slug, 'order', 'PedidoWeb')
-      .then(async resultApiOrder => {
-        // TODO - Solo prueba Listar Pedidos
-        if (resultApiOrder.status) {
-          return await resultApiOrder.apiSupplier;
+    if (supplier.slug !== '') {
+      supplier.apis.forEach(api => {
+        if (api.type === 'order' && api.return === 'order') {
+          apiOrder = api;
         }
-      })
-      .catch(err => console.error(err));
+      });
+    }
     if (apiOrder) {
-      const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
-        .then(async resultPedido => {
-          try {
-            console.log('resultPedido: ', resultPedido);
-            return await resultPedido;
-          } catch (error) {
-            throw await new Error(error.message);
-          }
-        });
-      console.log('pedidos: ', pedidos);
+      console.log('Existe/apiOrder: ', apiOrder);
+      // const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
+      //   .then(async resultPedido => {
+      //     try {
+      //       console.log('resultPedido: ', resultPedido);
+      //       return await resultPedido;
+      //     } catch (error) {
+      //       throw await new Error(error.message);
+      //     }
+      //   });
+      // console.log('pedidos: ', pedidos);
     }
   }
 
   async EfectuarPedidos(): Promise<any> {
     return await 'Pedido Elaborado';
   }
+  //#endregion
+
+  //#region Ejemplos
+  // Set Api Para Ordenes
+
+  // const apiOrder = await this.suppliersService.getApiSupplier(supplierName, 'order', 'PedidoWeb')
+  //   .then(async resultApiOrder => {
+  //     // TODO - Solo prueba Listar Pedidos
+  //     if (resultApiOrder.status) {
+  //       return await resultApiOrder.apiSupplier;
+  //     }
+  //   })
+  //   .catch(err => console.error(err));
+
+  // const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
+  //   .then(async resultPedido => {
+  //     try {
+  //       console.log('resultPedido: ', resultPedido);
+  //       return await resultPedido;
+  //     } catch (error) {
+  //       throw await new Error(error.message);
+  //     }
+  //   });
+  // console.log('pedidos: ', pedidos);
+
   //#endregion
 }
