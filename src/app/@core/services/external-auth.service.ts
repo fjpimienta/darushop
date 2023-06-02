@@ -618,28 +618,30 @@ export class ExternalAuthService {
     switch (apiSelect.return) {
       case 'order':
         order.productos.forEach(product => {
-          soapProducts += '<producto>' + product.clave + '</producto>' + '<cantidad>' + product.cantidad + '</cantidad>';
+          soapProducts += `&lt;producto&gt;
+                        &lt;clave&gt;${product.clave}&lt;/clave&gt;
+                        &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
+                      &lt;/producto&gt;`;
         });
         soapDetail = `<XMLOC xsi:type="xsd:string">
-                <PEDIDO>
-                  <NumOC>${order.NumOC}</NumOC>
-                  <Paqueteria>${order.Paqueteria}</Paqueteria>
-                  <CodigoSucursal>${order.CodigoSucursal}</CodigoSucursal>
-                  <PedidoBO>${order.PedidoBO}</PedidoBO>
-                  <Observaciones>${order.Observaciones}</Observaciones>
-                  <productos>
+                  &lt;PEDIDO&gt;
+                  &lt;NumOC&gt;${order.NumOC}&lt;/NumOC&gt;
+                  &lt;Paqueteria&gt;${order.Paqueteria}&lt;/Paqueteria&gt;
+                  &lt;CodigoSucursal&gt;${order.CodigoSucursal}&lt;/CodigoSucursal&gt;
+                  &lt;PedidoBO&gt;${order.PedidoBO}&lt;/PedidoBO&gt;
+                  &lt;Observaciones&gt;${order.Observaciones}&lt;/Observaciones&gt;
+                  &lt;productos&gt;
                     ${soapProducts}
-                  </productos>
-                  <TipoFlete>${order.TipoFlete}</TipoFlete>
-                  <Calle>${order.Calle}</Calle>
-                  <Numero>${order.Numero}</Numero>
-                  <NumeroInt>${order.NumeroInt}</NumeroInt>
-                  <Colonia>${order.Colonia}</Colonia>
-                  <CP>${order.CodigoPostal}</CP>
-                  <Estado>${order.Estado}</Estado>
-                  <Ciudad>${order.Ciudad}</Ciudad>
-                  <Atencion>${order.Atencion}</Atencion>
-                </PEDIDO>
+                  &lt;/productos&gt;
+                  &lt;TipoFlete&gt;${order.TipoFlete}&lt;/TipoFlete&gt;
+                  &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
+                  &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
+                  &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
+                  &lt;Colonia&gt;${order.Colonia}&lt;/Colonia&gt;
+                  &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
+                  &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;
+                  &lt;Atencion&gt;${order.Atencion}&lt;/Atencion&gt;
+                  &lt;/PEDIDO&gt;
               </XMLOC>`;
         soapBody = 'PedidoWeb';
         break;
@@ -652,7 +654,7 @@ export class ExternalAuthService {
         body = `<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
           <soap:Body>
-            <${soapBody} xmlns="https://www.grupocva.com/pedidos_web/">
+            <${soapBody} xmlns="urn:PedidoWebwsdl#PedidoWeb">
               <Usuario>admin73766</Usuario>
               <PWD>VCTRNZ1EFOmR</PWD>
               ${soapDetail}
