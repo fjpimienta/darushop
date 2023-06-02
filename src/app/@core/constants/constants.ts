@@ -27,6 +27,6 @@ export const PAY_PAYU = 'PAGO A TRAVES DE PAYU';
 export const PAY_FREE = 'SIN PAGO';
 
 // TipoFlete CVA
-export const SF = 'Sin Flete';
-export const FF = 'Flete cobrado en la factura de CVA';
-export const FS = 'Flete cobrado en la factura de CVA Asegurado';
+export const SF = 'SF'; // 'Sin Flete';
+export const FF = 'FF'; // 'Flete cobrado en la factura de CVA';
+export const FS = 'FS'; // 'Flete cobrado en la factura de CVA Asegurado';

@@ -430,6 +430,7 @@ export class ExternalAuthService {
 
     try {
       const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=ListaPedidos';
+
       const response = await axios.post(url, body, {
         headers: searchParams,
         params
@@ -609,63 +610,88 @@ export class ExternalAuthService {
   //#endregion
 
   //#region Pedidos
-  getPedidosSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
+  async getPedidosSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', order: any): Promise<any> {
     let soapBody = '';
-    switch (apiSelect.operation) {
-      case 'ListaPedidos':
-        soapBody = 'ListaPedidos';
-        break;
-      case 'ConsultaPedido':
-        soapBody = 'ConsultaPedido';
-        break;
-      case 'PedidoWeb':
+    let soapDetail = '';
+    let soapProducts = '';
+    console.log('apiSelect.operation: ', apiSelect.operation);
+    switch (apiSelect.return) {
+      case 'order':
+        order.productos.forEach(product => {
+          soapProducts += '<producto>' + product.clave + '</producto>' + '<cantidad>' + product.cantidad + '</cantidad>';
+        });
+        soapDetail = `<XMLOC xsi:type="xsd:string">
+                <PEDIDO>
+                  <NumOC>${order.NumOC}</NumOC>
+                  <Paqueteria>${order.Paqueteria}</Paqueteria>
+                  <CodigoSucursal>${order.CodigoSucursal}</CodigoSucursal>
+                  <PedidoBO>${order.PedidoBO}</PedidoBO>
+                  <Observaciones>${order.Observaciones}</Observaciones>
+                  <productos>
+                    ${soapProducts}
+                  </productos>
+                  <TipoFlete>${order.TipoFlete}</TipoFlete>
+                  <Calle>${order.Calle}</Calle>
+                  <Numero>${order.Numero}</Numero>
+                  <NumeroInt>${order.NumeroInt}</NumeroInt>
+                  <Colonia>${order.Colonia}</Colonia>
+                  <CP>${order.CodigoPostal}</CP>
+                  <Estado>${order.Estado}</Estado>
+                  <Ciudad>${order.Ciudad}</Ciudad>
+                  <Atencion>${order.Atencion}</Atencion>
+                </PEDIDO>
+              </XMLOC>`;
         soapBody = 'PedidoWeb';
         break;
       default:
         break;
     }
-    const body = `<?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    let body: string;
+    switch (supplier.slug) {
+      case 'cva':
+        body = `<?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
           <soap:Body>
             <${soapBody} xmlns="https://www.grupocva.com/pedidos_web/">
               <Usuario>admin73766</Usuario>
-              <PWD>nga4iCEDFswN</PWD>
+              <PWD>VCTRNZ1EFOmR</PWD>
+              ${soapDetail}
             </${soapBody}>
           </soap:Body>
         </soap:Envelope>`;
-    const searchParams = new axios.AxiosHeaders();
-    const params = new axios.AxiosHeaders();
-    searchParams.set('Content-Type', 'text/xml');
+        break;
+    }
+    const searchParams = {
+      'Content-Type': 'text/xml'
+    };
+    const params = {};
     if (supplier.token) {
       if (supplier.token.body_parameters.length > 0) {
         supplier.token.body_parameters.forEach(param => {
-          params.set(param.name, param.value);
+          params[param.name] = param.value;
         });
       }
     }
     // Parámetros de url
     if (apiSelect.parameters) {
       apiSelect.parameters.forEach(param => {
-        // params = params.set(param.name, param.value || search);
-        params.set(param.name + '=' + param.value || search);
+        params[param.name] = param.value || search;
       });
     }
-    return new Promise((resolve, reject) => {
-      axios.post(supplier.url_base_api,
-        body,
-        {
-          headers: searchParams,
-          params
-        }).then(async response => {
-          const Content = he.decode(response.data.toString('utf-8'));
-          console.log('Content: ', Content);
-          console.log('apiSelect.operation: ', apiSelect.operation);
-          const datos = await this.parseXmlToJson(Content, apiSelect.operation);
-          resolve(datos);
-        }).catch(error => {
-          reject(new Error(error.message));
-        });
-    });
+
+    try {
+      const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=PedidoWeb';
+
+      const response = await axios.post(url, body, {
+        headers: searchParams,
+        params
+      });
+      const Content = he.decode(response.data.toString('utf-8'));
+      const datos = await this.parseXmlToJson(Content, apiSelect.operation);
+      return await datos;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
   //#endregion Pedidos
 

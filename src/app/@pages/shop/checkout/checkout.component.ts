@@ -42,6 +42,8 @@ import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, P
 import { EnvioCt, OrderCt, ProductoCt } from '@core/models/suppliers/orderct.models';
 import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
+import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
+import { OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 
 
 declare var $: any;
@@ -640,7 +642,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 });
             }
             this.warehouses.push(this.warehouse);
-            console.log('this.warehouses: ', this.warehouses);
           }
         }
       });
@@ -773,8 +774,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         });
         const orderCvaSupplier: OrderCva = {
           NumOC: '1',
-          Paqueteria: warehouse.productShipments[0].almacen,
-          CodigoSucursal: '',
+          Paqueteria: '6',
+          CodigoSucursal: warehouse.productShipments[0].almacen,
           PedidoBO: 'N',
           Observaciones: 'Pedido de Prueba',
           productos: ProductosCva,
@@ -786,6 +787,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Estado: dir.d_estado,
           Ciudad: dir.d_mnpio,
           Atencion: user.name + ' ' + user.lastname,
+          CodigoPostal: dir.d_codigo
         };
         return orderCvaSupplier;
       case 'ingram':
@@ -802,10 +804,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
     delivery.warehouses = this.warehouses;
     const ordersCt: OrderCt[] = [];
+    let orderCtResponse: OrderCtResponse = new OrderCtResponse();
     const ordersCva: OrderCva[] = [];
+    let orderCvaResponse: OrderCvaResponse = new OrderCvaResponse();
     // Generar modelo de cada proveedor
     this.suppliers.forEach(supplier => {
-      this.warehouses.forEach(warehouse => {
+      this.warehouses.forEach(async warehouse => {
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
           const order = this.setOrder(supplier, delivery, warehouse);
           switch (warehouse.suppliersProd.idProveedor) {
@@ -818,15 +822,27 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case 'ingram':
               break;
           }
-          const orderNew = this.PedidosEjemplo(warehouse.suppliersProd.idProveedor)
+          console.log('EfectuarPedidos/order: ', order);
+          const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
             .then(async (result) => {
-              console.log('PedidosEjemplo/result: ', result);
+              console.log('EfectuarPedidos/result: ', result);
+              return await result;
             });
+          switch (warehouse.suppliersProd.idProveedor) {
+            case 'ct':
+              orderCtResponse = orderNew;
+              break;
+            case 'cva':
+              orderCvaResponse = orderNew;
+              break;
+          }
         }
       });
     });
     delivery.ordersCt = ordersCt;
     delivery.ordersCva = ordersCva;
+    delivery.orderCtResponse = orderCtResponse;
+    delivery.orderCvaResponse = orderCvaResponse;
     console.log('delivery: ', delivery);
     // Levantar la Orden al Proveedor
 
@@ -944,23 +960,50 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           apiOrder = api;
         }
       });
-    }
-    if (apiOrder) {
-      console.log('Existe/apiOrder: ', apiOrder);
-      // const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
-      //   .then(async resultPedido => {
-      //     try {
-      //       console.log('resultPedido: ', resultPedido);
-      //       return await resultPedido;
-      //     } catch (error) {
-      //       throw await new Error(error.message);
-      //     }
-      //   });
-      // console.log('pedidos: ', pedidos);
+      if (apiOrder) {
+        const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
+          .then(async resultPedido => {
+            try {
+              return await resultPedido;
+            } catch (error) {
+              throw await new Error(error.message);
+            }
+          });
+      }
+    } else {
+      // TODO Realizar el pedido manual.
     }
   }
 
-  async EfectuarPedidos(): Promise<any> {
+  async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
+    // get supplier
+    const supplier = await this.suppliersService.getSupplierByName(supplierName)
+      .then(async (result) => {
+        return await result;
+      });
+    let apiOrder: Apis = new Apis();
+    // Set Api Para Ordenes
+    if (supplier.slug !== '') {
+      supplier.apis.forEach(api => {
+        if (api.type === 'order' && api.return === 'order') {
+          apiOrder = api;
+        }
+      });
+      if (apiOrder) {
+        const pedidos = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
+          .then(async resultPedido => {
+            try {
+              console.log('resultPedido: ', resultPedido);
+              return await resultPedido;
+            } catch (error) {
+              throw await new Error(error.message);
+            }
+          });
+        console.log('pedidos: ', pedidos);
+      }
+    } else {
+      // TODO Realizar el pedido manual.
+    }
     return await 'Pedido Elaborado';
   }
   //#endregion
@@ -980,13 +1023,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   // const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
   //   .then(async resultPedido => {
   //     try {
-  //       console.log('resultPedido: ', resultPedido);
   //       return await resultPedido;
   //     } catch (error) {
   //       throw await new Error(error.message);
   //     }
   //   });
-  // console.log('pedidos: ', pedidos);
 
   //#endregion
 }
