@@ -787,6 +787,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productCva.cantidad = prod.cantidad;
           ProductosCva.push(productCva);
         });
+        const estado = this.ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).clave;
+        const ciudad = this.ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
         const orderCvaSupplier: OrderCva = {
           NumOC: '1',
           Paqueteria: '6',
@@ -799,8 +801,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Numero: '',
           NumeroInt: '',
           Colonia: dir.d_asenta,
-          Estado: dir.d_estado,
-          Ciudad: dir.d_mnpio,
+          Estado: estado,
+          Ciudad: ciudad,
           Atencion: user.name + ' ' + user.lastname,
           CodigoPostal: dir.d_codigo
         };
