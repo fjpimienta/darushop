@@ -44,6 +44,7 @@ import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
 import { OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { HttpClient } from '@angular/common/http';
 
 
 declare var $: any;
@@ -116,8 +117,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   PAY_PAYU: string = PAY_PAYU;
   PAY_FREE: string = PAY_FREE;
 
+  sucursalesCVA = [];
+  paqueteriasCVA = [];
+  ciudadesCVA = [];
+
   constructor(
     private router: Router,
+    private httpClient: HttpClient,
     private formBuilder: FormBuilder,
     public cartService: CartService,
     public countrysService: CountrysService,
@@ -489,6 +495,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<void> {
     // Inicializar Arreglo de Envios.
+    this.sucursalesCVA = await this.externalAuthService.getSucursalesCva().then(result => {
+      return result;
+    });
+    this.paqueteriasCVA = await this.externalAuthService.getPaqueteriasCva().then(result => {
+      return result;
+    });
+    this.ciudadesCVA = await this.externalAuthService.getCiudadesCva().then(result => {
+      return result;
+    });
     const capitalCpCT = '2700';
     const capitalCpCva = '06820';
     // const capitalCpIng = '';
@@ -1006,6 +1021,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
     return await 'Pedido Elaborado';
   }
+  //#endregion
+
+  //#region Catalogos Externos por json
+
   //#endregion
 
   //#region Ejemplos

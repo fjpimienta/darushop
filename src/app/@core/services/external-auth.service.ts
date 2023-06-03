@@ -34,6 +34,10 @@ export class ExternalAuthService {
     public http: HttpClient
   ) {
   }
+  // Define requests
+  private hRCvaSucursales$ = this.http.get('assets/uploads/json/cva_sucursales.json');
+  private hRCvaPaqueterias$ = this.http.get('assets/uploads/json/cva_paqueterias.json');
+  private hRCvaCiudades$ = this.http.get('assets/uploads/json/cva_ciudades.json');
 
   //#region Token
   async getToken(
@@ -619,30 +623,33 @@ export class ExternalAuthService {
       case 'order':
         order.productos.forEach(product => {
           soapProducts += `&lt;producto&gt;
-                        &lt;clave&gt;${product.clave}&lt;/clave&gt;
-                        &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
-                      &lt;/producto&gt;`;
+          &lt;clave&gt;${product.clave}&lt;/clave&gt;
+          &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
+      &lt;/producto&gt`;
         });
         soapDetail = `<XMLOC xsi:type="xsd:string">
-                  &lt;PEDIDO&gt;
-                  &lt;NumOC&gt;${order.NumOC}&lt;/NumOC&gt;
-                  &lt;Paqueteria&gt;${order.Paqueteria}&lt;/Paqueteria&gt;
-                  &lt;CodigoSucursal&gt;${order.CodigoSucursal}&lt;/CodigoSucursal&gt;
-                  &lt;PedidoBO&gt;${order.PedidoBO}&lt;/PedidoBO&gt;
-                  &lt;Observaciones&gt;${order.Observaciones}&lt;/Observaciones&gt;
-                  &lt;productos&gt;
-                    ${soapProducts}
-                  &lt;/productos&gt;
-                  &lt;TipoFlete&gt;${order.TipoFlete}&lt;/TipoFlete&gt;
-                  &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
-                  &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
-                  &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
-                  &lt;Colonia&gt;${order.Colonia}&lt;/Colonia&gt;
-                  &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
-                  &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;
-                  &lt;Atencion&gt;${order.Atencion}&lt;/Atencion&gt;
-                  &lt;/PEDIDO&gt;
-              </XMLOC>`;
+        &lt;PEDIDO&gt;
+        &lt;NumOC&gt;${order.NumOC}&lt;/NumOC&gt;
+        &lt;Paqueteria&gt;${order.Paqueteria}&lt;/Paqueteria&gt;
+        &lt;CodigoSucursal&gt;${order.CodigoSucursal}&lt;/CodigoSucursal&gt;
+        &lt;PedidoBO&gt;${order.PedidoBO}&lt;/PedidoBO&gt;
+        &lt;Observaciones&gt;${order.Observaciones}&lt;/Observaciones&gt;
+        &lt;productos&gt;
+            &lt;producto&gt;
+                &lt;clave&gt;AC-8143&lt;/clave&gt;
+                &lt;cantidad&gt;1&lt;/cantidad&gt;
+            &lt;/producto&gt;
+        &lt;/productos&gt;
+        &lt;TipoFlete&gt;${order.TipoFlete}&lt;/TipoFlete&gt;
+        &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
+        &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
+        &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
+        &lt;Colonia&gt;${order.Colonia}&lt;/Colonia&gt;
+        &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
+        &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;
+        &lt;Atencion&gt;${order.Atencion}&lt;/Atencion&gt;
+        &lt;/PEDIDO&gt;
+    </XMLOC>`;
         soapBody = 'PedidoWeb';
         break;
       default:
@@ -700,4 +707,49 @@ export class ExternalAuthService {
   //#region Facturacion
 
   //#endregion Facturacion
+
+  //#region Catalogos Externos por json
+  async getSucursalesCva(): Promise<any> {
+    const productsCt = await this.getSucursalesCvaJson()
+      .then(async (result) => {
+        return await result;
+      })
+      .catch(async (error: Error) => {
+        return await [];
+      });
+    return productsCt;
+  }
+
+  async getPaqueteriasCva(): Promise<any> {
+    const productsCt = await this.getPaqueteriasCvaJson()
+      .then(async (result) => {
+        return await result;
+      })
+      .catch(async (error: Error) => {
+        return await [];
+      });
+    return productsCt;
+  }
+
+  async getCiudadesCva(): Promise<any> {
+    const productsCt = await this.getCiudadesCvaJson()
+      .then(async (result) => {
+        return await result;
+      })
+      .catch(async (error: Error) => {
+        return await [];
+      });
+    return productsCt;
+  }
+  async getSucursalesCvaJson(): Promise<any> {
+    return await this.hRCvaSucursales$.toPromise();
+  }
+  async getPaqueteriasCvaJson(): Promise<any> {
+    return await this.hRCvaPaqueterias$.toPromise();
+  }
+  async getCiudadesCvaJson(): Promise<any> {
+    return await this.hRCvaCiudades$.toPromise();
+  }
+  //#endregion
+
 }
