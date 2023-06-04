@@ -624,55 +624,29 @@ export class ExternalAuthService {
     switch (apiSelect.return) {
       case 'order':
         order.productos.forEach(product => {
-          soapProducts += `&lt;producto&gt;
-          &lt;clave&gt;${product.clave}&lt;/clave&gt;
-          &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
-      &lt;/producto&gt`;
+          soapProducts += `&lt;productos&gt;
+          &lt;producto&gt;
+            &lt;clave&gt;${product.clave}&lt;/clave&gt;
+            &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
+        &lt;/producto&gt;
+        &lt;/productos&gt;`;
         });
-        //     soapDetail = `<XMLOC xsi:type="xsd:string">
-        //     &lt;PEDIDO&gt;
-        //     &lt;NumOC&gt;${order.NumOC}&lt;/NumOC&gt;
-        //     &lt;Paqueteria&gt;${order.Paqueteria}&lt;/Paqueteria&gt;
-        //     &lt;CodigoSucursal&gt;${order.CodigoSucursal}&lt;/CodigoSucursal&gt;
-        //     &lt;PedidoBO&gt;${order.PedidoBO}&lt;/PedidoBO&gt;
-        //     &lt;Observaciones&gt;${order.Observaciones}&lt;/Observaciones&gt;
-        //     &lt;productos&gt;
-        //         &lt;producto&gt;
-        //             &lt;clave&gt;AC-8143&lt;/clave&gt;
-        //             &lt;cantidad&gt;1&lt;/cantidad&gt;
-        //         &lt;/producto&gt;
-        //     &lt;/productos&gt;
-        //     &lt;TipoFlete&gt;${order.TipoFlete}&lt;/TipoFlete&gt;
-        //     &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
-        //     &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
-        //     &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
-        //     &lt;Colonia&gt;${order.Colonia}&lt;/Colonia&gt;
-        //     &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
-        //     &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;
-        //     &lt;Atencion&gt;${order.Atencion}&lt;/Atencion&gt;
-        //     &lt;/PEDIDO&gt;
-        // </XMLOC>`;
         soapDetail = `<XMLOC xsi:type="xsd:string">
         &lt;PEDIDO&gt;
         &lt;NumOC&gt;${order.NumOC}&lt;/NumOC&gt;
-        &lt;Paqueteria&gt;0&lt;/Paqueteria&gt;
-        &lt;CodigoSucursal&gt;27&lt;/CodigoSucursal&gt;
-        &lt;PedidoBO&gt;N&lt;/PedidoBO&gt;
-        &lt;Observaciones&gt;Pedidos de prueba desde web &lt;/Observaciones&gt;
-        &lt;productos&gt;
-            &lt;producto&gt;
-                &lt;clave&gt;AC-8143&lt;/clave&gt;
-                &lt;cantidad&gt;1&lt;/cantidad&gt;
-            &lt;/producto&gt;
-        &lt;/productos&gt;
-        &lt;TipoFlete&gt;SF&lt;/TipoFlete&gt;
-        &lt;Calle&gt;EMILIANO ZAPATA&lt;/Calle&gt;
-        &lt;Numero&gt;3&lt;/Numero&gt;
-        &lt;NumeroInt&gt;&lt;/NumeroInt&gt;
+        &lt;Paqueteria&gt;${order.Paqueteria}&lt;/Paqueteria&gt;
+        &lt;CodigoSucursal&gt;${order.CodigoSucursal}&lt;/CodigoSucursal&gt;
+        &lt;PedidoBO&gt;${order.PedidoBO}&lt;/PedidoBO&gt;
+        &lt;Observaciones&gt;${order.Observaciones}&lt;/Observaciones&gt;
+        ${soapProducts}
+        &lt;TipoFlete&gt;${order.TipoFlete}&lt;/TipoFlete&gt;
+        &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
+        &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
+        &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
         &lt;Colonia&gt;ESTIPAC&lt;/Colonia&gt;
-        &lt;Estado&gt;15&lt;/Estado&gt;
-        &lt;Ciudad&gt;632&lt;/Ciudad&gt;
-        &lt;Atencion&gt;SF&lt;/Atencion&gt;
+        &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
+        &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;
+        &lt;Atencion&gt;${order.Atencion}&lt;/Atencion&gt;
         &lt;/PEDIDO&gt;
     </XMLOC>`;
         soapBody = 'PedidoWeb';
@@ -715,7 +689,7 @@ export class ExternalAuthService {
 
     try {
       const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=PedidoWeb';
-
+      console.log('body: ', body);
       const response = await axios.post(url, body, {
         headers: searchParams,
         params
