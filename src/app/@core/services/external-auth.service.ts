@@ -701,6 +701,62 @@ export class ExternalAuthService {
       throw new Error(error.message);
     }
   }
+
+  async getPedidosAPI(supplier: ISupplier, apiSelect: IApis, order: any): Promise<any> {
+    let token = '';
+    console.log('supplier: ', supplier);
+    console.log('apiSelect: ', apiSelect);
+    switch (supplier.slug) {
+      case 'ct':
+        return await this.getToken(supplier, false)
+          .then(
+            async result => {
+              switch (supplier.slug) {
+                case 'ct':
+                  token = result.token;
+                  break;
+                case 'syscom':
+                  token = result.access_token;
+                  break;
+                default:
+                  break;
+              }
+              if (token) {
+                const url = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+                return await this.http.post(
+                  url,
+                  order,
+                  {
+                    headers: {
+                      'x-auth': token,
+                      Accept: 'application/json',
+                      'Content-type': 'application/json'
+                    }
+                  }).toPromise();
+              } else {
+                return await 'No se encontró el Token de Autorización.';
+              }
+            },
+            async error => {
+              return await error.message;
+            }
+          );
+      // return await this.http.get(
+      //   supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation,
+      //   {
+      //     headers: {
+      //       'x-auth': token,
+      //       Accept: 'application/json',
+      //       'Content-type': 'application/json'
+      //     }
+      //   }).toPromise();
+      default:
+        break;
+    }
+
+
+    return await [];
+  }
   //#endregion Pedidos
 
   //#region Facturacion

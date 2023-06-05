@@ -278,6 +278,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       selectMunicipio: ['', [Validators.required]],
       selectColonia: ['', Validators.required],
       directions: ['', Validators.required],
+      outdoorNumber: ['', Validators.required],
+      interiorNumber: [''],
       phone: ['', Validators.required],
       email: ['', Validators.required],
       crearcuenta: [false],
@@ -311,6 +313,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.formData.controls.codigoPostal.setValue(direction.d_codigo);
                   this.formData.controls.selectColonia.setValue(direction.d_asenta);
                   this.formData.controls.directions.setValue(direction.directions);
+                  this.formData.controls.outdoorNumber.setValue(direction.outdoorNumber);
+                  this.formData.controls.interiorNumber.setValue(direction.interiorNumber);
                   this.formData.controls.references.setValue(direction.references);
                   if (this.countrys.length > 0) {
                     this.countrys.forEach(country => {
@@ -431,6 +435,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       address.d_mnpio = this.selectMunicipio.D_mnpio;
       address.d_asenta = formData.controls.selectColonia.value;
       address.directions = formData.controls.directions.value;
+      address.outdoorNumber = formData.controls.outdoorNumber.value;
+      address.interiorNumber = formData.controls.interiorNumber.value;
       address.phone = formData.controls.phone.value;
       address.references = formData.controls.references.value;
       address.d_codigo = formData.controls.codigoPostal.value;
@@ -746,7 +752,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCt.entreCalles = dir.references;
         envioCt.colonia = dir.d_asenta;
         envioCt.estado = dir.d_estado;
-        envioCt.ciudad = dir.d_estado;
+        envioCt.ciudad = dir.d_mnpio;
+        envioCt.noExterior = dir.outdoorNumber;
+        envioCt.noInterior = dir.interiorNumber;
         envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCt.telefono = dir.phone;
         enviosCt.push(envioCt);
@@ -777,6 +785,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.colonia = dir.d_asenta;
         envioCva.estado = dir.d_estado;
         envioCva.ciudad = dir.d_mnpio;
+        envioCt.noExterior = dir.outdoorNumber;
+        envioCt.noInterior = dir.interiorNumber;
         envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
@@ -798,8 +808,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productos: ProductosCva,
           TipoFlete: FF,
           Calle: dir.directions,
-          Numero: '',
-          NumeroInt: '',
+          Numero: dir.outdoorNumber,
+          NumeroInt: dir.interiorNumber,
           Colonia: dir.d_asenta,
           Estado: estado,
           Ciudad: ciudad,
@@ -1006,17 +1016,33 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           apiOrder = api;
         }
       });
-      if (apiOrder) {
-        const pedidos = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
-          .then(async resultPedido => {
-            try {
-              console.log('resultPedido: ', resultPedido);
-              return await resultPedido;
-            } catch (error) {
-              throw await new Error(error.message);
-            }
-          });
-        console.log('pedidos: ', pedidos);
+      switch (supplier.slug) {
+        case 'cva':
+          if (apiOrder) {
+            const pedidosCva = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
+              .then(async resultPedido => {
+                try {
+                  console.log('resultPedido: ', resultPedido);
+                  return await resultPedido;
+                } catch (error) {
+                  throw await new Error(error.message);
+                }
+              });
+            console.log('pedidosCva: ', pedidosCva);
+          }
+          break;
+        case 'ct':
+          const pedidosCt = await this.externalAuthService.getPedidosAPI(supplier, apiOrder, order)
+            .then(async resultPedido => {
+              try {
+                console.log('resultPedido: ', resultPedido);
+                return await resultPedido;
+              } catch (error) {
+                throw await new Error(error.message);
+              }
+            });
+          console.log('pedidosCt: ', pedidosCt);
+          break;
       }
     } else {
       // TODO Realizar el pedido manual.
