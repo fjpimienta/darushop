@@ -27,6 +27,7 @@ export class EnvioCVA {
   direccion: string;
   entreCalles: string;
   noExterior: string;
+  noInterior: string;
   colonia: string;
   estado: string;
   ciudad: string;

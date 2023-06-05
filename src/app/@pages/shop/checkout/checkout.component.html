@@ -132,10 +132,22 @@
                 <div class="col-sm-6">
                   <label>Dirección *</label>
                   <input type="text" class="form-control" name="directions" formControlName="directions"
-                    placeholder="Calle y Número" required>
+                    placeholder="Calle" required>
                 </div>
               </div>
 
+              <div class="row">
+                <div class="col-sm-6">
+                  <label>N&uacute;mero Exterior *</label>
+                  <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
+                    placeholder="N&uacute;mero Exterior" required>
+                </div>
+                <div class="col-sm-6">
+                  <label>N&uacute;mero Interior</label>
+                  <input type="text" class="form-control" name="interiorNumber" formControlName="interiorNumber"
+                    placeholder="N&uacute;mero Interior">
+                </div>
+              </div>
 
               <div *ngIf="habilitacrearcuenta" class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="crearcuenta" name="crearcuenta"

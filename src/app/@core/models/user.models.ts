@@ -34,4 +34,6 @@ export class AddressInput {
   dir_invoice: boolean;
   dir_delivery: boolean;
   dir_delivery_main: boolean;
+  outdoorNumber: string;
+  interiorNumber: string;
 }
