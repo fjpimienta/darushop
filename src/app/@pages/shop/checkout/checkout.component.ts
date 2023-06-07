@@ -781,12 +781,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.nombre = user.name + ' ' + user.lastname;
         envioCva.direccion = dir.directions;
         envioCva.entreCalles = dir.references;
-        envioCva.noExterior = dir.d_asenta;
         envioCva.colonia = dir.d_asenta;
         envioCva.estado = dir.d_estado;
         envioCva.ciudad = dir.d_mnpio;
-        envioCt.noExterior = dir.outdoorNumber;
-        envioCt.noInterior = dir.interiorNumber;
+        envioCva.noExterior = dir.outdoorNumber;
+        envioCva.noInterior = dir.interiorNumber;
         envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
@@ -950,6 +949,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.selectMunicipio.setValue('');
         this.formData.controls.selectColonia.setValue('');
         this.formData.controls.directions.setValue('');
+        this.formData.controls.outdoorNumber.setValue('');
+        this.formData.controls.interiorNumber.setValue('');
       }
     });
   }

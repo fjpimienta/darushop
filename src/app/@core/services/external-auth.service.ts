@@ -643,7 +643,7 @@ export class ExternalAuthService {
         &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
         &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
         &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
-        &lt;Colonia&gt;ESTIPAC&lt;/Colonia&gt;
+        &lt;Colonia&gt;${order.Colonia}&lt;/Colonia&gt;
         &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
         &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;
         &lt;Atencion&gt;${order.Atencion}&lt;/Atencion&gt;
@@ -741,15 +741,6 @@ export class ExternalAuthService {
               return await error.message;
             }
           );
-      // return await this.http.get(
-      //   supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation,
-      //   {
-      //     headers: {
-      //       'x-auth': token,
-      //       Accept: 'application/json',
-      //       'Content-type': 'application/json'
-      //     }
-      //   }).toPromise();
       default:
         break;
     }
