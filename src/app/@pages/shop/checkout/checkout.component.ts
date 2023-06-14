@@ -729,6 +729,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
   }
+
+  removeAccents(text: string): string {
+    const accents = 'ÁÉÍÓÚáéíóú';
+    const accentsOut = 'AEIOUaeiou';
+    const mapAccents: { [key: string]: string } = {};
+    const textArray = text.split('');
+    accents.split('').forEach((accent, index) => {
+      mapAccents[accent] = accentsOut[index];
+    });
+    return textArray
+      .map((char) => mapAccents[char] || char)
+      .join('');
+  }
+
   //#endregion Metodos
 
   //#region Cobros
@@ -738,7 +752,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
   //#endregion Cobros
 
-  //#region  Enviar Ordenes
+  //#region Enviar Ordenes
 
   setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse): any {
     const user = delivery.user;
@@ -747,14 +761,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       case 'ct':
         const enviosCt: EnvioCt[] = [];
         const envioCt: EnvioCt = new EnvioCt();
-        envioCt.nombre = user.name + ' ' + user.lastname;
-        envioCt.direccion = dir.directions;
-        envioCt.entreCalles = dir.references;
-        envioCt.colonia = dir.d_asenta;
-        envioCt.estado = dir.d_estado;
-        envioCt.ciudad = dir.d_mnpio;
-        envioCt.noExterior = dir.outdoorNumber;
-        envioCt.noInterior = dir.interiorNumber;
+        envioCt.nombre = this.removeAccents(user.name + ' ' + user.lastname);
+        envioCt.direccion = this.removeAccents(dir.directions);
+        envioCt.entreCalles = this.removeAccents(dir.references);
+        envioCt.colonia = this.removeAccents(dir.d_asenta);
+        envioCt.estado = this.removeAccents(dir.d_estado);
+        envioCt.ciudad = this.removeAccents(dir.d_mnpio);
+        envioCt.noExterior = this.removeAccents(dir.outdoorNumber);
+        envioCt.noInterior = this.removeAccents(dir.interiorNumber);
         envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCt.telefono = dir.phone;
         enviosCt.push(envioCt);
@@ -778,14 +792,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       case 'cva':
         const enviosCva: EnvioCVA[] = [];
         const envioCva: EnvioCVA = new EnvioCVA();
-        envioCva.nombre = user.name + ' ' + user.lastname;
-        envioCva.direccion = dir.directions;
-        envioCva.entreCalles = dir.references;
-        envioCva.colonia = dir.d_asenta;
-        envioCva.estado = dir.d_estado;
-        envioCva.ciudad = dir.d_mnpio;
-        envioCva.noExterior = dir.outdoorNumber;
-        envioCva.noInterior = dir.interiorNumber;
+        envioCva.nombre = this.removeAccents(user.name + ' ' + user.lastname);
+        envioCva.direccion = this.removeAccents(dir.directions);
+        envioCva.entreCalles = this.removeAccents(dir.references);
+        envioCva.colonia = this.removeAccents(dir.d_asenta);
+        envioCva.estado = this.removeAccents(dir.d_estado);
+        envioCva.ciudad = this.removeAccents(dir.d_mnpio);
+        envioCva.noExterior = this.removeAccents(dir.outdoorNumber);
+        envioCva.noInterior = this.removeAccents(dir.interiorNumber);
         envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
@@ -806,13 +820,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Observaciones: 'Pedido de Prueba',
           productos: ProductosCva,
           TipoFlete: FF,
-          Calle: dir.directions,
+          Calle: this.removeAccents(dir.directions),
           Numero: dir.outdoorNumber,
           NumeroInt: dir.interiorNumber,
-          Colonia: dir.d_asenta,
-          Estado: estado,
-          Ciudad: ciudad,
-          Atencion: user.name + ' ' + user.lastname,
+          Colonia: this.removeAccents(dir.d_asenta),
+          Estado: this.removeAccents(estado),
+          Ciudad: this.removeAccents(ciudad),
+          Atencion: this.removeAccents(user.name + ' ' + user.lastname),
           CodigoPostal: dir.d_codigo
         };
         return orderCvaSupplier;
