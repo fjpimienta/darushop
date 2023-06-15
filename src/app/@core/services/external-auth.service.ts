@@ -294,8 +294,6 @@ export class ExternalAuthService {
 
   // tslint:disable-next-line: typedef
   async parseXmlToJson(xml, catalog) {
-    console.log('parseXmlToJson:/xml: ', xml);
-    console.log('parseXmlToJson:/catalog: ', catalog);
     switch (catalog) {
       case 'lista_precios.xml':
         return await xml2js
@@ -355,8 +353,12 @@ export class ExternalAuthService {
       case 'pedidos':                                                                  // SOAP CVA
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
-          // tslint:disable-next-line: no-string-literal
           .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos']['PEDIDOS'])
+          .catch(err => new Error(err.message));
+      case 'pedidos_ws_cva.php':                                                                  // SOAP CVA
+        return await xml2js
+          .parseStringPromise(xml, { explicitArray: false })
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:PedidoWebResponse'])
           .catch(err => new Error(err.message));
       default:
         break;
@@ -443,6 +445,7 @@ export class ExternalAuthService {
       });
       const Content = he.decode(response.data.toString('utf-8'));
       const datos = await this.parseXmlToJson(Content, apiSelect.operation);
+      console.log('getCatalogSOAP/datos: ', datos);
       return await datos;
     } catch (error) {
       throw new Error(error.message);
@@ -620,7 +623,6 @@ export class ExternalAuthService {
     let soapBody = '';
     let soapDetail = '';
     let soapProducts = '';
-    console.log('apiSelect.operation: ', apiSelect.operation);
     switch (apiSelect.return) {
       case 'order':
         order.productos.forEach(product => {
@@ -689,7 +691,6 @@ export class ExternalAuthService {
 
     try {
       const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=PedidoWeb';
-      console.log('body: ', body);
       const response = await axios.post(url, body, {
         headers: searchParams,
         params
@@ -704,8 +705,6 @@ export class ExternalAuthService {
 
   async getPedidosAPI(supplier: ISupplier, apiSelect: IApis, order: any): Promise<any> {
     let token = '';
-    console.log('supplier: ', supplier);
-    console.log('apiSelect: ', apiSelect);
     switch (supplier.slug) {
       case 'ct':
         return await this.getToken(supplier, false)

@@ -10,6 +10,7 @@ import { Warehouse } from './warehouse.models';
  */
 export class Delivery {
   id: string;
+  deliveryId: string;
   registerDate?: string;
   user: UserInput;
   warehouses: Warehouse[];

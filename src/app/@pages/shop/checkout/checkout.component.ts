@@ -38,13 +38,14 @@ import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
-import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
+import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER, SF } from '@core/constants/constants';
 import { EnvioCt, OrderCt, ProductoCt } from '@core/models/suppliers/orderct.models';
 import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
 import { OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { HttpClient } from '@angular/common/http';
+import { DeliverysService } from '@core/services/deliverys.service';
 
 
 declare var $: any;
@@ -137,6 +138,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public userService: UsersService,
     private externalAuthService: ExternalAuthService,
     public shippingsService: ShippingsService,
+    public deliverysService: DeliverysService
   ) {
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -814,7 +816,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const ciudad = this.ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
         const orderCvaSupplier: OrderCva = {
           NumOC: '1',
-          Paqueteria: '6',
+          Paqueteria: '0',
           CodigoSucursal: warehouse.productShipments[0].almacen,
           PedidoBO: 'N',
           Observaciones: 'Pedido de Prueba',
@@ -862,10 +864,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case 'ingram':
               break;
           }
-          console.log('EfectuarPedidos/order: ', order);
           const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
             .then(async (result) => {
-              console.log('EfectuarPedidos/result: ', result);
               return await result;
             });
           switch (warehouse.suppliersProd.idProveedor) {
@@ -876,19 +876,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               orderCvaResponse = orderNew;
               break;
           }
+          delivery.ordersCt = ordersCt;
+          delivery.ordersCva = ordersCva;
+          delivery.orderCtResponse = orderCtResponse;
+          delivery.orderCvaResponse = orderCvaResponse;
+          console.log('delivery: ', delivery);
         }
       });
     });
-    delivery.ordersCt = ordersCt;
-    delivery.ordersCva = ordersCva;
-    delivery.orderCtResponse = orderCtResponse;
-    delivery.orderCvaResponse = orderCvaResponse;
-    console.log('delivery: ', delivery);
-    // Levantar la Orden al Proveedor
+    // TODO::Levantar la Orden al Proveedor
 
 
-    // Confirmar Pedido
+    // TODO::Confirmar Pedido
 
+
+    // TODO::Registrar Delivery
+    this.deliverysService.add(delivery);
 
     // if (!supplier.token) {
     //   let resultados;
@@ -1037,32 +1040,36 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const pedidosCva = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
               .then(async resultPedido => {
                 try {
-                  console.log('resultPedido: ', resultPedido);
-                  return await resultPedido;
+                  const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
+                  cvaResponse.agentemail = resultPedido.agentemail._;
+                  cvaResponse.almacenmail = resultPedido.almacenmail._;
+                  cvaResponse.error = resultPedido.error._;
+                  cvaResponse.estado = resultPedido.estado._;
+                  cvaResponse.pedido = resultPedido.pedido._;
+                  cvaResponse.total = resultPedido.total._;
+                  return await cvaResponse;
                 } catch (error) {
                   throw await new Error(error.message);
                 }
               });
-            console.log('pedidosCva: ', pedidosCva);
+            return await pedidosCva;
           }
           break;
         case 'ct':
           const pedidosCt = await this.externalAuthService.getPedidosAPI(supplier, apiOrder, order)
             .then(async resultPedido => {
               try {
-                console.log('resultPedido: ', resultPedido);
                 return await resultPedido;
               } catch (error) {
                 throw await new Error(error.message);
               }
             });
-          console.log('pedidosCt: ', pedidosCt);
-          break;
+          return await pedidosCt;
       }
     } else {
       // TODO Realizar el pedido manual.
     }
-    return await 'Pedido Elaborado';
+    return await [];
   }
   //#endregion
 

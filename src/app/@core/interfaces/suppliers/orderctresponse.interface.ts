@@ -1,14 +1,11 @@
-/**
- * Clase de Respuesta de Ordenes para CT
- */
-export class OrderCtResponse {
+export interface IOrderCtResponse {
   pedidoWeb: string;
   tipoDeCambio: number;
   estatus: string;
-  errores: ErroresCT[];
+  errores: IErroresCT[];
 }
 
-export class ErroresCT {
+export interface IErroresCT {
   errorCode: number;
   errorMessage: string;
   errorReference: string;
