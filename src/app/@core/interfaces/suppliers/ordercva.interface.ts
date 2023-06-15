@@ -17,5 +17,5 @@ export interface IOrderCva {
 
 export interface IProductoCva {
   clave: string;
-  cantidad: string;
+  cantidad: number;
 }

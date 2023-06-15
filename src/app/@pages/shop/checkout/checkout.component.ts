@@ -221,6 +221,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.cartService.clearCart(false);
                   // Elaborar Pedido Proveedor
                   const OrderSupplier = await this.sendOrderSupplier();
+                  console.log('OrderSupplier: ', OrderSupplier);
+                  // TODO::Registrar Delivery
+                  this.deliverysService.add(OrderSupplier);
                   // Enviar correo electronico
                   await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
                   this.router.navigate(['/shop/dashboard']);
@@ -389,8 +392,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             break;
           case PAY_FREE:
             const OrderSupplier = await this.sendOrderSupplier();
-            const NewProperty = 'receipt_email';
-            OrderSupplier[NewProperty] = 'fjpimienta@gmail.com';
+            // const NewProperty = 'receipt_email';
+            // OrderSupplier[NewProperty] = 'fjpimienta@gmail.com';
+            console.log('OrderSupplier: ', OrderSupplier);
+            // TODO::Registrar Delivery
+            this.deliverysService.add(OrderSupplier);
+
             // this.sendEmail(OrderSupplier, 'Mensaje de Prueba', 'Hola Mundo');
             // this.cartService.clearCart(false);
             // await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
@@ -828,8 +835,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Colonia: this.removeAccents(dir.d_asenta),
           Estado: this.removeAccents(estado),
           Ciudad: this.removeAccents(ciudad),
-          Atencion: this.removeAccents(user.name + ' ' + user.lastname),
-          CodigoPostal: dir.d_codigo
+          Atencion: this.removeAccents(user.name + ' ' + user.lastname)
         };
         return orderCvaSupplier;
       case 'ingram':
@@ -880,8 +886,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           delivery.ordersCva = ordersCva;
           delivery.orderCtResponse = orderCtResponse;
           delivery.orderCvaResponse = orderCvaResponse;
-          console.log('delivery: ', delivery);
+          return await delivery;
         }
+        return await [];
       });
     });
     // TODO::Levantar la Orden al Proveedor
@@ -890,8 +897,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // TODO::Confirmar Pedido
 
 
-    // TODO::Registrar Delivery
-    this.deliverysService.add(delivery);
 
     // if (!supplier.token) {
     //   let resultados;

@@ -16,7 +16,6 @@ export class OrderCva {
   Estado: string;
   Ciudad: string;
   Atencion: string;
-  CodigoPostal: string;
 }
 
 /**

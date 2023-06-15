@@ -15,24 +15,25 @@ export class DeliverysService extends ApiService {
     super(apollo);
   }
 
-  add(brand: Delivery) {
+  add(delivery: Delivery) {
+    console.log('delivery: ', delivery);
     return this.set(
       ADD_DELIVERY,
       {
-        brand
+        delivery
       }, {}).pipe(map((result: any) => {
-        return result.addBrand;
+        return result.addDelivery;
       })
       );
   }
 
-  update(brand: Delivery) {
+  update(delivery: Delivery) {
     return this.set(
       UPDATE_DELIVERY,
       {
-        brand
+        delivery
       }, {}).pipe(map((result: any) => {
-        return result.updateBrand;
+        return result.updateDelivery;
       })
       );
   }
@@ -45,7 +46,7 @@ export class DeliverysService extends ApiService {
         unblock,
         admin
       }, {}).pipe(map((result: any) => {
-        return result.blockBrand;
+        return result.blockDelivery;
       })
       );
   }

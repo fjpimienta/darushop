@@ -10,12 +10,28 @@ export const DELIVERY_FRAGMENT = gql`
       name
       lastname
       email
-      password
       registerdate
       role
       phone
       stripeCustomer
-      addresses
+      addresses {
+        c_pais
+        d_pais
+        c_estado
+        d_estado
+        c_mnpio
+        d_mnpio
+        c_ciudad
+        d_ciudad
+        d_asenta
+        directions
+        phone
+        references
+        d_codigo
+        dir_invoice
+        dir_delivery
+        dir_delivery_main
+      }
       policy
     }
     warehouses {
