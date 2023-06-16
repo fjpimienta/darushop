@@ -1,17 +1,20 @@
-/**
- * Clase de los datos de entrada del usuario.
- */
-export class UserInput {
+export class UserBasicInput {
   id: string;
   name: string;
   lastname: string;
   email: string;
-  registerdate?: string;
-  role?: string;
   stripeCustomer?: string;
   phone?: string;
   addresses?: AddressInput[];
   policy?: boolean;
+}
+
+/**
+ * Clase de los datos de entrada del usuario.
+ */
+export class UserInput extends UserBasicInput {
+  registerdate?: string;
+  role?: string;
 }
 
 /**

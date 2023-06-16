@@ -14,8 +14,8 @@ export class Delivery {
   registerDate?: string;
   user: UserInput;
   warehouses: Warehouse[];
-  ordersCt: OrderCt[];
-  ordersCva: OrderCva[];
-  orderCtResponse: OrderCtResponse;
-  orderCvaResponse: OrderCvaResponse;
+  ordersCt?: OrderCt[];
+  ordersCva?: OrderCva[];
+  orderCtResponse?: OrderCtResponse;
+  orderCvaResponse?: OrderCvaResponse;
 }

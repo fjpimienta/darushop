@@ -15,16 +15,20 @@ export class DeliverysService extends ApiService {
     super(apollo);
   }
 
-  add(delivery: Delivery) {
-    console.log('delivery: ', delivery);
-    return this.set(
-      ADD_DELIVERY,
-      {
+  async add(delivery: Delivery): Promise<any> {
+    console.log('add/delivery: ', delivery);
+    return new Promise<any>((resolve, reject) => {
+      this.set(ADD_DELIVERY, {
         delivery
-      }, {}).pipe(map((result: any) => {
-        return result.addDelivery;
-      })
-      );
+      }, {}).subscribe(
+        (result: any) => {
+          console.log('add/result.addDelivery', result.addDelivery);
+          resolve(result.addDelivery);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
   update(delivery: Delivery) {

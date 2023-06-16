@@ -25,7 +25,7 @@ import { IMail } from '@core/interfaces/mail.interface';
 import { MailService } from '@core/services/mail.service';
 import { ICharge } from '@core/interfaces/stripe/charge.interface';
 import { UsersService } from '@core/services/users.service';
-import { AddressInput, UserInput } from '@core/models/user.models';
+import { AddressInput, UserBasicInput, UserInput } from '@core/models/user.models';
 import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
 import { Warehouse } from '@core/models/warehouse.models';
@@ -221,8 +221,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.cartService.clearCart(false);
                   // Elaborar Pedido Proveedor
                   const OrderSupplier = await this.sendOrderSupplier();
-                  console.log('OrderSupplier: ', OrderSupplier);
                   // TODO::Registrar Delivery
+                  console.log('OrderSupplier: ', OrderSupplier);
                   this.deliverysService.add(OrderSupplier);
                   // Enviar correo electronico
                   await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
@@ -394,9 +394,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const OrderSupplier = await this.sendOrderSupplier();
             // const NewProperty = 'receipt_email';
             // OrderSupplier[NewProperty] = 'fjpimienta@gmail.com';
-            console.log('OrderSupplier: ', OrderSupplier);
             // TODO::Registrar Delivery
-            this.deliverysService.add(OrderSupplier);
+            const result = await this.deliverysService.add(OrderSupplier);
+            console.log('PAY_FREE/result: ', result);
 
             // this.sendEmail(OrderSupplier, 'Mensaje de Prueba', 'Hola Mundo');
             // this.cartService.clearCart(false);
@@ -421,8 +421,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Metodos Componentes
 
   //#region Metodos
-  onSetUser(formData: FormGroup, stripeCustomer: string): UserInput {
-    const register = new UserInput();
+  onSetUser(formData: FormGroup, stripeCustomer: string): UserBasicInput {
+    const register = new UserBasicInput();
     register.id = '';
     if (this.session.user) {
       register.id = this.session.user.id;
@@ -430,7 +430,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     register.name = formData.controls.name.value;
     register.lastname = formData.controls.lastname.value;
     register.email = formData.controls.email.value;
-    register.role = 'CLIENT';
     register.stripeCustomer = stripeCustomer;
     register.phone = formData.controls.phone.value;
 
@@ -561,6 +560,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
               if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
                 cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
+                  console.log('cartItem.suppliersProd.branchOffices: ', cartItem.suppliersProd.branchOffices);
                   if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
                     || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
                     if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
@@ -572,6 +572,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
                         productsEstado.push(productShipment);
+                        warehouseEstado.id = branchOffice.id;
                         warehouseEstado.cp = branchOffice.cp;
                         warehouseEstado.name = branchOffice.name;
                         warehouseEstado.estado = branchOffice.estado;
@@ -586,6 +587,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
                         productsCapital.push(productShipment);
+                        warehouseCapital.id = branchOffice.id;
                         warehouseCapital.cp = branchOffice.cp;
                         warehouseCapital.name = branchOffice.name;
                         warehouseCapital.estado = branchOffice.estado;
@@ -849,6 +851,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const delivery = new Delivery();
     const id = '1';
     delivery.id = id;
+    delivery.deliveryId = id;
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
     delivery.warehouses = this.warehouses;
     const ordersCt: OrderCt[] = [];
@@ -886,6 +889,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           delivery.ordersCva = ordersCva;
           delivery.orderCtResponse = orderCtResponse;
           delivery.orderCvaResponse = orderCvaResponse;
+          console.log('sendOrderSupplier/delivery: ', delivery);
           return await delivery;
         }
         return await [];
@@ -1046,12 +1050,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               .then(async resultPedido => {
                 try {
                   const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
-                  cvaResponse.agentemail = resultPedido.agentemail._;
-                  cvaResponse.almacenmail = resultPedido.almacenmail._;
-                  cvaResponse.error = resultPedido.error._;
-                  cvaResponse.estado = resultPedido.estado._;
-                  cvaResponse.pedido = resultPedido.pedido._;
-                  cvaResponse.total = resultPedido.total._;
+                  cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
+                  cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
+                  cvaResponse.error = resultPedido.error._ ? resultPedido.error._ : '';
+                  cvaResponse.estado = resultPedido.estado._ ? resultPedido.estado._ : '';
+                  cvaResponse.pedido = resultPedido.pedido._ ? resultPedido.pedido._ : '';
+                  cvaResponse.total = resultPedido.total._ ? resultPedido.total._ : '';
                   return await cvaResponse;
                 } catch (error) {
                   throw await new Error(error.message);
