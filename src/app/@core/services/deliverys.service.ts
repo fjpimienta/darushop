@@ -16,13 +16,11 @@ export class DeliverysService extends ApiService {
   }
 
   async add(delivery: Delivery): Promise<any> {
-    console.log('add/delivery: ', delivery);
     return new Promise<any>((resolve, reject) => {
       this.set(ADD_DELIVERY, {
         delivery
       }, {}).subscribe(
         (result: any) => {
-          console.log('add/result.addDelivery', result.addDelivery);
           resolve(result.addDelivery);
         },
         (error: any) => {
@@ -31,44 +29,60 @@ export class DeliverysService extends ApiService {
     });
   }
 
-  update(delivery: Delivery) {
-    return this.set(
-      UPDATE_DELIVERY,
-      {
+  async update(delivery: Delivery): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.set(UPDATE_DELIVERY, {
         delivery
-      }, {}).pipe(map((result: any) => {
-        return result.updateDelivery;
-      })
-      );
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.updateDelivery);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
-  unblock(id: string, unblock: boolean = false, admin: boolean = false) {
-    return this.set(
-      BLOCK_DELIVERY,
-      {
-        id,
-        unblock,
-        admin
-      }, {}).pipe(map((result: any) => {
-        return result.blockDelivery;
-      })
-      );
+  async unblock(id: string, unblock: boolean = false, admin: boolean = false): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.set(BLOCK_DELIVERY, {
+        id, unblock, admin
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.blockDelivery);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
-  getDeliverys(page: number = 1, itemsPage: number = 10, filterName: string = '') {
-    return this.get(DELIVERYS_LIST_QUERY, {
-      itemsPage, page, filterName
-    }).pipe(map((result: any) => {
-      return result.deliverys;
-    }));
+  async getDeliverys(page: number = 1, itemsPage: number = 10, filterName: string = ''): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(DELIVERYS_LIST_QUERY, {
+        itemsPage, page, filterName
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.deliverys);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
-  getDelivery(id: string) {
-    return this.get(DELIVERY_DATA_QUERY, {
-      include: true, id
-    }).pipe(map((result: any) => {
-      return result;
-    }));
+  async getDelivery(id: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(DELIVERY_DATA_QUERY, {
+        include: true, id
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
 }

@@ -392,15 +392,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             break;
           case PAY_FREE:
             const OrderSupplier = await this.sendOrderSupplier();
-            // const NewProperty = 'receipt_email';
-            // OrderSupplier[NewProperty] = 'fjpimienta@gmail.com';
             // TODO::Registrar Delivery
-            const result = await this.deliverysService.add(OrderSupplier);
-            console.log('PAY_FREE/result: ', result);
+            const deliverySave = await this.deliverysService.add(OrderSupplier);
+            console.log('PAY_FREE/deliverySave: ', deliverySave);
 
-            // this.sendEmail(OrderSupplier, 'Mensaje de Prueba', 'Hola Mundo');
+            const NewProperty = 'receipt_email';
+            OrderSupplier[NewProperty] = OrderSupplier.user.email;
+            this.sendEmail(OrderSupplier, '', '');
             // this.cartService.clearCart(false);
-            // await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
+            await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
             // this.router.navigate(['/shop/dashboard']);
             break;
         }
@@ -560,7 +560,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
               if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
                 cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
-                  console.log('cartItem.suppliersProd.branchOffices: ', cartItem.suppliersProd.branchOffices);
                   if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
                     || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
                     if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
@@ -571,6 +570,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.precio = cartItem.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
+                        productShipment.name = cartItem.name;
+                        productShipment.total = cartItem.qty * cartItem.price;
                         productsEstado.push(productShipment);
                         warehouseEstado.id = branchOffice.id;
                         warehouseEstado.cp = branchOffice.cp;
@@ -586,6 +587,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.precio = cartItem.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
+                        productShipment.name = cartItem.name;
+                        productShipment.total = cartItem.qty * cartItem.price;
                         productsCapital.push(productShipment);
                         warehouseCapital.id = branchOffice.id;
                         warehouseCapital.cp = branchOffice.cp;
@@ -856,6 +859,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.warehouses = this.warehouses;
     const ordersCt: OrderCt[] = [];
     let orderCtResponse: OrderCtResponse = new OrderCtResponse();
+    orderCtResponse.pedidoWeb = 'DARU-' +  id;
+    orderCtResponse.tipoDeCambio = 0;
+    orderCtResponse.estatus = '';
+    orderCtResponse.errores = [];
     const ordersCva: OrderCva[] = [];
     let orderCvaResponse: OrderCvaResponse = new OrderCvaResponse();
     // Generar modelo de cada proveedor
@@ -889,7 +896,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           delivery.ordersCva = ordersCva;
           delivery.orderCtResponse = orderCtResponse;
           delivery.orderCvaResponse = orderCvaResponse;
-          console.log('sendOrderSupplier/delivery: ', delivery);
           return await delivery;
         }
         return await [];
@@ -948,9 +954,96 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#region Emails  //ICharge
   sendEmail(charge: any, issue: string = '', message: string = ''): void {
     const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
-    const subject = issue !== '' ? issue : 'Confirmacion del pedido';
-    const html = message !== '' ? message : `El pedido se ha realizado correctamente.
-            Puedes consultarlo en <a href="${charge.receipt_url}" target="_blank"> esta url</a>`;
+    const subject = issue !== '' ? issue : 'Confirmación del pedido';
+    const productos = charge.warehouses[0].productShipments;
+    const productRows = productos.map((producto: any) => `
+      <tr>
+        <td>${producto.name}</td>
+        <td>${producto.cantidad}</td>
+        <td>${producto.precio}</td>
+        <td>${producto.total}</td>
+      </tr>
+    `).join('');
+    const html = message !== '' ? message : `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Nota de Compra</title>
+      <style>
+        /* Estilos generales */
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f5f5f5;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          color: #333333;
+          margin-top: 0;
+        }
+        p {
+          color: #666666;
+          line-height: 1.5;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th, td {
+          padding: 10px;
+          border-bottom: 1px solid #dddddd;
+        }
+        th {
+          text-align: left;
+          font-weight: bold;
+        }
+        tfoot td {
+          text-align: right;
+          font-weight: bold;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Nota de Compra</h1>
+        <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
+        <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productRows}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2"><strong>Total:</strong></td>
+              <td colspan="2">$ ${this.totalPagar}</td>
+            </tr>
+          </tfoot>
+        </table>
+        <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
+        <p>Saludos cordiales,</p>
+        <p>DARU</p>
+      </div>
+    </body>
+    </html>
+    `;
     const mail: IMail = {
       to: receiptEmail,
       subject,
@@ -1054,8 +1147,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
                   cvaResponse.error = resultPedido.error._ ? resultPedido.error._ : '';
                   cvaResponse.estado = resultPedido.estado._ ? resultPedido.estado._ : '';
-                  cvaResponse.pedido = resultPedido.pedido._ ? resultPedido.pedido._ : '';
-                  cvaResponse.total = resultPedido.total._ ? resultPedido.total._ : '';
+                  cvaResponse.pedido = resultPedido.pedido._ ? resultPedido.pedido._ : '0';
+                  cvaResponse.total = resultPedido.total._ ? resultPedido.total._ : '0';
                   return await cvaResponse;
                 } catch (error) {
                   throw await new Error(error.message);

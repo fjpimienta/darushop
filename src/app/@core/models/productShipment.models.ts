@@ -7,4 +7,6 @@ export class ProductShipment {
   precio: number;
   moneda: string;
   almacen: string;
+  name: string;
+  total: number;
 }
