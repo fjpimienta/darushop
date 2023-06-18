@@ -1040,6 +1040,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
         <p>Saludos cordiales,</p>
         <p>DARU</p>
+        <hr>
+        <hr>
+        <p>
+          Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
+        </p>
       </div>
     </body>
     </html>

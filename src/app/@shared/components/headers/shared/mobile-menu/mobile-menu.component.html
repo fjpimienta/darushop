@@ -107,39 +107,15 @@
                   <li>
                     <a routerLink="/pages/faq">Preguntas y Respuestas</a>
                   </li>
+                  <li [class.active]="current.includes('pages/terms')">
+                    <a routerLink="/pages/terms">T&eacute;rmninos y Condiciones</a>
+                  </li>
                 </ul>
               </li>
             </ul>
           </nav>
         </ng-template>
       </li>
-      <!-- <li ngbNavItem>
-        <a ngbNavLink>Categorias</a>
-        <ng-template ngbNavContent>
-          <div class="mobile-cats-nav">
-            <ul class="mobile-cats-menu">
-              <li class="item-cats-lead">
-                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Computers'}">Computadoras</a>
-              </li>
-              <li class="item-cats-lead">
-                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Accessories'}">Accessorios</a>
-              </li>
-              <li>
-                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Camcorders'}">Grabadoras</a>
-              </li>
-              <li>
-                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Cameras'}">Camaras</a>
-              </li>
-              <li>
-                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Tablets'}">Tabletas</a>
-              </li>
-              <li>
-                <a routerLink="/shop/sidebar/3cols" [queryParams]="{category: 'Entertainment'}">Entretenimiento</a>
-              </li>
-            </ul>
-          </div>
-        </ng-template>
-      </li> -->
     </ul>
     <div [ngbNavOutlet]="nav"></div>
 

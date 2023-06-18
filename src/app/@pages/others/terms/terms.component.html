@@ -1,0 +1,161 @@
+<div class="main">
+  <nav class="breadcrumb-nav border-0 mb-0">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/pages/about">Empresa</a>
+        </li>
+        <li class="breadcrumb-item active">T&eacute;rminos y Condiciones</li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container">
+      <div *ngFor="let faqs of faqGroups;let i = index">
+        <strong class="title text-center mb-3">{{ faqs.title }}</strong>
+
+        <app-accordion [adClass]="faqs.items[0].adClass" accordionID="accordion-1">
+          <app-card adClass="card-box card-sm bg-light" title="Términos y Condiciones" parent="accordion-1"
+            [show]="true">
+            <p>Por favor lea estos términos y condiciones de uso cuidadosamente antes de utilizar este sitio. Al usar el
+              sitio www.daru.mx usted manifiesta su aceptación de estos Términos de Uso y nuestro Aviso de Privacidad.
+              Si usted no acepta estos Términos y condiciones de Uso, por favor no utilice este sitio. DARU S.A. de C.V.
+              (‘DARU’) se reserva el derecho, a nuestra discreción, de cambiar, añadir, eliminar o modificar partes de
+              estos Términos y condiciones de Uso en cualquier momento. Revise estos términos y condiciones de uso
+              periódicamente para los cambios. El uso continuado de este sitio después de la publicación de las
+              modificaciones de estas condiciones de uso significa que usted acepta esos cambios.</p>
+
+            <ul>
+              <li>Posesión</li>
+              <li>Licencia y Uso del Sitio</li>
+              <li>Su cuenta</li>
+              <li>Peticiones</li>
+              <li>Foros y comunicación pública</li>
+              <li>Contenido vinculado a cualquier sitio web de DARU</li>
+              <li>Cláusula de Renuncia "disclaimer"</li>
+              <li>Tarjetas de Crédito</li>
+              <li>Indemnización</li>
+              <li>Limitación de Responsabilidad</li>
+              <li>Cuestiones de competencia "incidentes jurisdiccionales"</li>
+              <li>Terminación</li>
+              <li>Aviso y procedimientos para realizar reclamaciones de infracción de derechos de autor</li>
+              <li>Disposiciones y provisiones generales</li>
+              <li>Exactitud de Información y Descargo de responsabilidad de garantía</li>
+            </ul>
+          </app-card>
+          <app-card adClass="card-box card-sm bg-light" title="Aviso de Privacidad para Clientes" parent="accordion-1"
+            [show]="false">
+            <p><strong>David Silva Hernández</strong> (en adelante el DARU), con domicilio en 601 Avenida de los
+              Insurgentes Sur Col. Nápoles, Delegación Benito Juárez Ciudad de México C.P. 03810, México, es el
+              responsable de salvaguardar la integridad, privacidad y protección de los datos personales que nos
+              proporcione (en adelante el Titular), los cuales serán protegidos conforme a lo dispuesto por la Ley
+              Federal de Protección de Datos Personales en Posesión de los Particulares (en adelante la Ley), y demás
+              normatividad aplicable. Le solicitamos leer cuidadosamente el presente Aviso de Privacidad.</p>
+
+            <p>Para DARU es necesario recopilar ciertos datos personales para llevar a cabo sus actividades. DARU tiene
+              la obligación legal y social de cumplir con las medidas legales y de seguridad para proteger los datos
+              personales y sensibles que haya recabado. A continuación, se describen las finalidades para las cuales se
+              recaban los datos personales en el presente Aviso.</p>
+
+            <p>Le recomendamos leer atentamente la siguiente información para tener pleno control y decisión sobre sus
+              datos personales.</p>
+
+            <p>Si el Titular proporciona sus datos personales, significa que ha leído, entendido y aceptado los términos
+              del presente Aviso.</p>
+
+            <strong>¿Qué datos personales solicitamos y para qué fines?</strong>
+
+            <p>Esta política tiene como objetivo asegurar la privacidad de los datos proporcionados por nuestros
+              clientes para vincularse con los servicios o productos proporcionados por DARU.</p>
+
+            <p>Al usar los servicios, productos o acceder a este sitio o cualquier sitio relacionado proporcionado por
+              DARU, usted acepta la recopilación, uso, transferencia y almacenamiento de su información personal y
+              personal sensible. Si no está de acuerdo, el titular NO debe proporcionar ninguna información personal.
+            </p>
+
+            <p><strong>Datos personales que podrán ser recabados con pleno conocimiento del Titular:</strong></p>
+
+            <p>Los datos personales que podrán ser recabados y sujetos a tratamiento por DARU son:</p>
+
+            <ol>
+              <li>Datos de identificación: nombre, apellido, fecha de nacimiento y sexo.</li>
+              <li>Datos de contacto: calle, número, colonia, código postal, ciudad, estado, país, teléfono celular,
+                correo electrónico.</li>
+            </ol>
+
+            <p><strong>Finalidades:</strong></p>
+
+            <ol>
+              <li>Proveer los servicios y productos que ha solicitado.</li>
+              <li>Informar sobre cambios o nuevos productos o servicios que estén relacionados con el contratado o
+                adquirido por el Titular.</li>
+              <li>Dar cumplimiento a obligaciones contraídas con el Titular.</li>
+              <li>Evaluar la calidad del servicio y realizar estudios internos sobre hábitos de consumo.</li>
+            </ol>
+
+            <strong>Limitación de uso y divulgación de datos personales</strong>
+
+            <p>Los datos personales del Titular serán tratados únicamente por el DARU y no serán transferidos a
+              terceros, salvo que se cuente con su consentimiento expreso, o bien que exista una orden de autoridad
+              competente.</p>
+
+            <strong>Medidas de seguridad</strong>
+
+            <p>El DARU implementará las medidas de seguridad administrativas, técnicas y físicas necesarias y
+              suficientes para la protección de los datos personales.</p>
+
+            <p>En caso de existir alguna vulneración de seguridad en cualquier etapa del tratamiento de datos
+              personales, el DARU se lo hará saber al Titular de manera inmediata y por cualquier medio de comunicación.
+            </p>
+
+            <strong>Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición)</strong>
+
+            <p>El Titular podrá ejercer los derechos ARCO respecto a sus datos personales. Para ello, deberá presentar
+              una solicitud por escrito en el domicilio del DARU o a través del correo electrónico contacto@daru.com.mx,
+              proporcionando los siguientes datos:</p>
+
+            <ol>
+              <li>Nombre y apellido del Titular o del representante legal.</li>
+              <li>Domicilio o correo electrónico para comunicar la respuesta a su solicitud.</li>
+              <li>Documentos que acrediten la identidad o, en su caso, la representación legal del Titular.</li>
+              <li>Descripción clara y precisa de los datos personales respecto de los que se busca ejercer alguno de los
+                derechos ARCO.</li>
+            </ol>
+
+            <strong>Cambios al Aviso de Privacidad</strong>
+
+            <p>El DARU se reserva el derecho de modificar este Aviso de Privacidad en cualquier momento. En caso de que
+              exista alguna modificación, se hará de su conocimiento a través de nuestra página web <a
+                href="http://www.daru.com.mx">www.daru.com.mx</a>.</p>
+
+            <p>Fecha de última actualización: 20 de mayo de 2023.</p>
+
+          </app-card>
+
+          <app-card adClass="card-box card-sm bg-light" title="Política de Cookies" parent="accordion-1" [show]="false">
+            <p>Esta web de DARU utiliza cookies propias para la elaboración de perfiles basados en los hábitos de
+              navegación del usuario y ofrecer contenidos adaptados a sus intereses.</p>
+            <p>Las cookies son el archivo de datos que se almacena en el disco duro del equipo de cómputo o del
+              dispositivo de comunicaciones electrónicas de un usuario al navegar en un sitio de internet específico, el
+              cual permite intercambiar información de estado entre dicho sitio y el navegador del usuario. La
+              información de estado puede revelar medios de identificación de sesión, autenticación o preferencias del
+              usuario, así como cualquier dato almacenado por el navegador respecto al sitio de internet.</p>
+            <p>DARU utiliza varias tecnologías para mejorar la eficiencia de sus sitios web, incluyendo su experiencia
+              cuando navega por dichos sitios. Entre estas tecnologías se incluye el uso de cookies. Las cookies son
+              pequeñas cantidades de información que se almacenan en el navegador utilizado por cada usuario para que el
+              servidor recuerde cierta información que posteriormente pueda utilizar. Esta información permite
+              identificarle y guardar sus preferencias personales para brindarle una mejor experiencia de navegación.
+            </p>
+            <p>Si quisiese retirar en cualquier momento su consentimiento relacionado con la presente Política de
+              Cookies, deberá eliminar las cookies almacenadas a través de los ajustes y configuraciones de su navegador
+              de Internet.</p>
+          </app-card>
+        </app-accordion>
+      </div>
+    </div>
+  </div>
+</div>
