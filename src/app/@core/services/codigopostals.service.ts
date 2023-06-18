@@ -13,11 +13,17 @@ export class CodigopostalsService extends ApiService {
     super(apollo);
   }
 
-  getCps(page: number = 1, itemsPage: number = 10, filterName: string = '') {
-    return this.get(CPS_LIST_QUERY, {
-      itemsPage, page, filterName
-    }).pipe(map((result: any) => {
-      return result.codigopostals;
-    }));
+  async getCps(page: number = 1, itemsPage: number = 10, filterName: string = ''): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(CPS_LIST_QUERY, {
+        itemsPage, page, filterName
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.codigopostals);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 }

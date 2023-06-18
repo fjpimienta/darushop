@@ -454,12 +454,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return register;
   }
 
-  onSetCps(event): void {
+  async onSetCps(event): Promise<void> {
     if (event) {
       const cp = $(event.target).val();
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
-        this.codigopostalsService.getCps(1, -1, cp).subscribe(result => {
+        const codigoPostal = this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;
           if (this.cps.length > 0) {
             // Agregar Pais, Estados, Municipios del CP
@@ -494,11 +494,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.colonias.push(codigo.d_asenta);
                 }
               });
+              return await this.colonias;
               // Cotizar con los proveedores el costo de envio de acuerdo al producto.
-              this.onCotizarEnvios(cp, this.selectEstado.d_estado);
             }
+            return await [];
           }
+          return await [];
         });
+        // Cotizar con los proveedores el costo de envio de acuerdo al producto.
+        if ((await codigoPostal).length > 0) {
+          const cotizacionEnvios = await this.onCotizarEnvios(cp, this.selectEstado.d_estado);
+          this.shipments = cotizacionEnvios;
+        }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
       }
@@ -507,7 +514,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<void> {
+  async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<any> {
     // Inicializar Arreglo de Envios.
     this.sucursalesCVA = await this.externalAuthService.getSucursalesCva().then(result => {
       return result;
@@ -525,6 +532,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.warehouses = [];
     this.warehouse = new Warehouse();
     this.warehouse.shipments = [];
+    const shipmentsEnd = [];
 
     // Verificar productos por proveedor.
     let i = 0;
@@ -624,7 +632,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.warehouse.productShipments = productsCapital;
             }
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(
-              supplier, apiShipment, this.warehouse, false)
+              supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {
                 const shipments: Shipment[] = [];
                 // tslint:disable-next-line: forin
@@ -638,53 +646,48 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return shipments;
               }
               );
-            const shipmentsTemp: Shipment[] = [];
             shipmentsCost.forEach(ship => {
-              shipmentsTemp.push(ship);
+              shipmentsEnd.push(ship);
             });
-            this.warehouse.shipments = shipmentsTemp;
-            this.shipments = this.warehouse.shipments;
-
-            // Cotizar con las paqueterias Externas a Proveedores
-            if (this.warehouse.shipments.length <= 0) {
-              const shipmentsExt = await this.shippingsService.getShippings()
-                .then(async result => {
-                  if (result.status && result.shippings.length > 0) {
-                    result.shippings.forEach(async shipping => {
-                      const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
-                      const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
-                        shipping, apiSelectShip, this.warehouse, false)
-                        .then(
-                          async (resultShipment) => {
-                            const shipments: Shipment[] = [];
-                            // tslint:disable-next-line: forin
-                            for (const key in resultShipment) {
-                              const shipment = new Shipment();
-                              shipment.empresa = resultShipment[key].empresa.toUpperCase();
-                              shipment.costo = resultShipment[key].costo;
-                              shipment.metodoShipping = '';
-                              shipments.push(shipment);
-                            }
-                            return await shipments;
-                          }
-                        );
-                      shippingsEstimate.forEach(ship => {
-                        this.shipments.push(ship);
-                      });
-                    });
-                  }
-                  return await this.shipments;
-                });
-            }
-            this.warehouses.push(this.warehouse);
+            this.warehouse.shipments = shipmentsEnd;
           }
         }
       });
+      // Cotizar con las paqueterias Externas a Proveedores
+      if (this.warehouse.shipments.length <= 0) {
+        const shipmentsExt = await this.shippingsService.getShippings()
+          .then(async result => {
+            if (result.status && result.shippings.length > 0) {
+              result.shippings.forEach(async shipping => {
+                const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
+                const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
+                  shipping, apiSelectShip, this.warehouse, false)
+                  .then(
+                    async (resultShipment) => {
+                      const shipments: Shipment[] = [];
+                      // tslint:disable-next-line: forin
+                      for (const key in resultShipment) {
+                        const shipment = new Shipment();
+                        shipment.empresa = resultShipment[key].empresa.toUpperCase();
+                        shipment.costo = resultShipment[key].costo;
+                        shipment.metodoShipping = '';
+                        shipments.push(shipment);
+                      }
+                      return await shipments;
+                    }
+                  );
+                shippingsEstimate.forEach(ship => {
+                  shipmentsEnd.push(ship);
+                });
+              });
+              return await shipmentsEnd;
+            }
+            return await [];
+          });
+      }
+      this.warehouses.push(this.warehouse);
     }
-
-
-
-
+    return await shipmentsEnd;
     // Elaborar Pedido Previo a facturacion.
   }
 
@@ -859,7 +862,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.warehouses = this.warehouses;
     const ordersCt: OrderCt[] = [];
     let orderCtResponse: OrderCtResponse = new OrderCtResponse();
-    orderCtResponse.pedidoWeb = 'DARU-' +  id;
+    orderCtResponse.pedidoWeb = 'DARU-' + id;
     orderCtResponse.tipoDeCambio = 0;
     orderCtResponse.estatus = '';
     orderCtResponse.errores = [];
