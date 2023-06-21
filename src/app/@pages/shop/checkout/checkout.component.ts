@@ -399,9 +399,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const NewProperty = 'receipt_email';
             OrderSupplier[NewProperty] = OrderSupplier.user.email;
             this.sendEmail(OrderSupplier, '', '');
-            // this.cartService.clearCart(false);
+            this.cartService.clearCart(false);
             await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
-            // this.router.navigate(['/shop/dashboard']);
+            this.router.navigate(['/shop/dashboard']);
             break;
         }
       } else if (this.existePaqueteria) {
@@ -639,16 +639,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 for (const key in resultShip) {
                   const shipment = new Shipment();
                   shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
-                  shipment.costo = resultShip[key].total;
-                  shipment.metodoShipping = resultShip[key].metodo;
+                  shipment.costo = resultShip[key].costo;
+                  shipment.metodoShipping = resultShip[key].metodoShipping;
+                  // shipment.costo = resultShip[key].total;
+                  // shipment.metodoShipping = resultShip[key].metodo;
                   shipments.push(shipment);
                 }
                 return shipments;
-              }
-              );
+              });
             shipmentsCost.forEach(ship => {
               shipmentsEnd.push(ship);
             });
+            console.log('suppliers/forEach/shipmentsEnd: ', shipmentsEnd);
             this.warehouse.shipments = shipmentsEnd;
           }
         }
@@ -662,24 +664,24 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
                 const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
                   shipping, apiSelectShip, this.warehouse, false)
-                  .then(
-                    async (resultShipment) => {
-                      const shipments: Shipment[] = [];
-                      // tslint:disable-next-line: forin
-                      for (const key in resultShipment) {
-                        const shipment = new Shipment();
-                        shipment.empresa = resultShipment[key].empresa.toUpperCase();
-                        shipment.costo = resultShipment[key].costo;
-                        shipment.metodoShipping = '';
-                        shipments.push(shipment);
-                      }
-                      return await shipments;
+                  .then(async (resultShipment) => {
+                    const shipments: Shipment[] = [];
+                    // tslint:disable-next-line: forin
+                    for (const key in resultShipment) {
+                      const shipment = new Shipment();
+                      shipment.empresa = resultShipment[key].empresa.toUpperCase();
+                      shipment.costo = resultShipment[key].costo;
+                      shipment.metodoShipping = '';
+                      shipments.push(shipment);
                     }
+                    return await shipments;
+                  }
                   );
                 shippingsEstimate.forEach(ship => {
                   shipmentsEnd.push(ship);
                 });
               });
+              console.log('api-externa/shipmentsEnd: ', shipmentsEnd);
               return await shipmentsEnd;
             }
             return await [];

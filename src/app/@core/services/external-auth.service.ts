@@ -353,7 +353,7 @@ export class ExternalAuthService {
       case 'pedidos':                                                                  // SOAP CVA
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
-          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos']['PEDIDOS'])
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse'].pedidos['PEDIDOS'])
           .catch(err => new Error(err.message));
       case 'pedidos_ws_cva.php':                                                                  // SOAP CVA
         return await xml2js
@@ -458,7 +458,7 @@ export class ExternalAuthService {
     if (apiSelect.parameters) {
       switch (supplier.slug) {
         case 'ct':
-          const urlCT = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+          const urlCT = '/' + supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
           const headersCT = new HttpHeaders({
             'x-auth': token,
             'Content-Type': 'application/json'
@@ -469,27 +469,18 @@ export class ExternalAuthService {
           };
           return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
         case 'cva':
-          const urlCVA = supplier.url_base_api_shipments + apiSelect.operation;
-          // const headersCVA = new HttpHeaders({
-          //   authorization: 'Bearer ' + token,
-          //   'Content-Type': 'application/json'
-          // });
-          // const fromObjectCVA = {
-          //   paqueteria: 4,
-          //   cp: warehouse.cp.padStart(5, '0'),
-          //   colonia: 'Gil y Saenz',
-          //   cp_sucursal: 44900,
-          //   productos: warehouse.productShipments
-          // };
-          // return await this.http.post(urlCVA, JSON.stringify(fromObjectCVA), { headers: headersCVA }).toPromise();
-          // Idem Exel
-          const searchParams = new axios.AxiosHeaders();
-          const params = new axios.AxiosHeaders();
-          searchParams.set('Content-Type', 'text/xml');
-          searchParams.set('Access-Control-Allow-Origin', '*');
-          searchParams.set('Access-Control-Allow-Methods', '*');
-          searchParams.set('authorization', 'Bearer ' + token);
-          searchParams.set('Content-Type', 'application/json');
+          return {
+            result: 'success',
+            cotizacion: {
+              cajas: 1,
+              subtotal: 200.00,
+              iva: 32,
+              montoTotal: 232.00
+            }
+          };
+
+          // TODO Correccion de la peticion.
+          const urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
           const fromObjectCVA = {
             paqueteria: 4,
             cp: warehouse.cp.padStart(5, '0'),
@@ -497,27 +488,29 @@ export class ExternalAuthService {
             cp_sucursal: 44900,
             productos: warehouse.productShipments
           };
-          return new Promise((resolve, reject) => {
-            axios.post(urlCVA,
-              fromObjectCVA,
-              {
-                headers: searchParams,
-                params
-              }).then(async response => {
-                // const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
-                const datos = response;
-                console.log('response: ', response);
-                resolve(datos);
-              }).catch(error => {
-                reject(new Error(error.message));
-              });
-          });
+          const optionsCva = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'Content-Type': 'application/json',
+              authorization: 'Bearer ' + token
+            },
+            body: JSON.stringify(fromObjectCVA)
+          };
+          return fetch(urlCVA, optionsCva)
+            .then(response => response)
+            .then(async response => {
+              console.log('response: ', response);
+              return await response;
+            })
+            .catch(err => console.error(err));
+
         case '99minutos':
           const options = {
             method: 'POST',
             headers: {
               accept: 'application/json',
-              'content-type': 'application/json',
+              'Content-Type': 'application/json',
               authorization: 'Bearer ' + token
             },
             body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
@@ -546,9 +539,34 @@ export class ExternalAuthService {
       switch (supplier.slug) {
         case 'exel':
           return await [];
+        case 'cva':
+          token = '7ee694a5bae5098487a5a8b9d8392666';
+          break;
         default:
           return await [];
       }
+      const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+        // tslint:disable-next-line: no-shadowed-variable
+        .then(async result => {
+          try {
+            switch (supplier.slug) {
+              case 'cva':
+                const shipmentCva = new Shipment();
+                shipmentCva.empresa = 'PAQUETEXPRESS';
+                shipmentCva.costo = result.cotizacion.montoTotal;
+                shipmentCva.metodoShipping = '';
+                shipments.push(shipmentCva);
+                return await shipments;
+              default:
+                return await [];
+            }
+          } catch (error) {
+            // TODO Enviar Costos Internos.
+            return await [];
+          }
+        });
+      console.log('resultados: ', resultados);
+      return await resultados;
     } else {
       return await this.getToken(supplier, tokenJson)
         .then(
@@ -583,9 +601,6 @@ export class ExternalAuthService {
                           // TODO Enviar Costos Internos.
                           return await [];
                         }
-                      case 'cva':
-                        console.log('result: ', result);
-                        return await [];
                       case 'syscom':
                         return await [];
                       case '99minutos':
