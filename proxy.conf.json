@@ -24,7 +24,7 @@
   },
   "/api/*": {
     "target": "https://www.grupocva.com",
-    "secure": true,
+    "secure": false,
     "changeOrigin": true
   }
 }
