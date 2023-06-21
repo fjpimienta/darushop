@@ -134,6 +134,9 @@ export const DELIVERY_FRAGMENT = gql`
         precio
         moneda
         almacen
+        cp
+        name
+        total
       }
       shipments {
         empresa
@@ -177,6 +180,7 @@ export const DELIVERY_FRAGMENT = gql`
       Calle
       Numero
       NumeroInt
+      CP
       Colonia
       Estado
       Ciudad

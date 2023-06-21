@@ -9,6 +9,7 @@ export interface IOrderCva {
   Calle: string;
   Numero: string;
   NumeroInt: string;
+  CP: string;
   Colonia: string;
   Estado: string;
   Ciudad: string;

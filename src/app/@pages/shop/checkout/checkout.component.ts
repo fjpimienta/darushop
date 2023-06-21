@@ -578,6 +578,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.precio = cartItem.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
+                        productShipment.cp = branchOffice.cp;
                         productShipment.name = cartItem.name;
                         productShipment.total = cartItem.qty * cartItem.price;
                         productsEstado.push(productShipment);
@@ -595,6 +596,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.precio = cartItem.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
+                        productShipment.cp = branchOffice.cp;
                         productShipment.name = cartItem.name;
                         productShipment.total = cartItem.qty * cartItem.price;
                         productsCapital.push(productShipment);
@@ -842,6 +844,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Calle: this.removeAccents(dir.directions),
           Numero: dir.outdoorNumber,
           NumeroInt: dir.interiorNumber,
+          CP: warehouse.productShipments[0].cp,
           Colonia: this.removeAccents(dir.d_asenta),
           Estado: this.removeAccents(estado),
           Ciudad: this.removeAccents(ciudad),

@@ -15,6 +15,7 @@ export const ORDERCVA_FRAGMENT = gql`
     Calle
     Numero
     NumeroInt
+    CP
     Colonia
     Estado
     Ciudad

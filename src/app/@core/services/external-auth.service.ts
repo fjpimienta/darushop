@@ -660,6 +660,7 @@ export class ExternalAuthService {
         &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
         &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
         &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
+        &lt;CP&gt;${order.CP}&lt;/CP&gt;
         &lt;Colonia&gt;${order.Colonia}&lt;/Colonia&gt;
         &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
         &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;

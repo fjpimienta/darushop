@@ -101,6 +101,9 @@ export const WAREHOUSE_FRAGMENT = gql`
       precio
       moneda
       almacen
+      cp
+      name
+      total
     }
     shipments {
       empresa
