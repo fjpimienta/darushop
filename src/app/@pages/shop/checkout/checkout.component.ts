@@ -122,6 +122,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   paqueteriasCVA = [];
   ciudadesCVA = [];
 
+  isSubmitting = false;
+
   constructor(
     private router: Router,
     private httpClient: HttpClient,
@@ -373,44 +375,50 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit(): Promise<any> {
-    if (this.formData.valid) {
-      // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
-      if (this.existeMetodoPago && this.existePaqueteria) {
-        switch (this.typePay) {
-          case PAY_STRIPE:
-            this.payStripe();
-            break;
-          case PAY_OPENPAY:
-            break;
-          case PAY_TRANSFER:
-            break;
-          case PAY_DEPOSIT:
-            break;
-          case PAY_PAYPAL:
-            break;
-          case PAY_MERCADO_PAGO:
-            break;
-          case PAY_FREE:
-            const OrderSupplier = await this.sendOrderSupplier();
-            // TODO::Registrar Delivery
-            const deliverySave = await this.deliverysService.add(OrderSupplier);
-            console.log('PAY_FREE/deliverySave: ', deliverySave);
+    if (!this.isSubmitting) {
+      this.isSubmitting = true;
+      if (this.formData.valid) {
+        // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
+        if (this.existeMetodoPago && this.existePaqueteria) {
+          switch (this.typePay) {
+            case PAY_STRIPE:
+              this.payStripe();
+              break;
+            case PAY_OPENPAY:
+              break;
+            case PAY_TRANSFER:
+              break;
+            case PAY_DEPOSIT:
+              break;
+            case PAY_PAYPAL:
+              break;
+            case PAY_MERCADO_PAGO:
+              break;
+            case PAY_FREE:
+              const OrderSupplier = await this.sendOrderSupplier();
+              // TODO::Registrar Delivery
+              const deliverySave = await this.deliverysService.add(OrderSupplier);
+              console.log('PAY_FREE/deliverySave: ', deliverySave);
 
-            const NewProperty = 'receipt_email';
-            OrderSupplier[NewProperty] = OrderSupplier.user.email;
-            this.sendEmail(OrderSupplier, '', '');
-            this.cartService.clearCart(false);
-            await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
-            this.router.navigate(['/shop/dashboard']);
-            break;
+              const NewProperty = 'receipt_email';
+              OrderSupplier[NewProperty] = OrderSupplier.user.email;
+              this.sendEmail(OrderSupplier, '', '');
+              this.cartService.clearCart(false);
+              await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
+              this.router.navigate(['/shop/dashboard']);
+              break;
+          }
+        } else if (this.existePaqueteria) {
+          this.isSubmitting = false;
+          return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
+        } else {
+          this.isSubmitting = false;
+          return await infoEventAlert('Se requiere definir una Paqueteria para el Env&iacute;o.', '');
         }
-      } else if (this.existePaqueteria) {
-        return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
       } else {
-        return await infoEventAlert('Se requiere definir una Paqueteria para el Env&iacute;o.', '');
+        this.isSubmitting = false;
+        return await infoEventAlert('Verificar los campos requeridos.', '');
       }
-    } else {
-      return await infoEventAlert('Verificar los campos requeridos.', '');
     }
   }
 
@@ -831,11 +839,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productCva.cantidad = prod.cantidad;
           ProductosCva.push(productCva);
         });
-        const estado = this.ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).clave;
+        const estado = this.ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
         const ciudad = this.ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
         const orderCvaSupplier: OrderCva = {
           NumOC: '1',
-          Paqueteria: '0',
+          Paqueteria: '4',
           CodigoSucursal: warehouse.productShipments[0].almacen,
           PedidoBO: 'N',
           Observaciones: 'Pedido de Prueba',
@@ -846,10 +854,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           NumeroInt: dir.interiorNumber,
           CP: warehouse.productShipments[0].cp,
           Colonia: this.removeAccents(dir.d_asenta),
-          Estado: this.removeAccents(estado),
-          Ciudad: this.removeAccents(ciudad),
+          Estado: Math.round(estado).toString(),
+          Ciudad: ciudad,
           Atencion: this.removeAccents(user.name + ' ' + user.lastname)
         };
+        console.log('orderCvaSupplier: ', orderCvaSupplier);
         return orderCvaSupplier;
       case 'ingram':
         return '';

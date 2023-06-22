@@ -1,9 +1,13 @@
 /**
  * Clase de Productos Enviados.
  */
-export class ProductShipment {
-  producto: string;
+export class ProductShipmentCVA {
+  clave: string;
   cantidad: number;
+}
+
+export class ProductShipment extends ProductShipmentCVA {
+  producto: string;
   precio: number;
   moneda: string;
   almacen: string;

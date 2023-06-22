@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 // import axios, { isCancel, AxiosError } from 'axios';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
+import { ProductShipmentCVA } from '@core/models/productShipment.models';
 
 declare const require;
 const axios = require('axios');
@@ -469,24 +470,30 @@ export class ExternalAuthService {
           };
           return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
         case 'cva':
-          return {
-            result: 'success',
-            cotizacion: {
-              cajas: 1,
-              subtotal: 200.00,
-              iva: 32,
-              montoTotal: 232.00
-            }
-          };
+          // return {
+          //   result: 'success',
+          //   cotizacion: {
+          //     cajas: 1,
+          //     subtotal: 200.00,
+          //     iva: 32,
+          //     montoTotal: 232.00
+          //   }
+          // };
 
           // TODO Correccion de la peticion.
           const urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
+          const productShipmentCVA: ProductShipmentCVA[] = [];
+          warehouse.productShipments.forEach(pS => {
+            const newPS: ProductShipmentCVA = new ProductShipmentCVA();
+            newPS.clave = pS.producto;
+            newPS.cantidad = pS.cantidad;
+            productShipmentCVA.push(newPS);
+          });
           const fromObjectCVA = {
             paqueteria: 4,
             cp: warehouse.cp.padStart(5, '0'),
-            colonia: 'Gil y Saenz',
             cp_sucursal: 44900,
-            productos: warehouse.productShipments
+            productos: productShipmentCVA
           };
           const optionsCva = {
             method: 'POST',
