@@ -45,23 +45,39 @@ export class ExternalAuthService {
     supplier: ISupplier,
     tokenJson: boolean = false
   ): Promise<any> {
-    let headers = new HttpHeaders();
-    let params = new HttpParams();
+    // let headers = new HttpHeaders();
+    // let params = new HttpParams();
     switch (supplier.slug) {
       case 'ct':
-        const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
-        headers = new HttpHeaders({
-          'Content-Type': contentType
-        });
-        if (supplier.token.body_parameters.length > 0) {
-          supplier.token.body_parameters.forEach(param => {
-            params = params.set(param.name, param.value);
-          });
-        }
-        return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
+        // const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
+        // headers = new HttpHeaders({
+        //   'Content-Type': contentType
+        // });
+        // if (supplier.token.body_parameters.length > 0) {
+        //   supplier.token.body_parameters.forEach(param => {
+        //     params = params.set(param.name, param.value);
+        //   });
+        // }
+        // return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
+
+        const optionsCT = {
+          method: 'POST',
+          headers: { accept: 'application/json', 'content-type': 'application/json' },
+          body: JSON.stringify({
+            email: 'david.silva@daru.mx',
+            cliente: 'VHA2391',
+            rfc: 'DIN2206222D3'
+          })
+        };
+        return await fetch('http://connect.ctonline.mx:3001/cliente/token', optionsCT)
+          .then(response => response.json())
+          .then(async response => {
+            return await response;
+          })
+          .catch(err => console.error(err));
       case 'cva':
         const tokenBearer = '7ee694a5bae5098487a5a8b9d8392666';
-        return tokenBearer;
+        return await tokenBearer;
       case '99minutos':
         const options = {
           method: 'POST',
@@ -71,7 +87,7 @@ export class ExternalAuthService {
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-        return fetch('99minutos/api/v3/oauth/token', options)
+        return await fetch('99minutos/api/v3/oauth/token', options)
           .then(response => response.json())
           .then(async response => {
             return await response;
@@ -354,7 +370,8 @@ export class ExternalAuthService {
       case 'pedidos':                                                                  // SOAP CVA
         return await xml2js
           .parseStringPromise(xml, { explicitArray: false })
-          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse'].pedidos['PEDIDOS'])
+          // tslint:disable-next-line: no-string-literal
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos']['PEDIDOS'])
           .catch(err => new Error(err.message));
       case 'pedidos_ws_cva.php':                                                                  // SOAP CVA
         return await xml2js
@@ -446,7 +463,6 @@ export class ExternalAuthService {
       });
       const Content = he.decode(response.data.toString('utf-8'));
       const datos = await this.parseXmlToJson(Content, apiSelect.operation);
-      console.log('getCatalogSOAP/datos: ', datos);
       return await datos;
     } catch (error) {
       throw new Error(error.message);
@@ -459,7 +475,7 @@ export class ExternalAuthService {
     if (apiSelect.parameters) {
       switch (supplier.slug) {
         case 'ct':
-          const urlCT = '/' + supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+          const urlCT = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
           const headersCT = new HttpHeaders({
             'x-auth': token,
             'Content-Type': 'application/json'
@@ -470,47 +486,77 @@ export class ExternalAuthService {
           };
           return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
         case 'cva':
-          // return {
-          //   result: 'success',
-          //   cotizacion: {
-          //     cajas: 1,
-          //     subtotal: 200.00,
-          //     iva: 32,
-          //     montoTotal: 232.00
-          //   }
-          // };
+          return {
+            result: 'success',
+            cotizacion: {
+              cajas: 1,
+              subtotal: 200.00,
+              iva: 32,
+              montoTotal: 232.00
+            }
+          };
 
-          // TODO Correccion de la peticion.
-          const urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
-          const productShipmentCVA: ProductShipmentCVA[] = [];
-          warehouse.productShipments.forEach(pS => {
-            const newPS: ProductShipmentCVA = new ProductShipmentCVA();
-            newPS.clave = pS.producto;
-            newPS.cantidad = pS.cantidad;
-            productShipmentCVA.push(newPS);
-          });
-          const fromObjectCVA = {
-            paqueteria: 4,
-            cp: warehouse.cp.padStart(5, '0'),
-            cp_sucursal: 44900,
-            productos: productShipmentCVA
-          };
-          const optionsCva = {
-            method: 'POST',
-            headers: {
-              accept: 'application/json',
-              'Content-Type': 'application/json',
-              authorization: 'Bearer ' + token
-            },
-            body: JSON.stringify(fromObjectCVA)
-          };
-          return fetch(urlCVA, optionsCva)
-            .then(response => response)
-            .then(async response => {
-              console.log('response: ', response);
-              return await response;
-            })
-            .catch(err => console.error(err));
+        // const payload = {
+        //   paqueteria: 4,
+        //   cp: 86080,
+        //   cp_sucursal: 44900,
+        //   productos: [
+        //     {
+        //       clave: 'MS-936',
+        //       cantidad: 1
+        //     }
+        //   ]
+        // };
+
+        // return fetch('https://www.grupocva.com/api/paqueteria/', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json', 'Authorization': 'Bearer 7ee694a5bae5098487a5a8b9d8392666'
+        //   },
+        //   body: JSON.stringify(payload)
+        // })
+        //   .then(response => response.json())
+        //   .then(data => {
+        //     // Aquí puedes manejar la respuesta del servidor
+        //     console.log(data);
+        //   })
+        //   .catch(error => {
+        //     // Aquí puedes manejar los errores
+        //     console.error(error);
+        //   });
+
+        // // TODO Correccion de la peticion.
+        // let urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
+        // const productShipmentCVA: ProductShipmentCVA[] = [];
+        // warehouse.productShipments.forEach(pS => {
+        //   const newPS: ProductShipmentCVA = new ProductShipmentCVA();
+        //   newPS.clave = pS.producto;
+        //   newPS.cantidad = pS.cantidad;
+        //   productShipmentCVA.push(newPS);
+        // });
+        // const fromObjectCVA = {
+        //   paqueteria: 4,
+        //   cp: warehouse.cp.padStart(5, '0'),
+        //   cp_sucursal: warehouse.productShipments[0].cp,
+        //   productos: productShipmentCVA
+        // };
+        // const optionsCva = {
+        //   method: 'POST',
+        //   headers: {
+        //     accept: 'application/json',
+        //     'Content-Type': 'application/json',
+        //     authorization: 'Bearer ' + token
+        //   },
+        //   body: JSON.stringify(fromObjectCVA)
+        // };
+        // urlCVA = 'api/paqueteria/';
+        // return fetch(urlCVA, optionsCva)
+        //   .then(response => response)
+        //   .then(async response => {
+        //     console.log('response: ', response);
+        //     return await response;
+        //   })
+        //   .catch(err => console.error(err));
 
         case '99minutos':
           const options = {
@@ -572,9 +618,9 @@ export class ExternalAuthService {
             return await [];
           }
         });
-      console.log('resultados: ', resultados);
       return await resultados;
     } else {
+      tokenJson = true;
       return await this.getToken(supplier, tokenJson)
         .then(
           async result => {

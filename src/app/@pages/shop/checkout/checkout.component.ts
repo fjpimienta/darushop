@@ -224,7 +224,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   // Elaborar Pedido Proveedor
                   const OrderSupplier = await this.sendOrderSupplier();
                   // TODO::Registrar Delivery
-                  console.log('OrderSupplier: ', OrderSupplier);
                   this.deliverysService.add(OrderSupplier);
                   // Enviar correo electronico
                   await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
@@ -396,9 +395,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               break;
             case PAY_FREE:
               const OrderSupplier = await this.sendOrderSupplier();
-              // TODO::Registrar Delivery
+              // TODO::Fix Registrar Delivery
               const deliverySave = await this.deliverysService.add(OrderSupplier);
-              console.log('PAY_FREE/deliverySave: ', deliverySave);
 
               const NewProperty = 'receipt_email';
               OrderSupplier[NewProperty] = OrderSupplier.user.email;
@@ -512,7 +510,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if ((await codigoPostal).length > 0) {
           const cotizacionEnvios = await this.onCotizarEnvios(cp, this.selectEstado.d_estado);
-          this.shipments = cotizacionEnvios;
+          if (cotizacionEnvios.length <= 0) {
+            const externos = await this.onCotizarEnviosExternos(cp, this.selectEstado.d_estado);
+            if (externos.length > 0) {
+              this.shipments = externos;
+            }
+          } else {
+            this.shipments = cotizacionEnvios;
+          }
         }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
@@ -549,19 +554,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return await result.suppliers;
       });
     this.suppliers = suppliers;
-    const shippings = await this.shippingsService.getShippings()          // Recuperar la lista de Paqueterias
-      .then(async result => {
-        return await result.shippings;
-      });
-
-    if (suppliers.length > 1) {
-      suppliers.forEach(async supplier => {
+    if (suppliers.length > 0) {
+      // tslint:disable-next-line: forin
+      for (const supId in suppliers) {
+        let supplier = new Supplier();
+        supplier = suppliers[supId];
         const supplierProd = new SupplierProd();                          // Revisar proveedors con apis
         const warehouseEstado = new Warehouse();
         const warehouseCapital = new Warehouse();
         const productsEstado: ProductShipment[] = [];
         const productsCapital: ProductShipment[] = [];
-
         // Set Api para Envios
         const apiShipment = await this.suppliersService.getApiSupplier(supplier.slug, 'envios', 'paqueterias')
           .then(async result => {
@@ -649,54 +651,80 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 for (const key in resultShip) {
                   const shipment = new Shipment();
                   shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
-                  shipment.costo = resultShip[key].costo;
-                  shipment.metodoShipping = resultShip[key].metodoShipping;
+                  if (supplier.slug === 'ct') {
+                    shipment.costo = resultShip[key].total;
+                    shipment.metodoShipping = resultShip[key].metodo;
+                  } else {
+                    shipment.costo = resultShip[key].costo;
+                    shipment.metodoShipping = resultShip[key].metodoShipping;
+                  }
                   // shipment.costo = resultShip[key].total;
                   // shipment.metodoShipping = resultShip[key].metodo;
                   shipments.push(shipment);
                 }
-                return shipments;
+                return await shipments;
               });
-            shipmentsCost.forEach(ship => {
-              shipmentsEnd.push(ship);
-            });
-            console.log('suppliers/forEach/shipmentsEnd: ', shipmentsEnd);
+            // tslint:disable-next-line: forin
+            for (const shipId in shipmentsCost) {
+              shipmentsEnd.push(shipmentsCost[shipId]);
+            }
             this.warehouse.shipments = shipmentsEnd;
           }
         }
-      });
-      // Cotizar con las paqueterias Externas a Proveedores
-      if (this.warehouse.shipments.length <= 0) {
-        const shipmentsExt = await this.shippingsService.getShippings()
-          .then(async result => {
-            if (result.status && result.shippings.length > 0) {
-              result.shippings.forEach(async shipping => {
-                const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
-                const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
-                  shipping, apiSelectShip, this.warehouse, false)
-                  .then(async (resultShipment) => {
-                    const shipments: Shipment[] = [];
-                    // tslint:disable-next-line: forin
-                    for (const key in resultShipment) {
-                      const shipment = new Shipment();
-                      shipment.empresa = resultShipment[key].empresa.toUpperCase();
-                      shipment.costo = resultShipment[key].costo;
-                      shipment.metodoShipping = '';
-                      shipments.push(shipment);
-                    }
-                    return await shipments;
-                  }
-                  );
-                shippingsEstimate.forEach(ship => {
-                  shipmentsEnd.push(ship);
-                });
-              });
-              console.log('api-externa/shipmentsEnd: ', shipmentsEnd);
-              return await shipmentsEnd;
-            }
-            return await [];
-          });
       }
+    }
+    return await shipmentsEnd;
+    // Elaborar Pedido Previo a facturacion.
+  }
+
+  async onCotizarEnviosExternos(cpDestino: string, estadoCp: string): Promise<any> {
+    // Inicializar Arreglo de Envios.
+    const capitalCpCT = '2700';
+    const capitalCpCva = '06820';
+    // const capitalCpIng = '';
+    this.shipments = [];
+    this.warehouses = [];
+    this.warehouse = new Warehouse();
+    this.warehouse.shipments = [];
+    const shipmentsEnd = [];
+
+    const shippings = await this.shippingsService.getShippings()          // Recuperar la lista de Paqueterias
+      .then(async result => {
+        return await result.shippings;
+      });
+    if (shippings.length > 0) {
+      // Cotizar con las paqueterias Externas a Proveedores
+      const shipmentsExt = await this.shippingsService.getShippings()
+        .then(async result => {
+          if (result.status && result.shippings.length > 0) {
+            for (const supId in result.shippings) {
+              let shipping = new Supplier();
+              shipping = result.shippings[supId];
+              const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
+              const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
+                shipping, apiSelectShip, this.warehouse, false)
+                .then(async (resultShipment) => {
+                  const shipments: Shipment[] = [];
+                  // tslint:disable-next-line: forin
+                  for (const key in resultShipment) {
+                    const shipment = new Shipment();
+                    shipment.empresa = resultShipment[key].empresa.toUpperCase();
+                    shipment.costo = resultShipment[key].costo;
+                    shipment.metodoShipping = '';
+                    shipments.push(shipment);
+                  }
+                  return await shipments;
+                }
+                );
+              // tslint:disable-next-line: forin
+              for (const shipId in shippingsEstimate) {
+                shipmentsEnd.push(shippingsEstimate[shipId]);
+              }
+            }
+            return await shipmentsEnd;
+          }
+          return await [];
+        });
       this.warehouses.push(this.warehouse);
     }
     return await shipmentsEnd;
@@ -858,7 +886,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Ciudad: ciudad,
           Atencion: this.removeAccents(user.name + ' ' + user.lastname)
         };
-        console.log('orderCvaSupplier: ', orderCvaSupplier);
         return orderCvaSupplier;
       case 'ingram':
         return '';
@@ -918,160 +945,133 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return await [];
       });
     });
-    // TODO::Levantar la Orden al Proveedor
-
-
     // TODO::Confirmar Pedido
-
-
-
-    // if (!supplier.token) {
-    //   let resultados;
-    //   switch (supplier.slug) {
-    //     case 'cva':
-    //       resultados = [];
-    //       return await resultados;
-    //     case 'exel':
-    //       resultados = [];
-    //       return await resultados;
-    //     default:
-    //       break;
-    //   }
-    // } else {                                                                  // Syscom, CT
-    //   return await this.externalAuthService.getToken(supplier, apiSelect)
-    //     .then(
-    //       async result => {
-    //         switch (supplier.slug) {
-    //           case 'ct':
-    //             this.token = result.token;
-    //             break;
-    //           case 'syscom':
-    //             this.token = result.access_token;
-    //             break;
-    //           default:
-    //             break;
-    //         }
-    //         if (this.token) {
-    //           let resultados;
-    //           resultados = [];
-    //           return await resultados;
-    //         } else {
-    //           basicAlert(TYPE_ALERT.WARNING, 'No se encontró el Token de Autorización.');
-    //         }
-    //       },
-    //       error => {
-    //         basicAlert(TYPE_ALERT.ERROR, error.message);
-    //       }
-    //     );
-    // }
     return await delivery;
   }
   //#endregion Enviar Ordenes
 
   //#region Emails  //ICharge
-  sendEmail(charge: any, issue: string = '', message: string = ''): void {
-    const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
+  sendEmail(charge: any, issue: string = '', message: string = '', interno: boolean = false): void {
+    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos = charge.warehouses[0].productShipments;
     const productRows = productos.map((producto: any) => `
-      <tr>
-        <td>${producto.name}</td>
-        <td>${producto.cantidad}</td>
-        <td>${producto.precio}</td>
-        <td>${producto.total}</td>
-      </tr>
-    `).join('');
+        <tr>
+          <td>${producto.name}</td>
+          <td>${producto.cantidad}</td>
+          <td>${producto.precio}</td>
+          <td>${producto.total}</td>
+        </tr>
+      `).join('');
     const html = message !== '' ? message : `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Nota de Compra</title>
-      <style>
-        /* Estilos generales */
-        body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 0;
-          background-color: #f5f5f5;
-        }
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-          padding: 20px;
-          background-color: #ffffff;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-          color: #333333;
-          margin-top: 0;
-        }
-        p {
-          color: #666666;
-          line-height: 1.5;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        th, td {
-          padding: 10px;
-          border-bottom: 1px solid #dddddd;
-        }
-        th {
-          text-align: left;
-          font-weight: bold;
-        }
-        tfoot td {
-          text-align: right;
-          font-weight: bold;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>Nota de Compra</h1>
-        <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
-        <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Precio Unitario</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${productRows}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2"><strong>Total:</strong></td>
-              <td colspan="2">$ ${this.totalPagar}</td>
-            </tr>
-          </tfoot>
-        </table>
-        <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
-        <p>Saludos cordiales,</p>
-        <p>DARU</p>
-        <hr>
-        <hr>
-        <p>
-          Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
-        </p>
-      </div>
-    </body>
-    </html>
-    `;
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nota de Compra</title>
+        <style>
+          /* Estilos generales */
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+          h1 {
+            color: #333333;
+            margin-top: 0;
+          }
+          p {
+            color: #666666;
+            line-height: 1.5;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            padding: 10px;
+            border-bottom: 1px solid #dddddd;
+          }
+          th {
+            text-align: left;
+            font-weight: bold;
+          }
+          tfoot td {
+            text-align: right;
+            font-weight: bold;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Nota de Compra</h1>
+          <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
+          <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${productRows}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2"><strong>Total:</strong></td>
+                <td colspan="2">$ ${this.totalPagar}</td>
+              </tr>
+            </tfoot>
+          </table>
+          <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
+          <p>Saludos cordiales,</p>
+          <p>DARU</p>
+          <hr>
+          <hr>
+          <p>
+            Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
+          </p>
+        </div>
+      </body>
+      </html>
+      `;
+    // const subject
     const mail: IMail = {
       to: receiptEmail,
       subject,
       html
     };
-    this.mailService.send(mail).pipe(first()).subscribe();
+    this.mailService.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
+    if (interno) {                                                        // Correos internos
+      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
+      const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
+      let htmlInt = '';
+      if (charge.orderCtResponse) {
+        htmlInt = 'Pedido de CT';
+      }
+      if (charge.orderCvaResponse) {
+        htmlInt = 'Pedido de CVA';
+      }
+      const mailInt: IMail = {
+        to: receiptEmailInt,
+        subject: subjectInt,
+        html: htmlInt
+      };
+      this.mailService.send(mailInt).pipe(first()).subscribe();                      // Envio de correo externo.
+    }
   }
   //#endregion Emails
 
