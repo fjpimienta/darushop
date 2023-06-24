@@ -45,24 +45,16 @@ export class ExternalAuthService {
     supplier: ISupplier,
     tokenJson: boolean = false
   ): Promise<any> {
-    // let headers = new HttpHeaders();
-    // let params = new HttpParams();
+    const headers = new Headers();
+    const params = new HttpParams();
     switch (supplier.slug) {
       case 'ct':
-        // const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
-        // headers = new HttpHeaders({
-        //   'Content-Type': contentType
-        // });
-        // if (supplier.token.body_parameters.length > 0) {
-        //   supplier.token.body_parameters.forEach(param => {
-        //     params = params.set(param.name, param.value);
-        //   });
-        // }
-        // return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
-
         const optionsCT = {
           method: 'POST',
-          headers: { accept: 'application/json', 'content-type': 'application/json' },
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             email: 'david.silva@daru.mx',
             cliente: 'VHA2391',
@@ -81,7 +73,10 @@ export class ExternalAuthService {
       case '99minutos':
         const options = {
           method: 'POST',
-          headers: { accept: 'application/json', 'content-type': 'application/json' },
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
@@ -130,7 +125,7 @@ export class ExternalAuthService {
               headers: {
                 'x-auth': token,
                 Accept: 'application/json',
-                'Content-type': 'application/json'
+                'Content-Type': 'application/json'
               }
             }).toPromise();
         default:
@@ -190,7 +185,7 @@ export class ExternalAuthService {
               headers: {
                 'x-auth': token,
                 Accept: 'application/json',
-                'Content-type': 'application/json'
+                'Content-Type': 'application/json'
               }
             }).toPromise();
         default:
@@ -486,77 +481,42 @@ export class ExternalAuthService {
           };
           return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
         case 'cva':
-          return {
-            result: 'success',
-            cotizacion: {
-              cajas: 1,
-              subtotal: 200.00,
-              iva: 32,
-              montoTotal: 232.00
-            }
+          // TODO Correccion de la peticion.
+          let urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
+          const productShipmentCVA: ProductShipmentCVA[] = [];
+          warehouse.productShipments.forEach(pS => {
+            const newPS: ProductShipmentCVA = new ProductShipmentCVA();
+            newPS.clave = pS.producto;
+            newPS.cantidad = pS.cantidad;
+            productShipmentCVA.push(newPS);
+          });
+          const fromObjectCVA = {
+            paqueteria: 4,
+            cp: warehouse.cp.padStart(5, '0'),
+            cp_sucursal: warehouse.productShipments[0].cp,
+            productos: productShipmentCVA
           };
-
-        // const payload = {
-        //   paqueteria: 4,
-        //   cp: 86080,
-        //   cp_sucursal: 44900,
-        //   productos: [
-        //     {
-        //       clave: 'MS-936',
-        //       cantidad: 1
-        //     }
-        //   ]
-        // };
-
-        // return fetch('https://www.grupocva.com/api/paqueteria/', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json', 'Authorization': 'Bearer 7ee694a5bae5098487a5a8b9d8392666'
-        //   },
-        //   body: JSON.stringify(payload)
-        // })
-        //   .then(response => response.json())
-        //   .then(data => {
-        //     // Aquí puedes manejar la respuesta del servidor
-        //     console.log(data);
-        //   })
-        //   .catch(error => {
-        //     // Aquí puedes manejar los errores
-        //     console.error(error);
-        //   });
-
-        // // TODO Correccion de la peticion.
-        // let urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
-        // const productShipmentCVA: ProductShipmentCVA[] = [];
-        // warehouse.productShipments.forEach(pS => {
-        //   const newPS: ProductShipmentCVA = new ProductShipmentCVA();
-        //   newPS.clave = pS.producto;
-        //   newPS.cantidad = pS.cantidad;
-        //   productShipmentCVA.push(newPS);
-        // });
-        // const fromObjectCVA = {
-        //   paqueteria: 4,
-        //   cp: warehouse.cp.padStart(5, '0'),
-        //   cp_sucursal: warehouse.productShipments[0].cp,
-        //   productos: productShipmentCVA
-        // };
-        // const optionsCva = {
-        //   method: 'POST',
-        //   headers: {
-        //     accept: 'application/json',
-        //     'Content-Type': 'application/json',
-        //     authorization: 'Bearer ' + token
-        //   },
-        //   body: JSON.stringify(fromObjectCVA)
-        // };
-        // urlCVA = 'api/paqueteria/';
-        // return fetch(urlCVA, optionsCva)
-        //   .then(response => response)
-        //   .then(async response => {
-        //     console.log('response: ', response);
-        //     return await response;
-        //   })
-        //   .catch(err => console.error(err));
+          const optionsCva = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'Content-Type': 'application/json',
+              authorization: 'Bearer 7ee694a5bae5098487a5a8b9d8392666'
+            },
+            body: JSON.stringify(fromObjectCVA),
+            redirect: 'manual' as RequestRedirect,
+            credentials: 'include' as RequestCredentials
+          };
+          // urlCVA = 'https://www.grupocva.com/api/paqueteria/';               // url sin proxy
+          urlCVA = 'api/paqueteria/';                                           // url con proxy
+          console.log('optionsCva: ', optionsCva);
+          return fetch(urlCVA, optionsCva)
+            .then(response => response)
+            .then(async response => {
+              console.log('response: ', response);
+              return await response;
+            })
+            .catch(err => console.error(err));
 
         case '99minutos':
           const options = {
@@ -798,7 +758,7 @@ export class ExternalAuthService {
                     headers: {
                       'x-auth': token,
                       Accept: 'application/json',
-                      'Content-type': 'application/json'
+                      'Content-Type': 'application/json'
                     }
                   }).toPromise();
               } else {
