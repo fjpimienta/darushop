@@ -20,6 +20,7 @@ export class Token {
   type: string;
   method: string;
   url_base_token: string;
+  header_parameters?: BodyParameters[];
   body_parameters: BodyParameters[];
   response_token: Responsetoken[];
 }

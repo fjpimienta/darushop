@@ -20,6 +20,7 @@ export interface IToken {
   type: string;
   method: string;
   url_base_token: string;
+  header_parameters?: IBodyParameters[];
   body_parameters: IBodyParameters[];
   response_token: IResponsetoken[];
 }

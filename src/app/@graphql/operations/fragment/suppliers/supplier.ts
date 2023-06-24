@@ -18,6 +18,12 @@ export const SUPPLIER_FRAGMENT = gql`
       type
       method
       url_base_token
+      header_parameters {
+        name
+        value
+        secuence
+        onlyUrl
+      }
       body_parameters {
         name
         value
