@@ -79,7 +79,24 @@ Header set Cache-Control "max-age=31536000, public"
 </IfModule>
 
 <IfModule mod_headers.c>
-  Header set Access-Control-Allow-Origin "*"
+  # Permitir solicitudes desde http://localhost:4200
+  Header set Access-Control-Allow-Origin "http://localhost:4200"
+
+  # Permitir los métodos HTTP especificados
+  Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+
+  # Permitir los encabezados personalizados especificados
+  Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+  # Permitir el envío de cookies
+  Header set Access-Control-Allow-Credentials "true"
+
+  # Permitir la validación de las solicitudes preflight (OPTIONS)
+  SetEnvIf Request_Method "OPTIONS" CORS_PREFLIGHT=1
+  Header merge Vary "Origin"
+  Header always set Access-Control-Allow-Origin "*" env=CORS_PREFLIGHT
+  Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS" env=CORS_PREFLIGHT
+  Header always set Access-Control-Allow-Headers "Content-Type, Authorization" env=CORS_PREFLIGHT
 </IfModule>
 
 # If the requested resource doesn't exist, use index.html
