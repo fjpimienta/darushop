@@ -21,10 +21,5 @@
     "target": "https://www.grupocva.com",
     "secure": false,
     "changeOrigin": true
-  },
-  "/api/*": {
-    "target": "https://www.grupocva.com",
-    "secure": false,
-    "changeOrigin": true
   }
 }
