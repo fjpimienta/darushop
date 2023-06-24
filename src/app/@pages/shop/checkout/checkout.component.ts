@@ -527,6 +527,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   *
+   * @param cpDestino Codigo Postal a donde llegara el pedido
+   * @param estadoCp Codigo postal predeterminado.
+   * @returns Datos de la(s) paqueteria(s) del proveedor
+   */
   async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<any> {
     // Inicializar Arreglo de Envios.
     this.sucursalesCVA = await this.externalAuthService.getSucursalesCva().then(result => {
@@ -658,8 +664,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     shipment.costo = resultShip[key].costo;
                     shipment.metodoShipping = resultShip[key].metodoShipping;
                   }
-                  // shipment.costo = resultShip[key].total;
-                  // shipment.metodoShipping = resultShip[key].metodo;
                   shipments.push(shipment);
                 }
                 return await shipments;
@@ -677,6 +681,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // Elaborar Pedido Previo a facturacion.
   }
 
+  /**
+   *
+   * @param cpDestino Codigo Postal a donde llegara el pedido
+   * @param estadoCp Codigo postal predeterminado.
+   * @returns Datos de la(s) paqueteria(s) externa(s)
+   */
   async onCotizarEnviosExternos(cpDestino: string, estadoCp: string): Promise<any> {
     // Inicializar Arreglo de Envios.
     const capitalCpCT = '2700';
