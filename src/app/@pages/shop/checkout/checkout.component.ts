@@ -30,7 +30,7 @@ import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Delivery } from '@core/models/delivery.models';
-import { SupplierProd } from '@core/models/product.models';
+import { BranchOffices, SupplierProd } from '@core/models/product.models';
 import { ExternalAuthService } from '@core/services/external-auth.service';
 import { SuppliersService } from '@core/services/suppliers/supplier.service';
 import { ISupplier } from '@core/interfaces/supplier.interface';
@@ -395,8 +395,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               break;
             case PAY_FREE:
               const OrderSupplier = await this.sendOrderSupplier();
-              console.log('OrderSupplier: ', OrderSupplier);
               // TODO::Fix Registrar Delivery
+              console.log('OrderSupplier: ', OrderSupplier);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
               const NewProperty = 'receipt_email';
@@ -471,36 +471,44 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (this.cps.length > 0) {
             // Agregar Pais, Estados, Municipios del CP
             if (this.countrys.length > 0) {
-              this.countrys.forEach(country => {
+              // tslint:disable-next-line: forin
+              for (const idC in this.countrys) {
+                const country: Country = this.countrys[idC];
                 if (country.c_pais === this.cps[0].c_pais) {
                   this.estados = country.estados;
                   this.formData.controls.selectCountry.setValue(country.c_pais);
                   this.selectCountry.c_pais = country.c_pais;
                   this.selectCountry.d_pais = country.d_pais;
-                  country.estados.forEach(estado => {
+                  // tslint:disable-next-line: forin
+                  for (const idE in country.estados) {
+                    const estado: Estado = country.estados[idE];
                     if (estado.c_estado === this.cps[0].c_estado) {
                       this.municipios = estado.municipios;
                       this.formData.controls.selectEstado.setValue(estado.c_estado);
                       this.selectEstado.c_estado = estado.c_estado;
                       this.selectEstado.d_estado = estado.d_estado;
-                      estado.municipios.forEach(municipio => {
+                      // tslint:disable-next-line: forin
+                      for (const idM in estado.municipios) {
+                        const municipio: Municipio = estado.municipios[idM];
                         if (municipio.c_mnpio === this.cps[0].c_mnpio) {
                           this.formData.controls.selectMunicipio.setValue(municipio.c_mnpio);
                           this.selectMunicipio.c_mnpio = municipio.c_mnpio;
                           this.selectMunicipio.D_mnpio = municipio.D_mnpio;
                         }
-                      });
+                      }
                     }
-                  });
+                  }
                 }
-              });
+              }
               // Agregar las colonias del CP
               this.colonias = [];
-              this.cps.forEach(codigo => {
+              // tslint:disable-next-line: forin
+              for (const idCp in this.cps) {
+                const codigo: Codigopostal = this.cps[idCp];
                 if (codigo.d_asenta) {
                   this.colonias.push(codigo.d_asenta);
                 }
-              });
+              }
               return await this.colonias;
               // Cotizar con los proveedores el costo de envio de acuerdo al producto.
             }
@@ -582,9 +590,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           // Agrupar Productos Por Proveedor
           // ==> TODO
           if (supplier.slug === this.cartItems[0].suppliersProd.idProveedor) {
-            this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
+            // tslint:disable-next-line: forin
+            for (const idCI in this.cartItems) {          // Revisar productos en el carrito
+              const cartItem: CartItem = this.cartItems[idCI];
               if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
-                cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
+                // tslint:disable-next-line: forin
+                for (const idB in cartItem.suppliersProd.branchOffices) {
+                  const branchOffice: BranchOffices = cartItem.suppliersProd.branchOffices[idB];
                   if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
                     || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
                     if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
@@ -626,7 +638,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       }
                     }
                   }
-                });
+                }
                 if (productsEstado.length === this.cartItems.length) {
                   i += 1;
                   this.warehouse = warehouseEstado;
@@ -642,7 +654,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 supplierProd.moneda = cartItem.suppliersProd.moneda;
                 this.warehouse.suppliersProd = supplierProd;
               }
-            });
+            }
             // Cotizar envio
             this.warehouse.cp = cpDestino;
             if (productsEstado.length === this.cartItems.length) {                  // Si hay disponibilidad en estado
@@ -839,14 +851,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCt.telefono = dir.phone;
         enviosCt.push(envioCt);
         const ProductosCt: ProductoCt[] = [];
-        warehouse.productShipments.forEach(prod => {
+        // tslint:disable-next-line: forin
+        for (const idPS in warehouse.productShipments) {
+          const prod: ProductShipment = warehouse.productShipments[idPS];
           const productCt: ProductoCt = new ProductoCt();
           productCt.cantidad = prod.cantidad;
           productCt.clave = prod.producto;
           productCt.moneda = prod.moneda;
           productCt.precio = prod.precio;
           ProductosCt.push(productCt);
-        });
+        }
         const orderCtSupplier: OrderCt = {
           idPedido: 1,
           almacen: warehouse.productShipments[0].almacen,
@@ -870,12 +884,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
         const ProductosCva: ProductoCva[] = [];
-        warehouse.productShipments.forEach(prod => {
+        // tslint:disable-next-line: forin
+        for (const idPS in warehouse.productShipments) {
+          const prod: ProductShipment = warehouse.productShipments[idPS];
           const productCva: ProductoCva = new ProductoCva();
           productCva.clave = prod.producto;
           productCva.cantidad = prod.cantidad;
           ProductosCva.push(productCva);
-        });
+        }
         const estado = this.ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
         const ciudad = this.ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
         const orderCvaSupplier: OrderCva = {
@@ -943,7 +959,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             });
           switch (warehouse.suppliersProd.idProveedor) {
             case 'ct':
-              orderCtResponse = orderNew;
+              orderCtResponse = orderNew[0].respuestaCT;
               break;
             case 'cva':
               orderCvaResponse = orderNew;
@@ -1165,11 +1181,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     let apiOrder: Apis = new Apis();
     // Set Api Para Ordenes
     if (supplier.slug !== '') {
-      supplier.apis.forEach(api => {
+      // tslint:disable-next-line: forin
+      for (const idA in supplier.apis) {
+        const api: Apis = supplier.apis[idA];
         if (api.type === 'order' && api.return === 'order') {
           apiOrder = api;
         }
-      });
+      }
       switch (supplier.slug) {
         case 'cva':
           if (apiOrder) {

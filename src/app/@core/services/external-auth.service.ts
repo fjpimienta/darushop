@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 // import axios, { isCancel, AxiosError } from 'axios';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
-import { ProductShipmentCVA } from '@core/models/productShipment.models';
+import { ProductShipment, ProductShipmentCVA } from '@core/models/productShipment.models';
 
 declare const require;
 const axios = require('axios');
@@ -484,12 +484,14 @@ export class ExternalAuthService {
           // TODO Correccion de la peticion.
           let urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
           const productShipmentCVA: ProductShipmentCVA[] = [];
-          warehouse.productShipments.forEach(pS => {
+          // tslint:disable-next-line: forin
+          for (const idPS in warehouse.productShipments) {
+            const pS: ProductShipment = warehouse.productShipments[idPS];
             const newPS: ProductShipmentCVA = new ProductShipmentCVA();
             newPS.clave = pS.producto;
             newPS.cantidad = pS.cantidad;
             productShipmentCVA.push(newPS);
-          });
+          }
           const fromObjectCVA = {
             paqueteria: 4,
             cp: warehouse.cp.padStart(5, '0'),
@@ -507,14 +509,11 @@ export class ExternalAuthService {
             redirect: 'manual' as RequestRedirect,
             credentials: 'include' as RequestCredentials
           };
-          // urlCVA = 'https://www.grupocva.com/api/paqueteria/';               // url sin proxy
-          urlCVA = 'api/paqueteria/';                                           // url con proxy
-          console.log('optionsCva: ', optionsCva);
+          urlCVA = 'api/paqueteria/';
           return fetch(urlCVA, optionsCva)
-            .then(response => response)
+            .then(response => response.json())
             .then(async response => {
-              console.log('response: ', response);
-              return await response;
+              return await response.cotizacion;
             })
             .catch(err => console.error(err));
 
@@ -566,7 +565,7 @@ export class ExternalAuthService {
               case 'cva':
                 const shipmentCva = new Shipment();
                 shipmentCva.empresa = 'PAQUETEXPRESS';
-                shipmentCva.costo = result.cotizacion.montoTotal;
+                shipmentCva.costo = result.montoTotal;
                 shipmentCva.metodoShipping = '';
                 shipments.push(shipmentCva);
                 return await shipments;
