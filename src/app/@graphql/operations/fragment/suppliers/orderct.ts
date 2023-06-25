@@ -10,6 +10,7 @@ export const ORDERCT_FRAGMENT = gql`
         direccion
         entreCalles
         noExterior
+        noInterior
         colonia
         estado
         ciudad

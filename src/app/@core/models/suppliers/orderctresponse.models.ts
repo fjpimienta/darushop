@@ -9,7 +9,7 @@ export class OrderCtResponse {
 }
 
 export class ErroresCT {
-  errorCode: number;
+  errorCode: string;
   errorMessage: string;
   errorReference: string;
 }

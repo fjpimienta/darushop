@@ -153,6 +153,7 @@ export const DELIVERY_FRAGMENT = gql`
         direccion
         entreCalles
         noExterior
+        noInterior
         colonia
         estado
         ciudad
