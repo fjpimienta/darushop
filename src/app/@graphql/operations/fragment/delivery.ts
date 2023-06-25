@@ -206,5 +206,7 @@ export const DELIVERY_FRAGMENT = gql`
       agentemail
       almacenmail
     }
+    statusError
+    messageError
   }
 `;

@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ProductShipment, ProductShipmentCVA } from '@core/models/productShipment.models';
+import { ErroresCT, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 
 declare const require;
 const axios = require('axios');
@@ -750,29 +751,43 @@ export class ExternalAuthService {
               }
               if (token) {
                 const url = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
-                return await this.http.post(
-                  url,
-                  order,
-                  {
-                    headers: {
-                      'x-auth': token,
-                      Accept: 'application/json',
-                      'Content-Type': 'application/json'
-                    }
-                  }).toPromise();
+                try {
+                  const response = await this.http.post(
+                    url,
+                    order,
+                    {
+                      headers: {
+                        'x-auth': token,
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                      }
+                    }).toPromise();
+                  return await response;
+                } catch (error) {
+                  const ctResponse: OrderCtResponse = new OrderCtResponse();
+                  ctResponse.estatus = 'false';
+                  ctResponse.fecha = new Date().toISOString();
+                  ctResponse.pedidoWeb = '';
+                  ctResponse.tipoDeCambio = 0;
+                  ctResponse.errores = [];
+                  const errorCt: ErroresCT = new ErroresCT();
+                  errorCt.errorCode = error.error.errorCode;
+                  errorCt.errorMessage = error.error.errorMessage;
+                  errorCt.errorReference = error.error.errorReference;
+                  ctResponse.errores.push(errorCt);
+                  return await ctResponse;
+                }
               } else {
-                return await 'No se encontró el Token de Autorización.';
+                return await null;
               }
             },
             async error => {
-              return await error.message;
+              return await null;
             }
           );
       default:
         break;
     }
-
-
     return await [];
   }
   //#endregion Pedidos

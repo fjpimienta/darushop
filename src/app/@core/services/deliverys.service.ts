@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Delivery } from '@core/models/delivery.models';
 import { ADD_DELIVERY, BLOCK_DELIVERY, UPDATE_DELIVERY } from '@graphql/operations/mutation/delivery';
-import { DELIVERYS_LIST_QUERY, DELIVERY_DATA_QUERY } from '@graphql/operations/query/delivery';
+import { DELIVERYS_LIST_QUERY, DELIVERY_DATA_QUERY, DELIVERY_ID_QUERY } from '@graphql/operations/query/delivery';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
 import { map } from 'rxjs/operators';
@@ -78,6 +78,18 @@ export class DeliverysService extends ApiService {
       }, {}).subscribe(
         (result: any) => {
           resolve(result);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async next(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(DELIVERY_ID_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.deliveryId.deliveryId);
         },
         (error: any) => {
           reject(error);

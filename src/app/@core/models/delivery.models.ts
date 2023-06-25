@@ -18,4 +18,6 @@ export class Delivery {
   ordersCva?: OrderCva[];
   orderCtResponse?: OrderCtResponse;
   orderCvaResponse?: OrderCvaResponse;
+  statusError: boolean;
+  messageError: string;
 }
