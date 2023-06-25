@@ -46,6 +46,7 @@ import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models
 import { OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { HttpClient } from '@angular/common/http';
 import { DeliverysService } from '@core/services/deliverys.service';
+import { IAddress } from '@core/interfaces/user.interface';
 
 
 declare var $: any;
@@ -314,7 +315,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             // tslint:disable-next-line: no-shadowed-variable
             .subscribe((result) => {
               this.countrys = result;
-              this.session.user?.addresses.forEach(direction => {
+              // tslint:disable-next-line: forin
+              for (const idU in this.session.user?.addresses) {
+                const direction: IAddress = this.session.user?.addresses[idU];
                 if (direction.dir_delivery_main === true) {
                   this.formData.controls.codigoPostal.setValue(direction.d_codigo);
                   this.formData.controls.selectColonia.setValue(direction.d_asenta);
@@ -323,39 +326,47 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.formData.controls.interiorNumber.setValue(direction.interiorNumber);
                   this.formData.controls.references.setValue(direction.references);
                   if (this.countrys.length > 0) {
-                    this.countrys.forEach(country => {
+                    // tslint:disable-next-line: forin
+                    for (const idC in this.countrys) {
+                      const country: Country = this.countrys[idC];
                       if (country.c_pais === direction.c_pais) {
                         this.estados = country.estados;
                         this.formData.controls.selectCountry.setValue(direction.c_pais);
                         this.selectCountry.c_pais = direction.c_pais;
                         this.selectCountry.d_pais = direction.d_pais;
-                        country.estados.forEach(estado => {
+                        // tslint:disable-next-line: forin
+                        for (const idE in country.estados) {
+                          const estado: Estado = country.estados[idE];
                           if (estado.c_estado === direction.c_estado) {
                             this.municipios = estado.municipios;
                             this.formData.controls.selectEstado.setValue(direction.c_estado);
                             this.selectEstado.c_estado = direction.c_estado;
                             this.selectEstado.d_estado = direction.d_estado;
-                            estado.municipios.forEach(municipio => {
+                            // tslint:disable-next-line: forin
+                            for (const idM in estado.municipios) {
+                              const municipio: Municipio = estado.municipios[idM];
                               if (municipio.c_mnpio === direction.c_mnpio) {
                                 this.formData.controls.selectMunicipio.setValue(direction.c_mnpio);
                                 this.selectMunicipio.c_mnpio = direction.c_mnpio;
                                 this.selectMunicipio.D_mnpio = direction.d_mnpio;
                               }
-                            });
+                            }
                           }
-                        });
+                        }
                       }
-                    });
+                    }
                     // Agregar las colonias del CP
                     this.colonias = [];
-                    this.cps.forEach(codigo => {
+                    // tslint:disable-next-line: forin
+                    for (const idCp in this.cps) {
+                      const codigo: Codigopostal = this.cps[idCp];
                       if (codigo.d_asenta) {
                         this.colonias.push(codigo.d_asenta);
                       }
-                    });
+                    }
                   }
                 }
-              });
+              }
             });
         }
       }
@@ -1111,7 +1122,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.selectEstado = new Estado();
     this.selectMunicipio = new Municipio();
     this.selectColonia = '';
-    this.countrys.forEach(country => {
+    // tslint:disable-next-line: forin
+    for (const idC in this.countrys) {
+      const country: Country = this.countrys[idC];
       if (country.c_pais === estado[1].split(' ').join('')) {
         this.estados = country.estados;
         this.formData.controls.selectEstado.setValue('');
@@ -1121,7 +1134,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.outdoorNumber.setValue('');
         this.formData.controls.interiorNumber.setValue('');
       }
-    });
+    }
   }
 
   onSetMunicipios(event): void {
@@ -1130,12 +1143,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.colonias = [];
     this.selectMunicipio = new Municipio();
     this.selectColonia = '';
-    this.estados.forEach(estado => {
+    // tslint:disable-next-line: forin
+    for (const idE in this.estados) {
+      const estado: Estado = this.estados[idE];
       if (estado.c_estado === municipio[1].split(' ').join('')) {
         this.municipios = estado.municipios;
         this.formData.controls.selectMunicipio.setValue('');
       }
-    });
+    }
   }
 
   onSetColonias(event): void {
@@ -1143,35 +1158,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Direccion
 
   //#region Pedidos
-  async PedidosEjemplo(supplierName: string): Promise<any> {
-    // get supplier
-    const supplier = await this.suppliersService.getSupplierByName(supplierName)
-      .then(async (result) => {
-        return await result;
-      });
-    let apiOrder: Apis = new Apis();
-    // Set Api Para Ordenes
-    if (supplier.slug !== '') {
-      supplier.apis.forEach(api => {
-        if (api.type === 'order' && api.return === 'order') {
-          apiOrder = api;
-        }
-      });
-      if (apiOrder) {
-        const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
-          .then(async resultPedido => {
-            try {
-              return await resultPedido;
-            } catch (error) {
-              throw await new Error(error.message);
-            }
-          });
-      }
-    } else {
-      // TODO Realizar el pedido manual.
-    }
-  }
-
   async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
     // get supplier
     const supplier = await this.suppliersService.getSupplierByName(supplierName)
