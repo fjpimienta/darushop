@@ -395,9 +395,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               break;
             case PAY_FREE:
               const OrderSupplier = await this.sendOrderSupplier();
+              console.log('OrderSupplier: ', OrderSupplier);
               // TODO::Fix Registrar Delivery
               const deliverySave = await this.deliverysService.add(OrderSupplier);
-
+              console.log('deliverySave: ', deliverySave);
               const NewProperty = 'receipt_email';
               OrderSupplier[NewProperty] = OrderSupplier.user.email;
               this.sendEmail(OrderSupplier, '', '');
@@ -673,6 +674,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               shipmentsEnd.push(shipmentsCost[shipId]);
             }
             this.warehouse.shipments = shipmentsEnd;
+            this.warehouses.push(this.warehouse);
           }
         }
       }
@@ -693,7 +695,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const capitalCpCva = '06820';
     // const capitalCpIng = '';
     this.shipments = [];
-    this.warehouses = [];
     this.warehouse = new Warehouse();
     this.warehouse.shipments = [];
     const shipmentsEnd = [];
@@ -735,7 +736,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
           return await [];
         });
-      this.warehouses.push(this.warehouse);
     }
     return await shipmentsEnd;
     // Elaborar Pedido Previo a facturacion.
@@ -820,7 +820,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Cobros
 
   //#region Enviar Ordenes
-
   setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse): any {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
@@ -920,8 +919,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const ordersCva: OrderCva[] = [];
     let orderCvaResponse: OrderCvaResponse = new OrderCvaResponse();
     // Generar modelo de cada proveedor
-    this.suppliers.forEach(supplier => {
-      this.warehouses.forEach(async warehouse => {
+    // tslint:disable-next-line: forin
+    for (const idSup in this.suppliers) {
+      const supplier: Supplier = this.suppliers[idSup];
+      // tslint:disable-next-line: forin
+      for (const idWar in this.warehouses) {
+        const warehouse: Warehouse = this.warehouses[idWar];
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
           const order = this.setOrder(supplier, delivery, warehouse);
           switch (warehouse.suppliersProd.idProveedor) {
@@ -952,9 +955,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           delivery.orderCvaResponse = orderCvaResponse;
           return await delivery;
         }
-        return await [];
-      });
-    });
+      }
+    }
     // TODO::Confirmar Pedido
     return await delivery;
   }
