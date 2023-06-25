@@ -27,10 +27,6 @@
     "secure": true,
     "changeOrigin": true,
     "headers": {
-      "Access-Control-Allow-Origin": "http://localhost:4200",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Access-Control-Allow-Credentials": "true",
       "Authorization": "Bearer 7ee694a5bae5098487a5a8b9d8392666"
     }
   }
