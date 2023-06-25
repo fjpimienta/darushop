@@ -189,6 +189,7 @@ export const DELIVERY_FRAGMENT = gql`
     }
     orderCtResponse {
       pedidoWeb
+      fecha
       tipoDeCambio
       estatus
       errores {

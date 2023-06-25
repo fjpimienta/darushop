@@ -389,6 +389,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.isSubmitting = true;
       if (this.formData.valid) {
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
+        loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
         if (this.existeMetodoPago && this.existePaqueteria) {
           switch (this.typePay) {
             case PAY_STRIPE:
@@ -940,6 +941,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const ordersCt: OrderCt[] = [];
     let orderCtResponse: OrderCtResponse = new OrderCtResponse();
     orderCtResponse.pedidoWeb = 'DARU-' + id;
+    orderCtResponse.fecha = '';
     orderCtResponse.tipoDeCambio = 0;
     orderCtResponse.estatus = '';
     orderCtResponse.errores = [];
