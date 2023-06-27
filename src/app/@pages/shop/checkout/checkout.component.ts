@@ -411,17 +411,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('OrderSupplier: ', OrderSupplier);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
+              const NewProperty = 'receipt_email';
+              let internalEmail = false;
+              let typeAlert = TYPE_ALERT.SUCCESS;
+              let sendEmail = OrderSupplier.user.email;
+              let messageDelivery = 'El Pedido se ha realizado correctamente';
               if (OrderSupplier.statusError) {
-                await infoEventAlert(OrderSupplier.messageError, '', TYPE_ALERT.SUCCESS);
-                break;
+                internalEmail = true;
+                this.isSubmitting = false;
+                typeAlert = TYPE_ALERT.WARNING;
+                sendEmail = 'marketing@daru.mx';
+                messageDelivery = OrderSupplier.messageError;
+              } else {
+                this.cartService.clearCart(false);
+                this.router.navigate(['/shop/dashboard']);
               }
               // Si compra es OK, continua.
-              const NewProperty = 'receipt_email';
-              OrderSupplier[NewProperty] = OrderSupplier.user.email;
-              this.sendEmail(OrderSupplier, '', '');
-              this.cartService.clearCart(false);
-              await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
-              this.router.navigate(['/shop/dashboard']);
+              OrderSupplier[NewProperty] = sendEmail;
+              this.sendEmail(OrderSupplier, '', messageDelivery, internalEmail);
+              await infoEventAlert(messageDelivery, '', typeAlert);
               break;
           }
         } else if (this.existePaqueteria) {
@@ -1017,7 +1025,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Enviar Ordenes
 
   //#region Emails  //ICharge
-  sendEmail(charge: any, issue: string = '', message: string = '', interno: boolean = false): void {
+  sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false): void {
     const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos = charge.warehouses[0].productShipments;
@@ -1121,7 +1129,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       html
     };
     this.mailService.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
-    if (interno) {                                                        // Correos internos
+    if (internal) {                                                        // Correos internos
       const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
       const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
       let htmlInt = '';
