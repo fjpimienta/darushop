@@ -424,11 +424,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 messageDelivery = OrderSupplier.messageError;
               } else {
                 this.cartService.clearCart(false);
-                this.router.navigate(['/shop/dashboard']);
+                this.router.navigate(['/shop/offers/list']);
               }
               // Si compra es OK, continua.
               OrderSupplier[NewProperty] = sendEmail;
-              this.sendEmail(OrderSupplier, '', messageDelivery, internalEmail);
+              this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
           }
@@ -962,8 +962,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCtResponse.errores = [];
     const ordersCva: OrderCva[] = [];
     let orderCvaResponse: OrderCvaResponse = new OrderCvaResponse();
+    orderCvaResponse.pedido = 'DARU-' + id;
     orderCvaResponse.estado = '';
-    orderCvaResponse.pedido = '';
     orderCvaResponse.total = '';
     orderCvaResponse.error = '';
     orderCvaResponse.agentemail = '';
@@ -1004,18 +1004,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             delivery.ordersCva = ordersCva;
             delivery.orderCtResponse = orderCtResponse;
             delivery.orderCvaResponse = orderCvaResponse;
-            if (orderCtResponse.errores.length > 0) {
-              delivery.statusError = true;
-              delivery.messageError = orderCtResponse.errores[0].errorMessage;
+            if (orderCtResponse.errores) {
+              if (orderCtResponse.errores.length > 0) {
+                delivery.statusError = true;
+                delivery.messageError = orderCtResponse.errores[0].errorMessage;
+              }
             }
             if (orderCvaResponse.error !== '') {
               delivery.statusError = true;
               delivery.messageError = orderCvaResponse.error;
             }
+            return await delivery;
           }
-          delivery.statusError = true;
-          delivery.messageError = 'No se pudo guardar correctamente.';
-          return await delivery;
         }
       }
     }
