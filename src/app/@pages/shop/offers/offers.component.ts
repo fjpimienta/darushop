@@ -79,8 +79,6 @@ export class OffersComponent implements OnInit {
         this.page = 1;
       }
       this.perPage = 48;
-      console.log('this.brands: ', this.brands);
-      console.log('this.categories: ', this.categories);
       this.productService.getProducts(
         this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
       ).subscribe(result => {
