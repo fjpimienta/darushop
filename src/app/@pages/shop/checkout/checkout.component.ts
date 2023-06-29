@@ -543,15 +543,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         });
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if ((await codigoPostal).length > 0) {
-          const cotizacionEnvios = await this.onCotizarEnvios(cp, this.selectEstado.d_estado);
-          if (cotizacionEnvios.length <= 0) {
-            const externos = await this.onCotizarEnviosExternos(cp, this.selectEstado.d_estado);
-            if (externos.length > 0) {
-              this.shipments = externos;
-            }
-          } else {
-            this.shipments = cotizacionEnvios;
-          }
+          this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
         }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
@@ -559,6 +551,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     } else {
 
     }
+  }
+
+  async getCotizacionEnvios(cp, estado): Promise<any> {
+    const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
+    if (cotizacionEnvios.length <= 0) {
+      const externos = await this.onCotizarEnviosExternos(cp, estado);
+      if (externos.length > 0) {
+        return await externos;
+      }
+    } else {
+      return await cotizacionEnvios;
+      // // Habilitado para mostrar el mas economico.
+      // cotizacionEnvios.sort((a, b) => a.costo - b.costo);
+      // const objetoMinimo = cotizacionEnvios[0];
+      // return [objetoMinimo];
+    }
+    return await [];
   }
 
   /**
