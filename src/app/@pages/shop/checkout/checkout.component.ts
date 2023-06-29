@@ -1244,12 +1244,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             .then(async resultPedido => {
               try {
                 const ctResponse: OrderCtResponse = new OrderCtResponse();
-                ctResponse.estatus = resultPedido.estatus;
-                ctResponse.fecha = resultPedido.fecha;
-                ctResponse.pedidoWeb = resultPedido.pedidoWeb;
-                ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
-                ctResponse.errores = resultPedido.errores;
-                return await resultPedido;
+                ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
+                ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
+                ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
+                ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
+                ctResponse.errores = resultPedido[0].respuestaCT.errores;
+                return await ctResponse;
               } catch (error) {
                 throw await error;
               }
