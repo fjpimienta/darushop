@@ -26,37 +26,39 @@ export class CartComponent implements OnInit, OnDestroy {
   constructor(private store: Store<any>, public cartService: CartService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscr = this.cartService.cartStream.subscribe(items => {
       this.cartItems = items;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscr.unsubscribe();
   }
 
-  trackByFn(index: number, item: any) {
-    if (!item) return null;
+  trackByFn(index: number, item: any): any {
+    if (!item) { return null; }
     return item.slug;
   }
 
-  updateCart(event: any, costoEnvio: number = 0) {
+  updateCart(event: any, costoEnvio: number = 0): void {
     event.preventDefault();
     event.target.parentElement.querySelector('.icon-refresh').classList.add('load-more-rotating');
 
     setTimeout(() => {
       this.cartService.updateCart(this.cartItems, costoEnvio);
       event.target.parentElement.querySelector('.icon-refresh').classList.remove('load-more-rotating');
+      // tslint:disable-next-line: no-unused-expression
       document.querySelector('.btn-cart-update:not(.diabled)') && document.querySelector('.btn-cart-update').classList.add('disabled');
     }, 400);
   }
 
-  changeShipping(value: number) {
+  changeShipping(value: number): void {
     this.shippingCost = value;
   }
 
-  onChangeQty(event: number, product: any) {
+  onChangeQty(event: number, product: any): void {
+    // tslint:disable-next-line: no-unused-expression
     document.querySelector('.btn-cart-update.disabled') && document.querySelector('.btn-cart-update.disabled').classList.remove('disabled');
 
     this.cartItems = this.cartItems.reduce((acc, cur) => {
@@ -67,9 +69,9 @@ export class CartComponent implements OnInit, OnDestroy {
           sum: (cur.sale_price ? cur.sale_price : cur.price) * event
         });
       }
-      else acc.push(cur);
+      else { acc.push(cur); }
 
       return acc;
-    }, [])
+    }, []);
   }
 }
