@@ -47,7 +47,7 @@
         </h3>
 
         <div class="product-price" *ngIf="!product.stock || product.stock == 0 else elseBlock">
-            <span class="out-price">{{ product.price.toFixed(2) | currency }}</span>
+            <span class="out-price">{{ productTmp.price.toFixed(2) | currency }}</span>
         </div>
 
         <ng-template #elseBlock>

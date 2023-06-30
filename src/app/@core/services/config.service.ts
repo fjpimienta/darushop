@@ -18,10 +18,15 @@ export class ConfigsService extends ApiService {
     super(apollo);
   }
 
-  getConfig(id: string) {
-    return this.get(CONFIG_QUERY, { id })
-      .pipe(map((result: any) => {
-        return result.config.config;
-      }));
+  async getConfig(id: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(CONFIG_QUERY, { id }).subscribe(
+        (result: any) => {
+          resolve(result.config.config);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 }
