@@ -48,6 +48,7 @@
     "exit-intent": "^1.1.0",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.3",
+    "he": "^1.2.0",
     "imagesloaded": "^4.1.4",
     "isotope-fit-columns": "^1.1.4",
     "isotope-layout": "^3.0.6",

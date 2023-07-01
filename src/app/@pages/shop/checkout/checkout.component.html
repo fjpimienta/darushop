@@ -132,10 +132,22 @@
                 <div class="col-sm-6">
                   <label>Dirección *</label>
                   <input type="text" class="form-control" name="directions" formControlName="directions"
-                    placeholder="Calle y Número" required>
+                    placeholder="Calle" required>
                 </div>
               </div>
 
+              <div class="row">
+                <div class="col-sm-6">
+                  <label>N&uacute;mero Exterior *</label>
+                  <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
+                    placeholder="N&uacute;mero Exterior" required>
+                </div>
+                <div class="col-sm-6">
+                  <label>N&uacute;mero Interior</label>
+                  <input type="text" class="form-control" name="interiorNumber" formControlName="interiorNumber"
+                    placeholder="N&uacute;mero Interior">
+                </div>
+              </div>
 
               <div *ngIf="habilitacrearcuenta" class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="crearcuenta" name="crearcuenta"
@@ -235,7 +247,7 @@
                     </tr>
 
                     <tr class="summary-shipping">
-                      <td>Envíos Disponibles:</td>
+                      <td>Env&iacute;os:</td>
                       <td>&nbsp;</td>
                     </tr>
 
@@ -259,16 +271,48 @@
 
                 <app-accordion adClass="accordion-summary" id="accordion-payment">
                   <div class="card">
+                    <div class="card-header" id="heading-6">
+                      <h2 class="card-title">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-6"
+                          aria-expanded="false" aria-controls="collapse-6" (click)="onHabilitaPago(PAY_STRIPE)">
+                          Tarjeta de Crédito (Stripe)
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-6" class="collapse" aria-labelledby="heading-6" data-parent="#accordion-payment">
+                      <div class="card-body">
+                        <ng-stripe-pay-form [key]="key" [hidePostalCode]="true" class="text-center">
+                        </ng-stripe-pay-form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card">
+                    <div class="card-header" id="heading-7">
+                      <h2 class="card-title">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-7"
+                          aria-expanded="false" aria-controls="collapse-7" (click)="onHabilitaPago(PAY_OPENPAY)">
+                          Open Pay
+                        </a>
+                      </h2>
+                    </div>
+                    <div id="collapse-7" class="collapse" aria-labelledby="heading-7" data-parent="#accordion-payment">
+                      <div class="card-body">
+                        Pendiente...
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card">
                     <div class="card-header" id="heading-1">
                       <h2 class="card-title">
-                        <a class="toggle-button" role="button" data-toggle="collapse" href="#collapse-1"
-                          aria-expanded="true" aria-controls="collapse-1">
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-1"
+                          aria-expanded="false" aria-controls="collapse-1" (click)="onHabilitaPago(PAY_TRANSFER)">
                           Transferencia Bancaria
                         </a>
                       </h2>
                     </div>
-                    <div id="collapse-1" class="collapse show" aria-labelledby="heading-1"
-                      data-parent="#accordion-payment">
+                    <div id="collapse-1" class="collapse" aria-labelledby="heading-1" data-parent="#accordion-payment">
                       <div class="card-body">
                         <div class="row">
                           <div class="col-2">Banco</div>
@@ -290,7 +334,7 @@
                     <div class="card-header" id="heading-2">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-2"
-                          aria-expanded="false" aria-controls="collapse-2">
+                          aria-expanded="false" aria-controls="collapse-2" (click)="onHabilitaPago(PAY_DEPOSIT)">
                           Deposito
                         </a>
                       </h2>
@@ -312,11 +356,11 @@
                     </div>
                   </div>
 
-                  <div class="card">
+                  <!-- <div class="card">
                     <div class="card-header" id="heading-3">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-3"
-                          aria-expanded="false" aria-controls="collapse-3" (click)="onHabilitaPago()">
+                          aria-expanded="false" aria-controls="collapse-3" (click)="onHabilitaPago(PAY_PAYPAL)">
                           PayPal
                         </a>
                       </h2>
@@ -332,7 +376,8 @@
                     <div class="card-header" id="heading-4">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-4"
-                          aria-expanded="false" aria-controls="collapse-4" (click)="onHabilitaPago()">
+                          aria-expanded="false" aria-controls="collapse-4"
+                          (click)="onHabilitaPago('{{PAY_MERCADO_PAGO}}')">
                           Mercado Pago
                         </a>
                       </h2>
@@ -348,7 +393,7 @@
                     <div class="card-header" id="heading-5">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-5"
-                          aria-expanded="false" aria-controls="collapse-5" (click)="onHabilitaPago()">
+                          aria-expanded="false" aria-controls="collapse-5" (click)="onHabilitaPago(PAY_PAYU)">
                           PayU
                         </a>
                       </h2>
@@ -358,21 +403,21 @@
                         <small class="float-right paypal-link">Paga con tu cuenta PayU</small>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
+
 
                   <div class="card">
-                    <div class="card-header" id="heading-6">
+                    <div class="card-header" id="heading-17">
                       <h2 class="card-title">
-                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-6"
-                          aria-expanded="false" aria-controls="collapse-6" (click)="onHabilitaPago()">
-                          Tarjeta de Crédito (Stripe)
+                        <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-17"
+                          aria-expanded="false" aria-controls="collapse-17" (click)="onHabilitaPago(PAY_FREE)">
+                          Libre de Pagos
                         </a>
                       </h2>
                     </div>
-                    <div id="collapse-6" class="collapse" aria-labelledby="heading-6" data-parent="#accordion-payment">
+                    <div id="collapse-17" class="collapse" aria-labelledby="heading-17" data-parent="#accordion-payment">
                       <div class="card-body">
-                        <ng-stripe-pay-form [key]="key" [hidePostalCode]="true" class="text-center">
-                        </ng-stripe-pay-form>
+                        Promocion Bajo Reserva de Autorizacion.
                       </div>
                     </div>
                   </div>

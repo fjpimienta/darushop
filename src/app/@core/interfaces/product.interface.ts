@@ -1,5 +1,5 @@
 export interface IProduct {
-  id?: number;
+  id?: string;
   name?: string;
   slug?: string;
   short_desc?: string;
@@ -14,14 +14,22 @@ export interface IProduct {
   new: boolean;
   author: string;
   sold: string;
+  partnumber: string;
+  sku: string;
+  upc: string;
   category: ICategorys[];
+  brand: string;
   brands: IBrands[];
   model: string;
   peso: number;
   pictures: IPicture[];
-  sm_pictures?: IPicture[];
-  variants?: IVariant[];
+  sm_pictures: IPicture[];
+  variants: IVariant[];
+  unidadDeMedida?: IUnidadDeMedida;
   active: boolean;
+  suppliersProd: ISupplierProd;
+  descuentos: IDescuentos;
+  promociones: IPromociones;
 }
 
 export interface ICategorys {
@@ -82,4 +90,41 @@ export interface ISize {
 export interface IPivoteSize {
   components_variants_variant_id: string;
   component_id: string;
+}
+
+export interface IUnidadDeMedida {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface ISupplierProd {
+  idProveedor: string;
+  codigo: string;
+  price: number;
+  moneda: string;
+  branchOffices: IBranchOffices[];
+}
+
+export interface IBranchOffices {
+  id: string;
+  name: string;
+  slug: string;
+  cantidad: number;
+  cp: string;
+  latitud: string;
+  longitud: string;
+}
+
+export interface IDescuentos {
+  total_descuento: number;
+  moneda_descuento: string;
+  precio_descuento: number;
+}
+
+export interface IPromociones {
+  clave_promocion: string;
+  descripcion_promocion: string;
+  vencimiento_promocion: string;
+  disponible_en_promocion: number;
 }

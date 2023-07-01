@@ -21,6 +21,7 @@ import { ServicesComponent } from './services/services.component';
 import { HowtobuyComponent } from './howtobuy/howtobuy.component';
 import { DatePickerLegalAgeModule } from '@shared/calendar/date-picker-legal-age/date-picker-legal-age.module';
 import { FormsModule } from '@angular/forms';
+import { TermsComponent } from './terms/terms.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { FormsModule } from '@angular/forms';
     ContactOnePageComponent,
     ComingSoonPageComponent,
     ServicesComponent,
-    HowtobuyComponent
+    HowtobuyComponent,
+    TermsComponent
   ],
 
   imports: [

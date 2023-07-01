@@ -1,3 +1,6 @@
+/**
+ * Clase de la entrada de los cargos
+ */
 export class ChargeInput {
   id: string;
   card: string;

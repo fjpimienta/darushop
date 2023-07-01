@@ -25,20 +25,29 @@ import { IMail } from '@core/interfaces/mail.interface';
 import { MailService } from '@core/services/mail.service';
 import { ICharge } from '@core/interfaces/stripe/charge.interface';
 import { UsersService } from '@core/services/users.service';
-import { AddressInput, UserInput } from '@core/models/user.models';
+import { AddressInput, UserBasicInput, UserInput } from '@core/models/user.models';
 import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
-import { WarehousesService } from '@core/services/warehouses.service';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Delivery } from '@core/models/delivery.models';
-import { SupplierProd } from '@core/models/product.models';
+import { BranchOffices, SupplierProd } from '@core/models/product.models';
 import { ExternalAuthService } from '@core/services/external-auth.service';
-import { SuppliersService } from '@core/services/supplier.service';
-import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
+import { SuppliersService } from '@core/services/suppliers/supplier.service';
+import { ISupplier } from '@core/interfaces/supplier.interface';
 import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
+import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER, SF } from '@core/constants/constants';
+import { EnvioCt, OrderCt, ProductoCt } from '@core/models/suppliers/orderct.models';
+import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
+import { Apis, Supplier } from '@core/models/suppliers/supplier';
+import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
+import { OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { HttpClient } from '@angular/common/http';
+import { DeliverysService } from '@core/services/deliverys.service';
+import { IAddress } from '@core/interfaces/user.interface';
+
 
 declare var $: any;
 
@@ -69,9 +78,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   referencias: string;
   codigosPostales: string[];
   existeMetodoPago: boolean;
+  existePaqueteria: boolean;
   stripeCustomer: string;
   errorSaveUser: boolean;
-  warehouses: Warehouse[];
   delivery: Delivery;
   deliverys: Delivery[];
   suppliers: [ISupplier];
@@ -98,9 +107,27 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   register: UserInput = new UserInput();
 
   shipments: Shipment[] = [];
+  warehouse: Warehouse = new Warehouse();
+  warehouses: Warehouse[] = [];
+  typePay: string;
+  PAY_STRIPE: string = PAY_STRIPE;
+  PAY_OPENPAY: string = PAY_OPENPAY;
+  PAY_TRANSFER: string = PAY_TRANSFER;
+  PAY_DEPOSIT: string = PAY_DEPOSIT;
+  PAY_PAYPAL: string = PAY_PAYPAL;
+  PAY_MERCADO_PAGO: string = PAY_MERCADO_PAGO;
+  PAY_PAYU: string = PAY_PAYU;
+  PAY_FREE: string = PAY_FREE;
+
+  sucursalesCVA = [];
+  paqueteriasCVA = [];
+  ciudadesCVA = [];
+
+  isSubmitting = false;
 
   constructor(
     private router: Router,
+    private httpClient: HttpClient,
     private formBuilder: FormBuilder,
     public cartService: CartService,
     public countrysService: CountrysService,
@@ -112,9 +139,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private chargeService: ChargeService,
     private mailService: MailService,
     public userService: UsersService,
-    private warehousesService: WarehousesService,
     private externalAuthService: ExternalAuthService,
     public shippingsService: ShippingsService,
+    public deliverysService: DeliverysService
   ) {
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -185,7 +212,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               user: this.onSetUser(this.formData, this.stripeCustomer),
               cartitems: this.cartItems
             };
-
             // Enviar la información y procesar el pago.
             this.chargeService.pay(payment, order).pipe(first())
               .subscribe(async (result: {
@@ -194,8 +220,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 charge: ICharge
               }) => {
                 if (result.status) {
-                  this.sendEmail(result.charge);
+                  this.sendEmail(result.charge, '', '');
                   this.cartService.clearCart(false);
+                  // Elaborar Pedido Proveedor
+                  const OrderSupplier = await this.sendOrderSupplier();
+                  // TODO::Registrar Delivery
+                  this.deliverysService.add(OrderSupplier);
+                  // Enviar correo electronico
                   await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
                   this.router.navigate(['/shop/dashboard']);
                 } else {
@@ -211,8 +242,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         basicAlert(TYPE_ALERT.ERROR, 'No hay datos de la tarjeta');
       }
     });
+
   }
 
+  //#region Metodos Componente
   ngOnInit(): void {
     console.clear();
     this.countrys = [];
@@ -232,24 +265,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.referencias = '';
     this.codigosPostales = [];
     this.existeMetodoPago = false;
+    this.existePaqueteria = false;
 
     this.authService.start();
 
     this.subscr = this.cartService.cartStream.subscribe(items => {
       this.cartItems = items;
-    });
-
-    this.suppliersService.getSuppliers().subscribe(result => {
-      this.suppliers = result.suppliers;
-    });
-
-    this.shippingsService.getShippings().subscribe(result => {
-      this.shippings = result.shippings;
-    });
-
-    this.warehouses = [];
-    this.warehousesService.getWarehouses(1, -1).subscribe(result => {
-      this.warehouses = result.warehouses;
     });
 
     document.querySelector('body').addEventListener('click', () => this.clearOpacity());
@@ -264,11 +285,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       selectMunicipio: ['', [Validators.required]],
       selectColonia: ['', Validators.required],
       directions: ['', Validators.required],
+      outdoorNumber: ['', Validators.required],
+      interiorNumber: [''],
       phone: ['', Validators.required],
       email: ['', Validators.required],
       crearcuenta: [false],
       references: [''],
-      existeMetodoPago: [false]
+      existeMetodoPago: [false],
+      existePaqueteria: [false]
     });
 
     // Obtiene los datos de la sesión
@@ -291,54 +315,66 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             // tslint:disable-next-line: no-shadowed-variable
             .subscribe((result) => {
               this.countrys = result;
-              this.session.user?.addresses.forEach(direction => {
+              // tslint:disable-next-line: forin
+              for (const idU in this.session.user?.addresses) {
+                const direction: IAddress = this.session.user?.addresses[idU];
                 if (direction.dir_delivery_main === true) {
                   this.formData.controls.codigoPostal.setValue(direction.d_codigo);
                   this.formData.controls.selectColonia.setValue(direction.d_asenta);
                   this.formData.controls.directions.setValue(direction.directions);
+                  this.formData.controls.outdoorNumber.setValue(direction.outdoorNumber);
+                  this.formData.controls.interiorNumber.setValue(direction.interiorNumber);
                   this.formData.controls.references.setValue(direction.references);
                   if (this.countrys.length > 0) {
-                    this.countrys.forEach(country => {
+                    // tslint:disable-next-line: forin
+                    for (const idC in this.countrys) {
+                      const country: Country = this.countrys[idC];
                       if (country.c_pais === direction.c_pais) {
                         this.estados = country.estados;
                         this.formData.controls.selectCountry.setValue(direction.c_pais);
                         this.selectCountry.c_pais = direction.c_pais;
                         this.selectCountry.d_pais = direction.d_pais;
-                        country.estados.forEach(estado => {
+                        // tslint:disable-next-line: forin
+                        for (const idE in country.estados) {
+                          const estado: Estado = country.estados[idE];
                           if (estado.c_estado === direction.c_estado) {
                             this.municipios = estado.municipios;
                             this.formData.controls.selectEstado.setValue(direction.c_estado);
                             this.selectEstado.c_estado = direction.c_estado;
                             this.selectEstado.d_estado = direction.d_estado;
-                            estado.municipios.forEach(municipio => {
+                            // tslint:disable-next-line: forin
+                            for (const idM in estado.municipios) {
+                              const municipio: Municipio = estado.municipios[idM];
                               if (municipio.c_mnpio === direction.c_mnpio) {
                                 this.formData.controls.selectMunicipio.setValue(direction.c_mnpio);
                                 this.selectMunicipio.c_mnpio = direction.c_mnpio;
                                 this.selectMunicipio.D_mnpio = direction.d_mnpio;
                               }
-                            });
+                            }
                           }
-                        });
+                        }
                       }
-                    });
+                    }
                     // Agregar las colonias del CP
                     this.colonias = [];
-                    this.cps.forEach(codigo => {
+                    // tslint:disable-next-line: forin
+                    for (const idCp in this.cps) {
+                      const codigo: Codigopostal = this.cps[idCp];
                       if (codigo.d_asenta) {
                         this.colonias.push(codigo.d_asenta);
                       }
-                    });
+                    }
                   }
                 }
-              });
+              }
             });
         }
       }
     });
+
   }
 
-  // tslint:disable-next-line: typedef
-  async notAvailableProducts(withMessage: boolean = true) {
+  async notAvailableProducts(withMessage: boolean = true): Promise<void> {
     if (withMessage) {
       await infoEventAlert(
         'Accion no disponible',
@@ -348,17 +384,65 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  // tslint:disable-next-line: typedef
-  async onSubmit() {
-    if (this.formData.valid) {
-      // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
-      if (this.existeMetodoPago) {
-        return await this.stripePaymentService.takeCardToken(true);
+  async onSubmit(): Promise<any> {
+    if (!this.isSubmitting) {
+      this.isSubmitting = true;
+      if (this.formData.valid) {
+        // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
+        loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
+        if (this.existeMetodoPago && this.existePaqueteria) {
+          switch (this.typePay) {
+            case PAY_STRIPE:
+              this.payStripe();
+              break;
+            case PAY_OPENPAY:
+              break;
+            case PAY_TRANSFER:
+              break;
+            case PAY_DEPOSIT:
+              break;
+            case PAY_PAYPAL:
+              break;
+            case PAY_MERCADO_PAGO:
+              break;
+            case PAY_FREE:
+              // Generar Orden de Compra con Proveedores
+              const OrderSupplier = await this.sendOrderSupplier();
+              console.log('OrderSupplier: ', OrderSupplier);
+              const deliverySave = await this.deliverysService.add(OrderSupplier);
+              console.log('deliverySave: ', deliverySave);
+              const NewProperty = 'receipt_email';
+              let internalEmail = false;
+              let typeAlert = TYPE_ALERT.SUCCESS;
+              let sendEmail = OrderSupplier.user.email;
+              let messageDelivery = 'El Pedido se ha realizado correctamente';
+              if (OrderSupplier.statusError) {
+                internalEmail = true;
+                this.isSubmitting = false;
+                typeAlert = TYPE_ALERT.WARNING;
+                sendEmail = 'marketing@daru.mx';
+                messageDelivery = OrderSupplier.messageError;
+              } else {
+                this.cartService.clearCart(false);
+                this.router.navigate(['/shop/offers/list']);
+              }
+              // Si compra es OK, continua.
+              OrderSupplier[NewProperty] = sendEmail;
+              this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
+              await infoEventAlert(messageDelivery, '', typeAlert);
+              break;
+          }
+        } else if (this.existePaqueteria) {
+          this.isSubmitting = false;
+          return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
+        } else {
+          this.isSubmitting = false;
+          return await infoEventAlert('Se requiere definir una Paqueteria para el Env&iacute;o.', '');
+        }
       } else {
-        return await infoEventAlert('Se requiere definir un método de pago.', '');
+        this.isSubmitting = false;
+        return await infoEventAlert('Verificar los campos requeridos.', '');
       }
-    } else {
-      return await infoEventAlert('Verificar los campos requeridos.', '');
     }
   }
 
@@ -366,9 +450,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.subscr.unsubscribe();
     document.querySelector('body').removeEventListener('click', () => this.clearOpacity());
   }
+  //#endregion Metodos Componentes
 
-  onSetUser(formData: FormGroup, stripeCustomer: string): UserInput {
-    const register = new UserInput();
+  //#region Metodos
+  onSetUser(formData: FormGroup, stripeCustomer: string): UserBasicInput {
+    const register = new UserBasicInput();
     register.id = '';
     if (this.session.user) {
       register.id = this.session.user.id;
@@ -376,7 +462,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     register.name = formData.controls.name.value;
     register.lastname = formData.controls.lastname.value;
     register.email = formData.controls.email.value;
-    register.role = 'CLIENT';
     register.stripeCustomer = stripeCustomer;
     register.phone = formData.controls.phone.value;
 
@@ -390,6 +475,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       address.d_mnpio = this.selectMunicipio.D_mnpio;
       address.d_asenta = formData.controls.selectColonia.value;
       address.directions = formData.controls.directions.value;
+      address.outdoorNumber = formData.controls.outdoorNumber.value;
+      address.interiorNumber = formData.controls.interiorNumber.value;
       address.phone = formData.controls.phone.value;
       address.references = formData.controls.references.value;
       address.d_codigo = formData.controls.codigoPostal.value;
@@ -399,51 +486,65 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return register;
   }
 
-  onSetCps(event): void {
+  async onSetCps(event): Promise<void> {
     if (event) {
       const cp = $(event.target).val();
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
-        this.codigopostalsService.getCps(1, -1, cp).subscribe(result => {
+        const codigoPostal = this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;
           if (this.cps.length > 0) {
             // Agregar Pais, Estados, Municipios del CP
             if (this.countrys.length > 0) {
-              this.countrys.forEach(country => {
+              // tslint:disable-next-line: forin
+              for (const idC in this.countrys) {
+                const country: Country = this.countrys[idC];
                 if (country.c_pais === this.cps[0].c_pais) {
                   this.estados = country.estados;
                   this.formData.controls.selectCountry.setValue(country.c_pais);
                   this.selectCountry.c_pais = country.c_pais;
                   this.selectCountry.d_pais = country.d_pais;
-                  country.estados.forEach(estado => {
+                  // tslint:disable-next-line: forin
+                  for (const idE in country.estados) {
+                    const estado: Estado = country.estados[idE];
                     if (estado.c_estado === this.cps[0].c_estado) {
                       this.municipios = estado.municipios;
                       this.formData.controls.selectEstado.setValue(estado.c_estado);
                       this.selectEstado.c_estado = estado.c_estado;
                       this.selectEstado.d_estado = estado.d_estado;
-                      estado.municipios.forEach(municipio => {
+                      // tslint:disable-next-line: forin
+                      for (const idM in estado.municipios) {
+                        const municipio: Municipio = estado.municipios[idM];
                         if (municipio.c_mnpio === this.cps[0].c_mnpio) {
                           this.formData.controls.selectMunicipio.setValue(municipio.c_mnpio);
                           this.selectMunicipio.c_mnpio = municipio.c_mnpio;
                           this.selectMunicipio.D_mnpio = municipio.D_mnpio;
                         }
-                      });
+                      }
                     }
-                  });
+                  }
                 }
-              });
+              }
               // Agregar las colonias del CP
               this.colonias = [];
-              this.cps.forEach(codigo => {
+              // tslint:disable-next-line: forin
+              for (const idCp in this.cps) {
+                const codigo: Codigopostal = this.cps[idCp];
                 if (codigo.d_asenta) {
                   this.colonias.push(codigo.d_asenta);
                 }
-              });
+              }
+              return await this.colonias;
               // Cotizar con los proveedores el costo de envio de acuerdo al producto.
-              this.onCotizarEnvios(cp, this.selectEstado.d_estado);
             }
+            return await [];
           }
+          return await [];
         });
+        // Cotizar con los proveedores el costo de envio de acuerdo al producto.
+        if ((await codigoPostal).length > 0) {
+          this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+        }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
       }
@@ -452,196 +553,249 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCotizarEnvios(cpDestino: string, estadoCp: string): void {
+  async getCotizacionEnvios(cp, estado): Promise<any> {
+    const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
+    if (cotizacionEnvios.length <= 0) {
+      const externos = await this.onCotizarEnviosExternos(cp, estado);
+      if (externos.length > 0) {
+        return await externos;
+      }
+    } else {
+      return await cotizacionEnvios;
+      // // Habilitado para mostrar el mas economico.
+      // cotizacionEnvios.sort((a, b) => a.costo - b.costo);
+      // const objetoMinimo = cotizacionEnvios[0];
+      // return [objetoMinimo];
+    }
+    return await [];
+  }
+
+  /**
+   *
+   * @param cpDestino Codigo Postal a donde llegara el pedido
+   * @param estadoCp Codigo postal predeterminado.
+   * @returns Datos de la(s) paqueteria(s) del proveedor
+   */
+  async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<any> {
     // Inicializar Arreglo de Envios.
-    const capitalCp = '2700';
-    const delivery = new Delivery();
-    let warehouse = new Warehouse();
-    let id = '1';
-    delivery.id = id;
-    delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+    this.sucursalesCVA = await this.externalAuthService.getSucursalesCva().then(result => {
+      return result;
+    });
+    this.paqueteriasCVA = await this.externalAuthService.getPaqueteriasCva().then(result => {
+      return result;
+    });
+    this.ciudadesCVA = await this.externalAuthService.getCiudadesCva().then(result => {
+      return result;
+    });
+    const capitalCpCT = '2700';
+    const capitalCpCva = '06820';
+    // const capitalCpIng = '';
     this.shipments = [];
+    this.warehouses = [];
+    this.warehouse = new Warehouse();
+    this.warehouse.shipments = [];
+    const shipmentsEnd = [];
+
     // Verificar productos por proveedor.
     let i = 0;
-    let apiSelect: IApis;
-    this.suppliers.forEach(async supplier => {
-      const supplierProd = new SupplierProd();                       // Revisar proveedors con apis
-      const warehouseEstado = new Warehouse();
-      const warehouseCapital = new Warehouse();
-      const productsEstado: ProductShipment[] = [];
-      const productsCapital: ProductShipment[] = [];
-      supplier.apis.forEach(async api => {
-        if (api.type === 'envios') {
-          switch (supplier.slug) {
-            case 'ct':
-              if (api.return === 'cotizacion') {
-                apiSelect = api;
-              }
-              break;
-            case 'cva':
-              if (api.return === 'cotizacion') {
-                apiSelect = api;
-              }
-              break;
-          }
-        }
+    const suppliers = await this.suppliersService.getSuppliers()          // Recuperar la lista de Proveedores
+      .then(async result => {
+        return await result.suppliers;
       });
-      if (apiSelect) {
-        console.log('supplier: ', supplier);
-        console.log('apiSelect: ', apiSelect);
-        console.log('this.cartItems: ', this.cartItems);
-        this.cartItems.forEach(async cartItem => {                              // Revisar productos en el carrito
-          if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
-            cartItem.suppliersProd.branchOffices.forEach(branchOffice => {      // Revisar productos en almacenes
-              if (estadoCp === branchOffice.estado || capitalCp === branchOffice.cp) {  // Almacenes estado|capital
-                if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
-                  if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
-                    const productShipment = new ProductShipment();
-                    productShipment.producto = cartItem.sku;
-                    productShipment.cantidad = cartItem.qty.toString();
-                    productShipment.precio = cartItem.price.toString();
-                    productShipment.moneda = cartItem.suppliersProd.moneda;
-                    productShipment.almacen = branchOffice.id;
-                    productsEstado.push(productShipment);
-                    warehouseEstado.cp = branchOffice.cp;
-                    warehouseEstado.name = branchOffice.name;
-                    warehouseEstado.estado = branchOffice.estado;
-                    warehouseEstado.latitud = branchOffice.latitud;
-                    warehouseEstado.longitud = branchOffice.longitud;
-                  }
-                  if (capitalCp === branchOffice.cp) {                          // Verificar Existencias en Capital
-                    const productShipment = new ProductShipment();
-                    productShipment.producto = cartItem.sku;
-                    productShipment.cantidad = cartItem.qty.toString();
-                    productShipment.precio = cartItem.price.toString();
-                    productShipment.moneda = cartItem.suppliersProd.moneda;
-                    productShipment.almacen = branchOffice.id;
-                    productsCapital.push(productShipment);
-                    warehouseCapital.cp = branchOffice.cp;
-                    warehouseCapital.name = branchOffice.name;
-                    warehouseCapital.estado = branchOffice.estado;
-                    warehouseCapital.latitud = branchOffice.latitud;
-                    warehouseCapital.longitud = branchOffice.longitud;
+    this.suppliers = suppliers;
+    if (suppliers.length > 0) {
+      // tslint:disable-next-line: forin
+      for (const supId in suppliers) {
+        let supplier = new Supplier();
+        supplier = suppliers[supId];
+        const supplierProd = new SupplierProd();                          // Revisar proveedors con apis
+        const warehouseEstado = new Warehouse();
+        const warehouseCapital = new Warehouse();
+        const productsEstado: ProductShipment[] = [];
+        const productsCapital: ProductShipment[] = [];
+        // Set Api para Envios
+        const apiShipment = await this.suppliersService.getApiSupplier(supplier.slug, 'envios', 'paqueterias')
+          .then(async result => {
+            if (result.status) {
+              return await result.apiSupplier;
+            }
+          });
+        if (apiShipment) {                                                          // Si hay Api para el Proveedor.
+          // Agrupar Productos Por Proveedor
+          // ==> TODO
+          if (supplier.slug === this.cartItems[0].suppliersProd.idProveedor) {
+            // tslint:disable-next-line: forin
+            for (const idCI in this.cartItems) {          // Revisar productos en el carrito
+              const cartItem: CartItem = this.cartItems[idCI];
+              if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
+                // tslint:disable-next-line: forin
+                for (const idB in cartItem.suppliersProd.branchOffices) {
+                  const branchOffice: BranchOffices = cartItem.suppliersProd.branchOffices[idB];
+                  if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
+                    || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
+                    if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
+                      if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
+                        const productShipment = new ProductShipment();
+                        productShipment.producto = cartItem.sku;
+                        productShipment.cantidad = cartItem.qty;
+                        productShipment.precio = cartItem.price;
+                        productShipment.moneda = cartItem.suppliersProd.moneda;
+                        productShipment.almacen = branchOffice.id;
+                        productShipment.cp = branchOffice.cp;
+                        productShipment.name = cartItem.name;
+                        productShipment.total = cartItem.qty * cartItem.price;
+                        productsEstado.push(productShipment);
+                        warehouseEstado.id = branchOffice.id;
+                        warehouseEstado.cp = branchOffice.cp;
+                        warehouseEstado.name = branchOffice.name;
+                        warehouseEstado.estado = branchOffice.estado;
+                        warehouseEstado.latitud = branchOffice.latitud;
+                        warehouseEstado.longitud = branchOffice.longitud;
+                      }
+                      if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
+                        const productShipment = new ProductShipment();
+                        productShipment.producto = cartItem.sku;
+                        productShipment.cantidad = cartItem.qty;
+                        productShipment.precio = cartItem.price;
+                        productShipment.moneda = cartItem.suppliersProd.moneda;
+                        productShipment.almacen = branchOffice.id;
+                        productShipment.cp = branchOffice.cp;
+                        productShipment.name = cartItem.name;
+                        productShipment.total = cartItem.qty * cartItem.price;
+                        productsCapital.push(productShipment);
+                        warehouseCapital.id = branchOffice.id;
+                        warehouseCapital.cp = branchOffice.cp;
+                        warehouseCapital.name = branchOffice.name;
+                        warehouseCapital.estado = branchOffice.estado;
+                        warehouseCapital.latitud = branchOffice.latitud;
+                        warehouseCapital.longitud = branchOffice.longitud;
+                      }
+                    }
                   }
                 }
+                if (productsEstado.length === this.cartItems.length) {
+                  i += 1;
+                  this.warehouse = warehouseEstado;
+                  this.warehouse.productShipments = productsEstado;
+                } else if (productsCapital.length === this.cartItems.length) {
+                  i += 1;
+                  this.warehouse = warehouseCapital;
+                  this.warehouse.productShipments = productsCapital;
+                }
+                supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
+                supplierProd.codigo = cartItem.suppliersProd.codigo;
+                supplierProd.price = cartItem.suppliersProd.price;
+                supplierProd.moneda = cartItem.suppliersProd.moneda;
+                this.warehouse.suppliersProd = supplierProd;
               }
-            });
-            if (productsEstado.length === this.cartItems.length) {
-              i += 1;
-              warehouse = warehouseEstado;
-              warehouse.productShipments = productsEstado;
-            } else if (productsCapital.length === this.cartItems.length) {
-              i += 1;
-              warehouse = warehouseCapital;
-              warehouse.productShipments = productsCapital;
             }
-            supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
-            supplierProd.codigo = cartItem.suppliersProd.codigo;
-            supplierProd.price = cartItem.suppliersProd.price;
-            supplierProd.moneda = cartItem.suppliersProd.moneda;
-            warehouse.suppliersProd = supplierProd;
-            id += 1;
-          }
-        });
-        // Cotizar envio
-        warehouse.cp = cpDestino;
-        if (productsEstado.length === this.cartItems.length) {              // Si hay disponibilidad en estado
-          warehouse.productShipments = productsCapital;
-        } else if (productsCapital.length === this.cartItems.length) {      // Si hay disponibilidad en capital
-          warehouse.productShipments = productsCapital;
-        }
-        const shipmentsCost = await this.externalAuthService.onShippingEstimate(supplier, apiSelect, warehouse, false)
-          .then(
-            async (result) => {
-              const shipments: Shipment[] = [];
-              // tslint:disable-next-line: forin
-              for (const key in result) {
-                const shipment = new Shipment();
-                shipment.empresa = result[key].empresa.toString().toUpperCase();
-                shipment.costo = result[key].total;
-                shipment.metodoShipping = result[key].metodo;
-                shipments.push(shipment);
-              }
-              return shipments;
+            // Cotizar envio
+            this.warehouse.cp = cpDestino;
+            if (productsEstado.length === this.cartItems.length) {                  // Si hay disponibilidad en estado
+              this.warehouse.productShipments = productsEstado;
+            } else if (productsCapital.length <= this.cartItems.length) {           // Si hay disponibilidad en capital
+              this.warehouse.productShipments = productsCapital;
             }
-          );
-        // this.shipments = shipmentsCost;
-        shipmentsCost.forEach(ship => {
-          this.shipments.push(ship);
-        });
-      }
-    });
-    // Cotizar con las paqueterias
-    if (this.shipments) {
-      if (this.shippings.length > 0) {
-        this.shippings.forEach(async shipping => {
-          const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
-          const shippingsCost = await this.externalAuthService.onShippingEstimate(
-            shipping, apiSelectShip, warehouse, false)
-            .then(
-              async (result) => {
+            const shipmentsCost = await this.externalAuthService.onShippingEstimate(
+              supplier, apiShipment, this.warehouse, true)
+              .then(async (resultShip) => {
                 const shipments: Shipment[] = [];
-                for (const key in result) {
-                  // tslint:disable-next-line: forin
+                // tslint:disable-next-line: forin
+                for (const key in resultShip) {
                   const shipment = new Shipment();
-                  shipment.empresa = '99MINUTOS';
-                  shipment.costo = result[key].costo;
-                  shipment.metodoShipping = '';
+                  shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
+                  if (supplier.slug === 'ct') {
+                    shipment.costo = resultShip[key].total;
+                    shipment.metodoShipping = resultShip[key].metodo;
+                  } else {
+                    shipment.costo = resultShip[key].costo;
+                    shipment.metodoShipping = resultShip[key].metodoShipping;
+                  }
                   shipments.push(shipment);
                 }
-                return shipments;
-              }
-            );
-          shippingsCost.forEach(ship => {
-            this.shipments.push(ship);
-          });
-        });
+                return await shipments;
+              });
+            // tslint:disable-next-line: forin
+            for (const shipId in shipmentsCost) {
+              shipmentsEnd.push(shipmentsCost[shipId]);
+            }
+            this.warehouse.shipments = shipmentsEnd;
+            this.warehouses.push(this.warehouse);
+          }
+        }
       }
     }
+    return await shipmentsEnd;
+    // Elaborar Pedido Previo a facturacion.
+  }
+
+  /**
+   *
+   * @param cpDestino Codigo Postal a donde llegara el pedido
+   * @param estadoCp Codigo postal predeterminado.
+   * @returns Datos de la(s) paqueteria(s) externa(s)
+   */
+  async onCotizarEnviosExternos(cpDestino: string, estadoCp: string): Promise<any> {
+    // Inicializar Arreglo de Envios.
+    const capitalCpCT = '2700';
+    const capitalCpCva = '06820';
+    // const capitalCpIng = '';
+    this.shipments = [];
+    this.warehouse = new Warehouse();
+    this.warehouse.shipments = [];
+    const shipmentsEnd = [];
+
+    const shippings = await this.shippingsService.getShippings()          // Recuperar la lista de Paqueterias
+      .then(async result => {
+        return await result.shippings;
+      });
+    if (shippings.length > 0) {
+      // Cotizar con las paqueterias Externas a Proveedores
+      const shipmentsExt = await this.shippingsService.getShippings()
+        .then(async result => {
+          if (result.status && result.shippings.length > 0) {
+            for (const supId in result.shippings) {
+              let shipping = new Supplier();
+              shipping = result.shippings[supId];
+              const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
+              const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
+                shipping, apiSelectShip, this.warehouse, false)
+                .then(async (resultShipment) => {
+                  const shipments: Shipment[] = [];
+                  // tslint:disable-next-line: forin
+                  for (const key in resultShipment) {
+                    const shipment = new Shipment();
+                    shipment.empresa = resultShipment[key].empresa.toUpperCase();
+                    shipment.costo = resultShipment[key].costo;
+                    shipment.metodoShipping = '';
+                    shipments.push(shipment);
+                  }
+                  return await shipments;
+                }
+                );
+              // tslint:disable-next-line: forin
+              for (const shipId in shippingsEstimate) {
+                shipmentsEnd.push(shippingsEstimate[shipId]);
+              }
+            }
+            return await shipmentsEnd;
+          }
+          return await [];
+        });
+    }
+    return await shipmentsEnd;
+    // Elaborar Pedido Previo a facturacion.
   }
 
   changeShipping(costo: number): void {
+    this.existePaqueteria = true;
     this.cartService.priceTotal.subscribe(total => {
       this.totalPagar = (total + costo).toFixed(2).toString();
     });
   }
 
-  onSetEstados(event): void {
-    const estado = event.value.split(':', 2);
-    this.estados = [];
-    this.municipios = [];
-    this.selectEstado = new Estado();
-    this.selectMunicipio = new Municipio();
-    this.selectColonia = '';
-    this.countrys.forEach(country => {
-      if (country.c_pais === estado[1].split(' ').join('')) {
-        this.estados = country.estados;
-        this.formData.controls.selectEstado.setValue('');
-        this.formData.controls.selectMunicipio.setValue('');
-        this.formData.controls.selectColonia.setValue('');
-        this.formData.controls.directions.setValue('');
-      }
-    });
-  }
-
-  onSetMunicipios(event): void {
-    const municipio = event.value.split(':', 2);
-    this.municipios = [];
-    this.colonias = [];
-    this.selectMunicipio = new Municipio();
-    this.selectColonia = '';
-    this.estados.forEach(estado => {
-      if (estado.c_estado === municipio[1].split(' ').join('')) {
-        this.municipios = estado.municipios;
-        this.formData.controls.selectMunicipio.setValue('');
-      }
-    });
-  }
-
-  onSetColonias(event): void {
-  }
-
-  onHabilitaPago(): void {
+  onHabilitaPago(payMent: string): void {
+    this.typePay = payMent;
     this.existeMetodoPago = true;
   }
 
@@ -689,16 +843,450 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   }
 
-  sendEmail(charge: ICharge): void {
-    const receiptEmail = charge.receipt_email + '; hosting3m@gmail.com';
+  removeAccents(text: string): string {
+    const accents = 'ÁÉÍÓÚáéíóú';
+    const accentsOut = 'AEIOUaeiou';
+    const mapAccents: { [key: string]: string } = {};
+    const textArray = text.split('');
+    accents.split('').forEach((accent, index) => {
+      mapAccents[accent] = accentsOut[index];
+    });
+    return textArray
+      .map((char) => mapAccents[char] || char)
+      .join('');
+  }
+
+  //#endregion Metodos
+
+  //#region Cobros
+  async payStripe(): Promise<any> {
+    await this.stripePaymentService.takeCardToken(true);
+    return await true;
+  }
+  //#endregion Cobros
+
+  //#region Enviar Ordenes
+  setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse): any {
+    const user = delivery.user;
+    const dir = delivery.user.addresses[0];
+    switch (supplier.slug) {
+      case 'ct':
+        const enviosCt: EnvioCt[] = [];
+        const envioCt: EnvioCt = new EnvioCt();
+        envioCt.nombre = this.removeAccents(user.name + ' ' + user.lastname);
+        envioCt.direccion = this.removeAccents(dir.directions);
+        envioCt.entreCalles = this.removeAccents(dir.references);
+        envioCt.colonia = this.removeAccents(dir.d_asenta);
+        envioCt.estado = this.removeAccents(dir.d_estado);
+        envioCt.ciudad = this.removeAccents(dir.d_mnpio);
+        envioCt.noExterior = this.removeAccents(dir.outdoorNumber);
+        envioCt.noInterior = this.removeAccents(dir.interiorNumber);
+        envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
+        envioCt.telefono = dir.phone;
+        enviosCt.push(envioCt);
+        const ProductosCt: ProductoCt[] = [];
+        // tslint:disable-next-line: forin
+        for (const idPS in warehouse.productShipments) {
+          const prod: ProductShipment = warehouse.productShipments[idPS];
+          const productCt: ProductoCt = new ProductoCt();
+          productCt.cantidad = prod.cantidad;
+          productCt.clave = prod.producto;
+          productCt.moneda = prod.moneda;
+          productCt.precio = prod.precio;
+          ProductosCt.push(productCt);
+        }
+        const orderCtSupplier: OrderCt = {
+          idPedido: 1,
+          almacen: warehouse.productShipments[0].almacen,
+          tipoPago: '04',
+          envio: enviosCt,
+          producto: ProductosCt
+        };
+        return orderCtSupplier;
+      case 'cva':
+        const enviosCva: EnvioCVA[] = [];
+        const envioCva: EnvioCVA = new EnvioCVA();
+        envioCva.nombre = this.removeAccents(user.name + ' ' + user.lastname);
+        envioCva.direccion = this.removeAccents(dir.directions);
+        envioCva.entreCalles = this.removeAccents(dir.references);
+        envioCva.colonia = this.removeAccents(dir.d_asenta);
+        envioCva.estado = this.removeAccents(dir.d_estado);
+        envioCva.ciudad = this.removeAccents(dir.d_mnpio);
+        envioCva.noExterior = this.removeAccents(dir.outdoorNumber);
+        envioCva.noInterior = this.removeAccents(dir.interiorNumber);
+        envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
+        envioCva.telefono = dir.phone;
+        enviosCva.push(envioCva);
+        const ProductosCva: ProductoCva[] = [];
+        // tslint:disable-next-line: forin
+        for (const idPS in warehouse.productShipments) {
+          const prod: ProductShipment = warehouse.productShipments[idPS];
+          const productCva: ProductoCva = new ProductoCva();
+          productCva.clave = prod.producto;
+          productCva.cantidad = prod.cantidad;
+          ProductosCva.push(productCva);
+        }
+        const estado = this.ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
+        const ciudad = this.ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
+        const orderCvaSupplier: OrderCva = {
+          NumOC: '1',
+          Paqueteria: '4',
+          CodigoSucursal: warehouse.productShipments[0].almacen,
+          PedidoBO: 'N',
+          Observaciones: 'Pedido de Prueba',
+          productos: ProductosCva,
+          TipoFlete: FF,
+          Calle: this.removeAccents(dir.directions),
+          Numero: dir.outdoorNumber,
+          NumeroInt: dir.interiorNumber,
+          CP: warehouse.productShipments[0].cp,
+          Colonia: this.removeAccents(dir.d_asenta),
+          Estado: Math.round(estado).toString(),
+          Ciudad: ciudad,
+          Atencion: this.removeAccents(user.name + ' ' + user.lastname)
+        };
+        return orderCvaSupplier;
+      case 'ingram':
+        return '';
+    }
+    return '';
+  }
+
+  async sendOrderSupplier(): Promise<any> {
+    // Cuando la consulta externa no requiere token
+    const delivery = new Delivery();
+    const id = await this.deliverysService.next();
+    delivery.id = id;
+    delivery.deliveryId = id;
+    delivery.statusError = false;
+    delivery.messageError = '';
+    delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+    delivery.warehouses = this.warehouses;
+    const ordersCt: OrderCt[] = [];
+    let orderCtResponse: OrderCtResponse = new OrderCtResponse();
+    orderCtResponse.pedidoWeb = 'DARU-' + id;
+    orderCtResponse.fecha = '';
+    orderCtResponse.tipoDeCambio = 0;
+    orderCtResponse.estatus = '';
+    orderCtResponse.errores = [];
+    const ordersCva: OrderCva[] = [];
+    let orderCvaResponse: OrderCvaResponse = new OrderCvaResponse();
+    orderCvaResponse.pedido = 'DARU-' + id;
+    orderCvaResponse.estado = '';
+    orderCvaResponse.total = '';
+    orderCvaResponse.error = '';
+    orderCvaResponse.agentemail = '';
+    orderCvaResponse.almacenmail = '';
+    // Generar modelo de cada proveedor
+    // tslint:disable-next-line: forin
+    for (const idSup in this.suppliers) {
+      const supplier: Supplier = this.suppliers[idSup];
+      // tslint:disable-next-line: forin
+      for (const idWar in this.warehouses) {
+        const warehouse: Warehouse = this.warehouses[idWar];
+        if (supplier.slug === warehouse.suppliersProd.idProveedor) {
+          const order = this.setOrder(supplier, delivery, warehouse);
+          switch (warehouse.suppliersProd.idProveedor) {
+            case 'ct':
+              ordersCt.push(order);
+              break;
+            case 'cva':
+              ordersCva.push(order);
+              break;
+            case 'ingram':
+              break;
+          }
+          const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
+            .then(async (result) => {
+              return await result;
+            });
+          if (orderNew) {
+            switch (warehouse.suppliersProd.idProveedor) {
+              case 'ct':
+                orderCtResponse = orderNew;
+                break;
+              case 'cva':
+                orderCvaResponse = orderNew;
+                break;
+            }
+            delivery.ordersCt = ordersCt;
+            delivery.ordersCva = ordersCva;
+            delivery.orderCtResponse = orderCtResponse;
+            delivery.orderCvaResponse = orderCvaResponse;
+            if (orderCtResponse.errores) {
+              if (orderCtResponse.errores.length > 0) {
+                delivery.statusError = true;
+                delivery.messageError = orderCtResponse.errores[0].errorMessage;
+              }
+            }
+            if (orderCvaResponse.error !== '') {
+              delivery.statusError = true;
+              delivery.messageError = orderCvaResponse.error;
+            }
+            return await delivery;
+          }
+        }
+      }
+    }
+    // TODO::Confirmar Pedido
+    return await delivery;
+  }
+  //#endregion Enviar Ordenes
+
+  //#region Emails  //ICharge
+  sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false): void {
+    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
+    const subject = issue !== '' ? issue : 'Confirmación del pedido';
+    const productos = charge.warehouses[0].productShipments;
+    const productRows = productos.map((producto: any) => `
+        <tr>
+          <td>${producto.name}</td>
+          <td>${producto.cantidad}</td>
+          <td>${producto.precio}</td>
+          <td>${producto.total}</td>
+        </tr>
+      `).join('');
+    const html = message !== '' ? message : `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nota de Compra</title>
+        <style>
+          /* Estilos generales */
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+          h1 {
+            color: #333333;
+            margin-top: 0;
+          }
+          p {
+            color: #666666;
+            line-height: 1.5;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            padding: 10px;
+            border-bottom: 1px solid #dddddd;
+          }
+          th {
+            text-align: left;
+            font-weight: bold;
+          }
+          tfoot td {
+            text-align: right;
+            font-weight: bold;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Nota de Compra</h1>
+          <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
+          <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${productRows}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2"><strong>Total:</strong></td>
+                <td colspan="2">$ ${this.totalPagar}</td>
+              </tr>
+            </tfoot>
+          </table>
+          <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
+          <p>Saludos cordiales,</p>
+          <p>DARU</p>
+          <hr>
+          <hr>
+          <p>
+            Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
+          </p>
+        </div>
+      </body>
+      </html>
+      `;
+    // const subject
     const mail: IMail = {
       to: receiptEmail,
-      subject: 'Confirmacion del pedido',
-      html: `
-        El pedido se ha realizado correctamente.
-        Puedes consultarlo en <a href="${charge.receipt_url}" target="_blank"> esta url</a>
-      `
+      subject,
+      html
     };
-    this.mailService.send(mail).pipe(first()).subscribe();
+    this.mailService.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
+    if (internal) {                                                        // Correos internos
+      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
+      const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
+      let htmlInt = '';
+      if (charge.orderCtResponse) {
+        htmlInt = 'Pedido de CT';
+      }
+      if (charge.orderCvaResponse) {
+        htmlInt = 'Pedido de CVA';
+      }
+      const mailInt: IMail = {
+        to: receiptEmailInt,
+        subject: subjectInt,
+        html: htmlInt
+      };
+      this.mailService.send(mailInt).pipe(first()).subscribe();                      // Envio de correo externo.
+    }
   }
+  //#endregion Emails
+
+  //#region Direccion
+  onSetEstados(event): void {
+    const estado = event.value.split(':', 2);
+    this.estados = [];
+    this.municipios = [];
+    this.selectEstado = new Estado();
+    this.selectMunicipio = new Municipio();
+    this.selectColonia = '';
+    // tslint:disable-next-line: forin
+    for (const idC in this.countrys) {
+      const country: Country = this.countrys[idC];
+      if (country.c_pais === estado[1].split(' ').join('')) {
+        this.estados = country.estados;
+        this.formData.controls.selectEstado.setValue('');
+        this.formData.controls.selectMunicipio.setValue('');
+        this.formData.controls.selectColonia.setValue('');
+        this.formData.controls.directions.setValue('');
+        this.formData.controls.outdoorNumber.setValue('');
+        this.formData.controls.interiorNumber.setValue('');
+      }
+    }
+  }
+
+  onSetMunicipios(event): void {
+    const municipio = event.value.split(':', 2);
+    this.municipios = [];
+    this.colonias = [];
+    this.selectMunicipio = new Municipio();
+    this.selectColonia = '';
+    // tslint:disable-next-line: forin
+    for (const idE in this.estados) {
+      const estado: Estado = this.estados[idE];
+      if (estado.c_estado === municipio[1].split(' ').join('')) {
+        this.municipios = estado.municipios;
+        this.formData.controls.selectMunicipio.setValue('');
+      }
+    }
+  }
+
+  onSetColonias(event): void {
+  }
+  //#endregion Direccion
+
+  //#region Pedidos
+  async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
+    // get supplier
+    const supplier = await this.suppliersService.getSupplierByName(supplierName)
+      .then(async (result) => {
+        return await result;
+      });
+    let apiOrder: Apis = new Apis();
+    // Set Api Para Ordenes
+    if (supplier.slug !== '') {
+      // tslint:disable-next-line: forin
+      for (const idA in supplier.apis) {
+        const api: Apis = supplier.apis[idA];
+        if (api.type === 'order' && api.return === 'order') {
+          apiOrder = api;
+        }
+      }
+      switch (supplier.slug) {
+        case 'cva':
+          if (apiOrder) {
+            const pedidosCva = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
+              .then(async resultPedido => {
+                try {
+                  const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
+                  cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
+                  cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
+                  cvaResponse.error = resultPedido.error._ ? resultPedido.error._ : '';
+                  cvaResponse.estado = resultPedido.estado._ ? resultPedido.estado._ : '';
+                  cvaResponse.pedido = resultPedido.pedido._ ? resultPedido.pedido._ : '0';
+                  cvaResponse.total = resultPedido.total._ ? resultPedido.total._ : '0';
+                  return await cvaResponse;
+                } catch (error) {
+                  throw await error;
+                }
+              });
+            return await pedidosCva;
+          }
+          break;
+        case 'ct':
+          const pedidosCt = await this.externalAuthService.getPedidosAPI(supplier, apiOrder, order)
+            .then(async resultPedido => {
+              try {
+                const ctResponse: OrderCtResponse = new OrderCtResponse();
+                ctResponse.estatus = resultPedido.estatus;
+                ctResponse.fecha = resultPedido.fecha;
+                ctResponse.pedidoWeb = resultPedido.pedidoWeb;
+                ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
+                ctResponse.errores = resultPedido.errores;
+                return await resultPedido;
+              } catch (error) {
+                throw await error;
+              }
+            });
+          return await pedidosCt;
+      }
+    } else {
+      // TODO Realizar el pedido manual.
+    }
+    return await [];
+  }
+  //#endregion
+
+  //#region Catalogos Externos por json
+
+  //#endregion
+
+  //#region Ejemplos
+  // Set Api Para Ordenes
+
+  // const apiOrder = await this.suppliersService.getApiSupplier(supplierName, 'order', 'PedidoWeb')
+  //   .then(async resultApiOrder => {
+  //     // TODO - Solo prueba Listar Pedidos
+  //     if (resultApiOrder.status) {
+  //       return await resultApiOrder.apiSupplier;
+  //     }
+  //   })
+  //   .catch(err => console.error(err));
+
+  // const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
+  //   .then(async resultPedido => {
+  //     try {
+  //       return await resultPedido;
+  //     } catch (error) {
+  //       throw await new Error(error.message);
+  //     }
+  //   });
+
+  //#endregion
 }

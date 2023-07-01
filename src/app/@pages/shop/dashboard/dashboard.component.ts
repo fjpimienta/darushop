@@ -240,12 +240,12 @@ export class DashboardComponent implements OnInit {
     this.formDataAddress.controls.selectMunicipio.setValue('');
   }
 
-  onSetCps(event): void {
+  async onSetCps(event): Promise<void> {
     if (event) {
       const cp = $(event.target).val();
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
-        this.codigopostalsService.getCps(1, -1, cp).subscribe(result => {
+        const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;
           if (this.cps.length > 0) {
             // Agregar Pais, Estados, Municipios del CP
@@ -282,6 +282,7 @@ export class DashboardComponent implements OnInit {
               });
             }
           }
+          return await this.colonias;
         });
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');

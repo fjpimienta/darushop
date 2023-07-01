@@ -1,3 +1,6 @@
+/**
+ * Clase del Catalogo Maestro.
+ */
 export class Catalog {
   id: string;
   description: string;
@@ -9,6 +12,9 @@ export class Catalog {
   };
 }
 
+/**
+ * Clase del envio de datos en el catalogo maestro.
+ */
 export class AddCatalog {
   tipo: string;
   item: Catalog;
@@ -16,6 +22,9 @@ export class AddCatalog {
   suppliersCat: SupplierCat;
 }
 
+/**
+ * Clase de Proveedor del catalogo.
+ */
 export class SupplierCat {
   idProveedor: string;
   name: string;

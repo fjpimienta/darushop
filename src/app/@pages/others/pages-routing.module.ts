@@ -9,6 +9,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { ContactOnePageComponent } from './contact-one/contact-one.component';
 import { ServicesComponent } from './services/services.component';
 import { HowtobuyComponent } from './howtobuy/howtobuy.component';
+import { TermsComponent } from './terms/terms.component';
 
 const routes: Routes = [
   {
@@ -47,6 +48,10 @@ const routes: Routes = [
   {
     path: 'contact',
     component: ContactOnePageComponent
+  },
+  {
+    path: 'terms',
+    component: TermsComponent
   }
 ];
 

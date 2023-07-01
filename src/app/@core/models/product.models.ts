@@ -1,3 +1,6 @@
+/**
+ * Clase de Productos.
+ */
 export class Product {
   id?: number;
   name?: string;
@@ -32,6 +35,9 @@ export class Product {
   promociones: Promociones;
 }
 
+/**
+ * Clase de Categorias.
+ */
 export class Categorys {
   name: string;
   slug: string;

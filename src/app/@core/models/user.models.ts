@@ -1,16 +1,25 @@
-export class UserInput {
+export class UserBasicInput {
   id: string;
   name: string;
   lastname: string;
   email: string;
-  registerdate?: string;
-  role?: string;
   stripeCustomer?: string;
   phone?: string;
   addresses?: AddressInput[];
   policy?: boolean;
 }
 
+/**
+ * Clase de los datos de entrada del usuario.
+ */
+export class UserInput extends UserBasicInput {
+  registerdate?: string;
+  role?: string;
+}
+
+/**
+ * Clase de las direcciones del usuario.
+ */
 export class AddressInput {
   c_pais: string;
   d_pais: string;
@@ -28,4 +37,6 @@ export class AddressInput {
   dir_invoice: boolean;
   dir_delivery: boolean;
   dir_delivery_main: boolean;
+  outdoorNumber: string;
+  interiorNumber: string;
 }

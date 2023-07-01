@@ -1,3 +1,7 @@
+/**
+ * Clase para las sesiones de usuarios.
+ */
+
 export class User {
   id: number;
   username: string;

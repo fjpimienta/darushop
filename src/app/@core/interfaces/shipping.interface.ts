@@ -9,6 +9,8 @@ export interface IShipping {
   phone: string;
   web: string;
   url_base_api: string;
+  url_base_api_order: string;
+  url_base_api_shipments: string;
   token: IToken;
   apis: IApis[];
   active: boolean;
@@ -18,6 +20,7 @@ export interface IToken {
   type: string;
   method: string;
   url_base_token: string;
+  header_parameters?: IBodyParameters[];
   body_parameters: IBodyParameters[];
   response_token: IResponsetoken[];
 }

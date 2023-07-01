@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { ApiService } from 'src/app/@graphql/services/api.service';
 import { map } from 'rxjs/operators';
-import { ADD_SUPPLIER, ADD_SUPPLIER_LIST, BLOCK_SUPPLIER, UPDATE_SUPPLIER } from '@graphql/operations/mutation/suppliers';
-import { SUPPLIERS_LIST_QUERY, SUPPLIER_ID_QUERY } from '@graphql/operations/query/suppliers';
+import { ADD_SUPPLIER, ADD_SUPPLIER_LIST, BLOCK_SUPPLIER, UPDATE_SUPPLIER } from '@graphql/operations/mutation/suppliers/suppliers';
+import { APISUPPLIER_QUERY, SUPPLIERS_LIST_QUERY, SUPPLIER_ID_QUERY, SUPPLIER_NAME_QUERY, SUPPLIER_QUERY } from '@graphql/operations/query/suppliers/suppliers';
 import { ISupplier } from '@core/interfaces/supplier.interface';
 
 @Injectable({
@@ -61,12 +61,32 @@ export class SuppliersService extends ApiService {
       );
   }
 
-  getSuppliers(page: number = 1, itemsPage: number = 10) {
-    return this.get(SUPPLIERS_LIST_QUERY, {
-      itemsPage, page
-    }).pipe(map((result: any) => {
-      return result.suppliers;
-    }));
+  async getSuppliers(page: number = 1, itemsPage: number = 10): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SUPPLIERS_LIST_QUERY, {
+        itemsPage, page
+      }).subscribe(
+        (result: any) => {
+          resolve(result.suppliers);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getSupplierByName(name: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SUPPLIER_NAME_QUERY, {
+        name
+      }).subscribe(
+        (result: any) => {
+          resolve(result.supplierName.supplierName);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 
   next() {
@@ -76,4 +96,19 @@ export class SuppliersService extends ApiService {
       return result.supplierId.supplierId;
     }));
   }
+
+  async getApiSupplier(name: string, typeApi: string, nameApi: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(APISUPPLIER_QUERY, {
+        name, typeApi, nameApi
+      }).subscribe(
+        (result: any) => {
+          resolve(result.apiSupplier);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
 }

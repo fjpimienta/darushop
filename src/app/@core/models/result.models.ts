@@ -1,3 +1,6 @@
+/**
+ * Clase de la respuesta de los servicios.
+ */
 export class Result {
   info: Info;
   status: boolean;
@@ -5,6 +8,9 @@ export class Result {
   data: any;
 }
 
+/**
+ * Clase relacionada con la informacion de paginacion.
+ */
 export class Info {
   page: number;
   pages: number;

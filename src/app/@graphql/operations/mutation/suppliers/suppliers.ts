@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { SUPPLIER_FRAGMENT } from '../fragment/supplier';
+import { SUPPLIER_FRAGMENT } from '../../fragment/suppliers/supplier';
 
 export const ADD_SUPPLIER = gql`
    mutation addSupplier($supplier: CatalogInput!) {

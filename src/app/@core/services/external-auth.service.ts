@@ -5,12 +5,17 @@ import { ILoginCTForm, ILoginSyscomForm } from '@core/interfaces/extern-login.in
 import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
-import axios, { isCancel, AxiosError } from 'axios';
+// import axios, { isCancel, AxiosError } from 'axios';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
+import { ProductShipment, ProductShipmentCVA } from '@core/models/productShipment.models';
+import { ErroresCT, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 
 declare const require;
+const axios = require('axios');
 const xml2js = require('xml2js');
+const he = require('he');
+
 
 @Injectable({
   providedIn: 'root'
@@ -31,38 +36,54 @@ export class ExternalAuthService {
     public http: HttpClient
   ) {
   }
+  // Define requests
+  private hRCvaSucursales$ = this.http.get('assets/uploads/json/cva_sucursales.json');
+  private hRCvaPaqueterias$ = this.http.get('assets/uploads/json/cva_paqueterias.json');
+  private hRCvaCiudades$ = this.http.get('assets/uploads/json/cva_ciudades.json');
 
+  //#region Token
   async getToken(
     supplier: ISupplier,
     tokenJson: boolean = false
   ): Promise<any> {
-    let headers = new HttpHeaders();
-    let params = new HttpParams();
+    const headers = new Headers();
+    const params = new HttpParams();
     switch (supplier.slug) {
       case 'ct':
-        const contentType = tokenJson ? 'application/json' : 'application/x-www-form-urlencoded';
-        headers = new HttpHeaders({
-          'Content-Type': contentType
-        });
-        if (supplier.token.body_parameters.length > 0) {
-          supplier.token.body_parameters.forEach(param => {
-            params = params.set(param.name, param.value);
-          });
-        }
-        return await this.http.post(supplier.token.url_base_token, params, { headers }).toPromise();
+        const optionsCT = {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: 'david.silva@daru.mx',
+            cliente: 'VHA2391',
+            rfc: 'DIN2206222D3'
+          })
+        };
+        return await fetch('http://connect.ctonline.mx:3001/cliente/token', optionsCT)
+          .then(response => response.json())
+          .then(async response => {
+            return await response;
+          })
+          .catch(err => console.error(err));
       case 'cva':
         const tokenBearer = '7ee694a5bae5098487a5a8b9d8392666';
-        return tokenBearer;
+        return await tokenBearer;
       case '99minutos':
         const options = {
           method: 'POST',
-          headers: { accept: 'application/json', 'content-type': 'application/json' },
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-        return fetch('99minutos/api/v3/oauth/token', options)
+        return await fetch('99minutos/api/v3/oauth/token', options)
           .then(response => response.json())
           .then(async response => {
             return await response;
@@ -70,7 +91,9 @@ export class ExternalAuthService {
           .catch(err => console.error(err));
     }
   }
+  //#endregion Token
 
+  //#region Catalogos
   async getSyscomCatalog(supplier: ISupplier, apiSelect: IApis, token: string, search: string = ''): Promise<any> {
     if (apiSelect.parameters) {
       switch (supplier.slug) {
@@ -103,7 +126,7 @@ export class ExternalAuthService {
               headers: {
                 'x-auth': token,
                 Accept: 'application/json',
-                'Content-type': 'application/json'
+                'Content-Type': 'application/json'
               }
             }).toPromise();
         default:
@@ -163,7 +186,7 @@ export class ExternalAuthService {
               headers: {
                 'x-auth': token,
                 Accept: 'application/json',
-                'Content-type': 'application/json'
+                'Content-Type': 'application/json'
               }
             }).toPromise();
         default:
@@ -340,12 +363,23 @@ export class ExternalAuthService {
           // tslint:disable-next-line: no-string-literal
           .then(response => JSON.parse(response['soap:Envelope']['soap:Body']['Obtener_GaleriaDeImagenesResponse']['Obtener_GaleriaDeImagenesResult']))
           .catch(err => new Error(err.message));
+      case 'pedidos':                                                                  // SOAP CVA
+        return await xml2js
+          .parseStringPromise(xml, { explicitArray: false })
+          // tslint:disable-next-line: no-string-literal
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos']['PEDIDOS'])
+          .catch(err => new Error(err.message));
+      case 'pedidos_ws_cva.php':                                                                  // SOAP CVA
+        return await xml2js
+          .parseStringPromise(xml, { explicitArray: false })
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:PedidoWebResponse'])
+          .catch(err => new Error(err.message));
       default:
         break;
     }
   }
 
-  getCatalogSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
+  async getCatalogSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', codigos: string = ''): Promise<any> {
     let soapBody = '';
     switch (apiSelect.operation) {
       case 'Obtener_Marcas':
@@ -363,10 +397,27 @@ export class ExternalAuthService {
       case 'Obtener_GaleriaDeImagenes':
         soapBody = 'Obtener_GaleriaDeImagenes';
         break;
+      case 'pedidos_ws_cva.php':
+        soapBody = 'ListaPedidos';
+        break;
       default:
         break;
     }
-    const body = `<?xml version="1.0" encoding="utf-8"?>
+    let body: string;
+    switch (supplier.slug) {
+      case 'cva':
+        body = `<?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <${soapBody} xmlns="https://www.grupocva.com/pedidos_web/">
+              <Usuario>admin73766</Usuario>
+              <PWD>VCTRNZ1EFOmR</PWD>
+            </${soapBody}>
+          </soap:Body>
+        </soap:Envelope>`;
+        break;
+      case 'exel':
+        body = `<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
           <soap:Body>
             <${soapBody} xmlns="http://ws.exel.com.mx:8181/">
@@ -376,39 +427,46 @@ export class ExternalAuthService {
             </${soapBody}>
           </soap:Body>
         </soap:Envelope>`;
-    const searchParams = new axios.AxiosHeaders();
-    const params = new axios.AxiosHeaders();
-    searchParams.set('Content-Type', 'text/xml');
+        break;
+      default:
+        break;
+    }
+
+    const searchParams = {
+      'Content-Type': 'text/xml'
+    };
+    const params = {};
     if (supplier.token) {
       if (supplier.token.body_parameters.length > 0) {
         supplier.token.body_parameters.forEach(param => {
-          params.set(param.name, param.value);
+          params[param.name] = param.value;
         });
       }
     }
     // Parámetros de url
     if (apiSelect.parameters) {
       apiSelect.parameters.forEach(param => {
-        // params = params.set(param.name, param.value || search);
-        params.set(param.name + '=' + param.value || search);
+        params[param.name] = param.value || search;
       });
     }
 
-    return new Promise((resolve, reject) => {
-      axios.post(supplier.url_base_api,
-        body,
-        {
-          headers: searchParams,
-          params
-        }).then(async response => {
-          const datos = await this.parseXmlToJson(response.data, apiSelect.operation);
-          resolve(datos);
-        }).catch(error => {
-          reject(new Error(error.message));
-        });
-    });
-  }
+    try {
+      const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=ListaPedidos';
 
+      const response = await axios.post(url, body, {
+        headers: searchParams,
+        params
+      });
+      const Content = he.decode(response.data.toString('utf-8'));
+      const datos = await this.parseXmlToJson(Content, apiSelect.operation);
+      return await datos;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  //#endregion Catalogos
+
+  //#region Envios
   async getShipments(supplier: ISupplier, apiSelect: IApis, token: string, warehouse: Warehouse): Promise<any> {
     if (apiSelect.parameters) {
       switch (supplier.slug) {
@@ -424,29 +482,48 @@ export class ExternalAuthService {
           };
           return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
         case 'cva':
-          console.log('supplier', supplier);
-          console.log('apiSelect', apiSelect);
-          console.log('token', token);
-          console.log('warehouse', warehouse);
-          const urlCVA = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
-          const headersCVA = new HttpHeaders({
-            'x-auth': token,
-            'Content-Type': 'application/json'
-          });
+          // TODO Correccion de la peticion.
+          let urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
+          const productShipmentCVA: ProductShipmentCVA[] = [];
+          // tslint:disable-next-line: forin
+          for (const idPS in warehouse.productShipments) {
+            const pS: ProductShipment = warehouse.productShipments[idPS];
+            const newPS: ProductShipmentCVA = new ProductShipmentCVA();
+            newPS.clave = pS.producto;
+            newPS.cantidad = pS.cantidad;
+            productShipmentCVA.push(newPS);
+          }
           const fromObjectCVA = {
             paqueteria: 4,
             cp: warehouse.cp.padStart(5, '0'),
-            colonia: 'Gil y Saenz',
-            cp_sucursal: 44900,
-            productos: warehouse.productShipments
+            cp_sucursal: warehouse.productShipments[0].cp,
+            productos: productShipmentCVA
           };
-          return await this.http.post(urlCVA, JSON.stringify(fromObjectCVA), { headers: headersCVA }).toPromise();
+          const optionsCva = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'Content-Type': 'application/json',
+              authorization: 'Bearer 7ee694a5bae5098487a5a8b9d8392666'
+            },
+            body: JSON.stringify(fromObjectCVA),
+            redirect: 'manual' as RequestRedirect,
+            credentials: 'include' as RequestCredentials
+          };
+          urlCVA = 'api/paqueteria/';
+          return fetch(urlCVA, optionsCva)
+            .then(response => response.json())
+            .then(async response => {
+              return await response.cotizacion;
+            })
+            .catch(err => console.error(err));
+
         case '99minutos':
           const options = {
             method: 'POST',
             headers: {
               accept: 'application/json',
-              'content-type': 'application/json',
+              'Content-Type': 'application/json',
               authorization: 'Bearer ' + token
             },
             body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
@@ -475,10 +552,35 @@ export class ExternalAuthService {
       switch (supplier.slug) {
         case 'exel':
           return await [];
+        case 'cva':
+          token = '7ee694a5bae5098487a5a8b9d8392666';
+          break;
         default:
           return await [];
       }
+      const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+        // tslint:disable-next-line: no-shadowed-variable
+        .then(async result => {
+          try {
+            switch (supplier.slug) {
+              case 'cva':
+                const shipmentCva = new Shipment();
+                shipmentCva.empresa = 'PAQUETEXPRESS';
+                shipmentCva.costo = result.montoTotal;
+                shipmentCva.metodoShipping = '';
+                shipments.push(shipmentCva);
+                return await shipments;
+              default:
+                return await [];
+            }
+          } catch (error) {
+            // TODO Enviar Costos Internos.
+            return await [];
+          }
+        });
+      return await resultados;
     } else {
+      tokenJson = true;
       return await this.getToken(supplier, tokenJson)
         .then(
           async result => {
@@ -487,8 +589,8 @@ export class ExternalAuthService {
                 token = result.token;
                 break;
               case 'cva':
-                console.log('getToken/result: ', result);
-                return result;
+                token = result;
+                break;
               case 'syscom':
                 token = result.access_token;
                 break;
@@ -542,4 +644,200 @@ export class ExternalAuthService {
         );
     }
   }
+  //#endregion
+
+  //#region Pedidos
+  async getPedidosSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', order: any): Promise<any> {
+    let soapBody = '';
+    let soapDetail = '';
+    let soapProducts = '';
+    switch (apiSelect.return) {
+      case 'order':
+        order.productos.forEach(product => {
+          soapProducts += `&lt;productos&gt;
+          &lt;producto&gt;
+            &lt;clave&gt;${product.clave}&lt;/clave&gt;
+            &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
+        &lt;/producto&gt;
+        &lt;/productos&gt;`;
+        });
+        soapDetail = `<XMLOC xsi:type="xsd:string">
+        &lt;PEDIDO&gt;
+        &lt;NumOC&gt;${order.NumOC}&lt;/NumOC&gt;
+        &lt;Paqueteria&gt;${order.Paqueteria}&lt;/Paqueteria&gt;
+        &lt;CodigoSucursal&gt;${order.CodigoSucursal}&lt;/CodigoSucursal&gt;
+        &lt;PedidoBO&gt;${order.PedidoBO}&lt;/PedidoBO&gt;
+        &lt;Observaciones&gt;${order.Observaciones}&lt;/Observaciones&gt;
+        ${soapProducts}
+        &lt;TipoFlete&gt;${order.TipoFlete}&lt;/TipoFlete&gt;
+        &lt;Calle&gt;${order.Calle}&lt;/Calle&gt;
+        &lt;Numero&gt;${order.Numero}&lt;/Numero&gt;
+        &lt;NumeroInt&gt;${order.NumeroInt}&lt;/NumeroInt&gt;
+        &lt;CP&gt;${order.CP}&lt;/CP&gt;
+        &lt;Colonia&gt;${order.Colonia}&lt;/Colonia&gt;
+        &lt;Estado&gt;${order.Estado}&lt;/Estado&gt;
+        &lt;Ciudad&gt;${order.Ciudad}&lt;/Ciudad&gt;
+        &lt;Atencion&gt;${order.Atencion}&lt;/Atencion&gt;
+        &lt;/PEDIDO&gt;
+    </XMLOC>`;
+        soapBody = 'PedidoWeb';
+        break;
+      default:
+        break;
+    }
+    let body: string;
+    switch (supplier.slug) {
+      case 'cva':
+        body = `<?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <${soapBody} xmlns="urn:PedidoWebwsdl#PedidoWeb">
+              <Usuario>admin73766</Usuario>
+              <PWD>VCTRNZ1EFOmR</PWD>
+              ${soapDetail}
+            </${soapBody}>
+          </soap:Body>
+        </soap:Envelope>`;
+        break;
+    }
+    const searchParams = {
+      'Content-Type': 'text/xml'
+    };
+    const params = {};
+    if (supplier.token) {
+      if (supplier.token.body_parameters.length > 0) {
+        supplier.token.body_parameters.forEach(param => {
+          params[param.name] = param.value;
+        });
+      }
+    }
+    // Parámetros de url
+    if (apiSelect.parameters) {
+      apiSelect.parameters.forEach(param => {
+        params[param.name] = param.value || search;
+      });
+    }
+
+    try {
+      const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=PedidoWeb';
+      const response = await axios.post(url, body, {
+        headers: searchParams,
+        params
+      });
+      const Content = he.decode(response.data.toString('utf-8'));
+      const datos = await this.parseXmlToJson(Content, apiSelect.operation);
+      return await datos;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getPedidosAPI(supplier: ISupplier, apiSelect: IApis, order: any): Promise<any> {
+    let token = '';
+    switch (supplier.slug) {
+      case 'ct':
+        return await this.getToken(supplier, false)
+          .then(
+            async result => {
+              switch (supplier.slug) {
+                case 'ct':
+                  token = result.token;
+                  break;
+                case 'syscom':
+                  token = result.access_token;
+                  break;
+                default:
+                  break;
+              }
+              if (token) {
+                const url = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+                try {
+                  const response = await this.http.post(
+                    url,
+                    order,
+                    {
+                      headers: {
+                        'x-auth': token,
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                      }
+                    }).toPromise();
+                  return await response;
+                } catch (error) {
+                  const ctResponse: OrderCtResponse = new OrderCtResponse();
+                  ctResponse.estatus = 'false';
+                  ctResponse.fecha = new Date().toISOString();
+                  ctResponse.pedidoWeb = '';
+                  ctResponse.tipoDeCambio = 0;
+                  ctResponse.errores = [];
+                  const errorCt: ErroresCT = new ErroresCT();
+                  errorCt.errorCode = error.error.errorCode;
+                  errorCt.errorMessage = error.error.errorMessage;
+                  errorCt.errorReference = error.error.errorReference;
+                  ctResponse.errores.push(errorCt);
+                  return await ctResponse;
+                }
+              } else {
+                return await null;
+              }
+            },
+            async error => {
+              return await null;
+            }
+          );
+      default:
+        break;
+    }
+    return await [];
+  }
+  //#endregion Pedidos
+
+  //#region Facturacion
+
+  //#endregion Facturacion
+
+  //#region Catalogos Externos por json
+  async getSucursalesCva(): Promise<any> {
+    const productsCt = await this.getSucursalesCvaJson()
+      .then(async (result) => {
+        return await result;
+      })
+      .catch(async (error: Error) => {
+        return await [];
+      });
+    return productsCt;
+  }
+
+  async getPaqueteriasCva(): Promise<any> {
+    const productsCt = await this.getPaqueteriasCvaJson()
+      .then(async (result) => {
+        return await result;
+      })
+      .catch(async (error: Error) => {
+        return await [];
+      });
+    return productsCt;
+  }
+
+  async getCiudadesCva(): Promise<any> {
+    const productsCt = await this.getCiudadesCvaJson()
+      .then(async (result) => {
+        return await result;
+      })
+      .catch(async (error: Error) => {
+        return await [];
+      });
+    return productsCt;
+  }
+  async getSucursalesCvaJson(): Promise<any> {
+    return await this.hRCvaSucursales$.toPromise();
+  }
+  async getPaqueteriasCvaJson(): Promise<any> {
+    return await this.hRCvaPaqueterias$.toPromise();
+  }
+  async getCiudadesCvaJson(): Promise<any> {
+    return await this.hRCvaCiudades$.toPromise();
+  }
+  //#endregion
+
 }
