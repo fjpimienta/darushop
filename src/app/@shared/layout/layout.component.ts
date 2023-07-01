@@ -60,9 +60,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
         }
       }
     });
-    this.configsService.getConfig('1').subscribe((result) => {
-      this.mensaje = result.message;
-    });
+    this.configsService.getConfig('1')
+      .then((result) => {
+        this.mensaje = result.message;
+      });
   }
 
   ngOnInit(): void {

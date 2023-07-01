@@ -48,10 +48,11 @@ export class HeaderComponent implements OnInit {
     });
     // this.sistema = false;  // Si es usario DARU para acceso al sistema
     // this.userName = 'Nombre del usuario';
-    this.configsService.getConfig('1').subscribe((result) => {
-      this.exchangeRate = result.exchange_rate;
-      this.offer = result.offer;
-    });
+    this.configsService.getConfig('1')
+      .then((result) => {
+        this.exchangeRate = result.exchange_rate;
+        this.offer = result.offer;
+      });
   }
 
   ngOnInit(): void {

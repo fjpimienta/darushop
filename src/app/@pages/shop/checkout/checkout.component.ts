@@ -639,6 +639,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.producto = cartItem.sku;
                         productShipment.cantidad = cartItem.qty;
                         productShipment.precio = cartItem.price;
+                        productShipment.priceSupplier = cartItem.suppliersProd.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
                         productShipment.cp = branchOffice.cp;
@@ -657,6 +658,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.producto = cartItem.sku;
                         productShipment.cantidad = cartItem.qty;
                         productShipment.precio = cartItem.price;
+                        productShipment.priceSupplier = cartItem.suppliersProd.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
                         productShipment.cp = branchOffice.cp;
@@ -892,7 +894,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productCt.cantidad = prod.cantidad;
           productCt.clave = prod.producto;
           productCt.moneda = prod.moneda;
-          productCt.precio = prod.precio;
+          productCt.precio = prod.priceSupplier;
           ProductosCt.push(productCt);
         }
         const orderCtSupplier: OrderCt = {
@@ -1244,12 +1246,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             .then(async resultPedido => {
               try {
                 const ctResponse: OrderCtResponse = new OrderCtResponse();
-                ctResponse.estatus = resultPedido.estatus;
-                ctResponse.fecha = resultPedido.fecha;
-                ctResponse.pedidoWeb = resultPedido.pedidoWeb;
-                ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
-                ctResponse.errores = resultPedido.errores;
-                return await resultPedido;
+                ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
+                ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
+                ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
+                ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
+                ctResponse.errores = resultPedido[0].respuestaCT.errores;
+                return await ctResponse;
               } catch (error) {
                 throw await error;
               }

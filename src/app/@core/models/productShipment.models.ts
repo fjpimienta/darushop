@@ -9,6 +9,7 @@ export class ProductShipmentCVA {
 export class ProductShipment extends ProductShipmentCVA {
   producto: string;
   precio: number;
+  priceSupplier: number;
   moneda: string;
   almacen: string;
   cp: string;
