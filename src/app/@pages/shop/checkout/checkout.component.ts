@@ -639,6 +639,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.producto = cartItem.sku;
                         productShipment.cantidad = cartItem.qty;
                         productShipment.precio = cartItem.price;
+                        productShipment.priceSupplier = cartItem.suppliersProd.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
                         productShipment.cp = branchOffice.cp;
@@ -657,6 +658,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         productShipment.producto = cartItem.sku;
                         productShipment.cantidad = cartItem.qty;
                         productShipment.precio = cartItem.price;
+                        productShipment.priceSupplier = cartItem.suppliersProd.price;
                         productShipment.moneda = cartItem.suppliersProd.moneda;
                         productShipment.almacen = branchOffice.id;
                         productShipment.cp = branchOffice.cp;
@@ -892,7 +894,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productCt.cantidad = prod.cantidad;
           productCt.clave = prod.producto;
           productCt.moneda = prod.moneda;
-          productCt.precio = prod.precio;
+          productCt.precio = prod.priceSupplier;
           ProductosCt.push(productCt);
         }
         const orderCtSupplier: OrderCt = {
