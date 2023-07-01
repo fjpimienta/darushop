@@ -9,7 +9,6 @@ import { WishlistService } from '@core/services/wishlist.service';
 import { CompareService } from '@core/services/compare.service';
 
 import { environment } from 'src/environments/environment';
-import { CurrencyConversionService } from '@core/services/currency-conversion.service';
 
 @Component({
   selector: 'app-product-eleven',
@@ -20,7 +19,6 @@ import { CurrencyConversionService } from '@core/services/currency-conversion.se
 export class ProductElevenComponent implements OnInit {
 
   @Input() product: Product;
-  productTmp: Product;
 
   maxPrice = 0;
   minPrice = 99999;
@@ -32,52 +30,28 @@ export class ProductElevenComponent implements OnInit {
     private modalService: ModalService,
     private cartService: CartService,
     private wishlistService: WishlistService,
-    private compareService: CompareService,
-    private currencyConversionService: CurrencyConversionService
+    private compareService: CompareService
   ) { }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     let min = this.minPrice;
     let max = this.maxPrice;
-    if (this.product.suppliersProd.moneda === 'USD') {
-      this.productTmp = this.product;
-      try {
-        const convertedPrice = await this.product.price;
-        this.productTmp.price = convertedPrice;
-        for (const item of this.product.variants) {
-          const convertedItemPrice = await item.price;
-          if (min > convertedItemPrice) { min = convertedItemPrice; }
-          if (max < convertedItemPrice) { max = convertedItemPrice; }
-        }
-        if (this.product.variants.length === 0) {
-          const convertedSalePrice = this.product.sale_price
-            ? await this.currencyConversionService.convertPrice(this.product.sale_price)
-            : await this.currencyConversionService.convertPrice(this.product.price);
-          min = convertedSalePrice;
-          max = await this.currencyConversionService.convertPrice(this.product.price);
-        }
-        this.minPrice = min;
-        this.maxPrice = max;
-      } catch (error) {
-        // Manejar el error si es necesario
-      }
-    } else {
-      for (const item of this.product.variants) {
-        if (min > item.price) { min = item.price; }
-        if (max < item.price) { max = item.price; }
-      }
 
-      if (this.product.variants.length === 0) {
-        min = this.product.sale_price
-          ? this.product.sale_price
-          : this.product.price;
-        max = this.product.price;
-      }
-      this.minPrice = min;
-      this.maxPrice = max;
+    this.product.variants.map(item => {
+      if (min > item.price) { min = item.price; }
+      if (max < item.price) { max = item.price; }
+    }, []);
+
+    if (this.product.variants.length === 0) {
+      min = this.product.sale_price
+        ? this.product.sale_price
+        : this.product.price;
+      max = this.product.price;
     }
-  }
 
+    this.minPrice = min;
+    this.maxPrice = max;
+  }
 
   addToCart(event: Event): void {
     event.preventDefault();
