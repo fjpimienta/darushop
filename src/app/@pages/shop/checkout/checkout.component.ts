@@ -990,9 +990,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           const order = this.setOrder(supplier, delivery, warehouse);
           switch (warehouse.suppliersProd.idProveedor) {
             case 'ct':
+              order.pedido = 'DARU-' + id;
               ordersCt.push(order);
               break;
             case 'cva':
+              order.NumOC = 'DARU-' + id;
               ordersCva.push(order);
               break;
             case 'ingram':
