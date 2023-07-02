@@ -576,7 +576,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.warehouse = new Warehouse();
     this.warehouse.shipments = [];
     const shipmentsEnd = [];
-
     // Verificar productos por proveedor.
     let i = 0;
     const suppliers = await this.suppliersService.getSuppliers()          // Recuperar la lista de Proveedores
@@ -602,10 +601,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           });
         if (apiShipment) {                                                          // Si hay Api para el Proveedor.
           // Agrupar Productos Por Proveedor
-          // ==> TODO
-          if (supplier.slug === this.cartItems[0].suppliersProd.idProveedor) {
-            for (const idCI of Object.keys(this.cartItems)) {          // Revisar productos en el carrito
-              const cartItem: CartItem = this.cartItems[idCI];
+          const arreglo = this.cartItems;
+          const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+          if (carItemsSupplier.length > 0) {                                        // Si el proveedor tiene productos en el carrito
+            for (const idCI of Object.keys(carItemsSupplier)) {                     // Revisar productos en el carrito
+              const cartItem: CartItem = carItemsSupplier[idCI];
               if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
                 for (const idB of Object.keys(cartItem.suppliersProd.branchOffices)) {
                   const branchOffice: BranchOffices = cartItem.suppliersProd.branchOffices[idB];
@@ -653,11 +653,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     }
                   }
                 }
-                if (productsEstado.length === this.cartItems.length) {
+                if (productsEstado.length === carItemsSupplier.length) {
                   i += 1;
                   this.warehouse = warehouseEstado;
                   this.warehouse.productShipments = productsEstado;
-                } else if (productsCapital.length === this.cartItems.length) {
+                } else if (productsCapital.length === carItemsSupplier.length) {
                   i += 1;
                   this.warehouse = warehouseCapital;
                   this.warehouse.productShipments = productsCapital;
@@ -671,9 +671,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             }
             // Cotizar envio
             this.warehouse.cp = cpDestino;
-            if (productsEstado.length === this.cartItems.length) {                  // Si hay disponibilidad en estado
+            if (productsEstado.length === carItemsSupplier.length) {                  // Si hay disponibilidad en estado
               this.warehouse.productShipments = productsEstado;
-            } else if (productsCapital.length <= this.cartItems.length) {           // Si hay disponibilidad en capital
+            } else if (productsCapital.length <= carItemsSupplier.length) {           // Si hay disponibilidad en capital
               this.warehouse.productShipments = productsCapital;
             }
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(
@@ -703,6 +703,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     }
+    console.log('this.warehouses: ', this.warehouses);
     return await shipmentsEnd;
     // Elaborar Pedido Previo a facturacion.
   }
