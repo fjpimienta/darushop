@@ -568,16 +568,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * @returns Datos de la(s) paqueteria(s) del proveedor
    */
   async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<any> {
-    // Inicializar Arreglo de Envios.
-    this.sucursalesCVA = await this.externalAuthService.getSucursalesCva().then(result => {
-      return result;
-    });
-    this.paqueteriasCVA = await this.externalAuthService.getPaqueteriasCva().then(result => {
-      return result;
-    });
-    this.ciudadesCVA = await this.externalAuthService.getCiudadesCva().then(result => {
-      return result;
-    });
     const capitalCpCT = '2700';
     const capitalCpCva = '06820';
     // const capitalCpIng = '';
@@ -852,21 +842,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Cobros
 
   //#region Enviar Ordenes
-  setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): any {
+  async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
     switch (supplier.slug) {
       case 'ct':
         const enviosCt: EnvioCt[] = [];
         const envioCt: EnvioCt = new EnvioCt();
-        envioCt.nombre = this.removeAccents(user.name + ' ' + user.lastname);
-        envioCt.direccion = this.removeAccents(dir.directions);
-        envioCt.entreCalles = this.removeAccents(dir.references);
-        envioCt.colonia = this.removeAccents(dir.d_asenta);
-        envioCt.estado = this.removeAccents(dir.d_estado);
-        envioCt.ciudad = this.removeAccents(dir.d_mnpio);
-        envioCt.noExterior = this.removeAccents(dir.outdoorNumber);
-        envioCt.noInterior = this.removeAccents(dir.interiorNumber);
+        envioCt.nombre = user.name + ' ' + user.lastname;
+        envioCt.direccion = dir.directions;
+        envioCt.entreCalles = dir.references;
+        envioCt.colonia = dir.d_asenta;
+        envioCt.estado = dir.d_estado;
+        envioCt.ciudad = dir.d_mnpio;
+        envioCt.noExterior = dir.outdoorNumber;
+        envioCt.noInterior = dir.interiorNumber;
         envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCt.telefono = dir.phone;
         enviosCt.push(envioCt);
@@ -891,14 +881,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       case 'cva':
         const enviosCva: EnvioCVA[] = [];
         const envioCva: EnvioCVA = new EnvioCVA();
-        envioCva.nombre = this.removeAccents(user.name + ' ' + user.lastname);
-        envioCva.direccion = this.removeAccents(dir.directions);
-        envioCva.entreCalles = this.removeAccents(dir.references);
-        envioCva.colonia = this.removeAccents(dir.d_asenta);
-        envioCva.estado = this.removeAccents(dir.d_estado);
-        envioCva.ciudad = this.removeAccents(dir.d_mnpio);
-        envioCva.noExterior = this.removeAccents(dir.outdoorNumber);
-        envioCva.noInterior = this.removeAccents(dir.interiorNumber);
+        envioCva.nombre = user.name + ' ' + user.lastname;
+        envioCva.direccion = dir.directions;
+        envioCva.entreCalles = dir.references;
+        envioCva.colonia = dir.d_asenta;
+        envioCva.estado = dir.d_estado;
+        envioCva.ciudad = dir.d_mnpio;
+        envioCva.noExterior = dir.outdoorNumber;
+        envioCva.noInterior = dir.interiorNumber;
         envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
@@ -910,8 +900,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productCva.cantidad = prod.cantidad;
           ProductosCva.push(productCva);
         }
-        const estado = this.ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
-        const ciudad = this.ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
+        const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
+        const estado = ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
+        const ciudad = ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
         const orderCvaSupplier: OrderCva = {
           NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
           Paqueteria: '4',
@@ -967,7 +958,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const idWar of Object.keys(this.warehouses)) {
         const warehouse: Warehouse = this.warehouses[idWar];
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
-          const order = this.setOrder(supplier, delivery, warehouse, id);
+          const order = await this.setOrder(supplier, delivery, warehouse, id);
           switch (warehouse.suppliersProd.idProveedor) {
             case 'ct':
               order.pedido = 'DARU-' + id.toString().padStart(6, '0');
@@ -1248,26 +1239,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#endregion
 
-  //#region Ejemplos
-  // Set Api Para Ordenes
-
-  // const apiOrder = await this.suppliersService.getApiSupplier(supplierName, 'order', 'PedidoWeb')
-  //   .then(async resultApiOrder => {
-  //     // TODO - Solo prueba Listar Pedidos
-  //     if (resultApiOrder.status) {
-  //       return await resultApiOrder.apiSupplier;
-  //     }
-  //   })
-  //   .catch(err => console.error(err));
-
-  // const pedidos = await this.externalAuthService.getCatalogSOAP(supplier, apiOrder, '')
-  //   .then(async resultPedido => {
-  //     try {
-  //       return await resultPedido;
-  //     } catch (error) {
-  //       throw await new Error(error.message);
-  //     }
-  //   });
-
+  //#region Catalogos Generales
   //#endregion
 }
