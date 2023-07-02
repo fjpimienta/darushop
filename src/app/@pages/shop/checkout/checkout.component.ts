@@ -732,7 +732,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const shipmentsExt = await this.shippingsService.getShippings()
         .then(async result => {
           if (result.status && result.shippings.length > 0) {
-            for (const supId of result.shippings) {
+            for (const supId of Object.keys(result.shippings)) {
               let shipping = new Supplier();
               shipping = result.shippings[supId];
               const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
@@ -740,7 +740,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 shipping, apiSelectShip, this.warehouse, false)
                 .then(async (resultShipment) => {
                   const shipments: Shipment[] = [];
-                  for (const key of resultShipment) {
+                  for (const key of Object.keys(resultShipment)) {
                     const shipment = new Shipment();
                     shipment.empresa = resultShipment[key].empresa.toUpperCase();
                     shipment.costo = resultShipment[key].costo;

@@ -492,7 +492,22 @@ export class ExternalAuthService {
             destino: warehouse.cp.padStart(5, '0'),
             productos: productosCT
           };
-          return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
+          try {
+            return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
+          } catch (error) {
+            const ctResponse: OrderCtResponse = new OrderCtResponse();
+            ctResponse.estatus = 'false';
+            ctResponse.fecha = new Date().toISOString();
+            ctResponse.pedidoWeb = '';
+            ctResponse.tipoDeCambio = 0;
+            ctResponse.errores = [];
+            const errorCt: ErroresCT = new ErroresCT();
+            errorCt.errorCode = error.error.codigo;
+            errorCt.errorMessage = error.error.mensaje;
+            errorCt.errorReference = error.error.referencia;
+            ctResponse.errores.push(errorCt);
+            return await ctResponse;
+          }
         case 'cva':
           // TODO Correccion de la peticion.
           let urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
