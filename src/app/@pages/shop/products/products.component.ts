@@ -52,7 +52,7 @@ export class ProductsComponent implements OnInit {
 
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
-      this.offer = true;
+      this.offer = false;
 
       if (params.description) {
         this.pageTitle = params.description;
