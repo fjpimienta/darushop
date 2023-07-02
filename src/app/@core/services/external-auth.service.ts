@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 // import axios, { isCancel, AxiosError } from 'axios';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
-import { ProductShipment, ProductShipmentCVA } from '@core/models/productShipment.models';
+import { ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 
 declare const require;
@@ -476,9 +476,21 @@ export class ExternalAuthService {
             'x-auth': token,
             'Content-Type': 'application/json'
           });
+          // Solo enviar el formato de productos para cotizar.
+          const productosCT: ProductShipmentCT[] = [];
+          for (const id of Object.keys(warehouse.productShipments)) {
+            const pS: ProductShipment = warehouse.productShipments[id];
+            const newPS: ProductShipmentCT = new ProductShipmentCT();
+            newPS.producto = pS.producto;
+            newPS.cantidad = pS.cantidad;
+            newPS.precio = pS.priceSupplier;
+            newPS.moneda = pS.moneda;
+            newPS.almacen = pS.almacen;
+            productosCT.push(newPS);
+          }
           const fromObjectCT = {
             destino: warehouse.cp.padStart(5, '0'),
-            productos: warehouse.productShipments
+            productos: productosCT
           };
           return await this.http.post(urlCT, JSON.stringify(fromObjectCT), { headers: headersCT }).toPromise();
         case 'cva':
