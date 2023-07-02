@@ -852,7 +852,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Cobros
 
   //#region Enviar Ordenes
-  setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse): any {
+  setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): any {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
     switch (supplier.slug) {
@@ -881,7 +881,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           ProductosCt.push(productCt);
         }
         const orderCtSupplier: OrderCt = {
-          idPedido: 1,
+          idPedido: pedido,
           almacen: warehouse.productShipments[0].almacen,
           tipoPago: '04',
           envio: enviosCt,
@@ -913,7 +913,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const estado = this.ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
         const ciudad = this.ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
         const orderCvaSupplier: OrderCva = {
-          NumOC: '1',
+          NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
           Paqueteria: '4',
           CodigoSucursal: warehouse.productShipments[0].almacen,
           PedidoBO: 'N',
@@ -967,7 +967,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const idWar of Object.keys(this.warehouses)) {
         const warehouse: Warehouse = this.warehouses[idWar];
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
-          const order = this.setOrder(supplier, delivery, warehouse);
+          const order = this.setOrder(supplier, delivery, warehouse, id);
           switch (warehouse.suppliersProd.idProveedor) {
             case 'ct':
               order.pedido = 'DARU-' + id.toString().padStart(6, '0');
