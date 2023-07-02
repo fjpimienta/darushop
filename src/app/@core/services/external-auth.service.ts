@@ -485,8 +485,7 @@ export class ExternalAuthService {
           // TODO Correccion de la peticion.
           let urlCVA = supplier.url_base_api_shipments + apiSelect.operation + '/';
           const productShipmentCVA: ProductShipmentCVA[] = [];
-          // tslint:disable-next-line: forin
-          for (const idPS in warehouse.productShipments) {
+          for (const idPS of Object.keys(warehouse.productShipments)) {
             const pS: ProductShipment = warehouse.productShipments[idPS];
             const newPS: ProductShipmentCVA = new ProductShipmentCVA();
             newPS.clave = pS.producto;

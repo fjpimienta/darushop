@@ -315,8 +315,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             // tslint:disable-next-line: no-shadowed-variable
             .subscribe((result) => {
               this.countrys = result;
-              // tslint:disable-next-line: forin
-              for (const idU in this.session.user?.addresses) {
+              for (const idU of Object.keys(this.session.user?.addresses)) {
                 const direction: IAddress = this.session.user?.addresses[idU];
                 if (direction.dir_delivery_main === true) {
                   this.formData.controls.codigoPostal.setValue(direction.d_codigo);
@@ -326,24 +325,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.formData.controls.interiorNumber.setValue(direction.interiorNumber);
                   this.formData.controls.references.setValue(direction.references);
                   if (this.countrys.length > 0) {
-                    // tslint:disable-next-line: forin
-                    for (const idC in this.countrys) {
+                    for (const idC of Object.keys(this.countrys)) {
                       const country: Country = this.countrys[idC];
                       if (country.c_pais === direction.c_pais) {
                         this.estados = country.estados;
                         this.formData.controls.selectCountry.setValue(direction.c_pais);
                         this.selectCountry.c_pais = direction.c_pais;
                         this.selectCountry.d_pais = direction.d_pais;
-                        // tslint:disable-next-line: forin
-                        for (const idE in country.estados) {
+                        for (const idE of Object.keys(country.estados)) {
                           const estado: Estado = country.estados[idE];
                           if (estado.c_estado === direction.c_estado) {
                             this.municipios = estado.municipios;
                             this.formData.controls.selectEstado.setValue(direction.c_estado);
                             this.selectEstado.c_estado = direction.c_estado;
                             this.selectEstado.d_estado = direction.d_estado;
-                            // tslint:disable-next-line: forin
-                            for (const idM in estado.municipios) {
+                            for (const idM of Object.keys(estado.municipios)) {
                               const municipio: Municipio = estado.municipios[idM];
                               if (municipio.c_mnpio === direction.c_mnpio) {
                                 this.formData.controls.selectMunicipio.setValue(direction.c_mnpio);
@@ -357,8 +353,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     }
                     // Agregar las colonias del CP
                     this.colonias = [];
-                    // tslint:disable-next-line: forin
-                    for (const idCp in this.cps) {
+                    for (const idCp of Object.keys(this.cps)) {
                       const codigo: Codigopostal = this.cps[idCp];
                       if (codigo.d_asenta) {
                         this.colonias.push(codigo.d_asenta);
@@ -496,24 +491,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (this.cps.length > 0) {
             // Agregar Pais, Estados, Municipios del CP
             if (this.countrys.length > 0) {
-              // tslint:disable-next-line: forin
-              for (const idC in this.countrys) {
+              for (const idC of Object.keys(this.countrys)) {
                 const country: Country = this.countrys[idC];
                 if (country.c_pais === this.cps[0].c_pais) {
                   this.estados = country.estados;
                   this.formData.controls.selectCountry.setValue(country.c_pais);
                   this.selectCountry.c_pais = country.c_pais;
                   this.selectCountry.d_pais = country.d_pais;
-                  // tslint:disable-next-line: forin
-                  for (const idE in country.estados) {
+                  for (const idE of Object.keys(country.estados)) {
                     const estado: Estado = country.estados[idE];
                     if (estado.c_estado === this.cps[0].c_estado) {
                       this.municipios = estado.municipios;
                       this.formData.controls.selectEstado.setValue(estado.c_estado);
                       this.selectEstado.c_estado = estado.c_estado;
                       this.selectEstado.d_estado = estado.d_estado;
-                      // tslint:disable-next-line: forin
-                      for (const idM in estado.municipios) {
+                      for (const idM of Object.keys(estado.municipios)) {
                         const municipio: Municipio = estado.municipios[idM];
                         if (municipio.c_mnpio === this.cps[0].c_mnpio) {
                           this.formData.controls.selectMunicipio.setValue(municipio.c_mnpio);
@@ -527,8 +519,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Agregar las colonias del CP
               this.colonias = [];
-              // tslint:disable-next-line: forin
-              for (const idCp in this.cps) {
+              for (const idCp of Object.keys(this.cps)) {
                 const codigo: Codigopostal = this.cps[idCp];
                 if (codigo.d_asenta) {
                   this.colonias.push(codigo.d_asenta);
@@ -604,8 +595,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       });
     this.suppliers = suppliers;
     if (suppliers.length > 0) {
-      // tslint:disable-next-line: forin
-      for (const supId in suppliers) {
+      for (const supId of Object.keys(suppliers)) {
         let supplier = new Supplier();
         supplier = suppliers[supId];
         const supplierProd = new SupplierProd();                          // Revisar proveedors con apis
@@ -624,12 +614,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           // Agrupar Productos Por Proveedor
           // ==> TODO
           if (supplier.slug === this.cartItems[0].suppliersProd.idProveedor) {
-            // tslint:disable-next-line: forin
-            for (const idCI in this.cartItems) {          // Revisar productos en el carrito
+            for (const idCI of Object.keys(this.cartItems)) {          // Revisar productos en el carrito
               const cartItem: CartItem = this.cartItems[idCI];
               if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
-                // tslint:disable-next-line: forin
-                for (const idB in cartItem.suppliersProd.branchOffices) {
+                for (const idB of Object.keys(cartItem.suppliersProd.branchOffices)) {
                   const branchOffice: BranchOffices = cartItem.suppliersProd.branchOffices[idB];
                   if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
                     || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
@@ -702,8 +690,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {
                 const shipments: Shipment[] = [];
-                // tslint:disable-next-line: forin
-                for (const key in resultShip) {
+                for (const key of Object.keys(resultShip)) {
                   const shipment = new Shipment();
                   shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
                   if (supplier.slug === 'ct') {
@@ -717,8 +704,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
                 return await shipments;
               });
-            // tslint:disable-next-line: forin
-            for (const shipId in shipmentsCost) {
+            for (const shipId of Object.keys(shipmentsCost)) {
               shipmentsEnd.push(shipmentsCost[shipId]);
             }
             this.warehouse.shipments = shipmentsEnd;
@@ -756,7 +742,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const shipmentsExt = await this.shippingsService.getShippings()
         .then(async result => {
           if (result.status && result.shippings.length > 0) {
-            for (const supId in result.shippings) {
+            for (const supId of result.shippings) {
               let shipping = new Supplier();
               shipping = result.shippings[supId];
               const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
@@ -764,8 +750,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 shipping, apiSelectShip, this.warehouse, false)
                 .then(async (resultShipment) => {
                   const shipments: Shipment[] = [];
-                  // tslint:disable-next-line: forin
-                  for (const key in resultShipment) {
+                  for (const key of resultShipment) {
                     const shipment = new Shipment();
                     shipment.empresa = resultShipment[key].empresa.toUpperCase();
                     shipment.costo = resultShipment[key].costo;
@@ -775,8 +760,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   return await shipments;
                 }
                 );
-              // tslint:disable-next-line: forin
-              for (const shipId in shippingsEstimate) {
+              for (const shipId of Object.keys(shippingsEstimate)) {
                 shipmentsEnd.push(shippingsEstimate[shipId]);
               }
             }
@@ -887,8 +871,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCt.telefono = dir.phone;
         enviosCt.push(envioCt);
         const ProductosCt: ProductoCt[] = [];
-        // tslint:disable-next-line: forin
-        for (const idPS in warehouse.productShipments) {
+        for (const idPS of Object.keys(warehouse.productShipments)) {
           const prod: ProductShipment = warehouse.productShipments[idPS];
           const productCt: ProductoCt = new ProductoCt();
           productCt.cantidad = prod.cantidad;
@@ -920,8 +903,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
         const ProductosCva: ProductoCva[] = [];
-        // tslint:disable-next-line: forin
-        for (const idPS in warehouse.productShipments) {
+        for (const idPS of Object.keys(warehouse.productShipments)) {
           const prod: ProductShipment = warehouse.productShipments[idPS];
           const productCva: ProductoCva = new ProductoCva();
           productCva.clave = prod.producto;
@@ -980,21 +962,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCvaResponse.agentemail = '';
     orderCvaResponse.almacenmail = '';
     // Generar modelo de cada proveedor
-    // tslint:disable-next-line: forin
-    for (const idSup in this.suppliers) {
+    for (const idSup of Object.keys(this.suppliers)) {
       const supplier: Supplier = this.suppliers[idSup];
-      // tslint:disable-next-line: forin
-      for (const idWar in this.warehouses) {
+      for (const idWar of Object.keys(this.warehouses)) {
         const warehouse: Warehouse = this.warehouses[idWar];
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
           const order = this.setOrder(supplier, delivery, warehouse);
           switch (warehouse.suppliersProd.idProveedor) {
             case 'ct':
-              order.pedido = 'DARU-' + id;
+              order.pedido = 'DARU-' + id.toString().padStart(6, '0');
               ordersCt.push(order);
               break;
             case 'cva':
-              order.NumOC = 'DARU-' + id;
+              order.NumOC = 'DARU-' + id.toString().padStart(6, '0');
               ordersCva.push(order);
               break;
             case 'ingram':
@@ -1170,8 +1150,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.selectEstado = new Estado();
     this.selectMunicipio = new Municipio();
     this.selectColonia = '';
-    // tslint:disable-next-line: forin
-    for (const idC in this.countrys) {
+    for (const idC of Object.keys(this.countrys)) {
       const country: Country = this.countrys[idC];
       if (country.c_pais === estado[1].split(' ').join('')) {
         this.estados = country.estados;
@@ -1191,8 +1170,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.colonias = [];
     this.selectMunicipio = new Municipio();
     this.selectColonia = '';
-    // tslint:disable-next-line: forin
-    for (const idE in this.estados) {
+    for (const idE of Object.keys(this.estados)) {
       const estado: Estado = this.estados[idE];
       if (estado.c_estado === municipio[1].split(' ').join('')) {
         this.municipios = estado.municipios;
@@ -1215,8 +1193,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     let apiOrder: Apis = new Apis();
     // Set Api Para Ordenes
     if (supplier.slug !== '') {
-      // tslint:disable-next-line: forin
-      for (const idA in supplier.apis) {
+      for (const idA of Object.keys(supplier.apis)) {
         const api: Apis = supplier.apis[idA];
         if (api.type === 'order' && api.return === 'order') {
           apiOrder = api;
