@@ -597,16 +597,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * @returns Datos de la(s) paqueteria(s) del proveedor
    */
   async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<any> {
-    const capitalCpCT = '2700';
-    const capitalCpCva = '06820';
-    // const capitalCpIng = '';
     this.shipments = [];
     this.warehouses = [];
     this.warehouse = new Warehouse();
     this.warehouse.shipments = [];
     const shipmentsEnd = [];
     // Verificar productos por proveedor.
-    let i = 0;
     const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
       .then(async result => {
         return await result.suppliers;
@@ -616,11 +612,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const supId of Object.keys(suppliers)) {
         let supplier = new Supplier();
         supplier = suppliers[supId];
-        const supplierProd = new SupplierProd();                                    // Revisar proveedores con apis
-        const warehouseEstado = new Warehouse();
-        const warehouseCapital = new Warehouse();
-        const productsEstado: ProductShipment[] = [];
-        const productsCapital: ProductShipment[] = [];
+        const warehouseNacional = new Warehouse();
         const productsNacional: ProductShipment[] = [];
         const apiShipment = await this.suppliersService                             // Set Api para Envios
           .getApiSupplier(supplier.slug, 'envios', 'paqueterias')
@@ -643,77 +635,32 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const branchSupplier = this.findCommonBranchOffice(carItemsSupplier);
             console.log('almacen que contiene todos los productos: ', branchSupplier);
             // END
-            for (const idCI of Object.keys(carItemsSupplier)) {                     // Revisar productos en el carrito
+
+            for (const idCI of Object.keys(carItemsSupplier)) {
               const cartItem: CartItem = carItemsSupplier[idCI];
-              // console.log('cartItem.suppliersProd.branchOffices: ', cartItem.suppliersProd.branchOffices);
-              for (const idB of Object.keys(cartItem.suppliersProd.branchOffices)) {  // Revisar disponibilidad en sucursales d proveedor
-                const branchOffice: BranchOffices = cartItem.suppliersProd.branchOffices[idB];
-                if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
-                  || capitalCpCva === branchOffice.cp) {                            // Almacenes estado|capital
-                  if (branchOffice.cantidad >= cartItem.qty) {                      // Revisar disponibilidad
-                    if (estadoCp === branchOffice.estado) {                         // Verificar Existencias en su Estado
-                      const productShipment = new ProductShipment();
-                      productShipment.producto = cartItem.sku;
-                      productShipment.cantidad = cartItem.qty;
-                      productShipment.precio = cartItem.price;
-                      productShipment.priceSupplier = cartItem.suppliersProd.price;
-                      productShipment.moneda = cartItem.suppliersProd.moneda;
-                      productShipment.almacen = branchOffice.id;
-                      productShipment.cp = branchOffice.cp;
-                      productShipment.name = cartItem.name;
-                      productShipment.total = cartItem.qty * cartItem.price;
-                      productsEstado.push(productShipment);
-                      warehouseEstado.id = branchOffice.id;
-                      warehouseEstado.cp = branchOffice.cp;
-                      warehouseEstado.name = branchOffice.name;
-                      warehouseEstado.estado = branchOffice.estado;
-                      warehouseEstado.latitud = branchOffice.latitud;
-                      warehouseEstado.longitud = branchOffice.longitud;
-                    }
-                    if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
-                      const productShipment = new ProductShipment();
-                      productShipment.producto = cartItem.sku;
-                      productShipment.cantidad = cartItem.qty;
-                      productShipment.precio = cartItem.price;
-                      productShipment.priceSupplier = cartItem.suppliersProd.price;
-                      productShipment.moneda = cartItem.suppliersProd.moneda;
-                      productShipment.almacen = branchOffice.id;
-                      productShipment.cp = branchOffice.cp;
-                      productShipment.name = cartItem.name;
-                      productShipment.total = cartItem.qty * cartItem.price;
-                      productsCapital.push(productShipment);
-                      warehouseCapital.id = branchOffice.id;
-                      warehouseCapital.cp = branchOffice.cp;
-                      warehouseCapital.name = branchOffice.name;
-                      warehouseCapital.estado = branchOffice.estado;
-                      warehouseCapital.latitud = branchOffice.latitud;
-                      warehouseCapital.longitud = branchOffice.longitud;
-                    }
-                  }
-                }
-              }
-              if (productsEstado.length === carItemsSupplier.length) {
-                i += 1;
-                this.warehouse = warehouseEstado;
-                this.warehouse.productShipments = productsEstado;
-              } else if (productsCapital.length === carItemsSupplier.length) {
-                i += 1;
-                this.warehouse = warehouseCapital;
-                this.warehouse.productShipments = productsCapital;
-              }
-              supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
-              supplierProd.codigo = cartItem.suppliersProd.codigo;
-              supplierProd.price = cartItem.suppliersProd.price;
-              supplierProd.moneda = cartItem.suppliersProd.moneda;
-              this.warehouse.suppliersProd = supplierProd;
+              const productShipment = new ProductShipment();
+              productShipment.producto = cartItem.sku;
+              productShipment.cantidad = cartItem.qty;
+              productShipment.precio = cartItem.price;
+              productShipment.priceSupplier = cartItem.suppliersProd.price;
+              productShipment.moneda = cartItem.suppliersProd.moneda;
+              productShipment.almacen = branchSupplier.id;
+              productShipment.cp = branchSupplier.cp;
+              productShipment.name = cartItem.name;
+              productShipment.total = cartItem.qty * cartItem.price;
+              productsNacional.push(productShipment);
+              warehouseNacional.id = branchSupplier.id;
+              warehouseNacional.cp = branchSupplier.cp;
+              warehouseNacional.name = branchSupplier.name;
+              warehouseNacional.estado = branchSupplier.estado;
+              warehouseNacional.latitud = branchSupplier.latitud;
+              warehouseNacional.longitud = branchSupplier.longitud;
+              this.warehouse = warehouseNacional;
+              this.warehouse.productShipments = productsNacional;
             }
-            // Cotizar envio
             this.warehouse.cp = cpDestino;
-            if (productsEstado.length === carItemsSupplier.length) {                  // Si hay disponibilidad en estado
-              this.warehouse.productShipments = productsEstado;
-            } else if (productsCapital.length <= carItemsSupplier.length) {           // Si hay disponibilidad en capital
-              this.warehouse.productShipments = productsCapital;
-            }
+            this.warehouse.productShipments = productsNacional;
+            console.log('this.warehouse: ', this.warehouse);
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(
               supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {
@@ -754,9 +701,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    */
   async onCotizarEnviosExternos(cpDestino: string, estadoCp: string): Promise<any> {
     // Inicializar Arreglo de Envios.
-    const capitalCpCT = '2700';
-    const capitalCpCva = '06820';
-    // const capitalCpIng = '';
     this.shipments = [];
     this.warehouse = new Warehouse();
     this.warehouse.shipments = [];
