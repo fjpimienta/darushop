@@ -98,6 +98,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   key = environment.stripePublicKey;
   token: string;
   totalPagar: string;
+  totalEnvios: string;
   resultCustomer: IResultStripeCustomer;
 
   myCurrency = CURRENCIES_SYMBOL[CURRENCY_LIST.MEXICAN_PESO];
@@ -427,9 +428,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
           }
-        } else if (this.existePaqueteria) {
-          this.isSubmitting = false;
-          return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
+          // } else if (this.existePaqueteria) {
+          //   this.isSubmitting = false;
+          //   return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
         } else {
           this.isSubmitting = false;
           return await infoEventAlert('Se requiere definir una Paqueteria para el Env&iacute;o.', '');
@@ -549,9 +550,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (cotizacionEnvios.length <= 0) {
       const externos = await this.onCotizarEnviosExternos(cp, estado);
       if (externos.length > 0) {
+        let costShips = 0;
+        for (const idS of Object.keys(cotizacionEnvios)) {
+          const ship = cotizacionEnvios[idS];
+          costShips += ship.costo;
+        }
+        this.totalEnvios = costShips.toFixed(2).toString();
+        this.changeShipping(costShips);
         return await externos;
       }
     } else {
+      let costShips = 0;
+      for (const idS of Object.keys(cotizacionEnvios)) {
+        const ship = cotizacionEnvios[idS];
+        costShips += ship.costo;
+      }
+      this.totalEnvios = costShips.toFixed(2).toString();
+      this.changeShipping(costShips);
       return await cotizacionEnvios;
       // // Habilitado para mostrar el mas economico.
       // cotizacionEnvios.sort((a, b) => a.costo - b.costo);
@@ -625,7 +640,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
           const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
           if (carItemsSupplier.length > 0) {                                        // Si el proveedor tiene productos en el carrito
-            console.log('Productos de ' + supplier.slug + ': ', carItemsSupplier);
             // START Filtrar almacenes que tengan todos los productos y recuperar el almacen que los tenga todos.
             const concatenatedBranchOffices: BranchOffices[][] = [];
             for (const idCI of Object.keys(carItemsSupplier)) {
@@ -633,7 +647,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               concatenatedBranchOffices.push(cartItem.suppliersProd.branchOffices);
             }
             const branchSupplier = this.findCommonBranchOffice(carItemsSupplier);
-            console.log('almacen que contiene todos los productos: ', branchSupplier);
             // END
 
             for (const idCI of Object.keys(carItemsSupplier)) {
@@ -660,7 +673,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             }
             this.warehouse.cp = cpDestino;
             this.warehouse.productShipments = productsNacional;
-            console.log('this.warehouse: ', this.warehouse);
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(
               supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {

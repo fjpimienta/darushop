@@ -573,7 +573,7 @@ export class ExternalAuthService {
     tokenJson: boolean
   ): Promise<any> {
     let token: string;
-    let shipments: Shipment[] = [];
+    const shipments: Shipment[] = [];
     if (!supplier.token) {
       switch (supplier.slug) {
         case 'exel':
@@ -635,12 +635,18 @@ export class ExternalAuthService {
                     switch (supplier.slug) {
                       case 'ct':
                         if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
-                          // Se agrega el lugar de envio a la paqueteria
-                          for (const idU of Object.keys(result.respuesta.cotizaciones)) {
-                            const envio = result.respuesta.cotizaciones[idU];
+                          let envioMasEconomico = null;
+                          let costoMasBajo = result.respuesta.cotizaciones[0].total;
+                          for (const envio of result.respuesta.cotizaciones) {
                             envio.lugarEnvio = (warehouse.name + ', ' + warehouse.estado).toLocaleUpperCase();
+                            if (envio.total <= costoMasBajo) {
+                              envioMasEconomico = envio;
+                              costoMasBajo = envio.total;
+                            }
                           }
-                          shipments = result.respuesta.cotizaciones;
+                          if (envioMasEconomico) {
+                            shipments.push(envioMasEconomico);
+                          }
                           return shipments;
                         } else {
                           // TODO Enviar Costos Internos.

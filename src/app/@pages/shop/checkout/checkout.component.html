@@ -248,16 +248,17 @@
 
                     <tr class="summary-shipping">
                       <td>Env&iacute;os:</td>
-                      <td>&nbsp;</td>
+                      <td>{{totalEnvios | currency}}</td>
                     </tr>
 
                     <tr *ngFor="let shipment of shipments" class="summary-shipping-row">
                       <td>
-                        <div class="custom-control custom-radio">
+                        <!-- <div class="custom-control custom-radio">
                           <input type="radio" id="{{shipment.empresa}}" name="shipping" class="custom-control-input"
                             (change)="changeShipping(shipment.costo)">
                           <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.lugarEnvio}}</label>
-                        </div>
+                        </div> -->
+                        <label for="{{shipment.empresa}}">{{shipment.lugarEnvio}}</label>
                       </td>
                       <td>{{shipment.costo.toFixed(2) | currency}}</td>
                     </tr>
@@ -415,7 +416,8 @@
                         </a>
                       </h2>
                     </div>
-                    <div id="collapse-17" class="collapse" aria-labelledby="heading-17" data-parent="#accordion-payment">
+                    <div id="collapse-17" class="collapse" aria-labelledby="heading-17"
+                      data-parent="#accordion-payment">
                       <div class="card-body">
                         Promocion Bajo Reserva de Autorizacion.
                       </div>
