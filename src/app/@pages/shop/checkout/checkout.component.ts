@@ -561,6 +561,35 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await [];
   }
 
+  findCommonBranchOffice(products: CartItem[]): BranchOffices | null {
+    if (products.length === 0) {
+      return null;
+    }
+    const filteredProducts = products.filter(
+      (product) => product.suppliersProd.branchOffices.some((office) => office.cantidad > product.qty)
+    );
+    if (filteredProducts.length === 0) {
+      return null;
+    }
+    const officeMap: { [estado: string]: BranchOffices } = {};
+    for (const product of filteredProducts) {
+      for (const office of product.suppliersProd.branchOffices) {
+        if (office.cantidad > product.qty) {
+          const existingOffice = officeMap[office.estado];
+          if (existingOffice) {
+            officeMap[office.estado] = { ...existingOffice, cantidad: existingOffice.cantidad + 1 };
+          } else {
+            officeMap[office.estado] = { ...office, cantidad: 1 };
+          }
+        }
+      }
+    }
+    const commonOfficeState = Object.keys(officeMap).find(
+      (estado) => officeMap[estado].cantidad === filteredProducts.length
+    );
+    return commonOfficeState ? officeMap[commonOfficeState] : null;
+  }
+
   /**
    *
    * @param cpDestino Codigo Postal a donde llegara el pedido
@@ -578,7 +607,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const shipmentsEnd = [];
     // Verificar productos por proveedor.
     let i = 0;
-    const suppliers = await this.suppliersService.getSuppliers()          // Recuperar la lista de Proveedores
+    const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
       .then(async result => {
         return await result.suppliers;
       });
@@ -587,87 +616,96 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const supId of Object.keys(suppliers)) {
         let supplier = new Supplier();
         supplier = suppliers[supId];
-        const supplierProd = new SupplierProd();                          // Revisar proveedors con apis
+        const supplierProd = new SupplierProd();                                    // Revisar proveedores con apis
         const warehouseEstado = new Warehouse();
         const warehouseCapital = new Warehouse();
         const productsEstado: ProductShipment[] = [];
         const productsCapital: ProductShipment[] = [];
-        // Set Api para Envios
-        const apiShipment = await this.suppliersService.getApiSupplier(supplier.slug, 'envios', 'paqueterias')
+        const productsNacional: ProductShipment[] = [];
+        const apiShipment = await this.suppliersService                             // Set Api para Envios
+          .getApiSupplier(supplier.slug, 'envios', 'paqueterias')
           .then(async result => {
             if (result.status) {
               return await result.apiSupplier;
             }
           });
         if (apiShipment) {                                                          // Si hay Api para el Proveedor.
-          // Agrupar Productos Por Proveedor
-          const arreglo = this.cartItems;
+          const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
           const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
           if (carItemsSupplier.length > 0) {                                        // Si el proveedor tiene productos en el carrito
+            console.log('Productos de ' + supplier.slug + ': ', carItemsSupplier);
+            // START Filtrar almacenes que tengan todos los productos y recuperar el almacen que los tenga todos.
+            const concatenatedBranchOffices: BranchOffices[][] = [];
+            for (const idCI of Object.keys(carItemsSupplier)) {
+              const cartItem: CartItem = carItemsSupplier[idCI];
+              concatenatedBranchOffices.push(cartItem.suppliersProd.branchOffices);
+            }
+            const branchSupplier = this.findCommonBranchOffice(carItemsSupplier);
+            console.log('almacen que contiene todos los productos: ', branchSupplier);
+            // END
             for (const idCI of Object.keys(carItemsSupplier)) {                     // Revisar productos en el carrito
               const cartItem: CartItem = carItemsSupplier[idCI];
-              if (cartItem.suppliersProd.idProveedor === supplier.slug) {           // Si el producto es del proveedor
-                for (const idB of Object.keys(cartItem.suppliersProd.branchOffices)) {
-                  const branchOffice: BranchOffices = cartItem.suppliersProd.branchOffices[idB];
-                  if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
-                    || capitalCpCva === branchOffice.cp) {  // Almacenes estado|capital
-                    if (branchOffice.cantidad >= cartItem.qty) {                    // Revisar disponibilidad
-                      if (estadoCp === branchOffice.estado) {                       // Verificar Existencias en su Estado
-                        const productShipment = new ProductShipment();
-                        productShipment.producto = cartItem.sku;
-                        productShipment.cantidad = cartItem.qty;
-                        productShipment.precio = cartItem.price;
-                        productShipment.priceSupplier = cartItem.suppliersProd.price;
-                        productShipment.moneda = cartItem.suppliersProd.moneda;
-                        productShipment.almacen = branchOffice.id;
-                        productShipment.cp = branchOffice.cp;
-                        productShipment.name = cartItem.name;
-                        productShipment.total = cartItem.qty * cartItem.price;
-                        productsEstado.push(productShipment);
-                        warehouseEstado.id = branchOffice.id;
-                        warehouseEstado.cp = branchOffice.cp;
-                        warehouseEstado.name = branchOffice.name;
-                        warehouseEstado.estado = branchOffice.estado;
-                        warehouseEstado.latitud = branchOffice.latitud;
-                        warehouseEstado.longitud = branchOffice.longitud;
-                      }
-                      if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
-                        const productShipment = new ProductShipment();
-                        productShipment.producto = cartItem.sku;
-                        productShipment.cantidad = cartItem.qty;
-                        productShipment.precio = cartItem.price;
-                        productShipment.priceSupplier = cartItem.suppliersProd.price;
-                        productShipment.moneda = cartItem.suppliersProd.moneda;
-                        productShipment.almacen = branchOffice.id;
-                        productShipment.cp = branchOffice.cp;
-                        productShipment.name = cartItem.name;
-                        productShipment.total = cartItem.qty * cartItem.price;
-                        productsCapital.push(productShipment);
-                        warehouseCapital.id = branchOffice.id;
-                        warehouseCapital.cp = branchOffice.cp;
-                        warehouseCapital.name = branchOffice.name;
-                        warehouseCapital.estado = branchOffice.estado;
-                        warehouseCapital.latitud = branchOffice.latitud;
-                        warehouseCapital.longitud = branchOffice.longitud;
-                      }
+              // console.log('cartItem.suppliersProd.branchOffices: ', cartItem.suppliersProd.branchOffices);
+              for (const idB of Object.keys(cartItem.suppliersProd.branchOffices)) {  // Revisar disponibilidad en sucursales d proveedor
+                const branchOffice: BranchOffices = cartItem.suppliersProd.branchOffices[idB];
+                if (estadoCp === branchOffice.estado || capitalCpCT === branchOffice.cp
+                  || capitalCpCva === branchOffice.cp) {                            // Almacenes estado|capital
+                  if (branchOffice.cantidad >= cartItem.qty) {                      // Revisar disponibilidad
+                    if (estadoCp === branchOffice.estado) {                         // Verificar Existencias en su Estado
+                      const productShipment = new ProductShipment();
+                      productShipment.producto = cartItem.sku;
+                      productShipment.cantidad = cartItem.qty;
+                      productShipment.precio = cartItem.price;
+                      productShipment.priceSupplier = cartItem.suppliersProd.price;
+                      productShipment.moneda = cartItem.suppliersProd.moneda;
+                      productShipment.almacen = branchOffice.id;
+                      productShipment.cp = branchOffice.cp;
+                      productShipment.name = cartItem.name;
+                      productShipment.total = cartItem.qty * cartItem.price;
+                      productsEstado.push(productShipment);
+                      warehouseEstado.id = branchOffice.id;
+                      warehouseEstado.cp = branchOffice.cp;
+                      warehouseEstado.name = branchOffice.name;
+                      warehouseEstado.estado = branchOffice.estado;
+                      warehouseEstado.latitud = branchOffice.latitud;
+                      warehouseEstado.longitud = branchOffice.longitud;
+                    }
+                    if (capitalCpCT === branchOffice.cp || capitalCpCva === branchOffice.cp) { // Verificar Existencias en Capital
+                      const productShipment = new ProductShipment();
+                      productShipment.producto = cartItem.sku;
+                      productShipment.cantidad = cartItem.qty;
+                      productShipment.precio = cartItem.price;
+                      productShipment.priceSupplier = cartItem.suppliersProd.price;
+                      productShipment.moneda = cartItem.suppliersProd.moneda;
+                      productShipment.almacen = branchOffice.id;
+                      productShipment.cp = branchOffice.cp;
+                      productShipment.name = cartItem.name;
+                      productShipment.total = cartItem.qty * cartItem.price;
+                      productsCapital.push(productShipment);
+                      warehouseCapital.id = branchOffice.id;
+                      warehouseCapital.cp = branchOffice.cp;
+                      warehouseCapital.name = branchOffice.name;
+                      warehouseCapital.estado = branchOffice.estado;
+                      warehouseCapital.latitud = branchOffice.latitud;
+                      warehouseCapital.longitud = branchOffice.longitud;
                     }
                   }
                 }
-                if (productsEstado.length === carItemsSupplier.length) {
-                  i += 1;
-                  this.warehouse = warehouseEstado;
-                  this.warehouse.productShipments = productsEstado;
-                } else if (productsCapital.length === carItemsSupplier.length) {
-                  i += 1;
-                  this.warehouse = warehouseCapital;
-                  this.warehouse.productShipments = productsCapital;
-                }
-                supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
-                supplierProd.codigo = cartItem.suppliersProd.codigo;
-                supplierProd.price = cartItem.suppliersProd.price;
-                supplierProd.moneda = cartItem.suppliersProd.moneda;
-                this.warehouse.suppliersProd = supplierProd;
               }
+              if (productsEstado.length === carItemsSupplier.length) {
+                i += 1;
+                this.warehouse = warehouseEstado;
+                this.warehouse.productShipments = productsEstado;
+              } else if (productsCapital.length === carItemsSupplier.length) {
+                i += 1;
+                this.warehouse = warehouseCapital;
+                this.warehouse.productShipments = productsCapital;
+              }
+              supplierProd.idProveedor = cartItem.suppliersProd.idProveedor;
+              supplierProd.codigo = cartItem.suppliersProd.codigo;
+              supplierProd.price = cartItem.suppliersProd.price;
+              supplierProd.moneda = cartItem.suppliersProd.moneda;
+              this.warehouse.suppliersProd = supplierProd;
             }
             // Cotizar envio
             this.warehouse.cp = cpDestino;
