@@ -671,9 +671,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   if (supplier.slug === 'ct') {
                     shipment.costo = resultShip[key].total;
                     shipment.metodoShipping = resultShip[key].metodo;
+                    shipment.lugarEnvio = resultShip[key].lugarEnvio;
                   } else {
                     shipment.costo = resultShip[key].costo;
                     shipment.metodoShipping = resultShip[key].metodoShipping;
+                    shipment.lugarEnvio = resultShip[key].lugarEnvio;
                   }
                   shipments.push(shipment);
                 }
@@ -728,6 +730,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     shipment.empresa = resultShipment[key].empresa.toUpperCase();
                     shipment.costo = resultShipment[key].costo;
                     shipment.metodoShipping = '';
+                    shipment.lugarEnvio = resultShipment[key].lugarEnvio;
                     shipments.push(shipment);
                   }
                   return await shipments;

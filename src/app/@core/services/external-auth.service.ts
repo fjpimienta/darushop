@@ -594,6 +594,7 @@ export class ExternalAuthService {
                 shipmentCva.empresa = 'PAQUETEXPRESS';
                 shipmentCva.costo = result.montoTotal;
                 shipmentCva.metodoShipping = '';
+                shipmentCva.lugarEnvio = (warehouse.name + ', ' + warehouse.estado).toLocaleUpperCase();
                 shipments.push(shipmentCva);
                 return await shipments;
               default:
@@ -634,6 +635,11 @@ export class ExternalAuthService {
                     switch (supplier.slug) {
                       case 'ct':
                         if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
+                          // Se agrega el lugar de envio a la paqueteria
+                          for (const idU of Object.keys(result.respuesta.cotizaciones)) {
+                            const envio = result.respuesta.cotizaciones[idU];
+                            envio.lugarEnvio = (warehouse.name + ', ' + warehouse.estado).toLocaleUpperCase();
+                          }
                           shipments = result.respuesta.cotizaciones;
                           return shipments;
                         } else {
@@ -647,6 +653,7 @@ export class ExternalAuthService {
                         shipment.empresa = supplier.slug;
                         shipment.costo = result.data.price;
                         shipment.metodoShipping = '';
+                        shipment.lugarEnvio = (warehouse.name + ', ' + warehouse.estado).toLocaleUpperCase();
                         shipments.push(shipment);
                         return await shipments;
                       default:
