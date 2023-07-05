@@ -627,6 +627,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const supId of Object.keys(suppliers)) {
         let supplier = new Supplier();
         supplier = suppliers[supId];
+        const shipmentsSupp = [];
         const supplierProd = new SupplierProd();
         const warehouseNacional = new Warehouse();
         const productsNacional: ProductShipment[] = [];
@@ -695,9 +696,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await shipments;
               });
             for (const shipId of Object.keys(shipmentsCost)) {
+              shipmentsSupp.push(shipmentsCost[shipId]);
               shipmentsEnd.push(shipmentsCost[shipId]);
             }
-            this.warehouse.shipments = shipmentsEnd;
+            this.warehouse.shipments = shipmentsSupp;
             supplierProd.idProveedor = supplier.slug;
             this.warehouse.suppliersProd = supplierProd;
             this.warehouses.push(this.warehouse);
