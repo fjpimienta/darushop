@@ -7,6 +7,7 @@ export class OrderCt {
   tipoPago: string;
   envio: EnvioCt[];
   producto: ProductoCt[];
+  cfdi: string;
 }
 
 /**

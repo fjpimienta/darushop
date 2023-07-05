@@ -4,6 +4,7 @@ export interface IOrderCt {
   tipoPago?: string;
   envio?: IEnvioCt[];
   producto?: IProductoCt[];
+  cfdi: string;
 }
 
 export interface IEnvioCt {

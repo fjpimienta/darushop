@@ -876,7 +876,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           almacen: warehouse.productShipments[0].almacen,
           tipoPago: '04',
           envio: enviosCt,
-          producto: ProductosCt
+          producto: ProductosCt,
+          cfdi: 'G01'
         };
         return orderCtSupplier;
       case 'cva':
@@ -959,10 +960,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const idWar of Object.keys(this.warehouses)) {
         const warehouse: Warehouse = this.warehouses[idWar];
         if (supplier.slug === warehouse.suppliersProd.idProveedor) {
-          const order = await this.setOrder(supplier, delivery, warehouse, id);
+          const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
           switch (warehouse.suppliersProd.idProveedor) {
             case 'ct':
-              order.pedido = 'DARU-' + id.toString().padStart(6, '0');
+              // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
               ordersCt.push(order);
               break;
             case 'cva':
@@ -1217,11 +1218,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             .then(async resultPedido => {
               try {
                 const ctResponse: OrderCtResponse = new OrderCtResponse();
-                ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
-                ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
-                ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
-                ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
-                ctResponse.errores = resultPedido[0].respuestaCT.errores;
+                if (resultPedido[0].respuestaCT) {
+                  ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
+                  ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
+                  ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
+                  ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
+                  ctResponse.errores = resultPedido[0].respuestaCT.errores;
+                } else {
+                  ctResponse.estatus = resultPedido.estatus;
+                  ctResponse.fecha = resultPedido.fecha;
+                  ctResponse.pedidoWeb = resultPedido.pedidoWeb;
+                  ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
+                  ctResponse.errores = resultPedido.errores;
+                }
                 return await ctResponse;
               } catch (error) {
                 throw await error;

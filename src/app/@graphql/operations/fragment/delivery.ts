@@ -166,6 +166,7 @@ export const DELIVERY_FRAGMENT = gql`
         precio
         moneda
       }
+      cfdi
     }
     ordersCva {
       NumOC

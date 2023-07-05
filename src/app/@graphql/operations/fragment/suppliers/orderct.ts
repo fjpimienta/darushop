@@ -23,5 +23,6 @@ export const ORDERCT_FRAGMENT = gql`
         precio
         moneda
       }
+      cfdi
    }
 `;
