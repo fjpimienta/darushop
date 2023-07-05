@@ -42,3 +42,9 @@ export class ProductoCva {
   clave: string;
   cantidad: number;
 }
+
+export class CompraCVA {
+  usuario: string;
+  pwd: string;
+  orden: string;
+}

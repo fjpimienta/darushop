@@ -374,6 +374,11 @@ export class ExternalAuthService {
           .parseStringPromise(xml, { explicitArray: false })
           .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:PedidoWebResponse'])
           .catch(err => new Error(err.message));
+      case 'pedidos_ws_cva.php':                                                                  // SOAP CVA
+        return await xml2js
+          .parseStringPromise(xml, { explicitArray: false })
+          .then(response => response['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:PedidoOrdenCompraResponse'])
+          .catch(err => new Error(err.message));
       default:
         break;
     }
@@ -832,7 +837,65 @@ export class ExternalAuthService {
   //#endregion Pedidos
 
   //#region Facturacion
+  async getComprasSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', order: any): Promise<any> {
+    let soapBody = '';
+    let soapDetail = '';
+    switch (apiSelect.return) {
+      case 'invoice':
+        soapDetail = `<XMLOC xsi:type="xsd:string">
+        &lt;Orden&gt;${order.NumOC}&lt;/NumOC&gt;
+    </XMLOC>`;
+        soapBody = 'PedidoOrdenCompra';
+        break;
+      default:
+        break;
+    }
+    let body: string;
+    switch (supplier.slug) {
+      case 'cva':
+        body = `<?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <${soapBody} xmlns="urn:PedidoWebwsdl#PedidoOrdenCompra">
+              <Usuario>admin73766</Usuario>
+              <PWD>VCTRNZ1EFOmR</PWD>
+              ${soapDetail}
+            </${soapBody}>
+          </soap:Body>
+        </soap:Envelope>`;
+        break;
+    }
+    const searchParams = {
+      'Content-Type': 'text/xml'
+    };
+    const params = {};
+    if (supplier.token) {
+      if (supplier.token.body_parameters.length > 0) {
+        supplier.token.body_parameters.forEach(param => {
+          params[param.name] = param.value;
+        });
+      }
+    }
+    // Parámetros de url
+    if (apiSelect.parameters) {
+      apiSelect.parameters.forEach(param => {
+        params[param.name] = param.value || search;
+      });
+    }
 
+    try {
+      const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=PedidoOrdenCompra';
+      const response = await axios.post(url, body, {
+        headers: searchParams,
+        params
+      });
+      const Content = he.decode(response.data.toString('utf-8'));
+      const datos = await this.parseXmlToJson(Content, apiSelect.operation);
+      return await datos;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
   //#endregion Facturacion
 
   //#region Catalogos Externos por json
