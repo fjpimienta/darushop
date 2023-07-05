@@ -63,7 +63,7 @@
     </ng-template>
     <div class="product-bra">
       <span *ngFor="let bra of product.brands; let i =index">
-        <a [routerLink]="['/shop/products']" [queryParams]="{brands: bra.slug}">{{ bra.name }}</a>{{ i <
+        <a [routerLink]="['/shop/products']" [queryParams]="{brand: bra.slug}">{{ bra.name }}</a>{{ i <
           product.brands.length - 1 ? ',' : '' }}</span>
     </div>
     <div class="ratings-container">

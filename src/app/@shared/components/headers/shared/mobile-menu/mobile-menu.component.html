@@ -57,7 +57,7 @@
                             <ul>
                               <li [class.active]="current.includes('shop/products')"
                                 *ngFor="let item of brands; let id = index;">
-                                <a [routerLink]="['/shop/products']" [queryParams]="{brands: item.slug}">{{
+                                <a [routerLink]="['/shop/products']" [queryParams]="{brand: item.slug}">{{
                                   item.description }}</a>
                               </li>
                             </ul>
