@@ -1014,7 +1014,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false): void {
     const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
-    const productos = charge.warehouses[0].productShipments;
+    const productos: ProductShipment[] = [];
+    let totalProd = 0.0;
+    for (const idW of Object.keys(charge.warehouses)) {
+      const warehouse = charge.warehouses[idW];
+      for (const idP of Object.keys(warehouse.productShipments)) {
+        const prod = warehouse.productShipments[idP];
+        totalProd += (prod.precio * prod.cantidad);
+        productos.push(prod);
+      }
+    }
+    const total = totalProd + parseFloat(this.totalEnvios);
+
+    // const productos = charge.warehouses[0].productShipments;
+
     const productRows = productos.map((producto: any) => `
         <tr>
           <td>${producto.name}</td>
@@ -1053,10 +1066,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           p {
             color: #666666;
             line-height: 1.5;
+            font-size: 10px; /* Tamaño de letra de los párrafos */
           }
           table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 12px; /* Tamaño de letra de los párrafos */
           }
           th, td {
             padding: 10px;
@@ -1069,6 +1084,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           tfoot td {
             text-align: right;
             font-weight: bold;
+          }
+          foot {
+            color: #666666;
+            font-size: 8px; /* Tamaño de letra de los párrafos */
           }
         </style>
       </head>
@@ -1091,8 +1110,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             </tbody>
             <tfoot>
               <tr>
+                <td colspan="2"><strong>Subtotal:</strong></td>
+                <td colspan="2">$ ${totalProd.toFixed(2).toString()}</td>
+              </tr>
+              <tr>
+                <td colspan="2"><strong>Costo Envio:</strong></td>
+                <td colspan="2">$ ${this.totalEnvios}</td>
+              </tr>
+              <tr>
                 <td colspan="2"><strong>Total:</strong></td>
-                <td colspan="2">$ ${this.totalPagar}</td>
+                <td colspan="2">$ ${total.toFixed(2).toString()}</td>
               </tr>
             </tfoot>
           </table>
@@ -1101,8 +1128,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           <p>DARU</p>
           <hr>
           <hr>
-          <p>
-            Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
+          <p class="foot">
+            Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
           </p>
         </div>
       </body>
