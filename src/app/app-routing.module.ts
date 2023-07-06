@@ -4,6 +4,12 @@ import { Routes, RouterModule } from '@angular/router';
 import { LayoutComponent } from '@shared/layout/layout.component';
 import { ComingSoonPageComponent } from '@pages/others/coming-soon/coming-soon.component';
 import { IndexComponent } from '@pages/home/index/index.component';
+import { TermsComponent } from '@pages/others/terms/terms.component';
+import { AboutOneComponent } from '@pages/others/about-one/about-one.component';
+import { ServicesComponent } from '@pages/others/services/services.component';
+import { HowtobuyComponent } from '@pages/others/howtobuy/howtobuy.component';
+import { FaqsPageComponent } from '@pages/others/faqs/faqs.component';
+import { ContactOnePageComponent } from '@pages/others/contact-one/contact-one.component';
 
 const routes: Routes = [
   {
@@ -48,10 +54,6 @@ const routes: Routes = [
         loadChildren: () => import('@pages/blog/blog.module').then(m => m.BlogModule)
       },
       {
-        path: 'pages',
-        loadChildren: () => import('@pages/others/pages.module').then(m => m.PagesModule)
-      },
-      {
         path: 'shop',
         loadChildren: () => import('@pages/shop/shop.module').then(m => m.ShopModule)
       },
@@ -74,6 +76,30 @@ const routes: Routes = [
       {
         path: 'products',
         loadChildren: () => import('@pages/shop/shop.module').then(m => m.ShopModule)
+      },
+      {
+        path: 'about',
+        component: AboutOneComponent
+      },
+      {
+        path: 'services',
+        component: ServicesComponent
+      },
+      {
+        path: 'howtobuy',
+        component: HowtobuyComponent
+      },
+      {
+        path: 'contact',
+        component: ContactOnePageComponent
+      },
+      {
+        path: 'faq',
+        component: FaqsPageComponent
+      },
+      {
+        path: 'terms',
+        component: TermsComponent
       }
     ]
   },

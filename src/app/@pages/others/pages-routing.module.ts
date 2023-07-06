@@ -18,14 +18,6 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'about',
-    component: AboutOneComponent
-  },
-  {
-    path: 'services',
-    component: ServicesComponent
-  },
-  {
     path: 'about-2',
     component: AboutTwoPageComponent
   },
@@ -36,22 +28,6 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginPageComponent
-  },
-  {
-    path: 'howtobuy',
-    component: HowtobuyComponent
-  },
-  {
-    path: 'faq',
-    component: FaqsPageComponent
-  },
-  {
-    path: 'contact',
-    component: ContactOnePageComponent
-  },
-  {
-    path: 'terms',
-    component: TermsComponent
   }
 ];
 
