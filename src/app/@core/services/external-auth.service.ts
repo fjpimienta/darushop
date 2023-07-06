@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
-import { ErroresCT, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 
 declare const require;
 const axios = require('axios');
@@ -836,67 +836,59 @@ export class ExternalAuthService {
   }
   //#endregion Pedidos
 
-  //#region Facturacion
-  async getComprasSOAP(supplier: ISupplier, apiSelect: IApis, search: string = '', order: any): Promise<any> {
-    let soapBody = '';
-    let soapDetail = '';
-    switch (apiSelect.return) {
-      case 'invoice':
-        soapDetail = `<XMLOC xsi:type="xsd:string">
-        &lt;Orden&gt;${order.NumOC}&lt;/NumOC&gt;
-    </XMLOC>`;
-        soapBody = 'PedidoOrdenCompra';
-        break;
+  //#region Confirmacion
+  async getConfirmacionAPI(supplier: ISupplier, apiSelect: IApis, confirm: any): Promise<any> {
+    let token = '';
+    switch (supplier.slug) {
+      case 'ct':
+        return await this.getToken(supplier, false)
+          .then(
+            async result => {
+              switch (supplier.slug) {
+                case 'ct':
+                  token = result.token;
+                  break;
+                case 'syscom':
+                  token = result.access_token;
+                  break;
+                default:
+                  break;
+              }
+              if (token) {
+                const url = supplier.url_base_api + apiSelect.operation + '/' + apiSelect.suboperation;
+                try {
+                  const response = await this.http.post(
+                    url,
+                    confirm,
+                    {
+                      headers: {
+                        'x-auth': token,
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                      }
+                    }).toPromise();
+                  return await response;
+                } catch (error) {
+                  const ctConfirmResponse: OrderCtConfirmResponse = new OrderCtConfirmResponse();
+                  ctConfirmResponse.okCode = error.error.errorCode;
+                  ctConfirmResponse.okMessage = error.error.errorMessage;
+                  ctConfirmResponse.okReference = error.error.errorReference;
+                  return await ctConfirmResponse;
+                }
+              } else {
+                return await null;
+              }
+            },
+            async error => {
+              return await null;
+            }
+          );
       default:
         break;
     }
-    let body: string;
-    switch (supplier.slug) {
-      case 'cva':
-        body = `<?xml version="1.0" encoding="utf-8"?>
-        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-          <soap:Body>
-            <${soapBody} xmlns="urn:PedidoWebwsdl#PedidoOrdenCompra">
-              <Usuario>admin73766</Usuario>
-              <PWD>VCTRNZ1EFOmR</PWD>
-              ${soapDetail}
-            </${soapBody}>
-          </soap:Body>
-        </soap:Envelope>`;
-        break;
-    }
-    const searchParams = {
-      'Content-Type': 'text/xml'
-    };
-    const params = {};
-    if (supplier.token) {
-      if (supplier.token.body_parameters.length > 0) {
-        supplier.token.body_parameters.forEach(param => {
-          params[param.name] = param.value;
-        });
-      }
-    }
-    // Parámetros de url
-    if (apiSelect.parameters) {
-      apiSelect.parameters.forEach(param => {
-        params[param.name] = param.value || search;
-      });
-    }
-
-    try {
-      const url = supplier.url_base_api_order + apiSelect.operation + '?wsdl=PedidoOrdenCompra';
-      const response = await axios.post(url, body, {
-        headers: searchParams,
-        params
-      });
-      const Content = he.decode(response.data.toString('utf-8'));
-      const datos = await this.parseXmlToJson(Content, apiSelect.operation);
-      return await datos;
-    } catch (error) {
-      throw new Error(error.message);
-    }
+    return await [];
   }
-  //#endregion Facturacion
+  //#endregion Confirmacion
 
   //#region Catalogos Externos por json
   async getSucursalesCva(): Promise<any> {

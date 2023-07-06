@@ -35,3 +35,7 @@ export class ProductoCt {
   precio: number;
   moneda: string;
 }
+
+export class OrderCtConfirm {
+  folio: string;
+}

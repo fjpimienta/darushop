@@ -1,5 +1,5 @@
 import { OrderCt } from './suppliers/orderct.models';
-import { OrderCtResponse } from './suppliers/orderctresponse.models';
+import { OrderCtConfirmResponse, OrderCtResponse } from './suppliers/orderctresponse.models';
 import { OrderCva } from './suppliers/ordercva.models';
 import { OrderCvaResponse } from './suppliers/ordercvaresponse.models';
 import { UserInput } from './user.models';
@@ -17,6 +17,7 @@ export class Delivery {
   ordersCt?: OrderCt[];
   ordersCva?: OrderCva[];
   orderCtResponse?: OrderCtResponse;
+  orderCtConfirmResponse?: OrderCtConfirmResponse;
   orderCvaResponse?: OrderCvaResponse;
   statusError: boolean;
   messageError: string;

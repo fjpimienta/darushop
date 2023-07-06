@@ -14,3 +14,9 @@ export class ErroresCT {
   errorMessage: string;
   errorReference: string;
 }
+
+export class OrderCtConfirmResponse {
+  okCode: string;
+  okMessage: string;
+  okReference: string;
+}

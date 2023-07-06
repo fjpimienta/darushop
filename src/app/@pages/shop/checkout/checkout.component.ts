@@ -39,11 +39,11 @@ import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
 import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER, SF } from '@core/constants/constants';
-import { EnvioCt, OrderCt, ProductoCt } from '@core/models/suppliers/orderct.models';
+import { EnvioCt, OrderCt, OrderCtConfirm, ProductoCt } from '@core/models/suppliers/orderct.models';
 import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
-import { OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { HttpClient } from '@angular/common/http';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
@@ -405,6 +405,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier();
               console.log('OrderSupplier: ', OrderSupplier);
+              // Registrar Pedido en DARU.
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
               const NewProperty = 'receipt_email';
@@ -957,54 +958,53 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCvaResponse.agentemail = '';
     orderCvaResponse.almacenmail = '';
     // Generar modelo de cada proveedor
-    for (const idSup of Object.keys(this.suppliers)) {
-      const supplier: Supplier = this.suppliers[idSup];
-      for (const idWar of Object.keys(this.warehouses)) {
-        const warehouse: Warehouse = this.warehouses[idWar];
-        if (supplier.slug === warehouse.suppliersProd.idProveedor) {
-          const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
-          switch (warehouse.suppliersProd.idProveedor) {
-            case 'ct':
-              // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
-              ordersCt.push(order);
-              break;
-            case 'cva':
-              order.NumOC = 'DARU-' + id.toString().padStart(6, '0');
-              ordersCva.push(order);
-              break;
-            case 'ingram':
-              break;
-          }
-          const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
-            .then(async (result) => {
-              return await result;
-            });
-          if (orderNew) {
-            switch (warehouse.suppliersProd.idProveedor) {
-              case 'ct':
-                orderCtResponse = orderNew;
-                break;
-              case 'cva':
-                orderCvaResponse = orderNew;
-                break;
-            }
+    for (const idWar of Object.keys(this.warehouses)) {
+      const warehouse: Warehouse = this.warehouses[idWar];
+      const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
+      const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
+      switch (warehouse.suppliersProd.idProveedor) {
+        case 'ct':
+          // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
+          ordersCt.push(order);
+          break;
+        case 'cva':
+          order.NumOC = 'DARU-' + id.toString().padStart(6, '0');
+          ordersCva.push(order);
+          break;
+        case 'ingram':
+          break;
+      }
+      const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
+        .then(async (result) => {
+          return await result;
+        });
+      if (orderNew) {
+        switch (warehouse.suppliersProd.idProveedor) {
+          case 'ct':
+            orderCtResponse = orderNew;
             delivery.ordersCt = ordersCt;
-            delivery.ordersCva = ordersCva;
             delivery.orderCtResponse = orderCtResponse;
+            const confirmarPedidoCt = await this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCtResponse);
+            delivery.orderCtConfirmResponse = confirmarPedidoCt;
+            break;
+          case 'cva':
+            orderCvaResponse = orderNew;
+            delivery.ordersCva = ordersCva;
             delivery.orderCvaResponse = orderCvaResponse;
-            if (orderCtResponse.errores) {
-              if (orderCtResponse.errores.length > 0) {
-                delivery.statusError = true;
-                delivery.messageError = orderCtResponse.errores[0].errorMessage;
-              }
-            }
-            if (orderCvaResponse.error !== '') {
-              delivery.statusError = true;
-              delivery.messageError = orderCvaResponse.error;
-            }
-            return await delivery;
+            const confirmarPedidoCva = this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCvaResponse);
+            break;
+        }
+        if (orderCtResponse.errores) {
+          if (orderCtResponse.errores.length > 0) {
+            delivery.statusError = true;
+            delivery.messageError = orderCtResponse.errores[0].errorMessage;
           }
         }
+        if (orderCvaResponse.error !== '') {
+          delivery.statusError = true;
+          delivery.messageError = orderCvaResponse.error;
+        }
+        return await delivery;
       }
     }
     // TODO::Confirmar Pedido
@@ -1269,6 +1269,46 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     } else {
       // TODO Realizar el pedido manual.
+    }
+    return await [];
+  }
+
+  async ConfirmarPedidos(supplierName: string, order: any): Promise<any> {
+    // Get supplier
+    const supplier = await this.suppliersService.getSupplierByName(supplierName)
+      .then(async (result) => {
+        return await result;
+      });
+    if (supplier.slug !== '') {
+      // Get Api Para Confirmar Pedidos
+      const apiConfirmar = supplier.apis.find((item) => item.return === 'confirmar');
+      if (apiConfirmar) {
+        switch (supplier.slug) {
+          case 'cva':
+            // TODO
+            return await [];
+          case 'ct':
+            const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
+            orderCtConfirm.folio = order.pedidoWeb;
+            const pedidosCt = await this.externalAuthService.getConfirmacionAPI(supplier, apiConfirmar, orderCtConfirm)
+              .then(async resultConfirm => {
+                try {
+                  const ctConfirmResponse: OrderCtConfirmResponse = new OrderCtConfirmResponse();
+                  ctConfirmResponse.okCode = resultConfirm.okCode;
+                  ctConfirmResponse.okMessage = resultConfirm.okMessage;
+                  ctConfirmResponse.okReference = resultConfirm.okReference;
+                  return await ctConfirmResponse;
+                } catch (error) {
+                  throw await error;
+                }
+              });
+            return await pedidosCt;
+        }
+      } else {
+        // TODO Realizar la confirmacion manual.
+      }
+    } else {
+      // TODO Realizar la confirmacion manual.
     }
     return await [];
   }
