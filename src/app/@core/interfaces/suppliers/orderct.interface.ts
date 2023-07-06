@@ -2,9 +2,15 @@ export interface IOrderCt {
   idPedido?: number;
   almacen?: string;
   tipoPago?: string;
+  guiaConnect: IGuiaConnect;
   envio?: IEnvioCt[];
   producto?: IProductoCt[];
   cfdi: string;
+}
+
+export interface IGuiaConnect {
+  generarGuia: boolean;
+  paqueteria: string;
 }
 
 export interface IEnvioCt {

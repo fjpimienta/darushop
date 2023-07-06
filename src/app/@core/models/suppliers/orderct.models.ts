@@ -5,9 +5,15 @@ export class OrderCt {
   idPedido: number;
   almacen: string;
   tipoPago: string;
+  guiaConnect: GuiaConnect;
   envio: EnvioCt[];
   producto: ProductoCt[];
   cfdi: string;
+}
+
+export class GuiaConnect {
+  generarGuia: boolean;
+  paqueteria: string;
 }
 
 /**

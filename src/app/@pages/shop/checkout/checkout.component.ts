@@ -39,7 +39,7 @@ import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
 import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER, SF } from '@core/constants/constants';
-import { EnvioCt, OrderCt, OrderCtConfirm, ProductoCt } from '@core/models/suppliers/orderct.models';
+import { EnvioCt, GuiaConnect, OrderCt, OrderCtConfirm, ProductoCt } from '@core/models/suppliers/orderct.models';
 import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
@@ -682,7 +682,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 const shipments: Shipment[] = [];
                 for (const key of Object.keys(resultShip)) {
                   const shipment = new Shipment();
-                  shipment.empresa = resultShip[key].empresa.toString().toUpperCase();
+                  shipment.empresa = resultShip[key].empresa.toString();
                   if (supplier.slug === 'ct') {
                     shipment.costo = resultShip[key].total;
                     shipment.metodoShipping = resultShip[key].metodo;
@@ -745,7 +745,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   const shipments: Shipment[] = [];
                   for (const key of Object.keys(resultShipment)) {
                     const shipment = new Shipment();
-                    shipment.empresa = resultShipment[key].empresa.toUpperCase();
+                    shipment.empresa = resultShipment[key].empresa;
                     shipment.costo = resultShipment[key].costo;
                     shipment.metodoShipping = '';
                     shipment.lugarEnvio = resultShipment[key].lugarEnvio;
@@ -851,6 +851,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const dir = delivery.user.addresses[0];
     switch (supplier.slug) {
       case 'ct':
+        const guiaConnect: GuiaConnect = new GuiaConnect();
+        guiaConnect.generarGuia = true;
+        guiaConnect.paqueteria = warehouse.shipments[0].empresa;
         const enviosCt: EnvioCt[] = [];
         const envioCt: EnvioCt = new EnvioCt();
         envioCt.nombre = user.name + ' ' + user.lastname;
@@ -877,7 +880,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const orderCtSupplier: OrderCt = {
           idPedido: pedido,
           almacen: warehouse.productShipments[0].almacen,
-          tipoPago: '04',
+          tipoPago: '99',
+          guiaConnect: guiaConnect,
           envio: enviosCt,
           producto: ProductosCt,
           cfdi: 'G01'

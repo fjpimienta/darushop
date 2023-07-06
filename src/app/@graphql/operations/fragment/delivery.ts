@@ -148,6 +148,10 @@ export const DELIVERY_FRAGMENT = gql`
       idPedido
       almacen
       tipoPago
+      guiaConnect {
+        generarGuia
+        paqueteria
+      }
       envio {
         nombre
         direccion
