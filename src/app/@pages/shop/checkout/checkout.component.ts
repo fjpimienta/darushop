@@ -892,12 +892,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const envioCva: EnvioCVA = new EnvioCVA();
         envioCva.nombre = user.name + ' ' + user.lastname;
         envioCva.direccion = dir.directions;
-        envioCva.entreCalles = dir.references;
+        envioCva.entreCalles = dir.references !== '' ? dir.references : '.';
         envioCva.colonia = dir.d_asenta;
         envioCva.estado = dir.d_estado;
         envioCva.ciudad = dir.d_mnpio;
         envioCva.noExterior = dir.outdoorNumber;
-        envioCva.noInterior = dir.interiorNumber;
+        envioCva.noInterior = dir.interiorNumber !== '' ? dir.interiorNumber : '0';
         envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
