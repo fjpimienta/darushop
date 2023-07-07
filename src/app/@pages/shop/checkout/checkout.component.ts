@@ -707,7 +707,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     }
-    console.log('this.warehouses: ', this.warehouses);
     // Verificar que todos los productos tengan su envio.
     for (const idW of Object.keys(this.warehouses)) {
       const warehouse = this.warehouses[idW];
@@ -1014,7 +1013,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           delivery.statusError = true;
           delivery.messageError = orderCvaResponse.error;
         }
-        return await delivery;
       }
     }
     // TODO::Confirmar Pedido
