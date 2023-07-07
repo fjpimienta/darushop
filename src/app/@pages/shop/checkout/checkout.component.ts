@@ -651,8 +651,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             }
             const branchSupplier = this.findCommonBranchOffice(carItemsSupplier);
             // END
-
-            for (const idCI of Object.keys(carItemsSupplier)) {
+            for (const idCI of Object.keys(carItemsSupplier)) {                     // Set los productos y el almacen para enviar.
               const cartItem: CartItem = carItemsSupplier[idCI];
               const productShipment = new ProductShipment();
               productShipment.producto = cartItem.sku;
@@ -676,7 +675,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             }
             this.warehouse.cp = cpDestino;
             this.warehouse.productShipments = productsNacional;
-            const shipmentsCost = await this.externalAuthService.onShippingEstimate(
+            const shipmentsCost = await this.externalAuthService.onShippingEstimate(    // Cotizar el envio de productos por proveedor
               supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {
                 const shipments: Shipment[] = [];
@@ -709,6 +708,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     }
     console.log('this.warehouses: ', this.warehouses);
+    // Verificar que todos los productos tengan su envio.
+    for (const idW of Object.keys(this.warehouses)) {
+      const warehouse = this.warehouses[idW];
+      if (warehouse.shipments.length === 0) {
+        basicAlert(TYPE_ALERT.ERROR, 'Hay un problema con las paqueterias para el envio. Intentar mas tarde.');
+      }
+    }
     return await shipmentsEnd;
     // Elaborar Pedido Previo a facturacion.
   }

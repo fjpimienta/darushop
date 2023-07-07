@@ -507,9 +507,9 @@ export class ExternalAuthService {
             ctResponse.tipoDeCambio = 0;
             ctResponse.errores = [];
             const errorCt: ErroresCT = new ErroresCT();
-            errorCt.errorCode = error.error.codigo;
-            errorCt.errorMessage = error.error.mensaje;
-            errorCt.errorReference = error.error.referencia;
+            errorCt.errorCode = error.error.errorCode;
+            errorCt.errorMessage = error.error.errorMessage;
+            errorCt.errorReference = error.error.errorReference;
             ctResponse.errores.push(errorCt);
             return await ctResponse;
           }
@@ -535,7 +535,7 @@ export class ExternalAuthService {
             headers: {
               accept: 'application/json',
               'Content-Type': 'application/json',
-              authorization: 'Bearer 7ee694a5bae5098487a5a8b9d8392666'
+              authorization: 'Bearer ' + token
             },
             body: JSON.stringify(fromObjectCVA),
             redirect: 'manual' as RequestRedirect,
@@ -579,7 +579,7 @@ export class ExternalAuthService {
   ): Promise<any> {
     let token: string;
     const shipments: Shipment[] = [];
-    if (!supplier.token) {
+    if (!supplier.token) {                                                                // Si la API no requiere token
       switch (supplier.slug) {
         case 'exel':
           return await [];
@@ -590,7 +590,6 @@ export class ExternalAuthService {
           return await [];
       }
       const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
-        // tslint:disable-next-line: no-shadowed-variable
         .then(async result => {
           try {
             switch (supplier.slug) {
@@ -599,7 +598,7 @@ export class ExternalAuthService {
                 shipmentCva.empresa = 'PAQUETEXPRESS';
                 shipmentCva.costo = result.montoTotal;
                 shipmentCva.metodoShipping = '';
-                shipmentCva.lugarEnvio = (warehouse.name + ', ' + warehouse.estado).toLocaleUpperCase();
+                shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
                 shipments.push(shipmentCva);
                 return await shipments;
               default:
@@ -613,7 +612,7 @@ export class ExternalAuthService {
       return await resultados;
     } else {
       tokenJson = true;
-      return await this.getToken(supplier, tokenJson)
+      return await this.getToken(supplier, tokenJson)                                     // Recupera el token
         .then(
           async result => {
             switch (supplier.slug) {
@@ -634,7 +633,6 @@ export class ExternalAuthService {
             }
             if (token) {
               const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
-                // tslint:disable-next-line: no-shadowed-variable
                 .then(async result => {
                   try {
                     switch (supplier.slug) {
@@ -642,8 +640,8 @@ export class ExternalAuthService {
                         if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
                           let envioMasEconomico = null;
                           let costoMasBajo = result.respuesta.cotizaciones[0].total;
-                          for (const envio of result.respuesta.cotizaciones) {
-                            envio.lugarEnvio = (warehouse.name + ', ' + warehouse.estado).toLocaleUpperCase();
+                          for (const envio of result.respuesta.cotizaciones) {            // Recuperar el envio mas economico
+                            envio.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
                             if (envio.total <= costoMasBajo) {
                               envioMasEconomico = envio;
                               costoMasBajo = envio.total;
@@ -664,7 +662,7 @@ export class ExternalAuthService {
                         shipment.empresa = supplier.slug;
                         shipment.costo = result.data.price;
                         shipment.metodoShipping = '';
-                        shipment.lugarEnvio = (warehouse.name + ', ' + warehouse.estado).toLocaleUpperCase();
+                        shipment.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
                         shipments.push(shipment);
                         return await shipments;
                       default:
