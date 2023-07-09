@@ -44,11 +44,11 @@
                     <h1 class="product-title">{{ product.name }}</h1>
 
                     <div class="ratings-container">
-                        <div class="ratings">
+                        <!-- <div class="ratings">
                             <div class="ratings-val" [style.width]="product.ratings * 20 + '%'"></div>
                             <span class="tooltip-text">{{ product.ratings.toFixed(2) }}</span>
                         </div>
-                        <span class="ratings-text">( {{ product.review }} Reviews )</span>
+                        <span class="ratings-text">( {{ product.review }} Reviews )</span> -->
                     </div>
 
                     <div class="product-price" *ngIf="!product.stock || product.stock == 0 else elseBlock">
