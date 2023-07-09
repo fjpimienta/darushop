@@ -195,11 +195,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           // Descripción del pedido (función en el carrito)
           if (!this.errorSaveUser) {
-            // Total a Pagar
-            this.cartService.priceTotal.subscribe(total => {
-              this.totalPagar = total.toString();
-            });
-
             // Almacenar información para guardar.
             const payment: IPayment = {
               token,
@@ -221,15 +216,31 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 charge: ICharge
               }) => {
                 if (result.status) {
-                  this.sendEmail(result.charge, '', '');
-                  this.cartService.clearCart(false);
-                  // Elaborar Pedido Proveedor
+                  // Generar Orden de Compra con Proveedores
                   const OrderSupplier = await this.sendOrderSupplier();
-                  // TODO::Registrar Delivery
-                  this.deliverysService.add(OrderSupplier);
-                  // Enviar correo electronico
-                  await infoEventAlert('El Pedido se ha realizado correctamente', '', TYPE_ALERT.SUCCESS);
-                  this.router.navigate(['/shop/dashboard']);
+                  console.log('OrderSupplier: ', OrderSupplier);
+                  // Registrar Pedido en DARU.
+                  const deliverySave = await this.deliverysService.add(OrderSupplier);
+                  console.log('deliverySave: ', deliverySave);
+                  const NewProperty = 'receipt_email';
+                  let internalEmail = false;
+                  let typeAlert = TYPE_ALERT.SUCCESS;
+                  let sendEmail = OrderSupplier.user.email;
+                  let messageDelivery = 'El Pedido se ha realizado correctamente';
+                  if (OrderSupplier.statusError) {
+                    internalEmail = true;
+                    this.isSubmitting = false;
+                    typeAlert = TYPE_ALERT.WARNING;
+                    sendEmail = 'marketing@daru.mx';
+                    messageDelivery = OrderSupplier.messageError;
+                  } else {
+                    this.cartService.clearCart(false);
+                    this.router.navigate(['/shop/offers/list']);
+                  }
+                  // Si compra es OK, continua.
+                  OrderSupplier[NewProperty] = sendEmail;
+                  this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
+                  await infoEventAlert(messageDelivery, '', typeAlert);
                 } else {
                   await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
                   this.router.navigate(['/shop/cart']);
@@ -243,7 +254,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         basicAlert(TYPE_ALERT.ERROR, 'No hay datos de la tarjeta');
       }
     });
-
   }
 
   //#region Metodos Componente
@@ -386,7 +396,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.formData.valid) {
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
         loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
-        if (this.existeMetodoPago && this.existePaqueteria) {
+        if (this.existeMetodoPago) {
           switch (this.typePay) {
             case PAY_STRIPE:
               this.payStripe();
@@ -429,12 +439,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
           }
-          // } else if (this.existePaqueteria) {
-          //   this.isSubmitting = false;
-          //   return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
         } else {
           this.isSubmitting = false;
-          return await infoEventAlert('Se requiere definir una Paqueteria para el Env&iacute;o.', '');
+          return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
         }
       } else {
         this.isSubmitting = false;
