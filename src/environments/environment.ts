@@ -4,11 +4,11 @@
 
 export const environment = {
   production: false,
-  backend: 'http://localhost:3000/graphql',
+  backend: 'https://localhost:3000/graphql',
   backendWs: 'wss://localhost:3000/graphql',
   stripePublicKey: 'pk_test_51LcAKpKmpYSfXVu3pcVivi8Yb5D9Rm359Uzl94jUsJgtzrHxyQHUyZPgyGqrwTLje73HwDrxRQZzbvQFVkhS534g004XdS4vSN',
-  upload: 'http://localhost:3000/upload',
-  uploadsUrl: 'http://localhost:3000/uploads',
+  upload: 'https://localhost:3000/upload',
+  uploadsUrl: 'https://localhost:3000/uploads',
   demo: 'demo30',
   SERVER_URL: '' // SERVER_URL: 'http://localhost:4200'
 };
