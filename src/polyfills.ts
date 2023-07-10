@@ -47,6 +47,7 @@
  */
 import 'zone.js/dist/zone';  // Included with Angular CLI.
 
+import 'stream-browserify';
 
 /***************************************************************************************************
  * APPLICATION IMPORTS
