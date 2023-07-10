@@ -66,6 +66,11 @@
                 "maximumWarning": "2kb",
                 "maximumError": "4kb"
               }
+            ],
+            "allowedCommonJsDependencies": [
+              "stream-browserify",
+              "graphql-tag",
+              "ngx-lightbox"
             ]
           },
           "configurations": {
