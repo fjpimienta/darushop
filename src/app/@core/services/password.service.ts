@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { CHANGE_PASSWORD, RESET_PASSWORD } from '@graphql/operations/mutation/password';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
-import { map } from 'rxjs/internal/operators/map';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
