@@ -2,7 +2,7 @@ RewriteEngine On
 
 RewriteCond %{HTTP_HOST} ^d-themes.com$
 RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://daru.mx/$1 [NC,R,L]
+RewriteRule ^(.*)$ http://daru.mx/$1 [NC,R,L]
 
 # If an existing asset or directory is requested go to it as it is
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
