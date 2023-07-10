@@ -31,7 +31,7 @@
     }
   },
   "/graphql": {
-    "target": "http://189.253.186.95:8080",
+    "target": "https://189.253.186.95:8080",
     "secure": false
   }
 }
