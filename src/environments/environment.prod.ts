@@ -1,10 +1,10 @@
 export const environment = {
   production: true,
-  backend: 'https://api.daru.mx/graphql',
-  backendWs: 'wss://api.daru.mx/graphql',
+  backend: 'http://189.253.186.95:8080/graphql',
+  backendWs: 'wss://189.253.186.95:8080/graphql',
   stripePublicKey: 'pk_test_51LcAKpKmpYSfXVu3pcVivi8Yb5D9Rm359Uzl94jUsJgtzrHxyQHUyZPgyGqrwTLje73HwDrxRQZzbvQFVkhS534g004XdS4vSN',
-  upload: 'https://api.daru.mx/upload',
-  uploadsUrl: 'https://api.daru.mx/uploads',
+  upload: 'http://189.253.186.95:8080/upload',
+  uploadsUrl: 'http://189.253.186.95:8080/uploads',
   demo: 'demo30',
   SERVER_URL: ''
 };
