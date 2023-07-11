@@ -20,6 +20,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   categories: Catalog[];
   brandsGroup: CatalogGroup[] = [];
   categorysGroup: CatalogGroup[] = [];
+  searchQuery: string = '';
 
   private subscr: Subscription;
 
@@ -85,7 +86,18 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     for (let i = 0; i < list.length; i++) {
       list[i].classList.add('show');
     }
-
     event.target.parentElement.classList.add('d-none');
+  }
+
+  searchBrands(event: any): void {
+    this.searchQuery = event.target.value;
+    if (this.searchQuery !== '') {
+      const brand = typeof this.searchQuery === 'string' ? this.searchQuery.trim().toLowerCase() : '';
+      const existBrand = this.brands.find(item => item.slug === brand) ? true : false;
+      // Solo filtra las marcas que existen en el catalogo.
+      if (existBrand) {
+        this.router.navigate(['/shop/brand'], { queryParams: { brand: brand } });
+      }
+    }
   }
 }
