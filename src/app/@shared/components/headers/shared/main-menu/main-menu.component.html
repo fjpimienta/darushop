@@ -15,8 +15,15 @@
               <div class="row">
                 <div class="col-md-12">
                   <ul>
+                    <li>
+                      <div class="header-search-wrapper">
+                        <label for="q" class="sr-only">Buscar</label>
+                        <input type="text" class="form-control" name="searchQueryCat" id="searchQueryCat" autocomplete="off"
+                          placeholder="Buscar categoria ..." required (input)="searchCategories($event)" />
+                      </div>
+                    </li>
                     <li [class.active]="current.includes('shop/category')"
-                      *ngFor="let item of categories; let id = index;">
+                      *ngFor="let item of categoriesTmp; let id = index;">
                       <a [routerLink]="['/shop/category']" [queryParams]="{category: item.slug}">{{
                         item.description }}</a>
                     </li>
