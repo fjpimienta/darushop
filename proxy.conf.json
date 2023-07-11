@@ -31,7 +31,7 @@
     }
   },
   "/graphql": {
-    "target": "https://189.253.186.95:443",
+    "target": "http://189.253.186.95:443",
     "secure": false
   }
 }
