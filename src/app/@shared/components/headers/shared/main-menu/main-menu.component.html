@@ -33,22 +33,18 @@
       <div *ngIf="brands.length>0" class="megamenu megamenu-sm">
         <div class="row no-gutters">
           <div class="col-md-12">
-            <ul>
-              <li>
-                <div class="header-search-wrapper">
-                  <label for="q" class="sr-only">Buscar</label>
-                  <input type="text" class="form-control" name="searchQuery" id="searchQuery"
-                    placeholder="Buscar marca ..." required (input)="searchBrands($event)" />
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div class="col-md-12">
             <div class="menu-col">
               <div class="row">
                 <div class="col-md-12">
                   <ul>
-                    <li [class.active]="current.includes('shop/brand')" *ngFor="let item of brands; let id = index;">
+                    <li>
+                      <div class="header-search-wrapper">
+                        <label for="q" class="sr-only">Buscar</label>
+                        <input type="text" class="form-control" name="searchQuery" id="searchQuery" autocomplete="off"
+                          placeholder="Buscar marca ..." required (input)="searchBrands($event)" />
+                      </div>
+                    </li>
+                    <li [class.active]="current.includes('shop/brand')" *ngFor="let item of brandsTmp; let id = index;">
                       <a [routerLink]="['/shop/brand']" [queryParams]="{brand: item.slug}">{{
                         item.description }}</a>
                     </li>

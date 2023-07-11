@@ -17,6 +17,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
   current = '/';
   brands: Catalog[];
+  brandsTmp: Catalog[];
   categories: Catalog[];
   brandsGroup: CatalogGroup[] = [];
   categorysGroup: CatalogGroup[] = [];
@@ -58,8 +59,10 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     });
 
     this.brands = [];
+    this.brandsTmp = [];
     this.brandsService.getBrands(1, -1).subscribe(result => {
       this.brands = result.brands;
+      this.brandsTmp = this.brands;
     });
     this.categories = [];
     this.categoriesService.getCategories(1, -1).subscribe(result => {
@@ -97,7 +100,12 @@ export class MainMenuComponent implements OnInit, OnDestroy {
       // Solo filtra las marcas que existen en el catalogo.
       if (existBrand) {
         this.router.navigate(['/shop/brand'], { queryParams: { brand: brand } });
+      } else {
+        const filtro = new RegExp(`.*${brand}.*`, 'i');
+        this.brandsTmp = this.brands.filter(item => filtro.test(item.slug));
       }
+    } else {
+      this.brandsTmp = this.brands;
     }
   }
 }
