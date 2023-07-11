@@ -47,6 +47,11 @@
  */
 import 'zone.js/dist/zone';  // Included with Angular CLI.
 
+import 'stream-browserify';
+
+// Polyfill para el módulo 'stream' requerido por 'sax'
+(window as any).global = window;
+(global as any).Stream = require('stream-browserify');
 
 /***************************************************************************************************
  * APPLICATION IMPORTS
