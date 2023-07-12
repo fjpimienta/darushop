@@ -2,3 +2,11 @@
   flex: 1 1 0;
   margin-left: 8.5em;
 }
+
+.header-middle .menu>li:not(:hover):not(.active):not(.show)>a{
+  color:#fff;
+}
+
+.header-middle.sticky-header.fixed{
+  background-color: #4a00ff;
+}

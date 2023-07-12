@@ -14,3 +14,11 @@
   height: 250px;
   overflow-y: scroll;
 }
+
+.sticky-header.fixed.header-middle .menu>li>a{
+  color:#fff;
+}
+
+.header-middle .menu>li:not(:hover):not(.active):not(.show)>a{
+  color:#fff;
+}

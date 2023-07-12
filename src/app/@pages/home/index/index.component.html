@@ -13,131 +13,280 @@
           Info <br>
           Info.
         </p> -->
-        <!-- <div class="banner-action" contentAnim aniName="fadeInUpShorter">
+        <div class="banner-action" contentAnim aniName="fadeInUpShorter">
           <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
-            (click)="addCart($event)">Agregar al Carrito</a>
-          <a routerLink="/shop/products" class="btn btn-outline-white btn-round">Ver m&aacute;s</a>
-        </div> -->
+            (click)="addCart($event)">Registrate</a>
+          <!-- <a routerLink="/shop/products" class="btn btn-outline-white btn-round">Ver m&aacute;s</a> -->
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Seccion 2 -->
-  <section class="sound-section" style="background-image: url(assets/images/home/banners/02.jpg)">
-    <div class="container service" contentAnim aniName="fadeInUpShorter">
-      <owl-carousel carouselClasses="owl-simple" [options]="brandSlider">
-        <div class="icon-box icon-box-side text-white">
-          <span class="icon-box-icon text-white">
-            <i class="icon-truck"></i>
-          </span>
-
-          <div class="icon-box-content">
-            <h3 class="icon-box-title text-white">Pagar &amp; Envios</h3>
-            <p>Envios gratuitos si el pedido es mayor a $1000</p>
-          </div>
-        </div>
-        <div class="icon-box icon-box-side">
-          <span class="icon-box-icon">
-            <img src="assets/images/home/icons/icon-reload.png" width="28" height="28" alt="Icon">
-          </span>
-
-          <div class="icon-box-content">
-            <h3 class="icon-box-title text-white">Regresar &amp; Refund</h3>
-            <p>Garantia</p>
-          </div>
-        </div>
-        <div class="icon-box icon-box-side">
-          <span class="icon-box-icon">
-            <img src="assets/images/home/icons/icon-tools.png" width="28" height="28" alt="Icon">
-          </span>
-
-          <div class="icon-box-content">
-            <h3 class="icon-box-title text-white">Soporte</h3>
-            <p>24/7</p>
-          </div>
-        </div>
-        <div class="icon-box icon-box-side">
-          <span class="icon-box-icon">
-            <img src="assets/images/home/icons/icon-envelope.png" width="28" height="28" alt="Icon">
-          </span>
-
-          <div class="icon-box-content">
-            <h3 class="icon-box-title text-white">Recibe noticias</h3>
-            <p></p>
-          </div>
-        </div>
-      </owl-carousel>
-    </div>
-
+  <section class="overview mt-5">
     <div class="container">
+      <figure class="bg-image">
+        <img src="assets/images/home/bg-circle.png" alt="Background" width="799" height="760">
+      </figure>
+    </div>
+    <div class="container banner-container">
       <div class="banner row d-flex">
-        <!-- <div class="col-lg-6 mt-6 mt-lg-0 d-flex d-lg-block justify-content-center">
+        <div class="col-lg-6 order-lg-last" contentAnim aniName="fadeInLeftShorter">
           <figure class="banner-img">
-            <img src="assets/images/home/products/headphone-1.png" width="579" height="653" alt="Product">
+            <img src="assets/images/home/products/headphone-2.png" alt="Product" width="901" height="532">
           </figure>
-        </div> -->
+        </div>
 
-        <div class="col-lg-6 mt-2 mt-lg-0" contentAnim aniName="fadeInLeftShorter">
+        <div class="col-lg-6" contentAnim aniName="fadeInRightShorter">
           <div class="banner-content">
-            <h3 class="banner-subtitle text-white">Escucha tu musica, sin ruidos.</h3>
-            <h2 class="banner-title text-white">Sonido Natural </h2>
-            <p class="banner-text">
-              Datos <br>
-              Observciones. <br>
-            </p>
-            <div class="banner-info row">
-              <div class="col-6">
-                <div class="icon-box icon-box-side">
-                  <span class="icon-box-icon">
-                    <img src="assets/images/home/icons/icon-noise.png" width="30" height="30" alt="Icon">
-                  </span>
-                  <div class="icon-box-content">
-                    <h3 class="icon-box-title text-white">Cancelacion</h3>
-                  </div>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="icon-box icon-box-side">
-                  <span class="icon-box-icon">
-                    <img src="assets/images/home/icons/icon-battery.png" width="30" height="30" alt="Icon">
-                  </span>
-                  <div class="icon-box-content">
-                    <h3 class="icon-box-title text-white">Playtime 20 + Horas</h3>
-                  </div>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="icon-box icon-box-side">
-                  <span class="icon-box-icon">
-                    <i class="icon-bluetooth-b"></i>
-                  </span>
-                  <div class="icon-box-content">
-                    <h3 class="icon-box-title text-white">Wireless</h3>
-                  </div>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="icon-box icon-box-side">
-                  <span class="icon-box-icon">
-                    <img src="assets/images/home/icons/icon-mobile.png" width="30" height="30" alt="Icon">
-                  </span>
-                  <div class="icon-box-content">
-                    <h3 class="icon-box-title text-white">Phone Functionality</h3>
-                  </div>
-                </div>
-              </div>
+            <h3 class="banner-subtitle text-white">Categorías</h3>
+            <h2 class="banner-title text-white mb-5">Top</h2>
+            <div class="banner-info mb-5">
+              <ul class="info-list text-white">
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Texto</span>
+                </li>
+                <!-- <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Info</span>
+                </li>
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Info</span>
+                </li>
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Info</span>
+                </li> -->
+              </ul>
+            </div>
+            <div class="action">
+             <!--  <span class="price text-white">
+                <sup>$</sup><strong>259</strong><sup>.99</sup>
+              </span>
+              -->
+              <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
+                (click)="addCart($event)">Ir a tienda</a>
             </div>
           </div>
         </div>
-        <div class="col-lg-6 mt-6 mt-lg-0 d-flex d-lg-block">
+      </div>
+    </div>
+  </section>
 
+  <!-- Seccion 2 -->
+  <section class="sound-section hub-home">
+    <div class="icon-boxes-container mb-2">
+  <!-- <section class="sound-section" style="background-image: url(assets/images/home/banners/02.jpg)"> -->
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+       <div class="icon-box icon-box-side">
+         <span class="icon-box-icon text-dark">
+           <i class="icon-truck"></i>
+          </span>
+          <div classs="icon-box-content">
+           <h3 class="icon-box-title">Envíos Gratis</h3>
+           <p>en compras mayores de $300</p>
+         </div>
+       </div>
+       </div>
+       <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+        <div class="icon-box icon-box-side">
+          <span class="icon-box-icon text-dark">
+            <i class="icon-rotate-left"></i>
+           </span>
+           <div classs="icon-box-content">
+            <h3 class="icon-box-title">Devolución gratuita</h3>
+            <p>en 30 días</p>
+          </div>
+        </div>
+        </div>
+        <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+          <div class="icon-box icon-box-side">
+            <span class="icon-box-icon text-dark">
+              <i class="icon-info-circle"></i>
+             </span>
+             <div classs="icon-box-content">
+              <h3 class="icon-box-title">Obtén un 20%</h3>
+              <p>en 1 artículo en tu primera compra</p>
+            </div>
+          </div>
+          </div>
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="bi bi-credit-card"></i>
+               </span>
+               <div classs="icon-box-content">
+                <h3 class="icon-box-title">Pago</h3>
+                <p>aceptamos todas las tarjetas bancarias</p>
+              </div>
+            </div>
+            </div>
+
+   <!-- <div class="container">
+     <div class="banner row d-flex">
+       <div class="col-lg-4 mt-4 mt-lg-0 d-flex d-lg-block justify-content-center">
+         <figure class="banner-img">
+           <img src="assets/images/home/products/headphone-1.png" width="579" height="653" alt="Product">
+         </figure>
+       </div> -->
+
+
+       <!-- <div class="col-lg-6 mt-2 mt-lg-0" contentAnim aniName="fadeInLeftShorter">
+         <div class="banner-content">
+           <h3 class="banner-subtitle">Las mejores marcas</h3>
+           <h2 class="banner-title">en un solo lugar </h2>
+           <p class="banner-text">
+             Datos <br>
+             Observciones. <br>
+           </p> -->
+           <!-- <div class="banner-info row">
+             <div class="col-6">
+               <div class="icon-box icon-box-side">
+                 <span class="icon-box-icon">
+                   <img src="assets/images/home/icons/icon-noise.png" width="30" height="30" alt="Icon">
+                 </span>
+                 <div class="icon-box-content">
+                   <h3 class="icon-box-title text-white">Cancelacion</h3>
+                 </div>
+               </div>
+             </div>
+             <div class="col-6">
+               <div class="icon-box icon-box-side">
+                 <span class="icon-box-icon">
+                   <img src="assets/images/home/icons/icon-battery.png" width="30" height="30" alt="Icon">
+                 </span>
+                 <div class="icon-box-content">
+                   <h3 class="icon-box-title text-white">Playtime 20 + Horas</h3>
+                 </div>
+               </div>
+             </div>
+             <div class="col-6">
+               <div class="icon-box icon-box-side">
+                 <span class="icon-box-icon">
+                   <i class="icon-bluetooth-b"></i>
+                 </span>
+                 <div class="icon-box-content">
+                   <h3 class="icon-box-title text-white">Wireless</h3>
+                 </div>
+               </div>
+             </div>
+             <div class="col-6">
+               <div class="icon-box icon-box-side">
+                 <span class="icon-box-icon">
+                   <img src="assets/images/home/icons/icon-mobile.png" width="30" height="30" alt="Icon">
+                 </span>
+                 <div class="icon-box-content">
+                   <h3 class="icon-box-title text-white">Phone Functionality</h3>
+                 </div>
+               </div>
+             </div>
+           </div> 
+         </div>
+       </div>
+       <div class="col-lg-6 mt-6 mt-lg-0 d-flex d-lg-block">
+
+       </div>
+     </div>
+   </div>-->
+    </div>
+    </div>
+    </div>
+ </section>
+
+  <!-- Seccion 3 -->
+  <section class="gallery pt-5">
+    <div class="heading mb-0 text-center">
+      <h4 class="subtitle">Ofertas</h4>
+      <h2 class="title" contentAnim aniName="blurIn">Relámpago</h2>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="content-left">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                  fixedPt="90.17%"></app-image>
+              </figure>
+              <div class="action text-center">
+                <span class="text-primary">
+                  <h6><strong>Gaming</strong></h6>
+                 </span>
+                 <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+               </div>
+              <!-- <h4 class="subtitle">Promociones Del Mes</h4>
+              <h2 class="title mb-2">Galeria <br>de Productos</h2>
+              <p class="content mb-6">
+                Info <br>
+                Info <br>
+                Info.
+              </p> -->
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="content-left">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+            <figure class="mb-md-2 media-2">
+              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                fixedPt="90.17%"></app-image>
+            </figure>
+            <div class="action text-center">
+              <span class="text-primary">
+                <h6><strong>Computo</strong></h6>
+               </span>
+               <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+             </div>
+          </div>
+          
+            <!-- <figure class="media-3">
+              <app-image src="assets/images/home/products/5.jpg" alt="Banner" width="471" height="300"
+                fixedPt="63.7%"></app-image>
+            </figure> -->
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="content-right">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+            <figure class="mb-md-2 media-2">
+              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                fixedPt="90.17%"></app-image>
+            </figure>
+            <div class="action text-center">
+              <span class="text-primary">
+                <h6><strong>Telefonía</strong></h6>
+               </span>
+               <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+             </div>
+          </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="content-right">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+            <figure class="mb-md-2 media-2">
+              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                fixedPt="90.17%"></app-image>
+            </figure>
+            <div class="action text-center">
+              <span class="text-primary">
+                <h6><strong>Audio</strong></h6>
+               </span>
+               <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+             </div>
+          </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Seccion 3 -->
-  <section class="playtime-section mb-4">
+  <!-- <section class="playtime-section mb-4">
     <div class="banner">
       <figure>
         <img src="assets/images/home/banners/03.jpg" alt="Banner" width="1903" height="880">
@@ -156,10 +305,10 @@
             <div class="info-box">
               <p>Info</p>
               <strong>Info</strong>
-              <!-- <p>horas</p> -->
+              <p>horas</p>
             </div>
             <div class="info-box">
-              <!-- <p>Jugando</p> -->
+              <p>Jugando</p>
               <strong>Info</strong>
               <p>Info</p>
             </div>
@@ -168,26 +317,22 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
 
-  <!-- Seccion 4
-  <section class="gallery pt-15">
+   <!--  Seccion 4 -->
+  <section class="gallery pt-15" style="background-image: url(assets/images/home/bg-2-back.jpg);">
     <div class="container">
       <div class="row">
         <div class="col-md-6">
           <div class="content-left">
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <h4 class="subtitle">Promociones Del Mes</h4>
-              <h2 class="title mb-2">Galeria <br>de Productos</h2>
-              <p class="content mb-6">
-                Info <br>
-                Info <br>
-                Info.
-              </p>
+              <h4 class="subtitle">Marcas</h4>
+              <h2 class="title mb-2">destacadas</h2>
+              <p class="content mb-6">texto</p>
             </div>
-            <figure>
-              <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="590" height="532"
-                fixedPt="112.3%"></app-image>
+            <figure class="mb-md-12 media-2">
+              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="590" height="532"
+                fixedPt="112.3%" class="image-daru" style="padding-top: 112.3%;"></app-image>
             </figure>
           </div>
         </div>
@@ -195,29 +340,29 @@
           <div class="content-right">
             <figure class="mb-md-12 media-2">
               <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
-                fixedPt="90.17%"></app-image>
+                fixedPt="90.17%" class="lazyloaded image-daru" style="padding-top: 90.17%;"></app-image>
             </figure>
-            <figure class="media-3">
-              <app-image src="assets/images/home/products/5.jpg" alt="Banner" width="471" height="300"
-                fixedPt="63.7%"></app-image>
+            <figure class="media-3 mb-6">
+              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="471" height="300"
+                fixedPt="63.7%" class="lazyloaded image-daru" style="padding-top: 63.7%;"></app-image>
             </figure>
           </div>
         </div>
       </div>
     </div>
-  </section> -->
+  </section>
 
   <!-- Seccion 5 -->
-  <section class="video-banner bg-parallax mb-20" style="background-image: url(assets/images/home/banners/06.jpg)"
+  <!-- <section class="video-banner bg-parallax mb-20" style="background-image: url(assets/images/home/banners/06.jpg)"
     bgParallax>
     <a href="https://www.youtube.com/watch?v=75-Mau54H4E&ab_channel=aTechES" (click)="showModal($event)"
       class="btn-iframe d-flex justify-content-center">
-      <!-- <i class="icon-play-outline"></i> -->
+       <i class="icon-play-outline"></i>
     </a>
-  </section>
+  </section> -->
 
   <!-- Seccion 6 -->
-  <section class="reviews mt-15">
+  <!-- <section class="reviews mt-5">
     <div class="heading mb-6 text-center">
       <h4 class="subtitle">Categorias</h4>
       <h2 class="title" contentAnim aniName="blurIn">Mejores Productos</h2>
@@ -227,7 +372,7 @@
         <div class="testimonials-box">
           <blockquote class="testimonials text-center">
             <div class="avatar">
-              <!-- <img [src]="SERVER_URL + products[0].sm_pictures[0].url" alt="Producto" width="90" height="90"> -->
+              <img [src]="SERVER_URL + products[0].sm_pictures[0].url" alt="Producto" width="90" height="90">
               <img src="assets/images/home/products/2.jpg" alt="Producto" width="90" height="90">
             </div>
             <div class="ratings-contianer">
@@ -247,7 +392,7 @@
         <div class="testimonials-box">
           <blockquote class="testimonials text-center">
             <div class="avatar">
-              <!-- <img [src]="SERVER_URL + products[1].sm_pictures[1].url" alt="Producto" width="80" height="80"> -->
+              <img [src]="SERVER_URL + products[1].sm_pictures[1].url" alt="Producto" width="80" height="80">
               <img src="assets/images/home/products/6.jpg" alt="Producto" width="90" height="90">
             </div>
             <div class="ratings-contianer">
@@ -267,7 +412,7 @@
         <div class="testimonials-box">
           <blockquote class="testimonials text-center">
             <div class="avatar">
-              <!-- <img [src]="SERVER_URL + products[2].sm_pictures[0].url" alt="Producto" width="70" height="70"> -->
+              <img [src]="SERVER_URL + products[2].sm_pictures[0].url" alt="Producto" width="70" height="70">
               <img src="assets/images/home/products/7.jpg" alt="Producto" width="90" height="90">
             </div>
             <div class="ratings-contianer">
@@ -286,10 +431,10 @@
         </div>
       </owl-carousel>
     </div>
-  </section>
+  </section> -->
 
   <!-- Seccion 7 -->
-  <section class="reviews mt-15" style="background-image: url(assets/images/home/banners/04.jpg)">
+  <!-- <section class="reviews mt-15" style="background-image: url(assets/images/home/banners/04.jpg)">
     <div class="container">
       <div class="heading mb-6 text-center">
         <h2 class="title" contentAnim aniName="blurIn">Promociones</h2>
@@ -355,65 +500,12 @@
         </div>
       </owl-carousel>
     </div>
-  </section>
+  </section> -->
 
-  <!-- Seccion 8 -->
-  <section class="overview mt-15">
-    <div class="container">
-      <figure class="bg-image">
-        <img src="assets/images/home/bg-circle.png" alt="Background" width="799" height="760">
-      </figure>
-    </div>
-    <div class="container banner-container">
-      <div class="banner row d-flex">
-        <div class="col-lg-6 order-lg-last" contentAnim aniName="fadeInLeftShorter">
-          <figure class="banner-img">
-            <img src="assets/images/home/products/headphone-2.png" alt="Product" width="901" height="532">
-          </figure>
-        </div>
-
-        <div class="col-lg-6" contentAnim aniName="fadeInRightShorter">
-          <div class="banner-content">
-            <h3 class="banner-subtitle text-white">Especificaciones</h3>
-            <h2 class="banner-title text-white mb-5">Productos <br> Informacion</h2>
-
-            <div class="banner-info mb-5">
-              <ul class="info-list text-white">
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Info.</span>
-                </li>
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Info</span>
-                </li>
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Info</span>
-                </li>
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Info</span>
-                </li>
-              </ul>
-            </div>
-
-            <div class="action">
-              <span class="price text-white">
-                <sup>$</sup><strong>259</strong><sup>.99</sup>
-              </span>
-
-              <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
-                (click)="addCart($event)">Agregar al Carrito</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  
 
   <!-- Seccion 9 -->
-  <!-- <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/04.jpg)">
+  <!-- <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
     <div class="container">
       <div class="heading mb-6 text-center">
         <h4 class="subtitle">Material &amp; Design</h4>
