@@ -31,7 +31,7 @@
     }
   },
   "/graphql": {
-    "target": "http://189.253.186.95:443",
+    "target": "https://services.daru.mx:3000/graphql",
     "secure": false
   }
 }
