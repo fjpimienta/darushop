@@ -31,6 +31,8 @@ export class OffersComponent implements OnInit {
   offer: boolean;
   brandsProd: Catalog[] = [];
   categoriesProd: Catalog[] = [];
+  minPrice = 0;
+  maxPrice = 0;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -46,6 +48,7 @@ export class OffersComponent implements OnInit {
     });
 
     this.activeRoute.queryParams.subscribe(params => {
+      console.log('params: ', params);
       this.loaded = false;
       this.offer = true;
 
@@ -61,6 +64,18 @@ export class OffersComponent implements OnInit {
         this.orderBy = params.orderBy;
       } else {
         this.orderBy = 'default';
+      }
+
+      if (params.minPrice) {
+        this.minPrice = params.minPrice;
+      } else {
+        this.minPrice = 0;
+      }
+
+      if (params.maxPrice) {
+        this.maxPrice = params.maxPrice;
+      } else {
+        this.maxPrice = 0;
       }
 
       this.brands = null;
