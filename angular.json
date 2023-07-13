@@ -105,7 +105,6 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "shop:build",
-            "proxyConfig": "proxy.conf.json",
             "ssl": true
           },
           "configurations": {
