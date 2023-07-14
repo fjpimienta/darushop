@@ -83,7 +83,7 @@ export class ExternalAuthService {
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-        return await fetch('99minutos/api/v3/oauth/token', options)
+        return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
           .then(response => response.json())
           .then(async response => {
             return await response;
@@ -559,7 +559,7 @@ export class ExternalAuthService {
             },
             body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
           };
-          return fetch('99minutos/api/v3/pricing', options)
+          return fetch('https://sandbox.99minutos.com/api/v3/pricing', options)
             .then(response => response.json())
             .then(async response => {
               return await response;
