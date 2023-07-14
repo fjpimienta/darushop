@@ -79,6 +79,7 @@ export class ExternalAuthService {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
+            grant_type: 'client_credentials',
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
