@@ -578,6 +578,7 @@ export class ExternalAuthService {
           return fetch(urlCVA, optionsCva)
             .then(response => response.json())
             .then(async response => {
+              console.log('response: ', response);
               return await response.cotizacion;
             })
             .catch(err => console.error(err));
