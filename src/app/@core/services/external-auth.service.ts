@@ -72,40 +72,40 @@ export class ExternalAuthService {
         const tokenBearer = '7ee694a5bae5098487a5a8b9d8392666';
         return await tokenBearer;
       case '99minutos':
+        // const options = {
+        //   method: 'POST',
+        //   headers: {
+        //     accept: 'application/json',
+        //     'content-type': 'application/x-www-form-urlencoded'
+        //   },
+        //   body: new URLSearchParams({
+        //     grant_type: 'client_credentials',
+        //     client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+        //     client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+        //   })
+        // };
+
+        // return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
+        //   .then(response => response.json())
+        //   .then(response => console.log(response))
+        //   .catch(err => console.error(err));
         const options = {
           method: 'POST',
           headers: {
             accept: 'application/json',
-            'content-type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
           },
-          body: new URLSearchParams({
-            grant_type: 'client_credentials',
+          body: JSON.stringify({
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-
         return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
           .then(response => response.json())
-          .then(response => console.log(response))
+          .then(async response => {
+            return await response;
+          })
           .catch(err => console.error(err));
-      // const options = {
-      //   method: 'POST',
-      //   headers: {
-      //     accept: 'application/json',
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({
-      //     client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
-      //     client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
-      //   })
-      // };
-      // return await fetch('99minutos/api/v3/oauth/token', options)
-      //   .then(response => response.json())
-      //   .then(async response => {
-      //     return await response;
-      //   })
-      //   .catch(err => console.error(err));
     }
   }
   //#endregion Token
