@@ -1,0 +1,34 @@
+{
+  "/99minutos/*": {
+    "target": "https://sandbox.99minutos.com",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/x14.asmx": {
+    "target": "https://ws.exel.com.mx:8181",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/catalogo_clientes_xml/*": {
+    "target": "https://www.grupocva.com",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/pedidos_web/*": {
+    "target": "https://www.grupocva.com",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/api/*": {
+    "target": "https://www.grupocva.com",
+    "secure": true,
+    "changeOrigin": true,
+    "headers": {
+      "Authorization": "Bearer 7ee694a5bae5098487a5a8b9d8392666"
+    }
+  },
+  "/graphql": {
+    "target": "https://apidev.daru.mx:3001/graphql",
+    "secure": true
+  }
+}

@@ -85,7 +85,7 @@ export class ExternalAuthService {
           })
         };
 
-        return await fetch('http://sandbox.99minutos.com/api/v3/oauth/token', options)
+        return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
           .then(response => response.json())
           .then(response => console.log(response))
           .catch(err => console.error(err));

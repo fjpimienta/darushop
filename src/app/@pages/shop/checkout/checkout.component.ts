@@ -555,7 +555,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    if (cotizacionEnvios.length <= 0) {
+    if (cotizacionEnvios.length >= 0) {
       const externos = await this.onCotizarEnviosExternos(cp, estado);
       if (externos.length > 0) {
         let costShips = 0;
