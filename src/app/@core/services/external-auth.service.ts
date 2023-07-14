@@ -76,20 +76,36 @@ export class ExternalAuthService {
           method: 'POST',
           headers: {
             accept: 'application/json',
-            'Content-Type': 'application/json'
+            'content-type': 'application/x-www-form-urlencoded'
           },
-          body: JSON.stringify({
+          body: new URLSearchParams({
             grant_type: 'client_credentials',
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-        return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
+
+        return await fetch('http://sandbox.99minutos.com/api/v3/oauth/token', options)
           .then(response => response.json())
-          .then(async response => {
-            return await response;
-          })
+          .then(response => console.log(response))
           .catch(err => console.error(err));
+      // const options = {
+      //   method: 'POST',
+      //   headers: {
+      //     accept: 'application/json',
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({
+      //     client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+      //     client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+      //   })
+      // };
+      // return await fetch('99minutos/api/v3/oauth/token', options)
+      //   .then(response => response.json())
+      //   .then(async response => {
+      //     return await response;
+      //   })
+      //   .catch(err => console.error(err));
     }
   }
   //#endregion Token
@@ -560,7 +576,7 @@ export class ExternalAuthService {
             },
             body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
           };
-          return fetch('https://sandbox.99minutos.com/api/v3/pricing', options)
+          return fetch('99minutos/api/v3/pricing', options)
             .then(response => response.json())
             .then(async response => {
               return await response;
