@@ -74,38 +74,54 @@ export class ExternalAuthService {
       case '99minutos':
         // const options = {
         //   method: 'POST',
-        //   headers: {
-        //     accept: 'application/json',
-        //     'content-type': 'application/x-www-form-urlencoded'
-        //   },
-        //   body: new URLSearchParams({
-        //     grant_type: 'client_credentials',
+        //   headers: { accept: 'application/json', 'content-type': 'application/json' },
+        //   body: JSON.stringify({
         //     client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
         //     client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
         //   })
         // };
 
-        // return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
+        // return await fetch('https://delivery.99minutos.com/api/v3/oauth/token', options)
         //   .then(response => response.json())
         //   .then(response => console.log(response))
         //   .catch(err => console.error(err));
+
+
         const options = {
           method: 'POST',
-          headers: {
-            accept: 'application/json',
-            'Content-Type': 'application/json'
-          },
+          headers: { accept: 'application/json', 'content-type': 'application/json' },
           body: JSON.stringify({
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-        return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
-          .then(response => response.json())
+
+        return await fetch('https://delivery.99minutos.com/api/v3/oauth/token', options)
+          .then(async response => response.json())
           .then(async response => {
-            return await response;
+            console.log(response);
+            return await response
           })
-          .catch(err => console.error(err));
+          .catch(async err => {
+            console.error(err);
+            return await err;
+          });
+
+
+      // const body = {
+      //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+      //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+      // };
+      // const headers = { accept: 'application/json', 'content-type': 'application/json' };
+
+      // try {
+      //   const url = '99minutos/api/v3/oauth/token';
+      //   const response = await axios.post(url, body, headers);
+      //   console.log('response: ', response);
+      //   return response;
+      // } catch (error) {
+      //   throw new Error(error.message);
+      // }
     }
   }
   //#endregion Token
