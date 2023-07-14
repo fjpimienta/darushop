@@ -586,6 +586,7 @@ export class ExternalAuthService {
         case '99minutos':
           const options = {
             method: 'POST',
+            mode: 'cors' as RequestMode,
             headers: { accept: 'application/json', 'content-type': 'application/json' },
             body: JSON.stringify({
               client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
