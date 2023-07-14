@@ -555,7 +555,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    if (cotizacionEnvios.length >= 0) {
+    if (cotizacionEnvios.length <= 0) {
       const externos = await this.onCotizarEnviosExternos(cp, estado);
       if (externos.length > 0) {
         let costShips = 0;
@@ -581,6 +581,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // const objetoMinimo = cotizacionEnvios[0];
       // return [objetoMinimo];
     }
+    // Verificar que todos los productos tengan su envio.
+    for (const idW of Object.keys(this.warehouses)) {
+      const warehouse = this.warehouses[idW];
+      if (warehouse.shipments.length === 0) {
+        basicAlert(TYPE_ALERT.ERROR, 'Hay un problema con las paqueterias para el envio. Intentar mas tarde.');
+      }
+    }
+
     return await [];
   }
 
@@ -712,13 +720,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.warehouses.push(this.warehouse);
           }
         }
-      }
-    }
-    // Verificar que todos los productos tengan su envio.
-    for (const idW of Object.keys(this.warehouses)) {
-      const warehouse = this.warehouses[idW];
-      if (warehouse.shipments.length === 0) {
-        basicAlert(TYPE_ALERT.ERROR, 'Hay un problema con las paqueterias para el envio. Intentar mas tarde.');
       }
     }
     return await shipmentsEnd;
