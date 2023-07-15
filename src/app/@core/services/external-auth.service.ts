@@ -91,10 +91,10 @@ export class ExternalAuthService {
           method: 'POST',
           mode: 'no-cors' as RequestMode,
           credentials: 'include' as RequestCredentials,
+          referrerPolicy: 'origin' as ReferrerPolicy,
           headers: {
             accept: 'application/json',
-            'content-type': 'application/json',
-            referrerPolicy: 'origin',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
@@ -591,10 +591,10 @@ export class ExternalAuthService {
             method: 'POST',
             mode: 'no-cors' as RequestMode,
             credentials: 'include' as RequestCredentials,
+            referrerPolicy: 'origin' as ReferrerPolicy,
             headers: {
               accept: 'application/json',
-              'content-type': 'application/json',
-              referrerPolicy: 'origin',
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify({
               client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
