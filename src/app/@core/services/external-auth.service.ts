@@ -89,7 +89,7 @@ export class ExternalAuthService {
 
         const options = {
           method: 'POST',
-          mode: 'no-cors' as RequestMode,
+          mode: 'cors' as RequestMode,
           credentials: 'include' as RequestCredentials,
           referrerPolicy: 'origin' as ReferrerPolicy,
           headers: {
@@ -589,7 +589,7 @@ export class ExternalAuthService {
         case '99minutos':
           const options = {
             method: 'POST',
-            mode: 'no-cors' as RequestMode,
+            mode: 'cors' as RequestMode,
             credentials: 'include' as RequestCredentials,
             referrerPolicy: 'origin' as ReferrerPolicy,
             headers: {
