@@ -96,7 +96,7 @@ export class ExternalAuthService {
           })
         };
 
-        return await fetch('https://delivery.99minutos.com/api/v3/oauth/token', options)
+        return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
           .then(async response => response.json())
           .then(async response => {
             console.log(response);
