@@ -89,7 +89,13 @@ export class ExternalAuthService {
 
         const options = {
           method: 'POST',
-          headers: { accept: 'application/json', 'content-type': 'application/json' },
+          mode: 'no-cors' as RequestMode,
+          credentials: 'include' as RequestCredentials,
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            referrerPolicy: 'origin',
+          },
           body: JSON.stringify({
             client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
@@ -97,15 +103,12 @@ export class ExternalAuthService {
         };
 
         return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
-          .then(async response => response.json())
+          .then(response => response.json())
           .then(async response => {
-            console.log(response);
-            return await response
+            console.log('response: ', response);
+            return await response;
           })
-          .catch(async err => {
-            console.error(err);
-            return await err;
-          });
+          .catch(err => console.error(err));
 
 
       // const body = {
