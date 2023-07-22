@@ -1,6 +1,6 @@
 {
   "/99minutos/*": {
-    "target": "https://sandbox.99minutos.com",
+    "target": "https://delivery.99minutos.com",
     "secure": false,
     "pathRewrite": {
       "^/99minutos": ""
@@ -8,18 +8,18 @@
     "changeOrigin": true
   },
   "/x14.asmx": {
-    "target": "http://ws.exel.com.mx:8181",
-    "secure": false,
+    "target": "https://ws.exel.com.mx:8181",
+    "secure": true,
     "changeOrigin": true
   },
   "/catalogo_clientes_xml/*": {
-    "target": "http://www.grupocva.com",
-    "secure": false,
+    "target": "https://www.grupocva.com",
+    "secure": true,
     "changeOrigin": true
   },
   "/pedidos_web/*": {
     "target": "https://www.grupocva.com",
-    "secure": false,
+    "secure": true,
     "changeOrigin": true
   },
   "/api/*": {
@@ -31,7 +31,7 @@
     }
   },
   "/graphql": {
-    "target": "https://api.daru.mx:3000/graphql",
-    "secure": false
+    "target": "https://apidev.daru.mx:3001/graphql",
+    "secure": true
   }
 }

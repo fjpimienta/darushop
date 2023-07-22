@@ -72,8 +72,26 @@ export class ExternalAuthService {
         const tokenBearer = '7ee694a5bae5098487a5a8b9d8392666';
         return await tokenBearer;
       case '99minutos':
+        // const options = {
+        //   method: 'POST',
+        //   headers: { accept: 'application/json', 'content-type': 'application/json' },
+        //   body: JSON.stringify({
+        //     client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+        //     client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+        //   })
+        // };
+
+        // return await fetch('https://delivery.99minutos.com/api/v3/oauth/token', options)
+        //   .then(response => response.json())
+        //   .then(response => console.log(response))
+        //   .catch(err => console.error(err));
+
+
         const options = {
           method: 'POST',
+          mode: 'cors' as RequestMode,
+          credentials: 'include' as RequestCredentials,
+          referrerPolicy: 'origin' as ReferrerPolicy,
           headers: {
             accept: 'application/json',
             'Content-Type': 'application/json'
@@ -83,12 +101,30 @@ export class ExternalAuthService {
             client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
           })
         };
-        return await fetch('99minutos/api/v3/oauth/token', options)
+
+        return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
           .then(response => response.json())
           .then(async response => {
+            console.log('response: ', response);
             return await response;
           })
           .catch(err => console.error(err));
+
+
+      // const body = {
+      //   client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+      //   client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+      // };
+      // const headers = { accept: 'application/json', 'content-type': 'application/json' };
+
+      // try {
+      //   const url = '99minutos/api/v3/oauth/token';
+      //   const response = await axios.post(url, body, headers);
+      //   console.log('response: ', response);
+      //   return response;
+      // } catch (error) {
+      //   throw new Error(error.message);
+      // }
     }
   }
   //#endregion Token
@@ -541,10 +577,11 @@ export class ExternalAuthService {
             redirect: 'manual' as RequestRedirect,
             credentials: 'include' as RequestCredentials
           };
-          urlCVA = 'api/paqueteria/';
+          urlCVA = 'https://www.grupocva.com/api/paqueteria/';
           return fetch(urlCVA, optionsCva)
             .then(response => response.json())
             .then(async response => {
+              console.log('response: ', response);
               return await response.cotizacion;
             })
             .catch(err => console.error(err));
@@ -552,19 +589,41 @@ export class ExternalAuthService {
         case '99minutos':
           const options = {
             method: 'POST',
+            mode: 'cors' as RequestMode,
+            credentials: 'include' as RequestCredentials,
+            referrerPolicy: 'origin' as ReferrerPolicy,
             headers: {
               accept: 'application/json',
-              'Content-Type': 'application/json',
-              authorization: 'Bearer ' + token
+              'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
+            body: JSON.stringify({
+              client_id: '18b99050-5cb7-4e67-928d-3f16d109b8c5',
+              client_secret: 'gdKeiQVGBxRAY~ICpdnJ_7aKEd'
+            })
           };
-          return fetch('99minutos/api/v3/pricing', options)
+
+          return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
             .then(response => response.json())
             .then(async response => {
+              console.log('response: ', response);
               return await response;
             })
             .catch(err => console.error(err));
+        // const options = {
+        //   method: 'POST',
+        //   headers: {
+        //     accept: 'application/json',
+        //     'Content-Type': 'application/json',
+        //     authorization: 'Bearer ' + token
+        //   },
+        //   body: JSON.stringify({ country: 'MEX', deliveryType: 'NXD', size: 'xl' })
+        // };
+        // return fetch('https://delivery.99minutos.com/99minutos/api/v3/pricing', options)
+        //   .then(response => response.json())
+        //   .then(async response => {
+        //     return await response;
+        //   })
+        //   .catch(err => console.error(err));
         default:
           break;
       }

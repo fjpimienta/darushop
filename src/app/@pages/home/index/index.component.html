@@ -1,9 +1,14 @@
 <main class="main home-page skeleton-body">
-  <!-- Seccion 1 -->
+  <!-- Seccion 1 Banner Principal -->
   <section class="intro-section">
     <div class="banner">
       <figure>
-        <img src="assets/images/home/banners/01.jpg" width="1903" height="780" alt="Image Desc">
+        <img
+          src="assets/images/home/banners/01.jpg"
+          width="1903"
+          height="780"
+          alt="Image Desc"
+        />
       </figure>
       <div class="banner-content">
         <!-- <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">Producto...</h3>
@@ -14,313 +19,474 @@
           Info.
         </p> -->
         <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-          <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
-            (click)="addCart($event)">Registrate</a>
+          <a
+            href="javascript:;"
+            class="btn btn-cart btn-primary btn-round btn-cart-home"
+            (click)="addCart($event)"
+            >Registrate a DARU</a
+          >
           <!-- <a routerLink="/shop/products" class="btn btn-outline-white btn-round">Ver m&aacute;s</a> -->
         </div>
       </div>
     </div>
   </section>
+  <!-- End Seccion 1 -->
 
-  <!-- Seccion 2 -->
-  <section class="overview mt-5">
+  <!-- Seccion 2 Categorías Populares -->
+  <section class="intro-section">
     <div class="container">
-      <figure class="bg-image">
-        <img src="assets/images/home/bg-circle.png" alt="Background" width="799" height="760">
-      </figure>
-    </div>
-    <div class="container banner-container">
-      <div class="banner row d-flex">
-        <div class="col-lg-6 order-lg-last" contentAnim aniName="fadeInLeftShorter">
-          <figure class="banner-img">
-            <img src="assets/images/home/products/headphone-2.png" alt="Product" width="901" height="532">
-          </figure>
-        </div>
-
-        <div class="col-lg-6" contentAnim aniName="fadeInRightShorter">
-          <div class="banner-content">
-            <h3 class="banner-subtitle text-white">Categorías</h3>
-            <h2 class="banner-title text-white mb-5">Top</h2>
-            <div class="banner-info mb-5">
-              <ul class="info-list text-white">
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Texto</span>
-                </li>
-                <!-- <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Info</span>
-                </li>
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Info</span>
-                </li>
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Info</span>
-                </li> -->
-              </ul>
+      <div class="heading mb-0 text-center">
+        <h2 class="title-home mb-1" contentAnim aniName="blurIn">
+          Categorías
+        </h2>
+        <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
+          Populares
+        </h2>
+      </div>
+      <div class="cat-blocks-container" contentAnim>
+        <div class="row">
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div
+                class="heading mt-0"
+                contentAnim
+                aniName="fadeInRightShorter"
+              >
+                <a
+                  routerLink="/shop/sidebar/list"
+                  [queryParams]="{ category: 'computer' }"
+                  class="cat-block"
+                >
+                  <figure>
+                    <img
+                      src="assets/images/home/categorias/computo.png"
+                      width="131"
+                      height="76"
+                      alt="Category image"
+                    />
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Computadoras & Tablets</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
             </div>
-            <div class="action">
-             <!--  <span class="price text-white">
-                <sup>$</sup><strong>259</strong><sup>.99</sup>
-              </span>
-              -->
-              <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
-                (click)="addCart($event)">Ir a tienda</a>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div
+                class="heading mt-0"
+                contentAnim
+                aniName="fadeInRightShorter"
+              >
+                <a
+                  routerLink="/shop/sidebar/list"
+                  [queryParams]="{ category: 'camera' }"
+                  class="cat-block"
+                >
+                  <figure>
+                    <span>
+                      <img
+                        src="assets/images/home/categorias/televisores.png"
+                        width="131"
+                        height="76"
+                        alt="Category image"
+                      />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Televisión & Video</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div
+                class="heading mt-0"
+                contentAnim
+                aniName="fadeInRightShorter"
+              >
+                <a
+                  routerLink="/shop/sidebar/list"
+                  [queryParams]="{ category: 'phones' }"
+                  class="cat-block"
+                >
+                  <figure>
+                    <span>
+                      <img
+                        src="assets/images/home/categorias/celulares.png"
+                        width="131"
+                        height="76"
+                        alt="Category image"
+                      />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Celulares & Accesorios</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div
+                class="heading mt-0"
+                contentAnim
+                aniName="fadeInRightShorter"
+              >
+                <a
+                  routerLink="/shop/sidebar/list"
+                  [queryParams]="{ category: 'televisions' }"
+                  class="cat-block"
+                >
+                  <figure>
+                    <span>
+                      <img
+                        src="assets/images/home/categorias/fotografia.png"
+                        width="131"
+                        height="76"
+                        alt="Category image"
+                      />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Cámara & Fotografía</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div
+                class="heading mt-0"
+                contentAnim
+                aniName="fadeInRightShorter"
+              >
+                <a
+                  routerLink="/shop/sidebar/list"
+                  [queryParams]="{ category: 'audio' }"
+                  class="cat-block"
+                >
+                  <figure>
+                    <span>
+                      <img
+                        src="assets/images/home/categorias/audio.png"
+                        width="131"
+                        height="76"
+                        alt="Category image"
+                      />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Audio & Equipos de Sonido</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div
+                class="heading mt-0"
+                contentAnim
+                aniName="fadeInRightShorter"
+              >
+                <a
+                  routerLink="/shop/sidebar/list"
+                  [queryParams]="{ category: 'watches' }"
+                  class="cat-block"
+                >
+                  <figure>
+                    <span>
+                      <img
+                        src="assets/images/home/categorias/consolas.png"
+                        width="131"
+                        height="76"
+                        alt="Category image"
+                      />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Consolas & Videojuegos</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- End Seccion 2 -->
 
-  <!-- Seccion 2 -->
-  <section class="sound-section hub-home">
-    <div class="icon-boxes-container mb-2">
-  <!-- <section class="sound-section" style="background-image: url(assets/images/home/banners/02.jpg)"> -->
+  <!-- Seccion 3 Mecanica Compra -->
+  <section class="overview mt-5">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-       <div class="icon-box icon-box-side">
-         <span class="icon-box-icon text-dark">
-           <i class="icon-truck"></i>
-          </span>
-          <div classs="icon-box-content">
-           <h3 class="icon-box-title">Envíos Gratis</h3>
-           <p>en compras mayores de $300</p>
-         </div>
-       </div>
-       </div>
-       <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-        <div class="icon-box icon-box-side">
-          <span class="icon-box-icon text-dark">
-            <i class="icon-rotate-left"></i>
-           </span>
-           <div classs="icon-box-content">
-            <h3 class="icon-box-title">Devolución gratuita</h3>
-            <p>en 30 días</p>
-          </div>
+      <figure class="bg-image">
+        <img
+          src="assets/images/home/bg-circle.png"
+          alt="Background"
+          width="799"
+          height="760"
+        />
+      </figure>
+    </div>
+    <div class="container banner-container">
+      <div class="banner row d-flex">
+        <div
+          class="col-lg-4 order-lg-last"
+          contentAnim
+          aniName="fadeInLeftShorter"
+        >
+          <figure class="banner-img">
+            <img
+              src="assets/images/home/comunidad/comunidad-daru-2.png"
+              alt="Product"
+              width="901"
+              height="532"
+            />
+          </figure>
         </div>
-        </div>
-        <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-          <div class="icon-box icon-box-side">
-            <span class="icon-box-icon text-dark">
-              <i class="icon-info-circle"></i>
-             </span>
-             <div classs="icon-box-content">
-              <h3 class="icon-box-title">Obtén un 20%</h3>
-              <p>en 1 artículo en tu primera compra</p>
+        <div class="col-lg-8" contentAnim aniName="fadeInRightShorter">
+          <div class="banner-content">
+            <h3 class="banner-subtitle text-white">Se parte de DARU</h3>
+            <h2 class="banner-title text-white mb-1">con un solo click</h2>
+            <span class="text-white"
+              >Integrate a la comunidad DARU para disfrutar de grandes
+              beneficios</span
+            >
+            <div class="banner-info mb-2">
+              <ul class="info-list text-white">
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Envíos gratis</span>
+                </li>
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Elige tu método de pago</span>
+                </li>
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Ofertas premier</span>
+                </li>
+              </ul>
+            </div>
+            <div class="action">
+              <!--  <span class="price text-white">
+                <sup>$</sup><strong>259</strong><sup>.99</sup>
+              </span>
+              -->
+              <a
+                href="javascript:;"
+                class="btn btn-cart btn-primary btn-round btn-cart-home"
+                (click)="addCart($event)"
+                >Regístrate</a
+              >
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End Seccion 3  -->
+
+  <!-- Seccion 4 Beneficios -->
+  <section class="sound-section hub-home">
+    <!-- <section class="sound-section" style="background-image: url(assets/images/home/banners/02.jpg)"> -->
+    <div class="icon-boxes-container mb-2">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="icon-truck"></i>
+              </span>
+              <div classs="icon-box-content">
+                <h3 class="icon-box-title">Envíos Gratis</h3>
+                <p>en compras mayores de $300</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="icon-rotate-left"></i>
+              </span>
+              <div classs="icon-box-content">
+                <h3 class="icon-box-title">Devolución gratuita</h3>
+                <p>en 30 días</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="icon-info-circle"></i>
+              </span>
+              <div classs="icon-box-content">
+                <h3 class="icon-box-title">Obtén un 20%</h3>
+                <p>en 1 artículo en tu primera compra</p>
+              </div>
+            </div>
           </div>
           <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
             <div class="icon-box icon-box-side">
               <span class="icon-box-icon text-dark">
                 <i class="bi bi-credit-card"></i>
-               </span>
-               <div classs="icon-box-content">
+              </span>
+              <div classs="icon-box-content">
                 <h3 class="icon-box-title">Pago</h3>
                 <p>aceptamos todas las tarjetas bancarias</p>
               </div>
             </div>
-            </div>
-
-   <!-- <div class="container">
-     <div class="banner row d-flex">
-       <div class="col-lg-4 mt-4 mt-lg-0 d-flex d-lg-block justify-content-center">
-         <figure class="banner-img">
-           <img src="assets/images/home/products/headphone-1.png" width="579" height="653" alt="Product">
-         </figure>
-       </div> -->
-
-
-       <!-- <div class="col-lg-6 mt-2 mt-lg-0" contentAnim aniName="fadeInLeftShorter">
-         <div class="banner-content">
-           <h3 class="banner-subtitle">Las mejores marcas</h3>
-           <h2 class="banner-title">en un solo lugar </h2>
-           <p class="banner-text">
-             Datos <br>
-             Observciones. <br>
-           </p> -->
-           <!-- <div class="banner-info row">
-             <div class="col-6">
-               <div class="icon-box icon-box-side">
-                 <span class="icon-box-icon">
-                   <img src="assets/images/home/icons/icon-noise.png" width="30" height="30" alt="Icon">
-                 </span>
-                 <div class="icon-box-content">
-                   <h3 class="icon-box-title text-white">Cancelacion</h3>
-                 </div>
-               </div>
-             </div>
-             <div class="col-6">
-               <div class="icon-box icon-box-side">
-                 <span class="icon-box-icon">
-                   <img src="assets/images/home/icons/icon-battery.png" width="30" height="30" alt="Icon">
-                 </span>
-                 <div class="icon-box-content">
-                   <h3 class="icon-box-title text-white">Playtime 20 + Horas</h3>
-                 </div>
-               </div>
-             </div>
-             <div class="col-6">
-               <div class="icon-box icon-box-side">
-                 <span class="icon-box-icon">
-                   <i class="icon-bluetooth-b"></i>
-                 </span>
-                 <div class="icon-box-content">
-                   <h3 class="icon-box-title text-white">Wireless</h3>
-                 </div>
-               </div>
-             </div>
-             <div class="col-6">
-               <div class="icon-box icon-box-side">
-                 <span class="icon-box-icon">
-                   <img src="assets/images/home/icons/icon-mobile.png" width="30" height="30" alt="Icon">
-                 </span>
-                 <div class="icon-box-content">
-                   <h3 class="icon-box-title text-white">Phone Functionality</h3>
-                 </div>
-               </div>
-             </div>
-           </div> 
-         </div>
-       </div>
-       <div class="col-lg-6 mt-6 mt-lg-0 d-flex d-lg-block">
-
-       </div>
-     </div>
-   </div>-->
-    </div>
-    </div>
-    </div>
- </section>
-
-  <!-- Seccion 3 -->
-  <section class="gallery pt-5">
-    <div class="heading mb-0 text-center">
-      <h4 class="subtitle">Ofertas</h4>
-      <h2 class="title" contentAnim aniName="blurIn">Relámpago</h2>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-3">
-          <div class="content-left">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <figure class="mb-md-2 media-2">
-                <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
-                  fixedPt="90.17%"></app-image>
-              </figure>
-              <div class="action text-center">
-                <span class="text-primary">
-                  <h6><strong>Gaming</strong></h6>
-                 </span>
-                 <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
-               </div>
-              <!-- <h4 class="subtitle">Promociones Del Mes</h4>
-              <h2 class="title mb-2">Galeria <br>de Productos</h2>
-              <p class="content mb-6">
-                Info <br>
-                Info <br>
-                Info.
-              </p> -->
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="content-left">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-            <figure class="mb-md-2 media-2">
-              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
-                fixedPt="90.17%"></app-image>
-            </figure>
-            <div class="action text-center">
-              <span class="text-primary">
-                <h6><strong>Computo</strong></h6>
-               </span>
-               <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
-             </div>
-          </div>
-          
-            <!-- <figure class="media-3">
-              <app-image src="assets/images/home/products/5.jpg" alt="Banner" width="471" height="300"
-                fixedPt="63.7%"></app-image>
-            </figure> -->
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="content-right">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-            <figure class="mb-md-2 media-2">
-              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
-                fixedPt="90.17%"></app-image>
-            </figure>
-            <div class="action text-center">
-              <span class="text-primary">
-                <h6><strong>Telefonía</strong></h6>
-               </span>
-               <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
-             </div>
-          </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="content-right">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-            <figure class="mb-md-2 media-2">
-              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
-                fixedPt="90.17%"></app-image>
-            </figure>
-            <div class="action text-center">
-              <span class="text-primary">
-                <h6><strong>Audio</strong></h6>
-               </span>
-               <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
-             </div>
-          </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- End Seccion 4 Beneficios -->
 
-  <!-- Seccion 3 -->
-  <!-- <section class="playtime-section mb-4">
-    <div class="banner">
-      <figure>
-        <img src="assets/images/home/banners/03.jpg" alt="Banner" width="1903" height="880">
-      </figure>
-
-      <div class="banner-content">
-        <div class="col-lg-6 mt-6 mt-lg-0 d-flex d-lg-block justify-content-center">&nbsp;
-        </div>
-        <div class="col-lg-6 mt-2 mt-lg-0" contentAnim aniName="fadeInLeftShorter">
-          <h3 class="banner-subtitle">Escucha todo el dia</h3>
-          <h2 class="banner-title" contentAnim aniName="blurIn">20 + Horas de <br>Juegos</h2>
-          <p class="banner-text">
-            Lo mejor en audio.
-          </p>
-          <div class="banner-info d-flex mt-4">
-            <div class="info-box">
-              <p>Info</p>
-              <strong>Info</strong>
-              <p>horas</p>
-            </div>
-            <div class="info-box">
-              <p>Jugando</p>
-              <strong>Info</strong>
-              <p>Info</p>
+  <!-- Seccion 5 Ofertas Relampagos -->
+  <section class="gallery pt-2">
+    <div class="heading mb-0 text-center">
+      <h2 class="title-home mb-1" contentAnim aniName="blurIn">
+        Ofertas
+      </h2>
+      <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
+        Relámpago
+      </h2>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-left">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <app-image
+                  src="assets/images/home/products/3.jpg"
+                  alt="Banner"
+                  width="472"
+                  height="530"
+                  fixedPt="90.17%"
+                ></app-image>
+              </figure>
+              <div class="action text-center">
+                <span class="text-primary">
+                  <h6><strong>Gaming</strong></h6>
+                </span>
+                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+              </div>
             </div>
           </div>
-
+        </div>
+         <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-left">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <app-image
+                  src="assets/images/home/products/3.jpg"
+                  alt="Banner"
+                  width="472"
+                  height="530"
+                  fixedPt="90.17%"
+                ></app-image>
+              </figure>
+              <div class="action text-center">
+                <span class="text-primary">
+                  <h6><strong>Computo</strong></h6>
+                </span>
+                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-right">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <app-image
+                  src="assets/images/home/products/3.jpg"
+                  alt="Banner"
+                  width="472"
+                  height="530"
+                  fixedPt="90.17%"
+                ></app-image>
+              </figure>
+              <div class="action text-center">
+                <span class="text-primary">
+                  <h6><strong>Telefonía</strong></h6>
+                </span>
+                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-right">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <app-image
+                  src="assets/images/home/products/3.jpg"
+                  alt="Banner"
+                  width="472"
+                  height="530"
+                  fixedPt="90.17%"
+                ></app-image>
+              </figure>
+              <div class="action text-center">
+                <span class="text-primary">
+                  <h6><strong>Audio</strong></h6>
+                </span>
+                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </section> -->
+  </section>
+  <!-- End Seccion 5 Ofertas Relampagos -->
 
-   <!--  Seccion 4 -->
-  <section class="gallery pt-15" style="background-image: url(assets/images/home/bg-2-back.jpg);">
+  <!-- Seccion 6 Oferta espacial-->
+  <section class="video-banner bg-parallax mb-10" style="background-image: url(assets/images/home/oferta/banner-oferta.jpg)"
+    bgParallax>
+    <!-- <div class="container">
+      <div class="banner row d-flex">
+        <div class="col-lg-4 mt-4 mt-lg-0 d-flex d-lg-block justify-content-center">
+          <figure class="banner-img">
+            <img src="assets/images/home/products/headphone-1.png"
+              width="579"
+              height="653"
+              alt="Product"
+            />
+          </figure>
+        </div>
+      </div>
+    </div> -->
+  </section>
+  <!-- End Seccion 6 Oferta especial-->
+
+  <!--  Seccion 7 Marcas destacadas -->
+  <!-- <section
+    class="gallery pt-15"
+    style="background-image: url(assets/images/home/bg-2-back.jpg)"
+  >
     <div class="container">
       <div class="row">
         <div class="col-md-6">
@@ -331,26 +497,50 @@
               <p class="content mb-6">texto</p>
             </div>
             <figure class="mb-md-12 media-2">
-              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="590" height="532"
-                fixedPt="112.3%" class="image-daru" style="padding-top: 112.3%;"></app-image>
+              <app-image
+                src="assets/images/home/products/3.jpg"
+                alt="Banner"
+                width="590"
+                height="532"
+                fixedPt="112.3%"
+                class="image-daru"
+                style="padding-top: 112.3%"
+              ></app-image>
             </figure>
           </div>
         </div>
         <div class="col-md-6 p-md-0">
           <div class="content-right">
             <figure class="mb-md-12 media-2">
-              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
-                fixedPt="90.17%" class="lazyloaded image-daru" style="padding-top: 90.17%;"></app-image>
+              <app-image
+                src="assets/images/home/products/3.jpg"
+                alt="Banner"
+                width="472"
+                height="530"
+                fixedPt="90.17%"
+                class="lazyloaded image-daru"
+                style="padding-top: 90.17%"
+              ></app-image>
             </figure>
             <figure class="media-3 mb-6">
-              <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="471" height="300"
-                fixedPt="63.7%" class="lazyloaded image-daru" style="padding-top: 63.7%;"></app-image>
+              <app-image
+                src="assets/images/home/products/3.jpg"
+                alt="Banner"
+                width="471"
+                height="300"
+                fixedPt="63.7%"
+                class="lazyloaded image-daru"
+                style="padding-top: 63.7%"
+              ></app-image>
             </figure>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
+  <!-- End Seccion 7 Marcas -->
+
+  
 
   <!-- Seccion 5 -->
   <!-- <section class="video-banner bg-parallax mb-20" style="background-image: url(assets/images/home/banners/06.jpg)"
@@ -360,149 +550,6 @@
        <i class="icon-play-outline"></i>
     </a>
   </section> -->
-
-  <!-- Seccion 6 -->
-  <!-- <section class="reviews mt-5">
-    <div class="heading mb-6 text-center">
-      <h4 class="subtitle">Categorias</h4>
-      <h2 class="title" contentAnim aniName="blurIn">Mejores Productos</h2>
-    </div>
-    <div class="container">
-      <owl-carousel carouselClasses="carousel-equal-height owl-simple" [options]="introSlider">
-        <div class="testimonials-box">
-          <blockquote class="testimonials text-center">
-            <div class="avatar">
-              <img [src]="SERVER_URL + products[0].sm_pictures[0].url" alt="Producto" width="90" height="90">
-              <img src="assets/images/home/products/2.jpg" alt="Producto" width="90" height="90">
-            </div>
-            <div class="ratings-contianer">
-              <div class="ratings">
-                <div class="ratings-val" style="width: 90px"></div>
-              </div>
-            </div>
-            <h5 class="comment-title">Info.</h5>
-            <p>
-              Info
-            </p>
-            <cite>
-              Info
-            </cite>
-          </blockquote>
-        </div>
-        <div class="testimonials-box">
-          <blockquote class="testimonials text-center">
-            <div class="avatar">
-              <img [src]="SERVER_URL + products[1].sm_pictures[1].url" alt="Producto" width="80" height="80">
-              <img src="assets/images/home/products/6.jpg" alt="Producto" width="90" height="90">
-            </div>
-            <div class="ratings-contianer">
-              <div class="ratings">
-                <div class="ratings-val" style="width: 80px"></div>
-              </div>
-            </div>
-            <h5 class="comment-title">Info.</h5>
-            <p>
-              Info.
-            </p>
-            <cite>
-              Info.
-            </cite>
-          </blockquote>
-        </div>
-        <div class="testimonials-box">
-          <blockquote class="testimonials text-center">
-            <div class="avatar">
-              <img [src]="SERVER_URL + products[2].sm_pictures[0].url" alt="Producto" width="70" height="70">
-              <img src="assets/images/home/products/7.jpg" alt="Producto" width="90" height="90">
-            </div>
-            <div class="ratings-contianer">
-              <div class="ratings">
-                <div class="ratings-val" style="width: 70px"></div>
-              </div>
-            </div>
-            <h5 class="comment-title">Info</h5>
-            <p>
-              Info
-            </p>
-            <cite>
-              Info
-            </cite>
-          </blockquote>
-        </div>
-      </owl-carousel>
-    </div>
-  </section> -->
-
-  <!-- Seccion 7 -->
-  <!-- <section class="reviews mt-15" style="background-image: url(assets/images/home/banners/04.jpg)">
-    <div class="container">
-      <div class="heading mb-6 text-center">
-        <h2 class="title" contentAnim aniName="blurIn">Promociones</h2>
-        <h4 class="subtitle">Productos de Temporada</h4>
-      </div>
-      <owl-carousel carouselClasses="carousel-equal-height owl-simple" [options]="reviewSlider">
-        <div class="testimonials-box">
-          <blockquote class="testimonials text-center">
-            <div class="avatar">
-              <img src="assets/images/home/products/7.jpg" alt="User" width="100" height="100">
-            </div>
-            <div class="ratings-contianer">
-              <div class="ratings">
-                <div class="ratings-val" style="width: 100%;"></div>
-              </div>
-            </div>
-            <h5 class="comment-title"></h5>
-            <p>
-              Descripcion
-            </p>
-            <cite>
-              Producto
-            </cite>
-          </blockquote>
-        </div>
-        <div class="testimonials-box">
-          <blockquote class="testimonials text-center">
-            <div class="avatar">
-              <img src="assets/images/home/products/8.jpg" alt="User" width="90" height="90">
-            </div>
-            <div class="ratings-contianer">
-              <div class="ratings">
-                <div class="ratings-val" style="width: 90%;"></div>
-              </div>
-            </div>
-            <h5 class="comment-title"></h5>
-            <p>
-              Descripcion
-            </p>
-            <cite>
-              Producto
-            </cite>
-          </blockquote>
-        </div>
-        <div class="testimonials-box">
-          <blockquote class="testimonials text-center">
-            <div class="avatar">
-              <img src="assets/images/home/products/9.jpg" alt="User" width="100" height="100">
-            </div>
-            <div class="ratings-contianer">
-              <div class="ratings">
-                <div class="ratings-val" style="width: 100%;"></div>
-              </div>
-            </div>
-            <h5 class="comment-title"></h5>
-            <p>
-              Descripcion
-            </p>
-            <cite>
-              Producto
-            </cite>
-          </blockquote>
-        </div>
-      </owl-carousel>
-    </div>
-  </section> -->
-
-  
 
   <!-- Seccion 9 -->
   <!-- <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
@@ -550,4 +597,39 @@
     </div>
   </section> -->
 
+  <div
+    class="cta bg-image bg-dark pt-4 pb-5 mb-0"
+    style="background-image: url('assets/images/home/bg-5.jpg')"
+  >
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-sm-10 col-md-8 col-lg-6">
+          <div class="cta-heading text-center">
+            <h3 class="cta-title text-white">Get The Latest Deals</h3>
+            <p class="cta-desc text-white">
+              and receive <span class="font-weight-normal">$20 coupon</span> for
+              first shopping
+            </p>
+          </div>
+
+          <form action="#">
+            <div class="input-group input-group-round">
+              <input
+                type="email"
+                class="form-control form-control-white border-0"
+                placeholder="Enter your Email Address"
+                aria-label="Email Adress"
+                required
+              />
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                  <span>Subscribe</span><i class="icon-long-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>

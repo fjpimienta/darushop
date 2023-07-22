@@ -106,9 +106,7 @@
           "options": {
             "browserTarget": "shop:build",
             "proxyConfig": "proxy.conf.json",
-            "ssl": false,
-            "sslKey": "src/daru.key",
-            "sslCert": "src/daru.crt"
+            "ssl": true
           },
           "configurations": {
             "production": {
