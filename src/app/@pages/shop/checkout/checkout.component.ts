@@ -495,7 +495,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const cp = $(event.target).val();
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
-        const codigoPostal = this.codigopostalsService.getCps(1, -1, cp).then(async result => {
+        const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;
           if (this.cps.length > 0) {
             // Agregar Pais, Estados, Municipios del CP
@@ -542,7 +542,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           return await [];
         });
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
-        if ((await codigoPostal).length > 0) {
+        if (codigoPostal.length > 0) {
           this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
         }
       } else {
@@ -628,6 +628,105 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * @returns Datos de la(s) paqueteria(s) del proveedor
    */
   async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<any> {
+    this.shipments = [];
+    this.warehouses = [];
+    this.warehouse = new Warehouse();
+    this.warehouse.shipments = [];
+    const shipmentsEnd = [];
+    // Verificar productos por proveedor.
+    const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
+      .then(async result => {
+        return await result.suppliers;
+      });
+    this.suppliers = suppliers;
+    if (suppliers.length > 0) {
+      for (const supId of Object.keys(suppliers)) {
+        let supplier = new Supplier();
+        supplier = suppliers[supId];
+        const shipmentsSupp = [];
+        const supplierProd = new SupplierProd();
+        const warehouseNacional = new Warehouse();
+        const productsNacional: ProductShipment[] = [];
+        const apiShipment = await this.suppliersService                             // Set Api para Envios
+          .getApiSupplier(supplier.slug, 'envios', 'paqueterias')
+          .then(async result => {
+            if (result.status) {
+              return await result.apiSupplier;
+            }
+          });
+        if (apiShipment) {                                                          // Si hay Api para el Proveedor.
+          const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
+          const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+          if (carItemsSupplier.length > 0) {                                        // Si el proveedor tiene productos en el carrito
+            // START Filtrar almacenes que tengan todos los productos y recuperar el almacen que los tenga todos.
+            const concatenatedBranchOffices: BranchOffices[][] = [];
+            for (const idCI of Object.keys(carItemsSupplier)) {
+              const cartItem: CartItem = carItemsSupplier[idCI];
+              concatenatedBranchOffices.push(cartItem.suppliersProd.branchOffices);
+            }
+            const branchSupplier = this.findCommonBranchOffice(carItemsSupplier);
+            // END
+            for (const idCI of Object.keys(carItemsSupplier)) {                     // Set los productos y el almacen para enviar.
+              const cartItem: CartItem = carItemsSupplier[idCI];
+              const productShipment = new ProductShipment();
+              productShipment.producto = cartItem.sku;
+              productShipment.cantidad = cartItem.qty;
+              productShipment.precio = cartItem.price;
+              productShipment.priceSupplier = cartItem.suppliersProd.price;
+              productShipment.moneda = cartItem.suppliersProd.moneda;
+              productShipment.almacen = branchSupplier.id;
+              productShipment.cp = branchSupplier.cp;
+              productShipment.name = cartItem.name;
+              productShipment.total = cartItem.qty * cartItem.price;
+              productsNacional.push(productShipment);
+              warehouseNacional.id = branchSupplier.id;
+              warehouseNacional.cp = branchSupplier.cp;
+              warehouseNacional.name = branchSupplier.name;
+              warehouseNacional.estado = branchSupplier.estado;
+              warehouseNacional.latitud = branchSupplier.latitud;
+              warehouseNacional.longitud = branchSupplier.longitud;
+              this.warehouse = warehouseNacional;
+              this.warehouse.productShipments = productsNacional;
+            }
+            this.warehouse.cp = cpDestino;
+            this.warehouse.productShipments = productsNacional;
+            const shipmentsCost = await this.externalAuthService.onShippingEstimate(    // Cotizar el envio de productos por proveedor
+              supplier, apiShipment, this.warehouse, true)
+              .then(async (resultShip) => {
+                const shipments: Shipment[] = [];
+                for (const key of Object.keys(resultShip)) {
+                  const shipment = new Shipment();
+                  shipment.empresa = resultShip[key].empresa.toString();
+                  if (supplier.slug === 'ct') {
+                    shipment.costo = resultShip[key].total;
+                    shipment.metodoShipping = resultShip[key].metodo;
+                    shipment.lugarEnvio = resultShip[key].lugarEnvio;
+                  } else {
+                    shipment.costo = resultShip[key].costo;
+                    shipment.metodoShipping = resultShip[key].metodoShipping;
+                    shipment.lugarEnvio = resultShip[key].lugarEnvio;
+                  }
+                  shipments.push(shipment);
+                }
+                return await shipments;
+              });
+            for (const shipId of Object.keys(shipmentsCost)) {
+              shipmentsSupp.push(shipmentsCost[shipId]);
+              shipmentsEnd.push(shipmentsCost[shipId]);
+            }
+            this.warehouse.shipments = shipmentsSupp;
+            supplierProd.idProveedor = supplier.slug;
+            this.warehouse.suppliersProd = supplierProd;
+            this.warehouses.push(this.warehouse);
+          }
+        }
+      }
+    }
+    return await shipmentsEnd;
+    // Elaborar Pedido Previo a facturacion.
+  }
+
+  async onCotizarEnviosX(cpDestino: string, estadoCp: string): Promise<any> {
     this.shipments = [];
     this.warehouses = [];
     this.warehouse = new Warehouse();
