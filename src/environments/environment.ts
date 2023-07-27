@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   backend: 'https://apidev.daru.mx:3001/graphql',
   backendWs: 'wss://apidev.daru.mx:3001/graphql',
-  stripePublicKey: 'pk_test_51LcAKpKmpYSfXVu3pcVivi8Yb5D9Rm359Uzl94jUsJgtzrHxyQHUyZPgyGqrwTLje73HwDrxRQZzbvQFVkhS534g004XdS4vSN',
+  stripePublicKey: 'pk_test_51NYXA6CQE0nb8Ka8LtAclE1JaXZxjpgF7V7oO8Bab8NXVQhkQx5uF7qiWod8VZu2KB1CiI7Y2VKq412v0k8OoyDy00tSs0cZDB',
   upload: 'https://apidev.daru.mx:3001/uploads',
   uploadsUrl: 'https://apidev.daru.mx:3001/uploads',
   demo: 'demo30',
