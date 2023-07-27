@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { PRODUCTOSCT_FRAGMENT, SHIPMENTS_CT_RATES_FRAGMENT, TOKENCT_FRAGMENT } from '@graphql/operations/fragment/suppliers/ct';
+import { ORDERCT_FRAGMENT, PRODUCTOSCT_FRAGMENT, SHIPMENTS_CT_RATES_FRAGMENT, TOKENCT_FRAGMENT } from '@graphql/operations/fragment/suppliers/ct';
 
 export const SHIPMENTS_CT_RATES_QUERY = gql`
   query shippingCtRates(
@@ -31,4 +31,17 @@ export const PRODUCTOSCT_LIST_QUERY = gql`
     }
   }
   ${PRODUCTOSCT_FRAGMENT}
+`;
+
+export const ADD_ORDER_CT = gql`
+  query orderCt {
+    orderCt {
+      status
+      message
+      orderCt {
+        ...OrderCtObject
+      }
+    }
+  }
+  ${ORDERCT_FRAGMENT}
 `;

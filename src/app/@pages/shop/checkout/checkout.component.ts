@@ -1223,6 +1223,62 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Pedidos
   async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
+    switch (supplierName) {
+      case 'cva':
+        const pedidosCva = await this.externalAuthService.setOrderCva(order)
+          .then(async resultPedido => {
+            try {
+              const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
+              cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
+              cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
+              cvaResponse.error = resultPedido.error._ ? resultPedido.error._ : '';
+              cvaResponse.estado = resultPedido.estado._ ? resultPedido.estado._ : '';
+              cvaResponse.pedido = resultPedido.pedido._ ? resultPedido.pedido._ : '0';
+              cvaResponse.total = resultPedido.total._ ? resultPedido.total._ : '0';
+              console.log('cvaResponse: ', cvaResponse);
+              return await cvaResponse;
+            } catch (error) {
+              throw await error;
+            }
+          });
+        return await pedidosCva;
+      case 'ct':
+        const pedidosCt = await this.externalAuthService.setOrderCt(
+          order.idPedido,
+          order.almacen,
+          order.tipoPago,
+          order.guiaConnect,
+          order.envio,
+          order.producto,
+          order.cfdi
+        )
+          .then(async resultPedido => {
+            try {
+              const ctResponse: OrderCtResponse = new OrderCtResponse();
+              if (resultPedido[0].respuestaCT) {
+                ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
+                ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
+                ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
+                ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
+                ctResponse.errores = resultPedido[0].respuestaCT.errores;
+              } else {
+                ctResponse.estatus = resultPedido.estatus;
+                ctResponse.fecha = resultPedido.fecha;
+                ctResponse.pedidoWeb = resultPedido.pedidoWeb;
+                ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
+                ctResponse.errores = resultPedido.errores;
+              }
+              console.log('ctResponse: ', ctResponse);
+              return await ctResponse;
+            } catch (error) {
+              throw await error;
+            }
+          });
+        return await pedidosCt;
+    }
+
+    return await [];
+
     // get supplier
     const supplier = await this.suppliersService.getSupplierByName(supplierName)
       .then(async (result) => {

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export const ORDERCT_FRAGMENT = gql`
+export const ORDERCT_FRAGMENT_X = gql`
    fragment OrderctObject on OrderCt {
       idPedido
       almacen

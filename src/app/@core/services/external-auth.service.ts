@@ -9,10 +9,13 @@ import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
-import { PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY } from '@graphql/operations/query/suppliers/ct';
-import { BRANDSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
+import { ADD_ORDER_CT, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY } from '@graphql/operations/query/suppliers/ct';
+import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
+import { IOrderCva } from '@core/interfaces/suppliers/ordercva.interface';
+import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from '@core/interfaces/suppliers/orderct.interface';
+import { EnvioCt, GuiaConnect } from '@core/models/suppliers/orderct.models';
 
 declare const require;
 const axios = require('axios');
@@ -1254,6 +1257,19 @@ export class ExternalAuthService extends ApiService {
         });
     });
   }
+
+  async setOrderCva(pedidoCva: IOrderCva): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(ADD_ORDER_CVA, { pedidoCva }, {}).subscribe(
+        (result: any) => {
+          console.log('result: ', result);
+          resolve(result.listProductsCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
   //#endregion
 
   //#region CT
@@ -1277,6 +1293,42 @@ export class ExternalAuthService extends ApiService {
       this.get(PRODUCTOSCT_LIST_QUERY, {}, {}).subscribe(
         (result: any) => {
           resolve(result.stockProductsCt);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async setOrderCt(
+    idPedido: number,
+    almacen:string,
+    tipoPago: string,
+    guiaConnect: IGuiaConnect,
+    envio: IEnvioCt,
+    producto: IProductoCt,
+    cfdi: string
+  ): Promise<any> {
+    console.log('idPedido: ', idPedido);
+    console.log('almacen: ', almacen);
+    console.log('tipoPago: ', tipoPago);
+    console.log('guiaConnect: ', guiaConnect);
+    console.log('envio: ', envio);
+    console.log('producto: ', producto);
+    console.log('cfdi: ', cfdi);
+    return new Promise<any>((resolve, reject) => {
+      this.get(ADD_ORDER_CT, {
+        idPedido,
+        almacen,
+        tipoPago,
+        guiaConnect,
+        envio,
+        producto,
+        cfdi
+      }, {}).subscribe(
+        (result: any) => {
+          console.log('result: ', result);
+          resolve(result.orderCt);
         },
         (error: any) => {
           reject(error);

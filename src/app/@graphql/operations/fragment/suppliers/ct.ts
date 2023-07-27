@@ -41,3 +41,22 @@ export const PRODUCTOSCT_FRAGMENT = gql`
     codigo
   }
 `;
+
+export const ORDERCT_FRAGMENT = gql`
+  fragment OrderCtObject on ResponseCtsOrder {
+    codigo
+    mensaje
+    referencia
+    respuesta {
+      pedidoWeb
+      fecha
+      tipoDeCambio
+      estatus
+      errores {
+        errorCode
+        errorMessage
+        errorReference
+      }
+    }
+  }
+`;

@@ -107,3 +107,14 @@ export const PRODUCTOSCVA_FRAGMENT = gql`
     ExsTotal
   }
 `;
+
+export const ORDERCVA_FRAGMENT = gql`
+  fragment OrderCvaObject on ResponseCvasOrder {
+    error
+    estado
+    pedido
+    total
+    agentemail
+    almacenmail
+  }
+`;
