@@ -738,13 +738,13 @@ a:focus {
   li.show,
   li.active {
     >a {
-      color: $primary-color;
+      color:#fff;
     }
   }
 }
 
 .main-nav li.active a.link-active {
-  color: $primary-color;
+  color: $light-text;
 }
 
 .demo-item {

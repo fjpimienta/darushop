@@ -368,11 +368,13 @@
   }
 
   .product-price {
-    font-size: 2.4rem;
+    font-size: 1.8rem;
   }
 
   .new-price {
     margin-right: 1rem;
+    font-weight: bold;
+    color:#4b02fc;
   }
 
   .product-content {
@@ -415,6 +417,7 @@
       }
     }
   }
+}
 
   .product-cat {
     font-weight: 400;
@@ -425,7 +428,7 @@
     }
 
     a {
-      color: #666;
+      color: #4b02fc;
       box-shadow: none;
       transition: all .35s ease;
 
@@ -469,17 +472,20 @@
       }
     }
   }
-
+.product{
   .btn-product {
 
     &:hover,
     &:focus {
-      span {
-        box-shadow: none;
-      }
+      background-color:#5bef97;
+      border-bottom-color:#5bef97;
+    }
+    span{
+      color:inherit;
+    }
     }
   }
-}
+
 
 .details-filter-row {
   display: flex;
