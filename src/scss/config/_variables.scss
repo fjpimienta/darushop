@@ -5,24 +5,23 @@ $footer-font-size: 1.3rem !default;
 $input-font-size: 1.4rem !default;
 $button-font-size: 1.4rem !default;
 
-$primary-color: #6666ff !default;
-$primary-color-dark: #3333ff !default;
+$primary-color: #4b02fc !default;
+$primary-color-dark: #4b02fc !default;
 
-$secondary-color: #3333ff !default;
-$secondary-color-dark: #3333ff !default;
+$secondary-color: #5bef97 !default;
+$secondary-color-dark: #5bef97 !default;
 $link-color: $primary-color  !default;
 
 $lazy-image-background: #ebebeb;
-
 $border-radius: 0 !default;
 
-$body-text: #666666 !default;
-$light-text: #999999 !default;
-$dark-text: #333333 !default;
+$body-text: #000 !default;
+$light-text: #d9d9d9 !default;
+$dark-text: #000 !default;
 $headings-text: $dark-text  !default;
 
-$font-family: 'Poppins', sans-serif !default;
-$second-font-family: 'Poppins', sans-serif !default;
+$font-family: 'futuramedium', sans-serif !default;
+$second-font-family: 'futuramedium', sans-serif !default;
 
 $breakpoints: (
   xs: 480px,

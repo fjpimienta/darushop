@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export const ORDERCVA_FRAGMENT = gql`
+export const ORDERCVA_FRAGMENT_X = gql`
    fragment OrdercvaObject on OrderCva {
     NumOC
     Paqueteria

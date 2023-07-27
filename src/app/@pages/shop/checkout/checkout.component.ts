@@ -495,7 +495,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const cp = $(event.target).val();
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
-        const codigoPostal = this.codigopostalsService.getCps(1, -1, cp).then(async result => {
+        const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;
           if (this.cps.length > 0) {
             // Agregar Pais, Estados, Municipios del CP
@@ -542,7 +542,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           return await [];
         });
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
-        if ((await codigoPostal).length > 0) {
+        if (codigoPostal.length > 0) {
           this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
         }
       } else {
@@ -555,7 +555,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    if (cotizacionEnvios.length >= 0) {
+    if (cotizacionEnvios[0].costo <= 0) {
       const externos = await this.onCotizarEnviosExternos(cp, estado);
       if (externos.length > 0) {
         let costShips = 0;
@@ -632,7 +632,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.warehouses = [];
     this.warehouse = new Warehouse();
     this.warehouse.shipments = [];
-    const shipmentsEnd = [];
+    let shipmentsEnd = [];
     // Verificar productos por proveedor.
     const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
       .then(async result => {
@@ -701,7 +701,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     shipment.costo = resultShip[key].total;
                     shipment.metodoShipping = resultShip[key].metodo;
                     shipment.lugarEnvio = resultShip[key].lugarEnvio;
-                  } else {
+                  } else if (supplier.slug === 'cva') {
                     shipment.costo = resultShip[key].costo;
                     shipment.metodoShipping = resultShip[key].metodoShipping;
                     shipment.lugarEnvio = resultShip[key].lugarEnvio;
@@ -1223,6 +1223,62 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Pedidos
   async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
+    switch (supplierName) {
+      case 'cva':
+        const pedidosCva = await this.externalAuthService.setOrderCva(order)
+          .then(async resultPedido => {
+            try {
+              const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
+              cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
+              cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
+              cvaResponse.error = resultPedido.error._ ? resultPedido.error._ : '';
+              cvaResponse.estado = resultPedido.estado._ ? resultPedido.estado._ : '';
+              cvaResponse.pedido = resultPedido.pedido._ ? resultPedido.pedido._ : '0';
+              cvaResponse.total = resultPedido.total._ ? resultPedido.total._ : '0';
+              console.log('cvaResponse: ', cvaResponse);
+              return await cvaResponse;
+            } catch (error) {
+              throw await error;
+            }
+          });
+        return await pedidosCva;
+      case 'ct':
+        const pedidosCt = await this.externalAuthService.setOrderCt(
+          order.idPedido,
+          order.almacen,
+          order.tipoPago,
+          order.guiaConnect,
+          order.envio,
+          order.producto,
+          order.cfdi
+        )
+          .then(async resultPedido => {
+            try {
+              const ctResponse: OrderCtResponse = new OrderCtResponse();
+              if (resultPedido[0].respuestaCT) {
+                ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
+                ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
+                ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
+                ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
+                ctResponse.errores = resultPedido[0].respuestaCT.errores;
+              } else {
+                ctResponse.estatus = resultPedido.estatus;
+                ctResponse.fecha = resultPedido.fecha;
+                ctResponse.pedidoWeb = resultPedido.pedidoWeb;
+                ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
+                ctResponse.errores = resultPedido.errores;
+              }
+              console.log('ctResponse: ', ctResponse);
+              return await ctResponse;
+            } catch (error) {
+              throw await error;
+            }
+          });
+        return await pedidosCt;
+    }
+
+    return await [];
+
     // get supplier
     const supplier = await this.suppliersService.getSupplierByName(supplierName)
       .then(async (result) => {

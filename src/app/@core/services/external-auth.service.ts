@@ -5,11 +5,17 @@ import { ILoginCTForm, ILoginSyscomForm } from '@core/interfaces/extern-login.in
 import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
-// import axios, { isCancel, AxiosError } from 'axios';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { ADD_ORDER_CT, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY } from '@graphql/operations/query/suppliers/ct';
+import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
+import { ApiService } from '@graphql/services/api.service';
+import { Apollo } from 'apollo-angular';
+import { IOrderCva } from '@core/interfaces/suppliers/ordercva.interface';
+import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from '@core/interfaces/suppliers/orderct.interface';
+import { EnvioCt, GuiaConnect } from '@core/models/suppliers/orderct.models';
 
 declare const require;
 const axios = require('axios');
@@ -20,7 +26,7 @@ const he = require('he');
 @Injectable({
   providedIn: 'root'
 })
-export class ExternalAuthService {
+export class ExternalAuthService extends ApiService {
   loginCTForm: ILoginCTForm = {
     email: '',
     cliente: '',
@@ -33,8 +39,10 @@ export class ExternalAuthService {
   };
 
   constructor(
-    public http: HttpClient
+    public http: HttpClient,
+    apollo: Apollo
   ) {
+    super(apollo);
   }
   // Define requests
   private hRCvaSucursales$ = this.http.get('assets/uploads/json/cva_sucursales.json');
@@ -638,6 +646,169 @@ export class ExternalAuthService {
   ): Promise<any> {
     let token: string;
     const shipments: Shipment[] = [];
+    switch (supplier.slug) {
+      case 'ct':
+        const productosCt: ProductShipmentCT[] = [];
+        for (const id of Object.keys(warehouse.productShipments)) {
+          const pS: ProductShipment = warehouse.productShipments[id];
+          const newPS: ProductShipmentCT = new ProductShipmentCT();
+          newPS.producto = pS.producto;
+          newPS.cantidad = pS.cantidad;
+          newPS.precio = pS.priceSupplier;
+          newPS.moneda = pS.moneda;
+          newPS.almacen = pS.almacen;
+          productosCt.push(newPS);
+        }
+        const destino = warehouse.cp.padStart(5, '0');
+        const shippmentsCt = await this.getShippingCtRates(destino, productosCt);
+
+
+        let envioMasEconomico = null;
+        let costoMasBajo = shippmentsCt.respuesta.cotizaciones[0].total;
+        for (const envio of shippmentsCt.respuesta.cotizaciones) {            // Recuperar el envio mas economico
+          envio.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+          if (envio.total <= costoMasBajo) {
+            envioMasEconomico = envio;
+            costoMasBajo = envio.total;
+          }
+        }
+        if (envioMasEconomico) {
+          shipments.push(envioMasEconomico);
+        }
+        return await shipments;
+      case 'cva':
+        const productShipmentCVA: ProductShipmentCVA[] = [];
+        for (const idPS of Object.keys(warehouse.productShipments)) {
+          const pS: ProductShipment = warehouse.productShipments[idPS];
+          const newPS: ProductShipmentCVA = new ProductShipmentCVA();
+          newPS.clave = pS.producto;
+          newPS.cantidad = pS.cantidad;
+          productShipmentCVA.push(newPS);
+        }
+        const paqueteria = 4;
+        const cp = parseInt(warehouse.cp);
+        const cp_sucursal = parseInt(warehouse.productShipments[0].cp);
+        const productosCva = productShipmentCVA;
+        const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
+        const shipmentCva = new Shipment();
+        shipmentCva.empresa = 'PAQUETEXPRESS';
+        shipmentCva.costo = shippmentsCva.shippingCvaRates.cotizacion.montoTotal;
+        shipmentCva.metodoShipping = '';
+        shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+        shipments.push(shipmentCva);
+        return await shipments;
+      case '99minutos':
+        break;
+      default:
+        return await [];
+    }
+    if (!supplier.token) {                                                                // Si la API no requiere token
+      const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+        .then(async result => {
+          try {
+            switch (supplier.slug) {
+              case 'cva':
+                const shipmentCva = new Shipment();
+                shipmentCva.empresa = 'PAQUETEXPRESS';
+                shipmentCva.costo = result.montoTotal;
+                shipmentCva.metodoShipping = '';
+                shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+                shipments.push(shipmentCva);
+                return await shipments;
+              default:
+                return await [];
+            }
+          } catch (error) {
+            // TODO Enviar Costos Internos.
+            return await [];
+          }
+        });
+      return await resultados;
+    } else {
+      tokenJson = true;
+      return await this.getToken(supplier, tokenJson)                                     // Recupera el token
+        .then(
+          async result => {
+            switch (supplier.slug) {
+              case 'ct':
+                token = result.token;
+                break;
+              case 'cva':
+                token = result;
+                break;
+              case 'syscom':
+                token = result.access_token;
+                break;
+              case '99minutos':
+                token = result.access_token;
+                break;
+              default:
+                break;
+            }
+            if (token) {
+              const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+                .then(async result => {
+                  try {
+                    switch (supplier.slug) {
+                      case 'ct':
+                        if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
+                          let envioMasEconomico = null;
+                          let costoMasBajo = result.respuesta.cotizaciones[0].total;
+                          for (const envio of result.respuesta.cotizaciones) {            // Recuperar el envio mas economico
+                            envio.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+                            if (envio.total <= costoMasBajo) {
+                              envioMasEconomico = envio;
+                              costoMasBajo = envio.total;
+                            }
+                          }
+                          if (envioMasEconomico) {
+                            shipments.push(envioMasEconomico);
+                          }
+                          return shipments;
+                        } else {
+                          // TODO Enviar Costos Internos.
+                          return await [];
+                        }
+                      case 'syscom':
+                        return await [];
+                      case '99minutos':
+                        const shipment = new Shipment();
+                        shipment.empresa = supplier.slug;
+                        shipment.costo = result.data.price;
+                        shipment.metodoShipping = '';
+                        shipment.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+                        shipments.push(shipment);
+                        return await shipments;
+                      default:
+                        return await [];
+                    }
+                  } catch (error) {
+                    // TODO Enviar Costos Internos.
+                    return await [];
+                  }
+                });
+              return await resultados;
+            } else {
+              console.log('No se encontró el Token de Autorización.');
+              // TODO Enviar Costos Internos.
+              return await [];
+            }
+          },
+          error => {
+            console.log('error.message: ', error.message);
+          }
+        );
+    }
+  }
+
+  async onShippingEstimateX(
+    supplier: ISupplier,
+    apiSelect: IApis,
+    warehouse: Warehouse,
+    tokenJson: boolean
+  ): Promise<any> {
+    let token: string;
+    const shipments: Shipment[] = [];
     if (!supplier.token) {                                                                // Si la API no requiere token
       switch (supplier.slug) {
         case 'exel':
@@ -948,27 +1119,28 @@ export class ExternalAuthService {
   //#endregion Confirmacion
 
   //#region Catalogos Externos por json
-  async getSucursalesCva(): Promise<any> {
-    const productsCt = await this.getSucursalesCvaJson()
-      .then(async (result) => {
-        return await result;
-      })
-      .catch(async (error: Error) => {
-        return await [];
-      });
-    return productsCt;
-  }
+  // async getSucursalesCva(): Promise<any> {
+  //   const productsCt = await this.getSucursalesCvaJson()
+  //     .then(async (result) => {
+  //       return await result;
 
-  async getPaqueteriasCva(): Promise<any> {
-    const productsCt = await this.getPaqueteriasCvaJson()
-      .then(async (result) => {
-        return await result;
-      })
-      .catch(async (error: Error) => {
-        return await [];
-      });
-    return productsCt;
-  }
+  //     })
+  //     .catch(async (error: Error) => {
+  //       return await [];
+  //     });
+  //   return productsCt;
+  // }
+
+  // async getPaqueteriasCva(): Promise<any> {
+  //   const productsCt = await this.getPaqueteriasCvaJson()
+  //     .then(async (result) => {
+  //       return await result;
+  //     })
+  //     .catch(async (error: Error) => {
+  //       return await [];
+  //     });
+  //   return productsCt;
+  // }
 
   async getCiudadesCva(): Promise<any> {
     const productsCt = await this.getCiudadesCvaJson()
@@ -980,14 +1152,188 @@ export class ExternalAuthService {
       });
     return productsCt;
   }
-  async getSucursalesCvaJson(): Promise<any> {
-    return await this.hRCvaSucursales$.toPromise();
-  }
-  async getPaqueteriasCvaJson(): Promise<any> {
-    return await this.hRCvaPaqueterias$.toPromise();
-  }
+  // async getSucursalesCvaJson(): Promise<any> {
+  //   return await this.hRCvaSucursales$.toPromise();
+  // }
+  // async getPaqueteriasCvaJson(): Promise<any> {
+  //   return await this.hRCvaPaqueterias$.toPromise();
+  // }
   async getCiudadesCvaJson(): Promise<any> {
     return await this.hRCvaCiudades$.toPromise();
+  }
+  //#endregion
+
+  //#region CVA
+  async getBrandsCva(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(BRANDSCVA_LIST_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.listBrandsCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getGroupsCva(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(GROUPSCVA_LIST_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.listGroupsCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getSolucionesCva(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SOLUCIONESCVA_LIST_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.listSolucionesCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getSucursalesCva(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SUCURSALESCVA_LIST_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.listSucursalesCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getPaqueteriasCva(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(PAQUETERIASCVA_LIST_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.listPaqueteriasCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getShippingCvaRates(
+    paqueteria: number,
+    cp: number,
+    cp_sucursal: number,
+    productosCva: ProductShipmentCVA[]
+  ): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SHIPMENTS_CVA_RATES_QUERY, {
+        paqueteria,
+        cp,
+        cp_sucursal,
+        productosCva
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.shippingCvaRates);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getProductsCva(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(PRODUCTOSCVA_LIST_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.listProductsCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async setOrderCva(pedidoCva: IOrderCva): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(ADD_ORDER_CVA, { pedidoCva }, {}).subscribe(
+        (result: any) => {
+          console.log('result: ', result);
+          resolve(result.listProductsCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+  //#endregion
+
+  //#region CT
+  async getShippingCtRates(destinoCt: String, productosCt: ProductShipmentCT[]): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SHIPMENTS_CT_RATES_QUERY, {
+        destinoCt,
+        productosCt
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.shippingCtRates.shippingCtRates);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getProductsCt(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(PRODUCTOSCT_LIST_QUERY, {}, {}).subscribe(
+        (result: any) => {
+          resolve(result.stockProductsCt);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async setOrderCt(
+    idPedido: number,
+    almacen:string,
+    tipoPago: string,
+    guiaConnect: IGuiaConnect,
+    envio: IEnvioCt,
+    producto: IProductoCt,
+    cfdi: string
+  ): Promise<any> {
+    console.log('idPedido: ', idPedido);
+    console.log('almacen: ', almacen);
+    console.log('tipoPago: ', tipoPago);
+    console.log('guiaConnect: ', guiaConnect);
+    console.log('envio: ', envio);
+    console.log('producto: ', producto);
+    console.log('cfdi: ', cfdi);
+    return new Promise<any>((resolve, reject) => {
+      this.get(ADD_ORDER_CT, {
+        idPedido,
+        almacen,
+        tipoPago,
+        guiaConnect,
+        envio,
+        producto,
+        cfdi
+      }, {}).subscribe(
+        (result: any) => {
+          console.log('result: ', result);
+          resolve(result.orderCt);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
   //#endregion
 

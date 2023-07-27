@@ -1,3 +1,10 @@
+.footer-bottom .container, .footer-bottom .container-fluid{
+  background-color: #4b02fc;
+}
+
+.footer-copyright{
+  color:#fff;
+}
 .story-box {
   padding: 0;
   height: 250px;
@@ -19,5 +26,21 @@
 }
 
 .footer .widget-title{
-  color:#4a00ff;
+  color:#4b02fc;
 }
+
+//iconos sociales
+
+.social-icon{
+  background-color: #5bef97;
+  color:#4b02fc;
+  }
+
+  .social-icon >a{
+    color: #4b02fc;
+    }
+
+  .footer .social-icon:hover, .footer .social-icon:focus{
+      background-color: #4b02fc;
+      color: #fff;
+    }
