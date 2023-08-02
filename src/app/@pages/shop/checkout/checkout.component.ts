@@ -47,6 +47,8 @@ import { OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/
 import { HttpClient } from '@angular/common/http';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
+import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
+import { AddressOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
 
 
 declare var $: any;
@@ -142,7 +144,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public userService: UsersService,
     private externalAuthService: ExternalAuthService,
     public shippingsService: ShippingsService,
-    public deliverysService: DeliverysService
+    public deliverysService: DeliverysService,
+    public chargeOpenpayService: ChargeOpenpayService
   ) {
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -402,6 +405,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.payStripe();
               break;
             case PAY_OPENPAY:
+              const pagoOpenpay = await this.payOpenpay();
+              if (pagoOpenpay.status === false) {
+                this.isSubmitting = false;
+                return await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
+              }
+              console.log('pagoOpenpay: ', pagoOpenpay);
+              return await [];
               break;
             case PAY_TRANSFER:
               break;
@@ -855,6 +865,74 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async payStripe(): Promise<any> {
     await this.stripePaymentService.takeCardToken(true);
     return await true;
+  }
+
+  async payOpenpay(): Promise<any> {
+    const card_number = document.querySelector<HTMLInputElement>('[data-openpay-card="card_number"]');
+    const expiration_month = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_month"]');
+    const expiration_year = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_year"]');
+    const cvv2 = document.querySelector<HTMLInputElement>('[data-openpay-card="cvv2"]');
+    const holder_name = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
+
+    const card: CardOpenpayInput = new CardOpenpayInput();
+    card.card_number = card_number.value;
+    card.holder_name = holder_name;
+    card.expiration_year = expiration_year.value;
+    card.expiration_month = expiration_month.value;
+    card.cvv2 = cvv2.value;
+
+    const cardResponse = await this.chargeOpenpayService.addCard(card);
+    console.log('cardResponse: ', cardResponse);
+
+    if (cardResponse.status === false) {
+      return { status: cardResponse.status, message: cardResponse.message };
+    }
+
+    const totalCharge = parseFloat(this.totalPagar) + parseFloat(this.totalEnvios);
+    console.log('totalCharge: ', totalCharge);
+    console.log('parseFloat(this.totalPagar): ', parseFloat(this.totalPagar));
+    console.log('parseFloat(this.totalEnvios): ', parseFloat(this.totalEnvios));
+    const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
+    charge.method = "card";
+    charge.source_id = cardResponse.id;
+    charge.amount = totalCharge;
+    charge.currency = "MXN";
+    charge.description = "Cargo de prueba";
+    charge.order_id = "Orden20";
+    charge.device_session_id = "12345678901234567890132546789012";
+    charge.capture = false;
+
+    const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
+    customer.external_id = "17";
+    customer.name = this.formData.controls.name.value;
+    customer.last_name = this.formData.controls.lastname.value;
+    customer.email = this.formData.controls.email.value;
+    customer.phone_number = this.formData.controls.phone.value;
+    customer.clabe = "01234567890123456";
+
+    const address: AddressOpenpayInput = new AddressOpenpayInput();
+    address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
+    address.line2 = this.formData.controls.selectColonia.value;
+    address.line3 = "";
+    address.postal_code = this.formData.controls.codigoPostal.value;
+    address.state = this.formData.controls.selectEstado.value;
+    address.city = this.formData.controls.selectMunicipio.value;
+    address.country_code = "MX";
+    customer.address = address;
+
+    charge.customer = customer;
+    charge.payment_plan = null;
+    charge.use_card_points = "NONE";
+    charge.send_email = false;
+    charge.redirect_url = "http://daru.mx/";
+    charge.use_3d_secure = false;
+    charge.confirm = true;
+
+    console.log('charge: ', charge);
+
+    return await charge;
+    const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    return await chargeResult;
   }
   //#endregion Cobros
 
