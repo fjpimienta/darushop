@@ -52,7 +52,7 @@ p {
 
 // general
 .header-top{
-  background-color:$light-text;
+  background-color:#f8f8f8;
 }
 
 .header-top a{
@@ -85,6 +85,55 @@ p {
   }
 }
 
+//menu mobile
+.mobile-menu-container{
+  background-color:$primary-color;
+  color:#fff;
+}
+
+.mobile-menu-light .mobile-menu li a:not(:hover):not(:focus){
+  color:#fff;
+}
+
+.mobile-menu-light .mobile-menu li a{
+  color:#fff;
+}
+
+.mobile-menu-container .social-icon{
+  background-color: $secondary-color;
+  color:$primary-color;
+}
+
+.mobile-menu-light .mmenu-btn:not(:hover):not(:focus){
+  color:#fff;
+}
+.mmenu-btn:hover, .mmenu-btn:focus{
+  color:$secondary-color;
+}
+
+.mobile-menu-light .mobile-search .form-control{
+  color:$primary-color;
+}
+
+.mobile-menu-light .mobile-menu li ul{
+  background-color: #fff;;
+}
+
+.mobile-menu-light .mobile-menu li a{
+  color:$primary-color;
+}
+
+.mobile-menu-light .mobile-menu li a:hover{
+  color:#fff;
+  zoom: 1;
+  text-shadow: 4px 2px 10px rgba(0,0,0,0.64);
+  background-color: $primary-color;
+}
+
+.mobile-menu-light .mobile-menu-close:not(:hover):not(:focus){
+  color:#fff;
+}
+
 .header-middle{
   background: $primary-color;
 }
@@ -93,7 +142,8 @@ p {
   color:#FFF;
  }
 
- .header-search .form-control, .header-search select{
+ .header-search .form-control, .header-search select, 
+ .header-search-wrapper .form-control {
   color:$primary-color;
  }
 
@@ -762,6 +812,10 @@ p {
 
 //product page
 
+.products .product{
+  border: 1px solid #f8f8f8;
+}
+
 .product-label.label-sale{
   background-color:$primary-color;
 }
@@ -770,6 +824,27 @@ p {
 .sidebar-filter-clear{
   color:$primary-color;
 }
+
+//tab detalles producto
+
+.product-desc-content{
+   h3{
+  font-weight: bold;
+  color:$primary-color;
+}
+
+p{
+  color:#000;
+}
+}
+
+//titulo header
+.page-header h1{
+  color:#fff;
+  text-shadow: 4px 2px 10px rgba(0,0,0,0.64);
+  font-weight: bold;
+}
+
   //boton
   /* Product 7 */
 .product.product-7 {
@@ -807,9 +882,18 @@ p {
     margin-bottom: 1rem;
   }
 }
+
+.social-icon{
+  background-color:$primary-color;
+  color:#fff;
+}
   
 .toolbox-info span{
   color:$primary-color;
+}
+
+.toolbox .select-custom{
+  background-color: #fff;;
 }
 
 .custom-checkbox .custom-control-input:checked~.custom-control-label:before{
@@ -819,6 +903,20 @@ p {
 }
 .btn-layout:hover svg, .btn-layout:focus svg, .btn-layout.active svg{
   fill:$primary-color;
+}
+
+.new-price{
+  font-weight: bold;
+}
+
+.old-price{
+  font-size: 1.2rem;
+}
+
+.product-details .product-content p:last-child{
+  color:#ccc;
+  font-size: 1rem;
+  font-weight: lighter;
 }
 
 .product-gallery-vertical .product-main-image .zoom-image>div img {
@@ -1080,4 +1178,33 @@ p {
 .sidebar-shop .widget-title{
   color:$primary-color;
   font-weight: bold;
+  font-size: 2.5rem;
 }
+
+// carrito de compras
+.table th{
+  color:#000;
+}
+
+//empresa
+.title-about {
+  font-size: 1.8rem;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: -.025em;
+  color: $primary-color;
+
+  h2{
+    font-size: 4rem;
+  }
+
+}
+
+.page-content p{
+  color:#000;
+  text-align: justify;
+}
+  //texto app-accordion .card
+  .card.card-sm .card-body{
+    font-size: 1.5rem;
+  }

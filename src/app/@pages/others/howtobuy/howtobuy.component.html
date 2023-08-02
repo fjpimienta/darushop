@@ -18,7 +18,7 @@
   <div class="page-content">
     <div class="container">
       <div *ngFor="let faqs of faqGroups;let i = index">
-        <h2 class="title text-center mb-3">{{ faqs.title }}</h2>
+        <h2 class="title-about text-center mb-3">{{ faqs.title }}</h2>
 
         <app-accordion [adClass]="faqs.items[0].adClass" [accordionID]="'accordion' + (1 + i)">
           <app-card *ngFor="let card of faqs.items[0].cards; let isFirst = first" [adClass]="faqs.items[0].cardAclass"
