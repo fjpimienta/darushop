@@ -36,8 +36,8 @@ export const ADD_CHARGE_OPENPAY = gql`
         ...ChargeOpenpayObject
       }
     }
-    ${CHARGE_OPENPAY_FRAGMENT_OBJECT}
   }
+  ${CHARGE_OPENPAY_FRAGMENT_OBJECT}
 `;
 
 export const CAPTURE_CHARGE_OPENPAY = gql`
@@ -51,6 +51,6 @@ export const CAPTURE_CHARGE_OPENPAY = gql`
           ...ChargeOpenpayObject
         }
     }
-    ${CHARGE_OPENPAY_FRAGMENT_OBJECT}
   }
+  ${CHARGE_OPENPAY_FRAGMENT_OBJECT}
 `;

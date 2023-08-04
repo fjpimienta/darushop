@@ -276,7 +276,7 @@
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-7"
                           aria-expanded="false" aria-controls="collapse-7" (click)="onHabilitaPago(PAY_OPENPAY)">
-                          Open Pay
+                          Open Pay (Tarjetas de Cr&eacute;dito o D&eacute;bito)
                         </a>
                       </h2>
                     </div>
@@ -303,34 +303,43 @@
                                   <div class="sctn-row">
                                     <div class="sctn-col l">
                                       <label>Número de tarjeta</label>
-                                      <input type="text" autocomplete="off" data-openpay-card="card_number">
+                                      <input type="text" autocomplete="off" data-openpay-card="card_number"
+                                        [(ngModel)]="numeroTarjetaFormateado"
+                                        (input)="formatearNumeroTarjeta(numeroTarjetaFormateado)" maxlength="19"
+                                        (keypress)="bloquearLetras($event)">
                                     </div>
                                   </div>
                                   <div class="sctn-row">
                                     <div class="sctn-col l">
                                       <label>Fecha de expiración</label>
                                       <div class="sctn-col half l"><input type="text" placeholder="Mes"
-                                          data-openpay-card="expiration_month"></div>
+                                          data-openpay-card="expiration_month" maxlength="2"
+                                          (keypress)="bloquearLetras($event)" pattern="^(0?[1-9]|1[0-2])$"></div>
                                       <div class="sctn-col half l"><input type="text" placeholder="Año"
-                                          data-openpay-card="expiration_year"></div>
+                                          data-openpay-card="expiration_year" maxlength="2"
+                                          (keypress)="bloquearLetras($event)"></div>
                                     </div>
+                                  </div>
+                                  <div class="sctn-row">
                                     <div class="sctn-col cvv"><label>Código de seguridad</label>
                                       <div class="sctn-col half l"><input type="text" placeholder="3 dígitos"
-                                          autocomplete="off" data-openpay-card="cvv2"></div>
+                                          autocomplete="off" data-openpay-card="cvv2" maxlength="3"
+                                          (keypress)="bloquearLetras($event)">
+                                      </div>
                                     </div>
                                   </div>
                                   <div class="openpay">
                                     <div class="shield">Tus pagos se realizan de forma segura con encriptación de 256
                                       bits</div>
                                   </div>
-                                  <div class="openpay">
+                                  <div class="sctn-row">
                                     <div class="card-expl">
                                       <div class="credit">
                                         <p>Tarjetas de crédito</p>
                                       </div>
                                     </div>
                                   </div>
-                                  <div class="openpay">
+                                  <div class="sctn-row">
                                     <div class="card-expl">
                                       <div class="debit">
                                         <p>Tarjetas de débito</p>
@@ -356,7 +365,7 @@
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-6"
                           aria-expanded="false" aria-controls="collapse-6" (click)="onHabilitaPago(PAY_STRIPE)">
-                          Tarjeta de Crédito (Stripe)
+                          Stripe(Tarjetas de Cr&eacute;dito)
                         </a>
                       </h2>
                     </div>
@@ -471,7 +480,7 @@
                   </div> -->
 
 
-                  <div class="card">
+                  <!-- <div class="card">
                     <div class="card-header" id="heading-17">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-17"
@@ -486,7 +495,7 @@
                         Promocion Bajo Reserva de Autorizacion.
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </app-accordion>
 
                 <!-- <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"

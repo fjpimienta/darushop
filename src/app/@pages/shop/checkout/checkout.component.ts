@@ -49,7 +49,7 @@ import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
 import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
 import { AddressOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
-
+import * as crypto from 'crypto-js';
 
 declare var $: any;
 
@@ -127,6 +127,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   ciudadesCVA = [];
 
   isSubmitting = false;
+
+  deviceDataId: string = '';
+  numeroTarjetaSinFormato: string = '';
+  numeroTarjetaFormateado: string = '';
 
   constructor(
     private router: Router,
@@ -219,8 +223,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 charge: ICharge
               }) => {
                 if (result.status) {
+
+                  // Recuperar siguiente id
+                  const id = await this.deliverysService.next();
+                  // Realizar Cargo con la Tarjeta
+                  const pagoOpenpay = await this.payOpenpay(id);
+                  if (pagoOpenpay.status === false) {
+                    this.isSubmitting = false;
+                    await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
+                  }
+                  console.log('pagoOpenpay: ', pagoOpenpay);
                   // Generar Orden de Compra con Proveedores
-                  const OrderSupplier = await this.sendOrderSupplier();
+                  const OrderSupplier = await this.sendOrderSupplier(id);
                   console.log('OrderSupplier: ', OrderSupplier);
                   // Registrar Pedido en DARU.
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
@@ -380,7 +394,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     });
-
   }
 
   async notAvailableProducts(withMessage: boolean = true): Promise<void> {
@@ -405,25 +418,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.payStripe();
               break;
             case PAY_OPENPAY:
-              const pagoOpenpay = await this.payOpenpay();
+              // Recuperar siguiente id
+              const id = await this.deliverysService.next();
+              // Realizar Cargo con la Tarjeta
+              const pagoOpenpay = await this.payOpenpay(id);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
                 return await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
               }
               console.log('pagoOpenpay: ', pagoOpenpay);
-              return await [];
-              break;
-            case PAY_TRANSFER:
-              break;
-            case PAY_DEPOSIT:
-              break;
-            case PAY_PAYPAL:
-              break;
-            case PAY_MERCADO_PAGO:
-              break;
-            case PAY_FREE:
               // Generar Orden de Compra con Proveedores
-              const OrderSupplier = await this.sendOrderSupplier();
+              const OrderSupplier = await this.sendOrderSupplier(id);
               console.log('OrderSupplier: ', OrderSupplier);
               // Registrar Pedido en DARU.
               const deliverySave = await this.deliverysService.add(OrderSupplier);
@@ -448,6 +453,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
+            case PAY_TRANSFER:
+              break;
+            case PAY_DEPOSIT:
+              break;
+            case PAY_PAYPAL:
+              break;
+            case PAY_MERCADO_PAGO:
+              break;
+
           }
         } else {
           this.isSubmitting = false;
@@ -867,56 +881,105 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await true;
   }
 
-  async payOpenpay(): Promise<any> {
-    const card_number = document.querySelector<HTMLInputElement>('[data-openpay-card="card_number"]');
+  generarNumeroAleatorioEncriptado(): string {
+    // Paso 1: Generar un número aleatorio entre 0 y 999999
+    const numeroAleatorio = Math.floor(Math.random() * 1000000);
+
+    // Paso 2: Convertir el número en una cadena
+    const numeroEnCadena = numeroAleatorio.toString();
+
+    // Paso 3: Encriptar la cadena utilizando AES de crypto
+    const claveEncriptacion = 'mi_clave_secreta'; // Reemplaza esto con una clave segura
+    const iv = crypto.lib.WordArray.random(16); // Generar un vector de inicialización aleatorio
+    const encrypted = crypto.AES.encrypt(numeroEnCadena, claveEncriptacion, { iv: iv });
+
+    // Truncar o recortar el resultado del cifrado a 32 caracteres
+    const resultadoEncriptado32 = encrypted.toString().slice(0, 32);
+    return resultadoEncriptado32;
+  }
+
+  // Método para formatear el número de tarjeta de crédito
+  formatearNumeroTarjeta(numeroTarjetaSinFormato: string) {
+    // Remover los espacios en blanco y guiones del número sin formato
+    const numeroSinEspacios = numeroTarjetaSinFormato.replace(/\s|-/g, '');
+
+    // Aplicar el formato 4 dígitos - 4 dígitos - 4 dígitos - 4 dígitos
+    const regex = /(\d{1,4})(\d{1,4})(\d{1,4})(\d{1,4})/;
+    const grupos = regex.exec(numeroSinEspacios);
+    if (grupos) {
+      this.numeroTarjetaFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+    } else {
+      this.numeroTarjetaFormateado = '';
+    }
+  }
+
+  bloquearLetras(event: KeyboardEvent) {
+    // Obtener el valor actual del input
+    const valorInput = (event.target as HTMLInputElement).value;
+
+    // Obtener el código ASCII de la tecla presionada
+    const charCode = event.which ? event.which : event.keyCode;
+
+    // Verificar si el código corresponde a un número (entre 48 y 57 son números)
+    if (charCode < 48 || charCode > 57) {
+      // Bloquear la tecla presionada si no es un número
+      event.preventDefault();
+    }
+  }
+
+  async payOpenpay(id: string): Promise<any> {
+    const card_numberF = document.querySelector<HTMLInputElement>('[data-openpay-card="card_number"]');
+    // Remover los guiones del número de tarjeta antes de enviarlo
+    const card_number = card_numberF.value.replace(/-/g, '');
+
     const expiration_month = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_month"]');
     const expiration_year = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_year"]');
     const cvv2 = document.querySelector<HTMLInputElement>('[data-openpay-card="cvv2"]');
     const holder_name = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
 
     const card: CardOpenpayInput = new CardOpenpayInput();
-    card.card_number = card_number.value;
+    card.card_number = card_number;
     card.holder_name = holder_name;
     card.expiration_year = expiration_year.value;
     card.expiration_month = expiration_month.value;
     card.cvv2 = cvv2.value;
 
     const cardResponse = await this.chargeOpenpayService.addCard(card);
-    console.log('cardResponse: ', cardResponse);
 
     if (cardResponse.status === false) {
       return { status: cardResponse.status, message: cardResponse.message };
     }
 
-    const totalCharge = parseFloat(this.totalPagar) + parseFloat(this.totalEnvios);
-    console.log('totalCharge: ', totalCharge);
-    console.log('parseFloat(this.totalPagar): ', parseFloat(this.totalPagar));
-    console.log('parseFloat(this.totalEnvios): ', parseFloat(this.totalEnvios));
+    const cardNew = cardResponse.createCardOpenpay;
+    const totalCharge = parseFloat(this.totalPagar);
+
+    this.deviceDataId = this.generarNumeroAleatorioEncriptado();
+
     const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
     charge.method = "card";
-    charge.source_id = cardResponse.id;
+    charge.source_id = cardNew.id;
     charge.amount = totalCharge;
     charge.currency = "MXN";
     charge.description = "Cargo de prueba";
-    charge.order_id = "Orden20";
-    charge.device_session_id = "12345678901234567890132546789012";
+    charge.order_id = this.deviceDataId;
+    charge.device_session_id = this.deviceDataId;
     charge.capture = false;
 
     const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
-    customer.external_id = "17";
+    customer.external_id = this.deviceDataId;
     customer.name = this.formData.controls.name.value;
     customer.last_name = this.formData.controls.lastname.value;
     customer.email = this.formData.controls.email.value;
     customer.phone_number = this.formData.controls.phone.value;
-    customer.clabe = "01234567890123456";
+    customer.clabe = "";
 
     const address: AddressOpenpayInput = new AddressOpenpayInput();
     address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
     address.line2 = this.formData.controls.selectColonia.value;
-    address.line3 = "";
+    address.line3 = this.formData.controls.references.value;
     address.postal_code = this.formData.controls.codigoPostal.value;
-    address.state = this.formData.controls.selectEstado.value;
-    address.city = this.formData.controls.selectMunicipio.value;
+    address.city = this.selectMunicipio.D_mnpio;
+    address.state = this.selectEstado.d_estado;
     address.country_code = "MX";
     customer.address = address;
 
@@ -924,14 +987,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.payment_plan = null;
     charge.use_card_points = "NONE";
     charge.send_email = false;
-    charge.redirect_url = "http://daru.mx/";
+    charge.redirect_url = "https://daru.mx/";
     charge.use_3d_secure = false;
     charge.confirm = true;
 
-    console.log('charge: ', charge);
-
-    return await charge;
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    console.log('chargeResult: ', chargeResult);
+    if (chargeResult.status === false) {
+      return { status: cardResponse.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
+    }
+    const idChargeOpenpay = "tryfpnltynkfstrcnbp9";
+    const captureTransactionOpenpay = { amount: totalCharge }
+    const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
     return await chargeResult;
   }
   //#endregion Cobros
@@ -1027,10 +1094,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  async sendOrderSupplier(): Promise<any> {
+  async sendOrderSupplier(id: string): Promise<any> {
     // Cuando la consulta externa no requiere token
     const delivery = new Delivery();
-    const id = await this.deliverysService.next();
     delivery.id = id;
     delivery.deliveryId = id;
     delivery.statusError = false;
@@ -1306,6 +1372,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const pedidosCva = await this.externalAuthService.setOrderCva(order)
           .then(async resultPedido => {
             try {
+              console.log('resultPedido: ', resultPedido);
               const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
               cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
               cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
@@ -1377,6 +1444,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const pedidosCva = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
               .then(async resultPedido => {
                 try {
+                  console.log('resultPedido: ', resultPedido);
                   const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
                   cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
                   cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
