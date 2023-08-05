@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CaptureChargeOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
 import { ADD_CARD_OPENPAY, LIST_CARDS_OPENPAY, ONE_CARD_OPENPAY } from '@graphql/operations/query/openpay/cards';
-import { ADD_CHARGE_OPENPAY, LIST_CHARGES_OPENPAY, ONE_CHARGE_OPENPAY } from '@graphql/operations/query/openpay/charges';
+import { ADD_CHARGE_OPENPAY, CAPTURE_CHARGE_OPENPAY, LIST_CHARGES_OPENPAY, ONE_CHARGE_OPENPAY } from '@graphql/operations/query/openpay/charges';
 import { ADD_CUSTOMER_OPENPAY, LIST_CUSTOMERS_OPENPAY, ONE_CUSTOMER_OPENPAY, UPDATE_CUSTOMER_OPENPAY } from '@graphql/operations/query/openpay/customers';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
@@ -118,9 +118,9 @@ export class ChargeOpenpayService extends ApiService {
     });
   }
 
-  async oneCharge(idTransactionOpenpay: String): Promise<any> {
+  async oneCharge(idChargeOpenpay: String): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.get(ONE_CHARGE_OPENPAY, { idTransactionOpenpay }).subscribe(
+      this.get(ONE_CHARGE_OPENPAY, { idChargeOpenpay }).subscribe(
         (result: any) => {
           resolve(result.chargeOpenpay);
         },
@@ -143,12 +143,12 @@ export class ChargeOpenpayService extends ApiService {
     });
   }
 
-  async captureCharge(idTransactionOpenpay: String,
+  async captureCharge(idChargeOpenpay: String,
     captureTransactionOpenpay: CaptureChargeOpenpayInput): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.get(ADD_CHARGE_OPENPAY, { idTransactionOpenpay, captureTransactionOpenpay }).subscribe(
+      this.get(CAPTURE_CHARGE_OPENPAY, { idChargeOpenpay, captureTransactionOpenpay }).subscribe(
         (result: any) => {
-          resolve(result.createChargeOpenpay);
+          resolve(result.captureChargeOpenpay);
         },
         (error: any) => {
           reject(error);

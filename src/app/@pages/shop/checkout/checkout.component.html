@@ -149,11 +149,11 @@
                 </div>
               </div>
 
-              <div *ngIf="habilitacrearcuenta" class="custom-control custom-checkbox">
+              <!-- <div *ngIf="habilitacrearcuenta" class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="crearcuenta" name="crearcuenta"
                   formControlName="crearcuenta">
                 <label class="custom-control-label" for="crearcuenta">Crear una cuenta?</label>
-              </div>
+              </div> -->
 
               <!-- <div class="form-group">
                 <div class="custom-control custom-checkbox mt-0 address-box">
@@ -258,7 +258,7 @@
                             (change)="changeShipping(shipment.costo)">
                           <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.lugarEnvio}}</label>
                         </div> -->
-                        <label for="{{shipment.empresa}}">{{shipment.lugarEnvio}}</label>
+                        <label for="{{shipment.empresa}}">Env&iacute;o para: {{shipment.lugarRecepcion}}</label>
                       </td>
                       <td>{{shipment.costo.toFixed(2) | currency}}</td>
                     </tr>

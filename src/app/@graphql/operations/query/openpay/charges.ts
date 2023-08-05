@@ -41,9 +41,9 @@ export const ADD_CHARGE_OPENPAY = gql`
 `;
 
 export const CAPTURE_CHARGE_OPENPAY = gql`
-  query($idTransactionOpenpay: String,
+  query($idChargeOpenpay: String,
         $captureTransactionOpenpay: CaptureChargeOpenpayInput) {
-    captureChargeOpenpay(idTransactionOpenpay: $idTransactionOpenpay,
+    captureChargeOpenpay(idChargeOpenpay: $idChargeOpenpay,
                   captureTransactionOpenpay: $captureTransactionOpenpay) {
         status
         message

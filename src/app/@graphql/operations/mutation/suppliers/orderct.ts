@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { ORDERCT_FRAGMENT } from '@graphql/operations/fragment/suppliers/orderct';
+import { ORDERCT_FRAGMENT } from '@graphql/operations/fragment/suppliers/ct';
 
 export const ADD_ORDERCT = gql`
    mutation addOrderCt($orderct: OrderCtInput!) {

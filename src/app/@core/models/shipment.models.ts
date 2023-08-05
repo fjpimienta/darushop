@@ -6,4 +6,5 @@ export class Shipment {
   metodoShipping: string;
   costo: number;
   lugarEnvio: string;
+  lugarRecepcion: string;
 }
