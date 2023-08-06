@@ -627,19 +627,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     for (const product of filteredProducts) {
       for (const office of product.suppliersProd.branchOffices) {
         if (office.cantidad > product.qty) {
-          const existingOffice = officeMap[office.estado];
-          if (existingOffice) {
-            officeMap[office.estado] = { ...existingOffice, cantidad: existingOffice.cantidad + 1 };
+          if (officeMap[office.estado]) {
+            officeMap[office.estado].cantidad += office.cantidad; // Acumulamos la cantidad
           } else {
-            officeMap[office.estado] = { ...office, cantidad: 1 };
+            officeMap[office.estado] = { ...office, cantidad: office.cantidad }; // Inicializamos con la cantidad
           }
         }
       }
     }
-    const commonOfficeState = Object.keys(officeMap).find(
-      (estado) => officeMap[estado].cantidad === filteredProducts.length
-    );
-    return commonOfficeState ? officeMap[commonOfficeState] : null;
+
+    let maxOffice: BranchOffices | null = null;
+    for (const estado in officeMap) {
+      if (!maxOffice || officeMap[estado].cantidad > maxOffice.cantidad) {
+        maxOffice = officeMap[estado];
+      }
+    }
+
+    return maxOffice;
   }
 
   /**
