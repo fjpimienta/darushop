@@ -33,7 +33,8 @@ export const PRODUCTOSCT_LIST_QUERY = gql`
   ${PRODUCTOSCT_FRAGMENT}
 `;
 
-export const ADD_ORDER_CT = gql`
+export const 
+ADD_ORDER_CT = gql`
   query orderCt {
     orderCt {
       status

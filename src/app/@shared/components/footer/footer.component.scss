@@ -1,10 +1,23 @@
 .footer-bottom .container, .footer-bottom .container-fluid{
   background-color: #4b02fc;
+  padding-bottom:0 ;
+  padding-top: 0;
 }
 
 .footer-copyright{
   color:#fff;
+  margin-top: 0;
+  font-size: 1rem;
 }
+
+.footer ul li a{
+  color:#000;
+}
+
+.widget-call a{
+  color:#000;
+}
+
 .story-box {
   padding: 0;
   height: 250px;
@@ -22,8 +35,9 @@
 
 .footer{
   background-color: #f7f7f7;
-  color:#333;
-}
+  }
+
+
 
 .footer .widget-title{
   color:#4b02fc;
@@ -34,11 +48,7 @@
 .social-icon{
   background-color: #5bef97;
   color:#4b02fc;
-  }
-
-  .social-icon >a{
-    color: #4b02fc;
-    }
+}
 
   .footer .social-icon:hover, .footer .social-icon:focus{
       background-color: #4b02fc;

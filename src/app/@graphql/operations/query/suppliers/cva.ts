@@ -103,8 +103,8 @@ export const PRODUCTOSCVA_LIST_QUERY = gql`
 `;
 
 export const ADD_ORDER_CVA = gql`
-  query orderCva {
-    orderCva {
+  query orderCva($pedidoCva: OrderCvaInput) {
+    orderCva(pedidoCva: $pedidoCva) {
       status
       message
       orderCva {

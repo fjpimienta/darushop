@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
-import { ORDERCT_FRAGMENT } from '../../fragment/suppliers/orderct';
 import { RESULT_INFO_FRAGMENT } from '../../fragment/result-info';
+import { ORDERCT_FRAGMENT } from '@graphql/operations/fragment/suppliers/ct';
 
 export const ORDERCTS_LIST_QUERY = gql`
   query orderCtsList($page: Int, $itemsPage: Int, $active: ActiveFilterEnum, $filterName: String = "") {

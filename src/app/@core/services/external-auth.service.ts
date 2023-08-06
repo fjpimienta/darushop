@@ -16,6 +16,7 @@ import { Apollo } from 'apollo-angular';
 import { IOrderCva } from '@core/interfaces/suppliers/ordercva.interface';
 import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from '@core/interfaces/suppliers/orderct.interface';
 import { EnvioCt, GuiaConnect } from '@core/models/suppliers/orderct.models';
+import { IOrderCvaResponse } from '@core/interfaces/suppliers/ordercvaresponse.interface';
 
 declare const require;
 const axios = require('axios');
@@ -1259,11 +1260,22 @@ export class ExternalAuthService extends ApiService {
   }
 
   async setOrderCva(pedidoCva: IOrderCva): Promise<any> {
+    console.log('setOrderCva/pedidoCva: ', pedidoCva);
     return new Promise<any>((resolve, reject) => {
       this.get(ADD_ORDER_CVA, { pedidoCva }, {}).subscribe(
         (result: any) => {
-          console.log('result: ', result);
-          resolve(result.listProductsCva);
+          if (result.orderCva.estado === 'ERROR') {
+            const orderCva: IOrderCvaResponse = {
+              error: result.OrderCva.error,
+              estado: result.OrderCva.estado,
+              pedido: '',
+              total: '',
+              agentemail: '',
+              almacenmail: ''
+            };
+            resolve (orderCva);
+          }
+          resolve(result);
         },
         (error: any) => {
           reject(error);
@@ -1302,20 +1314,13 @@ export class ExternalAuthService extends ApiService {
 
   async setOrderCt(
     idPedido: number,
-    almacen:string,
+    almacen: string,
     tipoPago: string,
     guiaConnect: IGuiaConnect,
     envio: IEnvioCt,
     producto: IProductoCt,
     cfdi: string
   ): Promise<any> {
-    console.log('idPedido: ', idPedido);
-    console.log('almacen: ', almacen);
-    console.log('tipoPago: ', tipoPago);
-    console.log('guiaConnect: ', guiaConnect);
-    console.log('envio: ', envio);
-    console.log('producto: ', producto);
-    console.log('cfdi: ', cfdi);
     return new Promise<any>((resolve, reject) => {
       this.get(ADD_ORDER_CT, {
         idPedido,

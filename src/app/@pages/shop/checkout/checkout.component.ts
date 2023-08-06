@@ -47,7 +47,9 @@ import { OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/
 import { HttpClient } from '@angular/common/http';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
-
+import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
+import { AddressOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
+import * as crypto from 'crypto-js';
 
 declare var $: any;
 
@@ -126,6 +128,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   isSubmitting = false;
 
+  deviceDataId: string = '';
+  numeroTarjetaSinFormato: string = '';
+  numeroTarjetaFormateado: string = '';
+
   constructor(
     private router: Router,
     private httpClient: HttpClient,
@@ -142,7 +148,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public userService: UsersService,
     private externalAuthService: ExternalAuthService,
     public shippingsService: ShippingsService,
-    public deliverysService: DeliverysService
+    public deliverysService: DeliverysService,
+    public chargeOpenpayService: ChargeOpenpayService
   ) {
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -216,8 +223,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 charge: ICharge
               }) => {
                 if (result.status) {
+                  // Recuperar siguiente id
+                  const id = await this.deliverysService.next();
                   // Generar Orden de Compra con Proveedores
-                  const OrderSupplier = await this.sendOrderSupplier();
+                  const OrderSupplier = await this.sendOrderSupplier(id);
                   console.log('OrderSupplier: ', OrderSupplier);
                   // Registrar Pedido en DARU.
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
@@ -377,7 +386,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     });
-
   }
 
   async notAvailableProducts(withMessage: boolean = true): Promise<void> {
@@ -402,19 +410,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.payStripe();
               break;
             case PAY_OPENPAY:
-              break;
-            case PAY_TRANSFER:
-              break;
-            case PAY_DEPOSIT:
-              break;
-            case PAY_PAYPAL:
-              break;
-            case PAY_MERCADO_PAGO:
-              break;
-            case PAY_FREE:
+              // Recuperar siguiente id
+              const id = await this.deliverysService.next();
+              // Realizar Cargo con la Tarjeta
+              const pagoOpenpay = await this.payOpenpay(id);
+              if (pagoOpenpay.status === false) {
+                this.isSubmitting = false;
+                return await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
+              }
+              console.log('pagoOpenpay: ', pagoOpenpay);
               // Generar Orden de Compra con Proveedores
-              const OrderSupplier = await this.sendOrderSupplier();
+              const OrderSupplier = await this.sendOrderSupplier(id);
               console.log('OrderSupplier: ', OrderSupplier);
+              if (OrderSupplier.error) {
+                this.isSubmitting = false;
+                return await infoEventAlert(OrderSupplier.messageError, TYPE_ALERT.ERROR);
+              }
               // Registrar Pedido en DARU.
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
@@ -438,6 +449,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
+            case PAY_TRANSFER:
+              break;
+            case PAY_DEPOSIT:
+              break;
+            case PAY_PAYPAL:
+              break;
+            case PAY_MERCADO_PAGO:
+              break;
+
           }
         } else {
           this.isSubmitting = false;
@@ -544,6 +564,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+          console.log('this.shipments: ', this.shipments);
         }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
@@ -606,19 +627,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     for (const product of filteredProducts) {
       for (const office of product.suppliersProd.branchOffices) {
         if (office.cantidad > product.qty) {
-          const existingOffice = officeMap[office.estado];
-          if (existingOffice) {
-            officeMap[office.estado] = { ...existingOffice, cantidad: existingOffice.cantidad + 1 };
+          if (officeMap[office.estado]) {
+            officeMap[office.estado].cantidad += office.cantidad; // Acumulamos la cantidad
           } else {
-            officeMap[office.estado] = { ...office, cantidad: 1 };
+            officeMap[office.estado] = { ...office, cantidad: office.cantidad }; // Inicializamos con la cantidad
           }
         }
       }
     }
-    const commonOfficeState = Object.keys(officeMap).find(
-      (estado) => officeMap[estado].cantidad === filteredProducts.length
-    );
-    return commonOfficeState ? officeMap[commonOfficeState] : null;
+
+    let maxOffice: BranchOffices | null = null;
+    for (const estado in officeMap) {
+      if (!maxOffice || officeMap[estado].cantidad > maxOffice.cantidad) {
+        maxOffice = officeMap[estado];
+      }
+    }
+
+    return maxOffice;
   }
 
   /**
@@ -693,6 +718,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(    // Cotizar el envio de productos por proveedor
               supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {
+                console.log('resultShip: ', resultShip);
                 const shipments: Shipment[] = [];
                 for (const key of Object.keys(resultShip)) {
                   const shipment = new Shipment();
@@ -700,11 +726,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   if (supplier.slug === 'ct') {
                     shipment.costo = resultShip[key].total;
                     shipment.metodoShipping = resultShip[key].metodo;
-                    shipment.lugarEnvio = resultShip[key].lugarEnvio;
+                    shipment.lugarEnvio = resultShip[key].lugarEnvio.toLocaleUpperCase();
+                    shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                   } else if (supplier.slug === 'cva') {
                     shipment.costo = resultShip[key].costo;
                     shipment.metodoShipping = resultShip[key].metodoShipping;
-                    shipment.lugarEnvio = resultShip[key].lugarEnvio;
+                    shipment.lugarEnvio = resultShip[key].lugarEnvio.toLocaleUpperCase();
+                    shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                   }
                   shipments.push(shipment);
                 }
@@ -761,7 +789,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     shipment.empresa = resultShipment[key].empresa;
                     shipment.costo = resultShipment[key].costo;
                     shipment.metodoShipping = '';
-                    shipment.lugarEnvio = resultShipment[key].lugarEnvio;
+                    shipment.lugarEnvio = resultShipment[key].lugarEnvio.toLocaleUpperCase();
+                    shipment.lugarRecepcion = resultShipment[key].lugarRecepcion.toLocaleUpperCase();
                     shipments.push(shipment);
                   }
                   return await shipments;
@@ -856,12 +885,138 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     await this.stripePaymentService.takeCardToken(true);
     return await true;
   }
+
+  generarNumeroAleatorioEncriptado(): string {
+    // Paso 1: Generar un número aleatorio entre 0 y 999999
+    const numeroAleatorio = Math.floor(Math.random() * 1000000);
+
+    // Paso 2: Convertir el número en una cadena
+    const numeroEnCadena = numeroAleatorio.toString();
+
+    // Paso 3: Encriptar la cadena utilizando AES de crypto
+    const claveEncriptacion = 'mi_clave_secreta'; // Reemplaza esto con una clave segura
+    const iv = crypto.lib.WordArray.random(16); // Generar un vector de inicialización aleatorio
+    const encrypted = crypto.AES.encrypt(numeroEnCadena, claveEncriptacion, { iv: iv });
+
+    // Truncar o recortar el resultado del cifrado a 32 caracteres
+    const resultadoEncriptado32 = encrypted.toString().slice(0, 32);
+    return resultadoEncriptado32;
+  }
+
+  // Método para formatear el número de tarjeta de crédito
+  formatearNumeroTarjeta(numeroTarjetaSinFormato: string) {
+    // Remover los espacios en blanco y guiones del número sin formato
+    const numeroSinEspacios = numeroTarjetaSinFormato.replace(/\s|-/g, '');
+
+    // Aplicar el formato 4 dígitos - 4 dígitos - 4 dígitos - 4 dígitos
+    const regex = /(\d{1,4})(\d{1,4})(\d{1,4})(\d{1,4})/;
+    const grupos = regex.exec(numeroSinEspacios);
+    if (grupos) {
+      this.numeroTarjetaFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+    } else {
+      this.numeroTarjetaFormateado = '';
+    }
+  }
+
+  bloquearLetras(event: KeyboardEvent) {
+    // Obtener el valor actual del input
+    const valorInput = (event.target as HTMLInputElement).value;
+
+    // Obtener el código ASCII de la tecla presionada
+    const charCode = event.which ? event.which : event.keyCode;
+
+    // Verificar si el código corresponde a un número (entre 48 y 57 son números)
+    if (charCode < 48 || charCode > 57) {
+      // Bloquear la tecla presionada si no es un número
+      event.preventDefault();
+    }
+  }
+
+  async payOpenpay(id: string): Promise<any> {
+    const card_numberF = document.querySelector<HTMLInputElement>('[data-openpay-card="card_number"]');
+    const card_number = card_numberF.value.replace(/-/g, '');       // Remover los guiones del número de tarjeta antes de enviarlo
+    const expiration_month = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_month"]');
+    const expiration_year = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_year"]');
+    const cvv2 = document.querySelector<HTMLInputElement>('[data-openpay-card="cvv2"]');
+    const holder_name = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
+    const card: CardOpenpayInput = new CardOpenpayInput();
+
+    card.card_number = card_number;
+    card.holder_name = holder_name;
+    card.expiration_year = expiration_year.value;
+    card.expiration_month = expiration_month.value;
+    card.cvv2 = cvv2.value;
+    const cardResponse = await this.chargeOpenpayService.addCard(card);
+
+    if (cardResponse.status === false) {
+      return { status: cardResponse.status, message: cardResponse.message };
+    }
+
+    const cardNew = cardResponse.createCardOpenpay;
+    const totalCharge = parseFloat(this.totalPagar);
+    this.deviceDataId = this.generarNumeroAleatorioEncriptado();
+
+    const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
+    charge.method = "card";
+    charge.source_id = cardNew.id;
+    charge.amount = totalCharge;
+    charge.currency = "MXN";
+    charge.description = "Cargo de prueba";
+    charge.order_id = this.deviceDataId;
+    charge.device_session_id = this.deviceDataId;
+    charge.capture = false;
+
+    const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
+    customer.external_id = this.deviceDataId;
+    customer.name = this.formData.controls.name.value;
+    customer.last_name = this.formData.controls.lastname.value;
+    customer.email = this.formData.controls.email.value;
+    customer.phone_number = this.formData.controls.phone.value;
+    customer.clabe = "";
+
+    const address: AddressOpenpayInput = new AddressOpenpayInput();
+    address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
+    address.line2 = this.formData.controls.selectColonia.value;
+    address.line3 = this.formData.controls.references.value;
+    address.postal_code = this.formData.controls.codigoPostal.value;
+    address.city = this.selectMunicipio.D_mnpio;
+    address.state = this.selectEstado.d_estado;
+    address.country_code = "MX";
+    customer.address = address;
+
+    charge.customer = customer;
+    charge.payment_plan = null;
+    charge.use_card_points = "NONE";
+    charge.send_email = false;
+    charge.redirect_url = "https://daru.mx/";
+    charge.use_3d_secure = false;
+    charge.confirm = true;
+
+    const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    console.log('chargeResult: ', chargeResult);
+    console.log('chargeResult.createChargeOpenpay: ', chargeResult.createChargeOpenpay);
+    if (chargeResult.status === false) {
+      return { status: cardResponse.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
+    }
+
+    const idChargeOpenpay = chargeResult.createChargeOpenpay.id;
+    const captureTransactionOpenpay = { amount: totalCharge }
+    console.log('idChargeOpenpay: ', idChargeOpenpay);
+    console.log('captureTransactionOpenpay: ', captureTransactionOpenpay);
+    const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
+    console.log('createResult: ', createResult);
+    if (createResult.status === false) {
+      return { status: createResult.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
+    }
+    return await createResult;
+  }
   //#endregion Cobros
 
   //#region Enviar Ordenes
   async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
+    console.log('warehouse: ', warehouse);
     switch (supplier.slug) {
       case 'ct':
         const guiaConnect: GuiaConnect = new GuiaConnect();
@@ -949,10 +1104,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  async sendOrderSupplier(): Promise<any> {
+  async sendOrderSupplier(id: string): Promise<any> {
     // Cuando la consulta externa no requiere token
     const delivery = new Delivery();
-    const id = await this.deliverysService.next();
     delivery.id = id;
     delivery.deliveryId = id;
     delivery.statusError = false;
@@ -995,6 +1149,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         .then(async (result) => {
           return await result;
         });
+      console.log('orderNew: ', orderNew);
       if (orderNew) {
         switch (warehouse.suppliersProd.idProveedor) {
           case 'ct':
@@ -1002,9 +1157,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             delivery.ordersCt = ordersCt;
             delivery.orderCtResponse = orderCtResponse;
             const confirmarPedidoCt = await this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCtResponse);
+            console.log('confirmarPedidoCt: ', confirmarPedidoCt);
             delivery.orderCtConfirmResponse = confirmarPedidoCt;
             break;
           case 'cva':
+            if (orderNew.estado === 'ERROR') {
+              delivery.statusError = true;
+              delivery.messageError = orderNew.error;
+              return await delivery;
+            }
             orderCvaResponse = orderNew;
             delivery.ordersCva = ordersCva;
             delivery.orderCvaResponse = orderCvaResponse;
@@ -1225,16 +1386,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
     switch (supplierName) {
       case 'cva':
+        console.log('order: ', order);
         const pedidosCva = await this.externalAuthService.setOrderCva(order)
           .then(async resultPedido => {
             try {
-              const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
-              cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
-              cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
-              cvaResponse.error = resultPedido.error._ ? resultPedido.error._ : '';
-              cvaResponse.estado = resultPedido.estado._ ? resultPedido.estado._ : '';
-              cvaResponse.pedido = resultPedido.pedido._ ? resultPedido.pedido._ : '0';
-              cvaResponse.total = resultPedido.total._ ? resultPedido.total._ : '0';
+              const { orderCva } = resultPedido.orderCva;
+              console.log('orderCva: ', orderCva);
+              const cvaResponse: OrderCvaResponse = {
+                agentemail: orderCva?.agentemail || '',
+                almacenmail: orderCva?.almacenmail || '',
+                error: orderCva?.error || '',
+                estado: orderCva?.estado || '',
+                pedido: orderCva?.pedido || '0',
+                total: orderCva?.total || '0',
+              };
               console.log('cvaResponse: ', cvaResponse);
               return await cvaResponse;
             } catch (error) {
@@ -1243,6 +1408,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           });
         return await pedidosCva;
       case 'ct':
+        console.log('order: ', order);
         const pedidosCt = await this.externalAuthService.setOrderCt(
           order.idPedido,
           order.almacen,
@@ -1299,6 +1465,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const pedidosCva = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
               .then(async resultPedido => {
                 try {
+                  console.log('resultPedido: ', resultPedido);
                   const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
                   cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
                   cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
@@ -1374,6 +1541,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   throw await error;
                 }
               });
+            console.log('pedidosCt: ', pedidosCt);
             return await pedidosCt;
         }
       } else {

@@ -43,7 +43,7 @@ export const PRODUCTOSCT_FRAGMENT = gql`
 `;
 
 export const ORDERCT_FRAGMENT = gql`
-  fragment OrderCtObject on ResponseCtsOrder {
+  fragment OrderCtObject on ResponseCtsOrders {
     codigo
     mensaje
     referencia

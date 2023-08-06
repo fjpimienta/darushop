@@ -109,7 +109,7 @@ export const PRODUCTOSCVA_FRAGMENT = gql`
 `;
 
 export const ORDERCVA_FRAGMENT = gql`
-  fragment OrderCvaObject on ResponseCvasOrder {
+  fragment OrderCvaObject on ResponseCvaOrder {
     error
     estado
     pedido

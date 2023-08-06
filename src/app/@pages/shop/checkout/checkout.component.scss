@@ -153,15 +153,15 @@ a.button.disabled {
 
 .sctn-col input {
   border: 1px solid #ccc;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 24px;
-  padding: 10px 12px;
+  padding: 0px 5px;
   width: 333px;
 }
 
 .sctn-col label {
-  font-size: 24px;
-  line-height: 24px;
+  font-size: 17px;
+  line-height: 16px;
   margin-bottom: 10px;
   width: 100%;
 }
@@ -216,7 +216,7 @@ a.button.disabled {
 }
 
 .pymnt-cntnt div.sctn-row {
-  margin: 20px 30px 0;
+  margin: 5px 30px 0;
   width: 370px;
 }
 
@@ -259,7 +259,7 @@ a.button.disabled {
 .openpay {
   float: right;
   height: 60px;
-  margin: 0px 30px 0 0;
+  margin: -20px 30px 0 0;
   width: 350px;
 }
 
@@ -267,10 +267,10 @@ a.button.disabled {
   background-image: url("../../../../assets/images/openpay/openpay.png");
   background-position: right bottom;
   background-repeat: no-repeat;
-  font-size: 12px;
+  font-size: 17px;
   font-weight: 400;
   margin-left: 20px;
-  padding: 20px 0 0 40px;
+  padding: 5px 0 0 5px;
   width: 350px;
 }
 
@@ -287,8 +287,8 @@ a.button.disabled {
 
 .card-expl {
   float: left;
-  height: 80px;
-  margin: 20px 0;
+  height: 40px;
+  margin: 0px 0;
   width: 350px;
 }
 
@@ -296,7 +296,7 @@ a.button.disabled {
   background-position: left 45px;
   background-repeat: no-repeat;
   height: 70px;
-  padding-top: 10px;
+  padding-top: 25px;
 }
 
 .card-expl div.debit {
