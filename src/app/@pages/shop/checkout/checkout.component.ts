@@ -412,13 +412,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case PAY_OPENPAY:
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
-              // // Realizar Cargo con la Tarjeta
-              // const pagoOpenpay = await this.payOpenpay(id);
-              // if (pagoOpenpay.status === false) {
-              //   this.isSubmitting = false;
-              //   return await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
-              // }
-              // console.log('pagoOpenpay: ', pagoOpenpay);
+              // Realizar Cargo con la Tarjeta
+              const pagoOpenpay = await this.payOpenpay(id);
+              if (pagoOpenpay.status === false) {
+                this.isSubmitting = false;
+                return await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
+              }
+              console.log('pagoOpenpay: ', pagoOpenpay);
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id);
               console.log('OrderSupplier: ', OrderSupplier);
