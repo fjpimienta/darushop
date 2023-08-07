@@ -62,6 +62,8 @@ declare var $: any;
 export class CheckoutComponent implements OnInit, OnDestroy {
 
   formData: FormGroup;
+  formDataCard: FormGroup;
+  formDataSpei: FormGroup;
   cartItems: CartItem[] = [];
   countrys: Country[];
   selectCountry: Country;
@@ -313,6 +315,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       references: [''],
       existeMetodoPago: [false],
       existePaqueteria: [false]
+    });
+
+    this.formDataSpei = this.formBuilder.group({
+      bankName: ['', Validators.required],
+      clabe: ['', Validators.required]
     });
 
     // Obtiene los datos de la sesión
@@ -1033,7 +1040,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCt.noExterior = dir.outdoorNumber;
         envioCt.noInterior = dir.interiorNumber;
         envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
-        envioCt.telefono = dir.phone;
+        envioCt.telefono = parseInt(dir.phone, 10);
         enviosCt.push(envioCt);
         const ProductosCt: ProductoCt[] = [];
         for (const idPS of Object.keys(warehouse.productShipments)) {
@@ -1129,6 +1136,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCvaResponse.agentemail = '';
     orderCvaResponse.almacenmail = '';
     // Generar modelo de cada proveedor
+    console.log('this.warehouses: ', this.warehouses);
     for (const idWar of Object.keys(this.warehouses)) {
       const warehouse: Warehouse = this.warehouses[idWar];
       const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);

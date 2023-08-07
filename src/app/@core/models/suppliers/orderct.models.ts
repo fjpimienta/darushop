@@ -29,7 +29,7 @@ export class EnvioCt {
   estado: string;
   ciudad: string;
   codigoPostal: number;
-  telefono: string;
+  telefono: number;
 }
 
 /**
