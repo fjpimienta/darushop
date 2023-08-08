@@ -571,7 +571,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
-          console.log('this.shipments: ', this.shipments);
         }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
@@ -729,7 +728,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(    // Cotizar el envio de productos por proveedor
               supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {
-                console.log('resultShip: ', resultShip);
                 const shipments: Shipment[] = [];
                 for (const key of Object.keys(resultShip)) {
                   const shipment = new Shipment();
@@ -1004,18 +1002,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.confirm = true;
 
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
-    console.log('chargeResult: ', chargeResult);
-    console.log('chargeResult.createChargeOpenpay: ', chargeResult.createChargeOpenpay);
     if (chargeResult.status === false) {
       return { status: cardResponse.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
     }
 
     const idChargeOpenpay = chargeResult.createChargeOpenpay.id;
     const captureTransactionOpenpay = { amount: totalCharge }
-    console.log('idChargeOpenpay: ', idChargeOpenpay);
-    console.log('captureTransactionOpenpay: ', captureTransactionOpenpay);
     const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
-    console.log('createResult: ', createResult);
     if (createResult.status === false) {
       return { status: createResult.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
     }
@@ -1027,7 +1020,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
-    console.log('warehouse: ', warehouse);
     switch (supplier.slug) {
       case 'ct':
         const guiaConnect: GuiaConnect = new GuiaConnect();
@@ -1140,7 +1132,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCvaResponse.agentemail = '';
     orderCvaResponse.almacenmail = '';
     // Generar modelo de cada proveedor
-    console.log('this.warehouses: ', this.warehouses);
     for (const idWar of Object.keys(this.warehouses)) {
       const warehouse: Warehouse = this.warehouses[idWar];
       const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
@@ -1161,7 +1152,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         .then(async (result) => {
           return await result;
         });
-      console.log('orderNew: ', orderNew);
       if (orderNew) {
         switch (warehouse.suppliersProd.idProveedor) {
           case 'ct':
@@ -1169,7 +1159,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             delivery.ordersCt = ordersCt;
             delivery.orderCtResponse = orderCtResponse;
             const confirmarPedidoCt = await this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCtResponse);
-            console.log('confirmarPedidoCt: ', confirmarPedidoCt);
             delivery.orderCtConfirmResponse = confirmarPedidoCt;
             break;
           case 'cva':
@@ -1398,12 +1387,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
     switch (supplierName) {
       case 'cva':
-        console.log('order: ', order);
         const pedidosCva = await this.externalAuthService.setOrderCva(order)
           .then(async resultPedido => {
             try {
               const { orderCva } = resultPedido.orderCva;
-              console.log('orderCva: ', orderCva);
               const cvaResponse: OrderCvaResponse = {
                 agentemail: orderCva?.agentemail || '',
                 almacenmail: orderCva?.almacenmail || '',
@@ -1412,7 +1399,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 pedido: orderCva?.pedido || '0',
                 total: orderCva?.total || '0',
               };
-              console.log('cvaResponse: ', cvaResponse);
               return await cvaResponse;
             } catch (error) {
               throw await error;
@@ -1420,7 +1406,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           });
         return await pedidosCva;
       case 'ct':
-        console.log('order: ', order);
         const pedidosCt = await this.externalAuthService.setOrderCt(
           order.idPedido,
           order.almacen,
@@ -1446,7 +1431,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
                 ctResponse.errores = resultPedido.errores;
               }
-              console.log('ctResponse: ', ctResponse);
               return await ctResponse;
             } catch (error) {
               throw await error;
@@ -1477,7 +1461,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const pedidosCva = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
               .then(async resultPedido => {
                 try {
-                  console.log('resultPedido: ', resultPedido);
                   const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
                   cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
                   cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
@@ -1553,7 +1536,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   throw await error;
                 }
               });
-            console.log('pedidosCt: ', pedidosCt);
             return await pedidosCt;
         }
       } else {

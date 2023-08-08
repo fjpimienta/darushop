@@ -114,7 +114,6 @@ export class ExternalAuthService extends ApiService {
         return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
           .then(response => response.json())
           .then(async response => {
-            console.log('response: ', response);
             return await response;
           })
           .catch(err => console.error(err));
@@ -590,7 +589,6 @@ export class ExternalAuthService extends ApiService {
           return fetch(urlCVA, optionsCva)
             .then(response => response.json())
             .then(async response => {
-              console.log('response: ', response);
               return await response.cotizacion;
             })
             .catch(err => console.error(err));
@@ -614,7 +612,6 @@ export class ExternalAuthService extends ApiService {
           return await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options)
             .then(response => response.json())
             .then(async response => {
-              console.log('response: ', response);
               return await response;
             })
             .catch(err => console.error(err));
@@ -1260,7 +1257,6 @@ export class ExternalAuthService extends ApiService {
   }
 
   async setOrderCva(pedidoCva: IOrderCva): Promise<any> {
-    console.log('setOrderCva/pedidoCva: ', pedidoCva);
     return new Promise<any>((resolve, reject) => {
       this.get(ADD_ORDER_CVA, { pedidoCva }, {}).subscribe(
         (result: any) => {
@@ -1332,7 +1328,6 @@ export class ExternalAuthService extends ApiService {
         cfdi
       }, {}).subscribe(
         (result: any) => {
-          console.log('result: ', result);
           resolve(result.orderCt);
         },
         (error: any) => {

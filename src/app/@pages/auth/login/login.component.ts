@@ -35,7 +35,6 @@ export class LoginComponent implements OnInit {
       this.login.email = '';
       this.login.remember = false;
     }
-    console.log('this.login: ', this.login);
   }
 
   onSubmit(): void {

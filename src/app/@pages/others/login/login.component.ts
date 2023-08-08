@@ -32,7 +32,6 @@ export class LoginPageComponent implements OnInit {
               public router: Router,
               public authService: AuthenticationService) {
     activeRoute.params.subscribe(params => {
-      console.log('params: ', params);
       if (params.register) {
         if (params.register !== 'on') {
           this.router.navigate(['/register/on']);

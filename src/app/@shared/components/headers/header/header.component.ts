@@ -71,7 +71,6 @@ export class HeaderComponent implements OnInit {
       return true;
       // // Comprobar que no esta caducado el token
       // if (dataDecode.exp < new Date().getTime() / 1000) {
-      //   console.log('Sesion caducada');
       //   this.closeNav();
       //   return this.redirect();
       // }
