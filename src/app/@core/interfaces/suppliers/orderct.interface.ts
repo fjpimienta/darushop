@@ -4,7 +4,7 @@ export interface IOrderCt {
   tipoPago?: string;
   guiaConnect: IGuiaConnect;
   envio?: IEnvioCt[];
-  producto?: IProductoCt[];
+  productoCt?: IProductoCt[];
   cfdi: string;
 }
 

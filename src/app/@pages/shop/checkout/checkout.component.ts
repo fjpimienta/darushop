@@ -1054,7 +1054,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           tipoPago: '99',
           guiaConnect: guiaConnect,
           envio: enviosCt,
-          producto: ProductosCt,
+          productoCt: ProductosCt,
           cfdi: 'G01'
         };
         return orderCtSupplier;
@@ -1158,8 +1158,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             orderCtResponse = orderNew;
             delivery.ordersCt = ordersCt;
             delivery.orderCtResponse = orderCtResponse;
-            const confirmarPedidoCt = await this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCtResponse);
-            delivery.orderCtConfirmResponse = confirmarPedidoCt;
+
+            const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
+            orderCtConfirm.folio = orderNew.pedidoWeb;
+
+            const confirmarPedidoCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio);
+            console.log('confirmarPedidoCt:', confirmarPedidoCt);
+
+            const ctConfirmResponse: OrderCtConfirmResponse = {
+              okCode: confirmarPedidoCt.confirmOrderCt.okCode.toString(),
+              okMessage: confirmarPedidoCt.confirmOrderCt.okMessage,
+              okReference: confirmarPedidoCt.confirmOrderCt.okReference
+            };
+            console.log('ctConfirmResponse:', ctConfirmResponse);
+
+
+
+            delivery.orderCtConfirmResponse = ctConfirmResponse;
             break;
           case 'cva':
             if (orderNew.estado === 'ERROR') {
@@ -1170,7 +1185,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             orderCvaResponse = orderNew;
             delivery.ordersCva = ordersCva;
             delivery.orderCvaResponse = orderCvaResponse;
-            const confirmarPedidoCva = this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCvaResponse);
+            const confirmarPedidoCva = [];
             break;
         }
         if (orderCtResponse.errores) {
@@ -1412,25 +1427,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           order.tipoPago,
           order.guiaConnect,
           order.envio,
-          order.producto,
+          order.productoCt,
           order.cfdi
         )
           .then(async resultPedido => {
             try {
               const ctResponse: OrderCtResponse = new OrderCtResponse();
-              if (resultPedido[0].respuestaCT) {
-                ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
-                ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
-                ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
-                ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
-                ctResponse.errores = resultPedido[0].respuestaCT.errores;
-              } else {
-                ctResponse.estatus = resultPedido.estatus;
-                ctResponse.fecha = resultPedido.fecha;
-                ctResponse.pedidoWeb = resultPedido.pedidoWeb;
-                ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
-                ctResponse.errores = resultPedido.errores;
-              }
+              ctResponse.estatus = resultPedido.orderCt.estatus;
+              ctResponse.fecha = resultPedido.orderCt.fecha;
+              ctResponse.pedidoWeb = resultPedido.orderCt.pedidoWeb;
+              ctResponse.tipoDeCambio = resultPedido.orderCt.tipoDeCambio;
+              ctResponse.errores = resultPedido.orderCt.errores;
               return await ctResponse;
             } catch (error) {
               throw await error;
@@ -1438,7 +1445,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           });
         return await pedidosCt;
     }
-
     return await [];
 
     // get supplier
@@ -1524,7 +1530,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           case 'ct':
             const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
             orderCtConfirm.folio = order.pedidoWeb;
-            const pedidosCt = await this.externalAuthService.getConfirmacionAPI(supplier, apiConfirmar, orderCtConfirm)
+            const pedidosCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio)
               .then(async resultConfirm => {
                 try {
                   const ctConfirmResponse: OrderCtConfirmResponse = new OrderCtConfirmResponse();

@@ -21,7 +21,7 @@ export const ORDERCT_FRAGMENT_X = gql`
         codigoPostal
         telefono
       }
-      producto {
+      productoCt {
         cantidad
         clave
         precio
