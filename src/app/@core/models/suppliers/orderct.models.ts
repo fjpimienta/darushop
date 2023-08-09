@@ -7,7 +7,7 @@ export class OrderCt {
   tipoPago: string;
   guiaConnect: GuiaConnect;
   envio: EnvioCt[];
-  producto: ProductoCt[];
+  productoCt: ProductoCt[];
   cfdi: string;
 }
 
@@ -29,7 +29,7 @@ export class EnvioCt {
   estado: string;
   ciudad: string;
   codigoPostal: number;
-  telefono: string;
+  telefono: number;
 }
 
 /**

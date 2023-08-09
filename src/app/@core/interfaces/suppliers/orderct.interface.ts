@@ -4,7 +4,7 @@ export interface IOrderCt {
   tipoPago?: string;
   guiaConnect: IGuiaConnect;
   envio?: IEnvioCt[];
-  producto?: IProductoCt[];
+  productoCt?: IProductoCt[];
   cfdi: string;
 }
 
@@ -23,7 +23,7 @@ export interface IEnvioCt {
   estado: string;
   ciudad: string;
   codigoPostal: number;
-  telefono: string;
+  telefono: number;
 }
 
 export interface IProductoCt {

@@ -68,10 +68,6 @@ export class CountDownComponent implements OnInit {
       this.hours = Math.floor(time % (3600 * 24) / 3600);
       this.minutes = Math.floor(time % 3600 / 60);
       this.seconds = Math.floor(time % 60);
-      // console.log('this.days: ', this.days);
-      // console.log('this.hours: ', this.hours);
-      // console.log('this.minutes: ', this.minutes);
-      // console.log('this.seconds: ', this.seconds);
     }, 1000);
   }
 }

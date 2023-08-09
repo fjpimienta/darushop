@@ -196,10 +196,8 @@ const swalWithBasicOptions = (title: string, html: string) => Swal.mixin({
 //     cancelButtonText
 //   }).then((result) => {
 //     if (result.value) {
-//       console.log('Editar');
 //       return true;
 //     } else if (result.dismiss.toString() === 'cancel') {
-//       console.log('Bloqueado');
 //       return false;
 //     }
 //   });

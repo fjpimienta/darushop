@@ -45,7 +45,8 @@
               <div class="row">
                 <div class="col-sm-6">
                   <label>Teléfono *</label>
-                  <input type="phone" class="form-control" name="phone" formControlName="phone" required>
+                  <input type="phone" class="form-control" name="phone" formControlName="phone"
+                    (keypress)="bloquearLetras($event)" required>
                 </div>
                 <div class="col-sm-6">
                   <label>Correo Electrónico *</label>
@@ -314,7 +315,7 @@
                                       <label>Fecha de expiración</label>
                                       <div class="sctn-col half l"><input type="text" placeholder="Mes"
                                           data-openpay-card="expiration_month" maxlength="2"
-                                          (keypress)="bloquearLetras($event)" pattern="^(0?[1-9]|1[0-2])$"></div>
+                                          (keypress)="bloquearLetras($event)"></div>
                                       <div class="sctn-col half l"><input type="text" placeholder="Año"
                                           data-openpay-card="expiration_year" maxlength="2"
                                           (keypress)="bloquearLetras($event)"></div>
@@ -389,15 +390,21 @@
                     <div id="collapse-1" class="collapse" aria-labelledby="heading-1" data-parent="#accordion-payment">
                       <div class="card-body">
                         <div class="row">
-                          <div class="col-2">Banco</div>
-                          <div class="col-5">Nombre</div>
-                          <div class="col-5">Cuenta</div>
+                          <div class="col-12">
+                            Realiza tu pago directamente en nuestra cuenta bancaria.
+                            Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
+                          </div>
                         </div>
                         <div class="row">
-                          <div class="col-12">
-                            Realiza tu pago directamente en nuestra cuenta bancaria. Utilice su ID de pedido como
-                            referencia
-                            de pago. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
+                          <div class="col-6">Banco</div>
+                          <div class="col-6">Cuenta</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-6">
+                            <input type="text" id="bankName" formControlName="bankName" required><br>
+                          </div>
+                          <div class="col-6">
+                            <input type="text" id="clabe" formControlName="clabe" required><br>
                           </div>
                         </div>
                       </div>

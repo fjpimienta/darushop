@@ -48,7 +48,6 @@ export class OffersComponent implements OnInit {
     });
 
     this.activeRoute.queryParams.subscribe(params => {
-      console.log('params: ', params);
       this.loaded = false;
       this.offer = true;
 

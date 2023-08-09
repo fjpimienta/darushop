@@ -62,6 +62,8 @@ declare var $: any;
 export class CheckoutComponent implements OnInit, OnDestroy {
 
   formData: FormGroup;
+  formDataCard: FormGroup;
+  formDataSpei: FormGroup;
   cartItems: CartItem[] = [];
   countrys: Country[];
   selectCountry: Country;
@@ -315,6 +317,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       existePaqueteria: [false]
     });
 
+    this.formDataSpei = this.formBuilder.group({
+      bankName: ['', Validators.required],
+      clabe: ['', Validators.required]
+    });
+
     // Obtiene los datos de la sesión
     this.authService.accessVar$.subscribe((result) => {
       this.session = result;
@@ -564,7 +571,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
-          console.log('this.shipments: ', this.shipments);
         }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
@@ -697,7 +703,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               productShipment.producto = cartItem.sku;
               productShipment.cantidad = cartItem.qty;
               productShipment.precio = cartItem.price;
-              productShipment.priceSupplier = cartItem.suppliersProd.price;
+              if (cartItem.promociones.disponible_en_promocion) {
+                productShipment.priceSupplier = cartItem.promociones.disponible_en_promocion;
+              } else {
+                productShipment.priceSupplier = cartItem.suppliersProd.price;
+              }
               productShipment.moneda = cartItem.suppliersProd.moneda;
               productShipment.almacen = branchSupplier.id;
               productShipment.cp = branchSupplier.cp;
@@ -718,7 +728,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const shipmentsCost = await this.externalAuthService.onShippingEstimate(    // Cotizar el envio de productos por proveedor
               supplier, apiShipment, this.warehouse, true)
               .then(async (resultShip) => {
-                console.log('resultShip: ', resultShip);
                 const shipments: Shipment[] = [];
                 for (const key of Object.keys(resultShip)) {
                   const shipment = new Shipment();
@@ -993,18 +1002,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.confirm = true;
 
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
-    console.log('chargeResult: ', chargeResult);
-    console.log('chargeResult.createChargeOpenpay: ', chargeResult.createChargeOpenpay);
     if (chargeResult.status === false) {
       return { status: cardResponse.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
     }
 
     const idChargeOpenpay = chargeResult.createChargeOpenpay.id;
     const captureTransactionOpenpay = { amount: totalCharge }
-    console.log('idChargeOpenpay: ', idChargeOpenpay);
-    console.log('captureTransactionOpenpay: ', captureTransactionOpenpay);
     const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
-    console.log('createResult: ', createResult);
     if (createResult.status === false) {
       return { status: createResult.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
     }
@@ -1016,7 +1020,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
-    console.log('warehouse: ', warehouse);
     switch (supplier.slug) {
       case 'ct':
         const guiaConnect: GuiaConnect = new GuiaConnect();
@@ -1033,7 +1036,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCt.noExterior = dir.outdoorNumber;
         envioCt.noInterior = dir.interiorNumber;
         envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
-        envioCt.telefono = dir.phone;
+        envioCt.telefono = parseInt(dir.phone, 10);
         enviosCt.push(envioCt);
         const ProductosCt: ProductoCt[] = [];
         for (const idPS of Object.keys(warehouse.productShipments)) {
@@ -1051,7 +1054,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           tipoPago: '99',
           guiaConnect: guiaConnect,
           envio: enviosCt,
-          producto: ProductosCt,
+          productoCt: ProductosCt,
           cfdi: 'G01'
         };
         return orderCtSupplier;
@@ -1149,16 +1152,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         .then(async (result) => {
           return await result;
         });
-      console.log('orderNew: ', orderNew);
       if (orderNew) {
         switch (warehouse.suppliersProd.idProveedor) {
           case 'ct':
             orderCtResponse = orderNew;
             delivery.ordersCt = ordersCt;
             delivery.orderCtResponse = orderCtResponse;
-            const confirmarPedidoCt = await this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCtResponse);
-            console.log('confirmarPedidoCt: ', confirmarPedidoCt);
-            delivery.orderCtConfirmResponse = confirmarPedidoCt;
+
+            const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
+            orderCtConfirm.folio = orderNew.pedidoWeb;
+
+            const confirmarPedidoCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio);
+            console.log('confirmarPedidoCt:', confirmarPedidoCt);
+
+            const ctConfirmResponse: OrderCtConfirmResponse = {
+              okCode: confirmarPedidoCt.confirmOrderCt.okCode.toString(),
+              okMessage: confirmarPedidoCt.confirmOrderCt.okMessage,
+              okReference: confirmarPedidoCt.confirmOrderCt.okReference
+            };
+            console.log('ctConfirmResponse:', ctConfirmResponse);
+
+
+
+            delivery.orderCtConfirmResponse = ctConfirmResponse;
             break;
           case 'cva':
             if (orderNew.estado === 'ERROR') {
@@ -1169,7 +1185,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             orderCvaResponse = orderNew;
             delivery.ordersCva = ordersCva;
             delivery.orderCvaResponse = orderCvaResponse;
-            const confirmarPedidoCva = this.ConfirmarPedidos(warehouse.suppliersProd.idProveedor, orderCvaResponse);
+            const confirmarPedidoCva = [];
             break;
         }
         if (orderCtResponse.errores) {
@@ -1386,12 +1402,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async EfectuarPedidos(supplierName: string, order: any): Promise<any> {
     switch (supplierName) {
       case 'cva':
-        console.log('order: ', order);
         const pedidosCva = await this.externalAuthService.setOrderCva(order)
           .then(async resultPedido => {
             try {
               const { orderCva } = resultPedido.orderCva;
-              console.log('orderCva: ', orderCva);
               const cvaResponse: OrderCvaResponse = {
                 agentemail: orderCva?.agentemail || '',
                 almacenmail: orderCva?.almacenmail || '',
@@ -1400,7 +1414,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 pedido: orderCva?.pedido || '0',
                 total: orderCva?.total || '0',
               };
-              console.log('cvaResponse: ', cvaResponse);
               return await cvaResponse;
             } catch (error) {
               throw await error;
@@ -1408,33 +1421,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           });
         return await pedidosCva;
       case 'ct':
-        console.log('order: ', order);
         const pedidosCt = await this.externalAuthService.setOrderCt(
           order.idPedido,
           order.almacen,
           order.tipoPago,
           order.guiaConnect,
           order.envio,
-          order.producto,
+          order.productoCt,
           order.cfdi
         )
           .then(async resultPedido => {
             try {
               const ctResponse: OrderCtResponse = new OrderCtResponse();
-              if (resultPedido[0].respuestaCT) {
-                ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
-                ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
-                ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
-                ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
-                ctResponse.errores = resultPedido[0].respuestaCT.errores;
-              } else {
-                ctResponse.estatus = resultPedido.estatus;
-                ctResponse.fecha = resultPedido.fecha;
-                ctResponse.pedidoWeb = resultPedido.pedidoWeb;
-                ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
-                ctResponse.errores = resultPedido.errores;
-              }
-              console.log('ctResponse: ', ctResponse);
+              ctResponse.estatus = resultPedido.orderCt.estatus;
+              ctResponse.fecha = resultPedido.orderCt.fecha;
+              ctResponse.pedidoWeb = resultPedido.orderCt.pedidoWeb;
+              ctResponse.tipoDeCambio = resultPedido.orderCt.tipoDeCambio;
+              ctResponse.errores = resultPedido.orderCt.errores;
               return await ctResponse;
             } catch (error) {
               throw await error;
@@ -1442,7 +1445,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           });
         return await pedidosCt;
     }
-
     return await [];
 
     // get supplier
@@ -1465,7 +1467,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const pedidosCva = await this.externalAuthService.getPedidosSOAP(supplier, apiOrder, '', order)
               .then(async resultPedido => {
                 try {
-                  console.log('resultPedido: ', resultPedido);
                   const cvaResponse: OrderCvaResponse = new OrderCvaResponse();
                   cvaResponse.agentemail = resultPedido.agentemail._ ? resultPedido.agentemail._ : '';
                   cvaResponse.almacenmail = resultPedido.almacenmail._ ? resultPedido.almacenmail._ : '';
@@ -1529,7 +1530,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           case 'ct':
             const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
             orderCtConfirm.folio = order.pedidoWeb;
-            const pedidosCt = await this.externalAuthService.getConfirmacionAPI(supplier, apiConfirmar, orderCtConfirm)
+            const pedidosCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio)
               .then(async resultConfirm => {
                 try {
                   const ctConfirmResponse: OrderCtConfirmResponse = new OrderCtConfirmResponse();
@@ -1541,7 +1542,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   throw await error;
                 }
               });
-            console.log('pedidosCt: ', pedidosCt);
             return await pedidosCt;
         }
       } else {

@@ -99,8 +99,6 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
 
   searchBrands(event: any): void {
     this.searchQuery = event.target.value;
-    console.log('this.searchQuery: ', this.searchQuery);
-    console.log('event.target.value: ', event.target.value);
     if (this.searchQuery !== '') {
       const brand = typeof this.searchQuery === 'string' ? this.searchQuery.trim().toLowerCase() : '';
       const existBrand = this.brands.find(item => item.slug === brand) ? true : false;

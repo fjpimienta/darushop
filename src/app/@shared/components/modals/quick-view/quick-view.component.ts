@@ -71,7 +71,6 @@ export class QuickViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('quick-view/this.id: ', this.id);
     this.productService.getProduct(this.id).subscribe(result => {
       this.product = result.product.product;
 

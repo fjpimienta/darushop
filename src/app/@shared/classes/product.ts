@@ -73,4 +73,11 @@ export interface Product {
       longitud: string;
     }>
   };
+  promociones: {
+    clave_promocion: string;
+    descripcion_promocion: string;
+    inicio_promocion: string;
+    vencimiento_promocion: string;
+    disponible_en_promocion: number;
+  }
 }

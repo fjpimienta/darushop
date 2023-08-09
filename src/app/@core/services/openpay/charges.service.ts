@@ -134,7 +134,6 @@ export class ChargeOpenpayService extends ApiService {
     return new Promise<any>((resolve, reject) => {
       this.get(ADD_CHARGE_OPENPAY, { chargeOpenpay }).subscribe(
         (result: any) => {
-          console.log('createCharge/result: ', result);
           resolve(result.createChargeOpenpay);
         },
         (error: any) => {
