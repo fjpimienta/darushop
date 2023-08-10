@@ -393,6 +393,28 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     });
+    this.loadOpenPayAsync();
+  }
+
+  private loadOpenPayAsync(): void {
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'assets/js/openpay-data.v1.min.js';
+    script.async = false; // Carga de manera sincrónica
+    console.log('1-loadOpenPayAsync');
+    script.onload = () => {
+      // La librería se ha cargado, ahora podemos acceder a OpenPay
+      console.log('2-script.onload');
+      this.setupOpenPayDeviceData();
+    };
+    console.log('3-loadOpenPayAsync');
+    document.head.appendChild(script);
+  }
+
+  private setupOpenPayDeviceData(): void {
+    const formId = this.formData; // Reemplaza con el ID de tu formulario
+    this.deviceDataId = window['OpenPay']['deviceData']['setup'](formId);
+    console.log('deviceDataId: ', this.deviceDataId);
   }
 
   async notAvailableProducts(withMessage: boolean = true): Promise<void> {
