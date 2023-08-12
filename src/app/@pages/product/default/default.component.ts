@@ -17,6 +17,7 @@ export class DefaultPageComponent implements OnInit {
   next: Product;
   related = [];
   loaded = false;
+  productName = '';
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -25,12 +26,12 @@ export class DefaultPageComponent implements OnInit {
   ) {
     activeRoute.params.subscribe(params => {
       this.loaded = false;
-      // this.apiService.getSingleProduct(params['slug']).subscribe(result => {
       this.productService.getProduct(params.slug).subscribe(result => {
         if (result === null) {
           this.router.navigate(['/pages/404']);
         }
         this.product = result.product.product;
+        this.productName = result.product.product.sku;
         // this.prev = this.product;
         // this.next = this.product;
 
