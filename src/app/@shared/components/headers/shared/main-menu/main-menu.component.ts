@@ -7,6 +7,7 @@ import { CategoriesService } from '@core/services/categorie.service';
 import { BrandsGroupsService } from '@core/services/brandgroup.service';
 import { CategorysGroupsService } from '@core/services/categorygroup.service';
 import { CatalogGroup } from '@core/models/cataloggroup.models';
+import { ProductsService } from '@core/services/products.service';
 
 @Component({
   selector: 'app-main-menu',
@@ -18,8 +19,8 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   current = '/';
   brands: Catalog[];
   brandsTmp: Catalog[];
-  categories: Catalog[];
-  categoriesTmp: Catalog[];
+  categories: Catalog[] = [];
+  categoriesTmp: Catalog[] = [];
   brandsGroup: CatalogGroup[] = [];
   categorysGroup: CatalogGroup[] = [];
   searchQuery: string = '';
@@ -32,7 +33,8 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     public brandsService: BrandsService,
     public categoriesService: CategoriesService,
     public brandsgroupService: BrandsGroupsService,
-    public categorysgroupService: CategorysGroupsService
+    public categorysgroupService: CategorysGroupsService,
+    public productService: ProductsService
   ) {
     this.subscr = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -68,16 +70,38 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     });
     this.categories = [];
     this.categoriesTmp = [];
-    this.categoriesService.getCategories(1, -1).subscribe(result => {
-      result.categories.forEach(cat => {
-        cat.param = {
-          category: cat.slug,
-          description: cat.description
-        };
+    this.productService.getProducts(1, -1, '', false)
+      .subscribe(result => {
+        const resultCategorie = result;
+        const categoriesProd = resultCategorie.products.reduce((products, product) => {
+          if (!products[product.category[0].slug]) {
+            products[product.category[0].slug] = [];
+          }
+          products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
+          return products;
+        }, {});
+        let j = 0;
+        Object.keys(categoriesProd).forEach((categorie) => {
+          j += 1;
+          const br = new Catalog();
+          br.id = j.toString();
+          br.slug = categorie;
+          br.description = categorie.toUpperCase();
+          this.categories.push(br);
+        });
+        for (const cat of this.categories) {
+          cat.param = {
+            category: cat.slug,
+            description: cat.description
+          };
+          this.categoriesTmp.push(cat);
+        }
+        if (this.categories.length !== this.categoriesTmp.length) {
+          this.categories = result.categories;
+          this.categoriesTmp = this.categories;
+        }
       });
-      this.categories = result.categories;
-      this.categoriesTmp = this.categories;
-    });
+
   }
 
   ngOnInit(): void {
