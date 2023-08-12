@@ -16,7 +16,7 @@ export class ProductsComponent implements OnInit {
   type = 'boxed';
   totalCount = 0;
   orderBy = 'default';
-  pageTitle = 'MarkePlace';
+  pageTitle = 'Productos';
   searchTerm = '';
   containerClass = 'container';
   cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
