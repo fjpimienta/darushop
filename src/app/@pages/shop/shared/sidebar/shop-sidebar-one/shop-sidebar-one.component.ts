@@ -1,13 +1,11 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { shopData } from '../../data';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoriesService } from '@core/services/categorie.service';
 import { BrandsService } from '@core/services/brand.service';
 import { Catalog } from '@core/models/catalog.models';
-import { BrandsGroupsService } from '@core/services/brandgroup.service';
-import { CategorysGroupsService } from '@core/services/categorygroup.service';
-import { CatalogGroup } from '@core/models/cataloggroup.models';
+import { ProductsService } from '@core/services/products.service';
 
 @Component({
   selector: 'app-shop-sidebar-one',
@@ -18,104 +16,122 @@ import { CatalogGroup } from '@core/models/cataloggroup.models';
 export class ShopSidebarOneComponent implements OnInit {
 
   @Input() toggle = false;
+
   shopData = shopData;
   params = {};
-  priceRange: any = [0, 100];
-  brands: Catalog[];
-  categories: Catalog[];
-  brandsGroup: CatalogGroup[] = [];
-  categorysGroup: CatalogGroup[] = [];
-
-  @ViewChild('priceSlider') priceSlider: any;
+  @Input() offer: boolean;
+  brands: Catalog[] = [];
+  categories: Catalog[] = [];
+  brandsProd: Catalog[] = [];
+  categoriesProd: Catalog[] = [];
 
   constructor(
     public activeRoute: ActivatedRoute,
     public router: Router,
     public brandsService: BrandsService,
     public categoriesService: CategoriesService,
-    public brandsgroupService: BrandsGroupsService,
-    public categorysgroupService: CategorysGroupsService
+    public productService: ProductsService
   ) {
-    this.brands = [];
-    this.brandsService.getBrands(1, -1).subscribe(result => {
-      this.brands = result.brands;
-    });
-    this.categories = [];
-    this.categoriesService.getCategories(1, -1).subscribe(result => {
-      result.categories.forEach(cat => {
-        cat.param = {
-          category: cat.slug,
-          description: cat.description
-        };
-      });
-      this.categories = result.categories;
-    });
-
-    this.brandsgroupService.getBrandsGroup().subscribe(result => {
-      result.brandsgroups.forEach(brand => {
-        const brandGroup = new CatalogGroup();
-        brandGroup.total = brand.total;
-        brandGroup.name = brand._id[0].name;
-        brandGroup.slug = brand._id[0].slug;
-        this.brandsGroup.push(brandGroup);
-      });
-    });
-    this.categorysgroupService.getCategorysGroup().subscribe(result => {
-      result.categorysgroups.forEach(category => {
-        const categoryGroup = new CatalogGroup();
-        categoryGroup.total = category.total;
-        categoryGroup.name = category._id[0].name;
-        categoryGroup.slug = category._id[0].slug;
-        this.categorysGroup.push(categoryGroup);
-      });
-    });
-
     activeRoute.queryParams.subscribe(params => {
       this.params = params;
-      if (params.minPrice && params.maxPrice) {
-        this.priceRange = [
-          params.minPrice / 10,
-          params.maxPrice / 10
-        ];
-      } else {
-        this.priceRange = [0, 100];
+      this.brands = [];
+      this.categories = [];
+      this.productService.getProducts(1, -1, '', this.offer)
+        .subscribe(result => {
+          const resultBrand = result;
+          const resultCategorie = result;
+          const brandsProd = resultBrand.products.reduce((products, product) => {
+            if (!products[product.brands[0].slug]) {
+              products[product.brands[0].slug] = [];
+            }
+            products[product.brands[0].slug].push({ brands: product.brands[0].name, slug: product.brands[0].slug });
+            return products;
+          }, {});
+          let i = 0;
+          Object.keys(brandsProd).forEach((brand) => {
+            i += 1;
+            const br = new Catalog();
+            br.id = i.toString();
+            br.slug = brand;
+            br.description = brand.toUpperCase();
+            this.brands.push(br);
+          });
 
-        if (this.priceSlider) {
-          this.priceSlider.slider.reset({ min: 0, max: 100 });
-        }
-      }
+          const categoriesProd = resultCategorie.products.reduce((products, product) => {
+            if (!products[product.category[0].slug]) {
+              products[product.category[0].slug] = [];
+            }
+            products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
+            return products;
+          }, {});
+          let j = 0;
+          Object.keys(categoriesProd).forEach((categorie) => {
+            j += 1;
+            const br = new Catalog();
+            br.id = j.toString();
+            br.slug = categorie;
+            br.description = categorie.toUpperCase();
+            this.categories.push(br);
+          });
+
+          if (this.brands.length !== this.brandsProd.length) {
+            this.brandsProd = this.brands;
+          }
+          if (this.categories.length !== this.categoriesProd.length) {
+            this.categoriesProd = this.categories;
+          }
+        });
     });
   }
 
   ngOnInit(): void {
   }
 
-  containsAttrInUrl(type: string, value: string) {
+  containsAttrInUrl(type: string, value: string): any {
     const currentQueries = this.params[type] ? this.params[type].split(',') : [];
     return currentQueries && currentQueries.includes(value);
   }
 
-  getUrlForAttrs(type: string, value: string) {
+  containsPriceInUrl(price: any): boolean {
+    let flag = false;
+    // tslint:disable-next-line: no-string-literal
+    if (this.params['minPrice'] && this.params['minPrice'] === price.min) {
+      flag = true;
+    }
+    else { return false; }
+
+    if (price.max) {
+      if (
+        // tslint:disable-next-line: no-string-literal
+        this.params['maxPrice'] &&
+        // tslint:disable-next-line: no-string-literal
+        this.params['maxPrice'] === price.max
+      ) {
+        flag = true;
+      }
+      else { return false; }
+    }
+    return true;
+  }
+
+  getUrlForAttrs(type: string, value: string): any {
     let currentQueries = this.params[type] ? this.params[type].split(',') : [];
     currentQueries = this.containsAttrInUrl(type, value) ? currentQueries.filter(item => item !== value) : [...currentQueries, value];
     return currentQueries.join(',');
   }
 
   onAttrClick(attr: string, value: string): void {
-    const url = this.getUrlForAttrs(attr, value);
     this.router.navigate([], { queryParams: { [attr]: this.getUrlForAttrs(attr, value), page: 1 }, queryParamsHandling: 'merge' });
   }
 
-  filterPrice(): void {
-    this.router.navigate(
-      [],
-      {
-        queryParams: { minPrice: this.priceRange[0] * 10, maxPrice: this.priceRange[1] * 10, page: 1 },
-        queryParamsHandling: 'merge'
-      });
-  }
+  onPriceChange(event: any, value: any): void {
+    let queryParams: any;
+    if (event.currentTarget.checked) {
+      queryParams = { ...queryParams, minPrice: value.min, maxPrice: value.max, page: 1 };
+    } else {
+      queryParams = { ...queryParams, minPrice: 0, maxPrice: 9999, page: 1 };
+    }
 
-  changeFilterPrice(value: any): void {
-    this.priceRange = [value[0], value[1]];
+    this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
   }
 }
