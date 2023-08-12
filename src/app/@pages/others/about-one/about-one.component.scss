@@ -1,3 +1,58 @@
 .page-header {
   background-color: transparent;
+  background-size: cover;
+  background-position: 50%;
+  background-repeat: no-repeat;
+}
+
+.page-header.page-header-big{
+  display: flex;
+  position: relative;
+  padding-bottom: 0rem;
+  margin-bottom: 0rem;
+}
+
+.page-header.page-header-big h1{
+  position: absolute;
+  top:50%;
+  left:25%;
+  text-transform: uppercase;
+  font-size: 6rem;
+}
+
+.about-images{
+  padding-top: 1rem;
+}
+
+.text-about p {
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: -.01em;
+  color:#000 !important;
+  margin-bottom: 2.4rem;
+}
+.container-text-quienes-somos{
+padding-left: 17%;
+}
+
+.member{
+  background-color: white;
+}
+
+.member p{
+  color:#000;
+}
+
+.member-content{
+  transition: none;
+}
+
+.member:hover .member-content{
+  opacity: 1;
+}
+
+.member-title{
+  color:#4b02fc;
+  font-size: 4rem;
+  
 }
