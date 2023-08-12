@@ -1181,29 +1181,51 @@ p{
   font-size: 2.5rem;
 }
 
+// Empresa
+
+.page-content-about{
+  position: relative;
+  margin-top: -89px;
+  overflow: hidden;
+  background-color:$primary-color;
+  // padding: 108px 0 88px;
+
+  .banner,
+  figure {
+    margin-bottom: 0;
+    background: transparent;
+  }
+  .banner {
+    img {
+      width: auto;
+      max-width: 100%;
+    }
+
+    .banner-content {
+      left: 19%;
+      top: 58%;
+      width: auto;
+      padding: 1rem;
+      }
+
+    .banner-subtitle {
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -.025em;
+      color:$primary-color;
+      margin-bottom: .5rem;
+      
+    }
+  }
+}
+
+
 // carrito de compras
 .table th{
   color:#000;
 }
 
-//empresa
-.title-about {
-  font-size: 1.8rem;
-  font-weight: bold;
-  line-height: 1;
-  letter-spacing: -.025em;
-  color: $primary-color;
-
-  h2{
-    font-size: 4rem;
-  }
-
-}
-
-.page-content p{
-  color:#000;
-  text-align: justify;
-}
   //texto app-accordion .card
   .card.card-sm .card-body{
     font-size: 1.5rem;
