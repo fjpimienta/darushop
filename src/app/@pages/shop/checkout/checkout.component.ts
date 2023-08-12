@@ -414,7 +414,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   private setupOpenPayDeviceData(): void {
     const formId = this.formData; // Reemplaza con el ID de tu formulario
-    this.deviceDataId = window['OpenPay']['deviceData']['setup'](formId);
+    // this.deviceDataId = window['OpenPay']['deviceData']['setup'](formId);
     console.log('setupOpenPayDeviceData/deviceDataId: ', this.deviceDataId);
   }
 
