@@ -1,5 +1,6 @@
 <main class="main">
-  <app-page-header title="Verificar" subtitle="DaruShop"></app-page-header>
+  <app-page-header title="Verificar" subtitle=""
+    image="assets/images/banners/banner-checkout.jpg"></app-page-header>
   <nav class="breadcrumb-nav">
     <div class="container">
       <ol class="breadcrumb">
@@ -389,29 +390,38 @@
                     </div>
                     <div id="collapse-1" class="collapse" aria-labelledby="heading-1" data-parent="#accordion-payment">
                       <div class="card-body">
-                        <div class="row">
-                          <div class="col-12">
-                            Realiza tu pago directamente en nuestra cuenta bancaria.
-                            Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
+                        <form (ngSubmit)="onSubmitSpei()" [formGroup]="formDataSpei">
+                          <div class="row">
+                            <div class="col-12">
+                              Realiza tu pago directamente en nuestra cuenta bancaria.
+                              Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
+                            </div>
                           </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-6">Banco</div>
-                          <div class="col-6">Cuenta</div>
-                        </div>
-                        <div class="row">
-                          <div class="col-6">
-                            <input type="text" id="bankName" formControlName="bankName" required><br>
+                          <div class="row">
+                            <div class="col-6">Banco</div>
+                            <div class="col-6">Cuenta</div>
                           </div>
-                          <div class="col-6">
-                            <input type="text" id="clabe" formControlName="clabe" required><br>
+                          <div class="row">
+                            <div class="col-6">
+                              <input type="text" id="bankName" formControlName="bankName" required><br>
+                            </div>
+                            <div class="col-6">
+                              <input type="text" id="clabe" formControlName="clabe" required><br>
+                            </div>
                           </div>
-                        </div>
+                        </form>
+                      </div>
+                      <div class="row">
+                        <button type="submit" class="btn btn-info btn-order btn-block btn-round"
+                          [disabled]="!formDataSpei.valid">
+                          <span class="btn-text">Solicitar Transacci&oacute;n</span>
+                          <span class="btn-hover-text" (click)="onSubmitSpei()">Generar Spei</span>
+                        </button>
                       </div>
                     </div>
                   </div>
 
-                  <div class="card">
+                  <!-- <div class="card">
                     <div class="card-header" id="heading-2">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-2"
@@ -437,7 +447,7 @@
                     </div>
                   </div>
 
-                  <!-- <div class="card">
+                  <div class="card">
                     <div class="card-header" id="heading-3">
                       <h2 class="card-title">
                         <a class="toggle-button collapsed" role="button" data-toggle="collapse" href="#collapse-3"
@@ -504,12 +514,6 @@
                     </div>
                   </div> -->
                 </app-accordion>
-
-                <!-- <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
-                  [disabled]="!formData.valid">
-                  <span class="btn-text">Realizar Pedido</span>
-                  <span class="btn-hover-text" (click)="onSubmit()">Pagar</span>
-                </button> -->
 
                 <button type="submit" class="btn btn-primary btn-order btn-block btn-round"
                   [disabled]="!formData.valid">
