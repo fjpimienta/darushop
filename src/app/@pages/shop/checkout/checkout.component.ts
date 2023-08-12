@@ -129,6 +129,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   ciudadesCVA = [];
 
   isSubmitting = false;
+  isSubmittingSpei = false;
 
   deviceDataId: string = '';
   numeroTarjetaSinFormato: string = '';
@@ -425,6 +426,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       );
     }
     this.router.navigate(['/']);
+  }
+
+  async onSubmitSpei(): Promise<any> {
+    if (!this.isSubmittingSpei) {
+      this.isSubmittingSpei = true;
+      if (this.formDataSpei.valid) {
+        loadData('Solicitando el cargo.', 'Esperar el procesamiento de pago.');
+      } else {
+        this.isSubmitting = false;
+        return await infoEventAlert('Verificar los campos para la transferencia requeridos.', '');
+      }
+    }
   }
 
   async onSubmit(): Promise<any> {
