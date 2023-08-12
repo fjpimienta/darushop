@@ -1,44 +1,14 @@
-@media screen and (min-width: 992px) {
-  .sidebar {
-    position: sticky;
-    top: 70px;
+.sidebar-filter-clear {
+  text-transform: capitalize;
+  margin-left: auto;
+  background-color: transparent;
+  color: darkblue;
+
+  &:hover,
+  &:focus {
+    color: blue;
+    font-weight: 800;
   }
-}
-
-.sidebar-shop .custom-control-label {
-  font-weight: 400;
-  color: white;
-  cursor: pointer;
-}
-
-.widget-clean label {
-  color: white;
-  font-weight: 400;
-  font-size: 1.4rem;
-  letter-spacing: -.01em;
-  margin: 0;
-}
-
-.widget-collapsible .widget-title a {
-  position: relative;
-  display: block;
-  color: white;
-  text-decoration: none;
-  padding-right: 3rem;
-}
-
-.filter-item a {
-  color: lightgray;
-}
-
-.filter-price-text {
-  margin-bottom: 1.5em;
-  letter-spacing: -.01em;
-  color: lightgray;
-}
-
-.sidebar-filter-clear:hover {
-  font-weight: 800;
 }
 
 .sidebar-shop .widget {
