@@ -35,7 +35,8 @@
                 <ul class="contact-list">
                   <li>
                     <i class="icon-map-marker"></i>
-                    601 Avenida de los Insurgentes Sur Col. Nápoles, Delegación Benito Juárez Ciudad de México C.P. 03810, México
+                    601 Avenida de los Insurgentes Sur Col. Nápoles, Delegación Benito Juárez Ciudad de México C.P.
+                    03810, México
                   </li>
                   <li>
                     <i class="icon-phone"></i>
@@ -71,33 +72,36 @@
           <h2 class="title mb-1">Alguna pregunta?</h2>
           <p class="mb-2">Use el siguiente formulario para cualquir duda o pregunta.</p>
 
-          <form action="#" class="contact-form mb-3">
+          <form (ngSubmit)="onSubmit()" [formGroup]="formData" class="contact-form mb-3">
             <div class="row">
               <div class="col-sm-6">
                 <label for="cname" class="sr-only">Nombre</label>
-                <input type="text" class="form-control" id="cname" placeholder="Nombre *" required>
+                <input type="text" class="form-control" id="cname" formControlName="cname" placeholder="Nombre *"
+                  required>
               </div>
 
               <div class="col-sm-6">
-                <label for="cemail" class="sr-only">Correo</label>
-                <input type="email" class="form-control" id="cemail" placeholder="Correo *" required>
+                <label for="cmail" class="sr-only">Correo</label>
+                <input type="email" class="form-control" id="cmail" formControlName="cmail" placeholder="Correo *"
+                  required>
               </div>
             </div>
 
             <div class="row">
               <div class="col-sm-6">
                 <label for="cphone" class="sr-only">Teléfono</label>
-                <input type="tel" class="form-control" id="cphone" placeholder="Teléfono">
+                <input type="tel" class="form-control" id="cphone" formControlName="cphone" placeholder="Teléfono">
               </div>
 
               <div class="col-sm-6">
                 <label for="csubject" class="sr-only">Tema</label>
-                <input type="text" class="form-control" id="csubject" placeholder="Tema">
+                <input type="text" class="form-control" id="csubject" formControlName="csubject" placeholder="Tema">
               </div>
             </div>
 
             <label for="cmessage" class="sr-only">Mensaje</label>
-            <textarea class="form-control" cols="30" rows="4" id="cmessage" required placeholder="Mensaje *"></textarea>
+            <textarea class="form-control" cols="30" rows="4" id="cmessage" formControlName="cmessage" required
+              placeholder="Mensaje *"></textarea>
 
             <button type="submit" class="btn btn-outline-primary-2 btn-minwidth-sm">
               <span>ENVIAR</span>
@@ -115,7 +119,9 @@
     </div>
     <div id="map">
       <div *ngIf="apiLoaded | async">
-        <google-map></google-map>
+        <google-map width="400px" height="300px" [center]="{lat: 19.397467, lng: -99.1715642}" [zoom]="17"
+          [options]="{ zoomControl: true, streetViewControl: false }" apiKey="YOUR_API_KEY">
+        </google-map>
       </div>
     </div>
   </div>
