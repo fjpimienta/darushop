@@ -20,7 +20,7 @@ import { ComingSoonPageComponent } from './coming-soon/coming-soon.component';
 import { ServicesComponent } from './services/services.component';
 import { HowtobuyComponent } from './howtobuy/howtobuy.component';
 import { DatePickerLegalAgeModule } from '@shared/calendar/date-picker-legal-age/date-picker-legal-age.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TermsComponent } from './terms/terms.component';
 
 @NgModule({
@@ -42,6 +42,7 @@ import { TermsComponent } from './terms/terms.component';
     PagesRoutingModule,
     SharedModule,
     NgbModule,
+    ReactiveFormsModule,
     RouterModule,
     OwlModule,
     GoogleMapsModule,
