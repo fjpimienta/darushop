@@ -1,6 +1,5 @@
 <main class="main">
-  <app-page-header title="Verificar" subtitle=""
-    image="assets/images/banners/banner-checkout.jpg"></app-page-header>
+  <app-page-header title="Verificar" subtitle="" image="assets/images/banners/banner-checkout.jpg"></app-page-header>
   <nav class="breadcrumb-nav">
     <div class="container">
       <ol class="breadcrumb">
@@ -61,10 +60,10 @@
               <div class="row">
                 <div class="col-sm-6 form-check">
                   <div class="row codigo_postal">
-                    <div class="col-sm-10">
+                    <div class="col-sm-9">
                       <label class='align-bottom'>¿Conoces el Código Postal? Activar/Desactivar captura</label>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                       <input type="checkbox" name="byCodigopostal" class="form-control form-check-input align-bottom"
                         (change)="onActiveCP()" formControlName="byCodigopostal">
                     </div>
@@ -284,7 +283,6 @@
                     </div>
                     <div id="collapse-7" class="collapse" aria-labelledby="heading-7" data-parent="#accordion-payment">
                       <div class="card-body">
-
                         <div class="bkng-tb-cntnt">
                           <div class="pymnts">
                             <form action="#" method="POST" id="payment-form">
@@ -357,7 +355,6 @@
                             </form>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -398,25 +395,40 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-6">Banco</div>
-                            <div class="col-6">Cuenta</div>
+                            <div class="col-6">Nombre del Banco</div>
+                            <div class="col-6">Clabe del Banco (18 digitos)</div>
                           </div>
                           <div class="row">
                             <div class="col-6">
-                              <input type="text" id="bankName" formControlName="bankName" required><br>
+                              <!-- <input type="text" autocomplete="off" id="bankName" formControlName="bankName"
+                                maxlength="50" required> -->
+                              <select class="form-control bank" name="bankName" required formControlName="bankName"
+                                (change)="onSetBancos($event.target)">
+                                <option [ngValue]="''" [selected]="'' == bankName">Elije un País</option>
+                                <option *ngFor="let banco of bancos" [ngValue]="banco">
+                                  {{banco}}
+                                </option>
+                              </select>
                             </div>
                             <div class="col-6">
-                              <input type="text" id="clabe" formControlName="clabe" required><br>
+                              <input type="text" autocomplete="off" id="clabe" formControlName="clabe"
+                                [(ngModel)]="numeroClabeFormateada" (input)="formatearCLABE(numeroClabeFormateada)"
+                                maxlength="21" (keypress)="bloquearLetras($event)" required>
                             </div>
                           </div>
+                          <div class="row">&nbsp;</div>
+                          <div class="row">
+                            <div class="col-3"></div>
+                            <div class="col-6">
+                              <button type="submit" class="btn btn-outline-primary btn-round"
+                                [disabled]="!formDataSpei.valid">
+                                <span class="btn-text">Solicitar SPEI</span>
+                                <span class="btn-hover-text" (click)="onSubmitSpei()">Solicitando SPEI</span>
+                              </button>
+                            </div>
+                            <div class="col-3"></div>
+                          </div>
                         </form>
-                      </div>
-                      <div class="row">
-                        <button type="submit" class="btn btn-info btn-order btn-block btn-round"
-                          [disabled]="!formDataSpei.valid">
-                          <span class="btn-text">Solicitar Transacci&oacute;n</span>
-                          <span class="btn-hover-text" (click)="onSubmitSpei()">Generar Spei</span>
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -514,13 +526,17 @@
                     </div>
                   </div> -->
                 </app-accordion>
-
-                <button type="submit" class="btn btn-primary btn-order btn-block btn-round"
-                  [disabled]="!formData.valid">
-                  <span class="btn-text">Realizar Pedido</span>
-                  <span class="btn-hover-text" (click)="onSubmit()">Pagar</span>
-                </button>
-
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-8">
+                    <button type="submit" class="btn btn-outline-primary btn-order btn-block btn-round"
+                      [disabled]="!formData.valid">
+                      <span class="btn-text">Realizar Pedido</span>
+                      <span class="btn-hover-text" (click)="onSubmit()">Realizando Pedido</span>
+                    </button>
+                  </div>
+                  <div class="col-2"></div>
+                </div>
               </div>
             </aside>
           </div>
