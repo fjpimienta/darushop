@@ -5,7 +5,7 @@ import { CountrysService } from '@core/services/countrys.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
 import { Codigopostal } from '@core/models/codigopostal.models';
 import { Country, Estado, Municipio } from '@core/models/country.models';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '@core/services/auth.service';
 import { IMeData } from '@core/interfaces/session.interface';
 import { environment } from 'src/environments/environment';
@@ -129,11 +129,34 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   ciudadesCVA = [];
 
   isSubmitting = false;
-  isSubmittingSpei = false;
 
   deviceDataId: string = '';
-  numeroTarjetaSinFormato: string = '';
   numeroTarjetaFormateado: string = '';
+  numeroClabeFormateada: string = '';
+  bankName: string;
+
+  bancos = [
+    'Banco Nacional de México (Banamex)',
+    'Banco Santander México',
+    'BBVA México',
+    'Banco Azteca',
+    'Scotiabank México',
+    'HSBC México',
+    'Banco Inbursa',
+    'Banco del Bajío',
+    'Banco Interacciones',
+    'Banco Afirme',
+    'Banco Compartamos',
+    'Banco Famsa',
+    'Banco Invex',
+    'Banco Multiva',
+    'Banco Mifel',
+    'Banco Ve por Más (Bx+)',
+    'Banco Monex',
+    'Banco Regional',
+    'Banco Sabadell México',
+    'Banco Ahorro Famsa'
+  ];
 
   constructor(
     private router: Router,
@@ -320,7 +343,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     this.formDataSpei = this.formBuilder.group({
       bankName: ['', Validators.required],
-      clabe: ['', Validators.required]
+      clabe: ['', [Validators.required, this.validateCLABE.bind(this)]]
     });
 
     // Obtiene los datos de la sesión
@@ -397,6 +420,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.loadOpenPayAsync();
   }
 
+  // Función de validación personalizada para la CLABE
+  validateCLABE(control: AbstractControl): { [key: string]: boolean } | null {
+    const clabeValue = control.value;
+    // Remover espacios en blanco y guiones de la CLABE
+    const clabeSinEspacios = clabeValue.replace(/\s|-/g, '');
+    // Verificar si la CLABE tiene 18 dígitos
+    if (clabeSinEspacios.length !== 18) {
+      return { 'invalidCLABELength': true };
+    }
+    return null; // La validación es exitosa
+  }
+
   private loadOpenPayAsync(): void {
     const script = document.createElement('script');
     script.type = 'text/javascript';
@@ -429,15 +464,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async onSubmitSpei(): Promise<any> {
-    if (!this.isSubmittingSpei) {
-      this.isSubmittingSpei = true;
-      if (this.formDataSpei.valid) {
+    if (this.formDataSpei.valid) {
+      const name_transfer = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
+      console.log('name_transfer: ', name_transfer);
+      if (name_transfer !== '') {
         loadData('Solicitando el cargo.', 'Esperar el procesamiento de pago.');
+        return await infoEventAlert('Se ha enviado a su correo.', '');
       } else {
-        this.isSubmitting = false;
-        return await infoEventAlert('Verificar los campos para la transferencia requeridos.', '');
+        return await infoEventAlert('Es necesario el Nombre y Apellido.', '');
       }
+    } else {
+      return await infoEventAlert('Verificar los campos para la transferencia requeridos. La clabe ser de 18 digitos.', '');
     }
+    // }
   }
 
   async onSubmit(): Promise<any> {
@@ -933,15 +972,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   generarNumeroAleatorioEncriptado(): string {
     // Paso 1: Generar un número aleatorio entre 0 y 999999
     const numeroAleatorio = Math.floor(Math.random() * 1000000);
-
     // Paso 2: Convertir el número en una cadena
     const numeroEnCadena = numeroAleatorio.toString();
-
     // Paso 3: Encriptar la cadena utilizando AES de crypto
     const claveEncriptacion = 'mi_clave_secreta'; // Reemplaza esto con una clave segura
     const iv = crypto.lib.WordArray.random(16); // Generar un vector de inicialización aleatorio
     const encrypted = crypto.AES.encrypt(numeroEnCadena, claveEncriptacion, { iv: iv });
-
     // Truncar o recortar el resultado del cifrado a 32 caracteres
     const resultadoEncriptado32 = encrypted.toString().slice(0, 32);
     return resultadoEncriptado32;
@@ -951,7 +987,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   formatearNumeroTarjeta(numeroTarjetaSinFormato: string) {
     // Remover los espacios en blanco y guiones del número sin formato
     const numeroSinEspacios = numeroTarjetaSinFormato.replace(/\s|-/g, '');
-
     // Aplicar el formato 4 dígitos - 4 dígitos - 4 dígitos - 4 dígitos
     const regex = /(\d{1,4})(\d{1,4})(\d{1,4})(\d{1,4})/;
     const grupos = regex.exec(numeroSinEspacios);
@@ -962,13 +997,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Método para formatear la CLABE bancaria
+  formatearCLABE(clabeSinFormato: string) {
+    // Remover los espacios en blanco y guiones de la CLABE sin formato
+    const clabeSinEspacios = clabeSinFormato.replace(/\s|-/g, '');
+    // Aplicar el formato 4 dígitos - 2 dígitos - 10 dígitos - 2 dígitos
+    const regex = /(\d{4})(\d{2})(\d{10})(\d{2})/;
+    const grupos = regex.exec(clabeSinEspacios);
+    if (grupos) {
+      this.numeroClabeFormateada = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+    } else {
+      this.numeroClabeFormateada = '';
+    }
+  }
+
   bloquearLetras(event: KeyboardEvent) {
     // Obtener el valor actual del input
     const valorInput = (event.target as HTMLInputElement).value;
-
     // Obtener el código ASCII de la tecla presionada
     const charCode = event.which ? event.which : event.keyCode;
-
     // Verificar si el código corresponde a un número (entre 48 y 57 son números)
     if (charCode < 48 || charCode > 57) {
       // Bloquear la tecla presionada si no es un número
@@ -1586,6 +1633,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // TODO Realizar la confirmacion manual.
     }
     return await [];
+  }
+
+  onSetBancos(event): void {
+    this.bankName = '';
+    if (event) {
+      const banco = event.value.split(':', 2);
+      this.bankName = banco[1];
+    }
+    console.log('this.bankName: ', this.bankName);
   }
   //#endregion
 
