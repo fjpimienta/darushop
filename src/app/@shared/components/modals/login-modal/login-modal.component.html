@@ -2,8 +2,7 @@
   <button type="button" class="close" (click)="closeModal()">
     <span aria-hidden="true"><i class="icon-close"></i></span>
   </button>
-
-  <div class="form-box">
+  <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg')">
     <div class="form-tab nav-fill">
       <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="justify-content-center nav nav-pills">
         <li [ngbNavItem]=1>
@@ -55,8 +54,8 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="signinRemember"
-                        name="signinRemember" #signinRemember="ngModel" [(ngModel)]="login.remember">
+                        <input type="checkbox" class="custom-control-input" id="signinRemember" name="signinRemember"
+                          #signinRemember="ngModel" [(ngModel)]="login.remember">
                         <label class="custom-control-label" for="signinRemember">Recuerdame</label>
                       </div>
                     </div>
@@ -176,7 +175,7 @@
                 </button>
               </div>
             </form>
-            <div class="form-choice">
+            <!-- <div class="form-choice">
               <p class="text-center">o iniciar con</p>
               <div class="row">
                 <div class="col-sm-6">
@@ -192,7 +191,7 @@
                   </a>
                 </div>
               </div>
-            </div>
+            </div> -->
           </ng-template>
         </li>
       </ul>
