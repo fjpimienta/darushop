@@ -1,6 +1,5 @@
 <main class="main">
-  <app-page-header title="Preguntas y Respuestas" subtitle=""
-    image="assets/images/banners/banner-company.jpg"></app-page-header>
+  <app-page-header title="&nbsp;" subtitle="" image="assets/images/banners/banner-faq.jpg"></app-page-header>
 
   <nav class="breadcrumb-nav border-0 mb-0">
     <div class="container">
@@ -19,8 +18,7 @@
   <div class="page-content">
     <div class="container">
       <div *ngFor="let faqs of faqGroups;let i = index">
-        <h2 class="title-about text-center mb-3">{{ faqs.title }}</h2>
-
+        <!-- <h2 class="title-about text-center mb-3">{{ faqs.title }}</h2> -->
         <app-accordion [adClass]="faqs.items[0].adClass" [accordionID]="'accordion' + (1 + i)">
           <app-card *ngFor="let card of faqs.items[0].cards; let isFirst = first" [adClass]="faqs.items[0].cardAclass"
             [title]="card.title" [parent]="'accordion' + (1 + i)" [show]="isFirst && ! i ? true : false">
@@ -32,19 +30,19 @@
   </div>
 
   <div class="cta cta-display bg-image pt-4 pb-4"
-    style="background-image: url(assets/images/backgrounds/cta/bg-7.jpg);">
+    style="background-image: url(assets/images/banners/banner-how_to_buy.jpg)">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-10 col-lg-9 col-xl-7">
           <div class="row no-gutters flex-sm-row align-items-sm-center">
             <div class="col-12 col-sm">
-              <h3 class="cta-title text-white">Si tienes más preguntas</h3>
-              <p class="cta-desc text-white">Puedes consultarnos</p>
+              <strong>
+                <h3 class="cta-title text-light">Si tienes más preguntas. Puedes consultarnos</h3>
+              </strong>
             </div>
-
             <div class="col-auto">
-              <a routerLink="/contact" class="btn btn-outline-white"><span>CONTACTANOS</span><i
-                  class="icon-long-arrow-right"></i></a>
+              <a routerLink="/contact" class="btn btn-outline-white"><strong><span>CONTACTANOS</span><i
+                    class="icon-long-arrow-right"></i></strong></a>
             </div>
           </div>
         </div>
