@@ -387,48 +387,25 @@
                     </div>
                     <div id="collapse-1" class="collapse" aria-labelledby="heading-1" data-parent="#accordion-payment">
                       <div class="card-body">
-                        <form (ngSubmit)="onSubmitSpei()" [formGroup]="formDataSpei">
-                          <div class="row">
-                            <div class="col-12">
-                              Realiza tu pago directamente en nuestra cuenta bancaria.
-                              Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
-                            </div>
+                        <div class="row">
+                          <div class="col-12">
+                            Realiza tu pago directamente en nuestra cuenta bancaria.
+                            Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.
                           </div>
-                          <div class="row">
-                            <div class="col-6">Nombre del Banco</div>
-                            <div class="col-6">Clabe del Banco (18 digitos)</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-6">Nombre de la Cuenta</div>
+                          <div class="col-6">Clabe del Banco (18 digitos)</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-6">
+                            <label>DARU INNOVACION S DE RL DE CV</label>
                           </div>
-                          <div class="row">
-                            <div class="col-6">
-                              <!-- <input type="text" autocomplete="off" id="bankName" formControlName="bankName"
-                                maxlength="50" required> -->
-                              <select class="form-control bank" name="bankName" required formControlName="bankName"
-                                (change)="onSetBancos($event.target)">
-                                <option [ngValue]="''" [selected]="'' == bankName">Elije un País</option>
-                                <option *ngFor="let banco of bancos" [ngValue]="banco">
-                                  {{banco}}
-                                </option>
-                              </select>
-                            </div>
-                            <div class="col-6">
-                              <input type="text" autocomplete="off" id="clabe" formControlName="clabe"
-                                [(ngModel)]="numeroClabeFormateada" (input)="formatearCLABE(numeroClabeFormateada)"
-                                maxlength="21" (keypress)="bloquearLetras($event)" required>
-                            </div>
+                          <div class="col-6">
+                            <label>0121 80001201 4699 46</label>
                           </div>
-                          <div class="row">&nbsp;</div>
-                          <div class="row">
-                            <div class="col-3"></div>
-                            <div class="col-6">
-                              <button type="submit" class="btn btn-outline-primary btn-round"
-                                [disabled]="!formDataSpei.valid">
-                                <span class="btn-text">Solicitar SPEI</span>
-                                <span class="btn-hover-text" (click)="onSubmitSpei()">Solicitando SPEI</span>
-                              </button>
-                            </div>
-                            <div class="col-3"></div>
-                          </div>
-                        </form>
+                        </div>
+                        <div class="row">&nbsp;</div>
                       </div>
                     </div>
                   </div>
