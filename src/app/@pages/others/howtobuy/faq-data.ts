@@ -2,22 +2,22 @@ import { Card, Accordion, AccordionGroup } from '../../elements/accordions/accor
 
 const card1: Card = {
   title: '¿Cómo seleccionar un producto?',
-  body: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis. Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales sit amet, nisi. '
+  body: 'Puedes seleccionar un producto navegando a través de las categorías en nuestra tienda en línea. Una vez que encuentres el producto que te interesa, puedes hacer clic en él para obtener más detalles y opciones de compra.'
 };
 
 const card2: Card = {
-  title: '¿Cómo seleccionel el método de pago',
-  body: 'Ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. '
+  title: '¿Cómo seleccionar el método de pago?',
+  body: 'En el proceso de pago, después de agregar los productos a tu carrito, te dirigirás a la página de pago. Allí, podrás elegir entre diferentes métodos de pago, como tarjeta de crédito, OpenPay o transferencia bancaria. Simplemente selecciona el método de pago que prefieras y sigue las instrucciones para completar la transacción.'
 };
 
 const card3: Card = {
   title: '¿Cómo selecciono la paquetería de envío?',
-  body: 'Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. '
+  body: 'Durante el proceso de compra y pago, se te presentarán varias opciones de envío. Puedes seleccionar la paquetería y el tipo de envío que mejor se adapte a tus necesidades. Las opciones pueden incluir envío estándar, exprés u otras alternativas disponibles.'
 };
 
 const card4: Card = {
   title: '¿Dónde están mis productos para comprar?',
-  body: 'Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. '
+  body: 'Puedes explorar y encontrar nuestros productos en la sección de "Tienda" en nuestro sitio web. Aquí encontrarás una amplia gama de productos en diferentes categorías, desde electrónica hasta moda y más.'
 };
 
 const card5: Card = {
@@ -27,12 +27,12 @@ const card5: Card = {
 
 const card6: Card = {
   title: '¿Puedo quitar productos a mi carrito de compras?',
-  body: 'Ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. '
+  body: 'Sí, puedes administrar los productos en tu carrito de compras. En la página del carrito de compras, verás una lista de los productos que has agregado. Junto a cada producto, normalmente habrá una opción para eliminarlo del carrito. Solo tienes que hacer clic en esa opción para quitar el producto que ya no deseas comprar.'
 };
 
 const card7: Card = {
   title: '¿Cómo puedo pagar mis productos?',
-  body: 'Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. '
+  body: 'Ofrecemos varias opciones de pago para tu comodidad. Durante el proceso de pago, podrás elegir entre opciones como tarjeta de crédito, débito, PayPal o incluso pago en efectivo en algunos casos. Simplemente selecciona la opción de pago que prefieras y sigue las instrucciones para completar el pago de tus productos. '
 };
 
 const faq1: Accordion = {
@@ -45,7 +45,7 @@ const faq1: Accordion = {
 
 export const faqGroups: AccordionGroup[] = [
   {
-    title: 'Preguntas Frecuentes?',
+    title: 'Como Comprar en DARU?',
     items: [
       faq1
     ]

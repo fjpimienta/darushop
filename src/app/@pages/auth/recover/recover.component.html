@@ -1,5 +1,6 @@
 <main class="main">
-  <app-page-header title="Recuperar Clave" subtitle=""></app-page-header>
+  <app-page-header title="Recuperar Clave" subtitle=""
+    image="assets/images/banners/banner-terms.jpg"></app-page-header>
   <div class="page-content">
     <div class="container">
       <div class="form-box">
@@ -9,8 +10,7 @@
               <label for="recoverEmail">Correo Electrónico *</label>
               <input type="recoverEmail" class="form-control" id="recoverEmail" name="recoverEmail"
                 #recoverEmail="ngModel" [(ngModel)]="recover.email"
-                [ngClass]="{'is-valid': !recoverEmail.invalid, 'is-invalid': recoverEmail.invalid}"
-                [pattern]="pattern"
+                [ngClass]="{'is-valid': !recoverEmail.invalid, 'is-invalid': recoverEmail.invalid}" [pattern]="pattern"
                 required>
               <div class="alert alert-danger"
                 *ngIf="recoverEmail.invalid && (recoverEmail.dirty || recoverEmail.touched)">
