@@ -52,6 +52,7 @@ import { AddressOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpen
 import * as crypto from 'crypto-js';
 
 declare var $: any;
+declare var OpenPay: any
 
 @Component({
   selector: 'app-checkout-page',
@@ -60,6 +61,8 @@ declare var $: any;
 })
 
 export class CheckoutComponent implements OnInit, OnDestroy {
+
+  private openpay: any;
 
   formData: FormGroup;
   formDataCard: FormGroup;
@@ -131,32 +134,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   isSubmitting = false;
 
   deviceDataId: string = '';
+  orderUniqueId: string = '';
   numeroTarjetaFormateado: string = '';
   numeroClabeFormateada: string = '';
   bankName: string;
-
-  bancos = [
-    'Banco Nacional de México (Banamex)',
-    'Banco Santander México',
-    'BBVA México',
-    'Banco Azteca',
-    'Scotiabank México',
-    'HSBC México',
-    'Banco Inbursa',
-    'Banco del Bajío',
-    'Banco Interacciones',
-    'Banco Afirme',
-    'Banco Compartamos',
-    'Banco Famsa',
-    'Banco Invex',
-    'Banco Multiva',
-    'Banco Mifel',
-    'Banco Ve por Más (Bx+)',
-    'Banco Monex',
-    'Banco Regional',
-    'Banco Sabadell México',
-    'Banco Ahorro Famsa'
-  ];
 
   constructor(
     private router: Router,
@@ -177,6 +158,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public deliverysService: DeliverysService,
     public chargeOpenpayService: ChargeOpenpayService
   ) {
+
     this.stripeCustomer = '';
     this.errorSaveUser = false;
     this.countrysService.getCountrys().subscribe(result => {
@@ -338,7 +320,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       crearcuenta: [false],
       references: [''],
       existeMetodoPago: [false],
-      existePaqueteria: [false]
+      existePaqueteria: [false],
+      token_id: ['']
     });
 
     this.formDataSpei = this.formBuilder.group({
@@ -417,7 +400,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     });
-    this.loadOpenPayAsync();
+    // this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
+    this.deviceDataId = OpenPay.deviceData.setup();
+    console.log('deviceSessionId: ', this.deviceDataId);
   }
 
   // Función de validación personalizada para la CLABE
@@ -432,27 +417,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return null; // La validación es exitosa
   }
 
-  private loadOpenPayAsync(): void {
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://js.openpay.mx/openpay-data.v1.min.js';
-    script.async = false; // Carga de manera sincrónica
-    console.log('1-loadOpenPayAsync');
-    script.onload = () => {
-      // La librería se ha cargado, ahora podemos acceder a OpenPay
-      console.log('2-script.onload');
-      this.setupOpenPayDeviceData();
-    };
-    console.log('3-loadOpenPayAsync');
-    document.head.appendChild(script);
-  }
-
-  private setupOpenPayDeviceData(): void {
-    const formId = this.formData; // Reemplaza con el ID de tu formulario
-    // this.deviceDataId = window['OpenPay']['deviceData']['setup'](formId);
-    console.log('setupOpenPayDeviceData/deviceDataId: ', this.deviceDataId);
-  }
-
   async notAvailableProducts(withMessage: boolean = true): Promise<void> {
     if (withMessage) {
       await infoEventAlert(
@@ -461,22 +425,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       );
     }
     this.router.navigate(['/']);
-  }
-
-  async onSubmitSpei(): Promise<any> {
-    if (this.formDataSpei.valid) {
-      const name_transfer = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
-      console.log('name_transfer: ', name_transfer);
-      if (name_transfer !== '') {
-        loadData('Solicitando el cargo.', 'Esperar el procesamiento de pago.');
-        return await infoEventAlert('Se ha enviado a su correo.', '');
-      } else {
-        return await infoEventAlert('Es necesario el Nombre y Apellido.', '');
-      }
-    } else {
-      return await infoEventAlert('Verificar los campos para la transferencia requeridos. La clabe ser de 18 digitos.', '');
-    }
-    // }
   }
 
   async onSubmit(): Promise<any> {
@@ -1045,7 +993,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     const cardNew = cardResponse.createCardOpenpay;
     const totalCharge = parseFloat(this.totalPagar);
-    this.deviceDataId = this.generarNumeroAleatorioEncriptado();
+    this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
 
     const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
     charge.method = "card";
@@ -1053,12 +1001,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.amount = totalCharge;
     charge.currency = "MXN";
     charge.description = "Cargo de prueba";
-    charge.order_id = this.deviceDataId;
+    charge.order_id = this.orderUniqueId;
     charge.device_session_id = this.deviceDataId;
     charge.capture = false;
 
     const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
-    customer.external_id = this.deviceDataId;
+    customer.external_id = this.orderUniqueId;
     customer.name = this.formData.controls.name.value;
     customer.last_name = this.formData.controls.lastname.value;
     customer.email = this.formData.controls.email.value;
