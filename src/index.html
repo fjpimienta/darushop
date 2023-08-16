@@ -46,19 +46,6 @@
   </div>
   <app-root></app-root>
 
-  <!-- Carga asíncrona de OpenPay después de que la página esté construida -->
-  <script>
-    function loadOpenPay() {
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = 'https://js.openpay.mx/openpay-data.v1.min.js';
-      script.async = true;
-      document.head.appendChild(script);
-    }
-
-    // Llama a la función para cargar OpenPay
-    loadOpenPay();
-  </script>
 </body>
 
 </html>

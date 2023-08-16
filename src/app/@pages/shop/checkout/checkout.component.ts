@@ -52,11 +52,6 @@ import { AddressOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpen
 import * as crypto from 'crypto-js';
 
 declare var $: any;
-declare global {
-  interface Window {
-    OpenPay: any;
-  }
-}
 
 @Component({
   selector: 'app-checkout-page',
@@ -422,7 +417,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     });
-    this.loadOpenPayAsync();
+    // this.loadOpenPayAsync();
   }
 
   // Función de validación personalizada para la CLABE
@@ -437,22 +432,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return null; // La validación es exitosa
   }
 
-  private loadOpenPayAsync(): void {
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://js.openpay.mx/openpay-data.v1.min.js';
-    script.async = false;
-    script.onload = () => {
-      this.setupOpenPayDeviceData();
-    };
-    document.head.appendChild(script);
-  }
+  // private loadOpenPayAsync(): void {
+  //   const script = document.createElement('script');
+  //   script.type = 'text/javascript';
+  //   script.src = 'https://js.openpay.mx/openpay-data.v1.min.js';
+  //   script.async = false;
+  //   script.onload = () => {
+  //     this.setupOpenPayDeviceData();
+  //   };
+  //   document.head.appendChild(script);
+  // }
 
-  private setupOpenPayDeviceData(): void {
-    const formId = 'formId'; // Reemplaza con el ID de tu formulario
-    this.deviceDataId = window['OpenPay']['deviceData']['setup'](formId, 'deviceIdHiddenFieldName');
-    console.log('deviceDataId: ', this.deviceDataId);
-  }
+  // private setupOpenPayDeviceData(): void {
+  //   const formId = 'formId'; // Reemplaza con el ID de tu formulario
+  //   // this.deviceDataId = window['OpenPay']['deviceData']['setup'](formId, 'deviceIdHiddenFieldName');
+  //   console.log('deviceDataId: ', this.deviceDataId);
+  // }
 
   async notAvailableProducts(withMessage: boolean = true): Promise<void> {
     if (withMessage) {
