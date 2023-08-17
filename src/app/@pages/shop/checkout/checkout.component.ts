@@ -48,7 +48,7 @@ import { HttpClient } from '@angular/common/http';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
 import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
-import { AddressOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
+import { AddressOpenpayInput, BankAccountOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
 import * as crypto from 'crypto-js';
 
 declare var $: any;
@@ -401,6 +401,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     });
     // this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
+    OpenPay.setSandboxMode();
     this.deviceDataId = OpenPay.deviceData.setup();
     console.log('deviceSessionId: ', this.deviceDataId);
   }
@@ -479,6 +480,47 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
             case PAY_TRANSFER:
+              // Recuperar siguiente idT
+              const idT = await this.deliverysService.next();
+              // Realizar Cargo con la Tarjeta
+              console.log('idT: ', idT);
+              const pagoOpenpayT = await this.payOpenpaySpei(idT);
+              console.log('pagoOpenpayT: ', pagoOpenpayT);
+
+              if (pagoOpenpayT.status === false) {
+                this.isSubmitting = false;
+                return await infoEventAlert(pagoOpenpayT.message, TYPE_ALERT.ERROR);
+              }
+              // Generar Orden de Compra con Proveedores
+              const OrderSupplierT = await this.sendOrderSupplier(idT);
+              console.log('OrderSupplierT: ', OrderSupplierT);
+              if (OrderSupplierT.error) {
+                this.isSubmitting = false;
+                return await infoEventAlert(OrderSupplierT.messageError, TYPE_ALERT.ERROR);
+              }
+              // Registrar Pedido en DARU.
+              const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
+              console.log('deliverySaveT: ', deliverySaveT);
+              const NewPropertyT = 'receipt_email';
+              let internalEmailT = false;
+              let typeAlertT = TYPE_ALERT.SUCCESS;
+              let sendEmailT = OrderSupplierT.user.email;
+              let messageDeliveryT = 'El Pedido se ha realizado correctamente';
+              if (OrderSupplierT.statusError) {
+                internalEmailT = true;
+                this.isSubmitting = false;
+                typeAlertT = TYPE_ALERT.WARNING;
+                sendEmailT = 'marketing@daru.mx';
+                messageDeliveryT = OrderSupplierT.messageError;
+              } else {
+                this.cartService.clearCart(false);
+                this.router.navigate(['/shop/offers/list']);
+              }
+              // Si compra es OK, continua.
+              OrderSupplierT[NewPropertyT] = sendEmailT;
+              console.log('OrderSupplierT: ', OrderSupplierT);
+              this.sendEmailSpei(OrderSupplierT, messageDeliveryT, '', internalEmailT);
+              await infoEventAlert(messageDeliveryT, '', typeAlertT);
               break;
             case PAY_DEPOSIT:
               break;
@@ -1033,7 +1075,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
     if (chargeResult.status === false) {
-      return { status: cardResponse.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
+      return { status: chargeResult.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
     }
 
     const idChargeOpenpay = chargeResult.createChargeOpenpay.id;
@@ -1043,6 +1085,48 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       return { status: createResult.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
     }
     return await createResult;
+  }
+
+  async payOpenpaySpei(id: string): Promise<any> {
+    const holder_name = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
+
+    const totalCharge = parseFloat(this.totalPagar);
+    this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
+
+    const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
+    charge.method = "bank_account";
+    charge.amount = totalCharge;
+    charge.description = "Cargo de prueba";
+    charge.order_id = this.orderUniqueId;
+    charge.device_session_id = this.deviceDataId;
+
+    const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
+    customer.external_id = this.orderUniqueId;
+    customer.name = this.formData.controls.name.value;
+    customer.last_name = this.formData.controls.lastname.value;
+    customer.email = this.formData.controls.email.value;
+    customer.phone_number = this.formData.controls.phone.value;
+    customer.clabe = "";
+
+    const address: AddressOpenpayInput = new AddressOpenpayInput();
+    address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
+    address.line2 = this.formData.controls.selectColonia.value;
+    address.line3 = this.formData.controls.references.value;
+    address.postal_code = this.formData.controls.codigoPostal.value;
+    address.city = this.selectMunicipio.D_mnpio;
+    address.state = this.selectEstado.d_estado;
+    address.country_code = "MX";
+    customer.address = address;
+
+    charge.customer = customer;
+
+    console.log('charge: ', charge);
+    const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    console.log('chargeResult: ', chargeResult);
+    if (chargeResult.status === false) {
+      return { status: chargeResult.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
+    }
+    return await chargeResult;
   }
   //#endregion Cobros
 
@@ -1345,6 +1429,178 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               <tr>
                 <td colspan="2"><strong>Total:</strong></td>
                 <td colspan="2">$ ${total.toFixed(2).toString()}</td>
+              </tr>
+            </tfoot>
+          </table>
+          <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
+          <p>Saludos cordiales,</p>
+          <p>DARU</p>
+          <hr>
+          <hr>
+          <p class="foot">
+            Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
+          </p>
+        </div>
+      </body>
+      </html>
+      `;
+    // const subject
+    const mail: IMail = {
+      to: receiptEmail,
+      subject,
+      html
+    };
+    this.mailService.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
+    if (internal) {                                                        // Correos internos
+      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
+      const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
+      let htmlInt = '';
+      if (charge.orderCtResponse) {
+        htmlInt = 'Pedido de CT';
+      }
+      if (charge.orderCvaResponse) {
+        htmlInt = 'Pedido de CVA';
+      }
+      const mailInt: IMail = {
+        to: receiptEmailInt,
+        subject: subjectInt,
+        html: htmlInt
+      };
+      this.mailService.send(mailInt).pipe(first()).subscribe();                      // Envio de correo externo.
+    }
+  }
+
+  sendEmailSpei(charge: any, issue: string = '', message: string = '', internal: boolean = false): void {
+    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
+    const subject = issue !== '' ? issue : 'Confirmación del pedido';
+    const productos: ProductShipment[] = [];
+    let totalProd = 0.0;
+    for (const idW of Object.keys(charge.warehouses)) {
+      const warehouse = charge.warehouses[idW];
+      for (const idP of Object.keys(warehouse.productShipments)) {
+        const prod = warehouse.productShipments[idP];
+        totalProd += (prod.precio * prod.cantidad);
+        productos.push(prod);
+      }
+    }
+    const total = totalProd + parseFloat(this.totalEnvios);
+
+    // const productos = charge.warehouses[0].productShipments;
+
+    const productRows = productos.map((producto: any) => `
+        <tr>
+          <td>${producto.name}</td>
+          <td>${producto.cantidad}</td>
+          <td>${producto.precio}</td>
+          <td>${producto.total}</td>
+        </tr>
+      `).join('');
+    const html = message !== '' ? message : `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nota de Compra</title>
+        <style>
+          /* Estilos generales */
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+          h1 {
+            color: #333333;
+            margin-top: 0;
+          }
+          p {
+            color: #666666;
+            line-height: 1.5;
+            font-size: 10px; /* Tamaño de letra de los párrafos */
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px; /* Tamaño de letra de los párrafos */
+          }
+          th, td {
+            padding: 10px;
+            border-bottom: 1px solid #dddddd;
+          }
+          th {
+            text-align: left;
+            font-weight: bold;
+          }
+          tfoot td {
+            text-align: right;
+            font-weight: bold;
+          }
+          foot {
+            color: #666666;
+            font-size: 8px; /* Tamaño de letra de los párrafos */
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Nota de Compra</h1>
+          <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
+          <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${productRows}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2"><strong>Subtotal:</strong></td>
+                <td colspan="2">$ ${totalProd.toFixed(2).toString()}</td>
+              </tr>
+              <tr>
+                <td colspan="2"><strong>Costo Envio:</strong></td>
+                <td colspan="2">$ ${this.totalEnvios}</td>
+              </tr>
+              <tr>
+                <td colspan="2"><strong>Total:</strong></td>
+                <td colspan="2">$ ${total.toFixed(2).toString()}</td>
+              </tr>
+              <tr>
+                <td colspan="4"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
+              </tr>
+              <tr>
+                <td colspan="2">&nbsp;</td>
+                <td colspan="2">Datos de la Cuenta a Transferir</td>
+              </tr>
+              <tr>
+                <td colspan="2">Banco</td>
+                <td colspan="2">BBVA Mexico (Pesos Mexicanos)</td>
+              </tr>
+              <tr>
+                <td colspan="2">Nombre</td>
+                <td colspan="2">Daru Innovacion S de RL de CV</td>
+              </tr>
+              <tr>
+                <td colspan="2">Clabe</td>
+                <td colspan="2">0121 80001201 4699 46</td>
+              </tr>
+              <tr>
+                <td colspan="4">&nbsp;</td>
               </tr>
             </tfoot>
           </table>
