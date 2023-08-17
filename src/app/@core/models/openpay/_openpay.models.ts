@@ -58,3 +58,8 @@ export class RefundChargeOpenpayInput {
   description: string;
   amount: number;
 }
+
+export class BankAccountOpenpayInput {
+  clabe: string;
+  holder_name: string;
+}
