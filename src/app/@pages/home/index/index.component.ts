@@ -10,6 +10,7 @@ import { Product } from '@core/models/product.models';
 
 import { introSlider, brandSlider, reviewSlider } from '../data';
 import demo30 from '@assets/demo30.json';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-index',
@@ -20,6 +21,8 @@ import demo30 from '@assets/demo30.json';
 export class IndexComponent implements OnInit {
 
   itemsProducts: any = demo30;
+
+  formData: FormGroup;
 
   products = [];
   topProducts = [];
@@ -41,9 +44,10 @@ export class IndexComponent implements OnInit {
   @ViewChild('customDots') customDots: any;
 
   constructor(
-    public utilsService: UtilsService,
     private modalService: ModalService,
+    private formBuilder: FormBuilder,
     private cartService: CartService,
+    public utilsService: UtilsService,
     public productService: ProductsService
   ) {
     // Mostrar el modal inicial
@@ -78,6 +82,10 @@ export class IndexComponent implements OnInit {
         }
       });
       this.loaded = true;
+    });
+
+    this.formData = this.formBuilder.group({
+      email: ['', Validators.required],
     });
   }
 
@@ -134,5 +142,13 @@ export class IndexComponent implements OnInit {
   showModal(event: Event): void {
     event.preventDefault();
     this.modalService.showVideoModal();
+  }
+
+  onSubmit() {
+    console.log('this.formData: ');
+    if (this.formData.valid) {
+      const email = this.formData.controls.email.value;
+      console.log('email: ', email);
+    }
   }
 }

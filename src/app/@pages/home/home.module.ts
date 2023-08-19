@@ -7,6 +7,7 @@ import { OwlModule } from 'angular-owl-carousel';
 import { SharedModule } from '@shared/shared.module';
 
 import { IndexComponent } from './index/index.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { IndexComponent } from './index/index.component';
     RouterModule,
     NgbModule,
     OwlModule,
-    SharedModule
+    SharedModule,
+    ReactiveFormsModule
   ]
 })
 

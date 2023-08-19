@@ -442,13 +442,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case PAY_OPENPAY:
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
+              console.log('id: ', id);
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(id);
+              console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
                 return await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
               }
-              console.log('pagoOpenpay: ', pagoOpenpay);
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id);
               console.log('OrderSupplier: ', OrderSupplier);
@@ -476,17 +477,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Si compra es OK, continua.
               OrderSupplier[NewProperty] = sendEmail;
+              console.log('OrderSupplier: ', OrderSupplier);
               this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
             case PAY_TRANSFER:
               // Recuperar siguiente idT
               const idT = await this.deliverysService.next();
-              // Realizar Cargo con la Tarjeta
               console.log('idT: ', idT);
+              // Realizar Cargo con la Tarjeta
               const pagoOpenpayT = await this.payOpenpaySpei(idT);
               console.log('pagoOpenpayT: ', pagoOpenpayT);
-
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
                 return await infoEventAlert(pagoOpenpayT.message, TYPE_ALERT.ERROR);

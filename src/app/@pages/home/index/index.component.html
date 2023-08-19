@@ -3,12 +3,7 @@
   <section class="intro-section mt-50">
     <div class="banner">
       <figure>
-        <img
-          src="assets/images/home/banners/01.jpg"
-          width="1903"
-          height="780"
-          alt="Image Desc"
-        />
+        <img src="assets/images/home/banners/01.jpg" width="1903" height="780" alt="Image Desc" />
       </figure>
       <div class="banner-content">
         <!-- <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">Producto...</h3>
@@ -16,15 +11,10 @@
         <p class="banner-text text-white" contentAnim aniName="fadeInUpShorter">
           Info <br>
           Info <br>
-          Info.
+          Info.            (click)="addCart($event)"
         </p> -->
         <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-          <a
-            href="javascript:;"
-            class="btn btn-cart btn-primary btn-round btn-cart-home"
-            (click)="addCart($event)"
-            >Registrate a DARU</a
-          >
+          <a routerLink="/register" class="btn btn-cart btn-primary btn-round btn-cart-home">Registrate en DARU TEAM</a>
           <!-- <a routerLink="/shop/products" class="btn btn-outline-white btn-round">Ver m&aacute;s</a> -->
         </div>
       </div>
@@ -47,23 +37,11 @@
         <div class="row">
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
-              <div
-                class="heading mt-0"
-                contentAnim
-                aniName="fadeInRightShorter"
-              >
-                <a
-                  routerLink="/shop/category/4cols"
-                  [queryParams]="{ category: 'computadoras-gaming' }"
-                  class="cat-block"
-                >
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'computadoras-gaming' }"
+                  class="cat-block">
                   <figure>
-                    <img
-                      src="assets/images/home/categorias/computo.png"
-                      width="131"
-                      height="76"
-                      alt="Category image"
-                    />
+                    <img src="assets/images/home/categorias/computo.png" width="131" height="76" alt="Category image" />
                   </figure>
                   <div class="action text-center">
                     <span>
@@ -76,24 +54,12 @@
           </div>
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
-              <div
-                class="heading mt-0"
-                contentAnim
-                aniName="fadeInRightShorter"
-              >
-                <a
-                  routerLink="/shop/category/4cols"
-                  [queryParams]="{ category: 'video-vigilancia' }"
-                  class="cat-block"
-                >
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'video-vigilancia' }" class="cat-block">
                   <figure>
                     <span>
-                      <img
-                        src="assets/images/home/categorias/televisores.png"
-                        width="131"
-                        height="76"
-                        alt="Category image"
-                      />
+                      <img src="assets/images/home/categorias/televisores.png" width="131" height="76"
+                        alt="Category image" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -107,24 +73,13 @@
           </div>
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
-              <div
-                class="heading mt-0"
-                contentAnim
-                aniName="fadeInRightShorter"
-              >
-                <a
-                  routerLink="/shop/category/4cols"
-                  [queryParams]="{ category: 'accesorios-para-electronica' }"
-                  class="cat-block"
-                >
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'accesorios-para-electronica' }"
+                  class="cat-block">
                   <figure>
                     <span>
-                      <img
-                        src="assets/images/home/categorias/celulares.png"
-                        width="131"
-                        height="76"
-                        alt="Category image"
-                      />
+                      <img src="assets/images/home/categorias/celulares.png" width="131" height="76"
+                        alt="Category image" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -138,24 +93,12 @@
           </div>
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
-              <div
-                class="heading mt-0"
-                contentAnim
-                aniName="fadeInRightShorter"
-              >
-                <a
-                  routerLink="/shop/category/4cols"
-                  [queryParams]="{ category: 'televisions' }"
-                  class="cat-block"
-                >
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'televisions' }" class="cat-block">
                   <figure>
                     <span>
-                      <img
-                        src="assets/images/home/categorias/fotografia.png"
-                        width="131"
-                        height="76"
-                        alt="Category image"
-                      />
+                      <img src="assets/images/home/categorias/fotografia.png" width="131" height="76"
+                        alt="Category image" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -169,24 +112,11 @@
           </div>
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
-              <div
-                class="heading mt-0"
-                contentAnim
-                aniName="fadeInRightShorter"
-              >
-                <a
-                  routerLink="/shop/category/4cols"
-                  [queryParams]="{ category: 'audio' }"
-                  class="cat-block"
-                >
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'audio' }" class="cat-block">
                   <figure>
                     <span>
-                      <img
-                        src="assets/images/home/categorias/audio.png"
-                        width="131"
-                        height="76"
-                        alt="Category image"
-                      />
+                      <img src="assets/images/home/categorias/audio.png" width="131" height="76" alt="Category image" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -200,24 +130,12 @@
           </div>
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
-              <div
-                class="heading mt-0"
-                contentAnim
-                aniName="fadeInRightShorter"
-              >
-                <a
-                  routerLink="/shop/category/4cols"
-                  [queryParams]="{ category: 'watches' }"
-                  class="cat-block"
-                >
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'watches' }" class="cat-block">
                   <figure>
                     <span>
-                      <img
-                        src="assets/images/home/categorias/consolas.png"
-                        width="131"
-                        height="76"
-                        alt="Category image"
-                      />
+                      <img src="assets/images/home/categorias/consolas.png" width="131" height="76"
+                        alt="Category image" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -239,38 +157,22 @@
   <section class="overview mt-5">
     <div class="container">
       <figure class="bg-image">
-        <img
-          src="assets/images/home/bg-circle.png"
-          alt="Background"
-          width="799"
-          height="760"
-        />
+        <img src="assets/images/home/bg-circle.png" alt="Background" width="799" height="760" />
       </figure>
     </div>
     <div class="container banner-container">
       <div class="banner row d-flex">
-        <div
-          class="col-lg-4 order-lg-last"
-          contentAnim
-          aniName="fadeInLeftShorter"
-        >
+        <div class="col-lg-4 order-lg-last" contentAnim aniName="fadeInLeftShorter">
           <figure class="banner-img">
-            <img
-              src="assets/images/home/comunidad/comunidad-daru-2.png"
-              alt="Product"
-              width="901"
-              height="532"
-            />
+            <img src="assets/images/home/comunidad/comunidad-daru-2.png" alt="Product" width="901" height="532" />
           </figure>
         </div>
         <div class="col-lg-8" contentAnim aniName="fadeInRightShorter">
           <div class="banner-content">
             <h3 class="banner-subtitle text-white">Se parte de DARU</h3>
             <h2 class="banner-title text-white mb-1">con un solo click</h2>
-            <span class="text-white"
-              >Integrate a la comunidad DARU para disfrutar de grandes
-              beneficios</span
-            >
+            <span class="text-white">Integrate a la comunidad DARU para disfrutar de grandes
+              beneficios</span>
             <div class="banner-info mb-2">
               <ul class="info-list text-white">
                 <li>
@@ -292,12 +194,8 @@
                 <sup>$</sup><strong>259</strong><sup>.99</sup>
               </span>
               -->
-              <a
-                href="javascript:;"
-                class="btn btn-cart btn-primary btn-round btn-cart-home"
-                (click)="addCart($event)"
-                >Regístrate</a
-              >
+              <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
+                (click)="addCart($event)">Regístrate</a>
             </div>
           </div>
         </div>
@@ -378,40 +276,34 @@
           <div class="content-left">
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
-                <app-image
-                  src="assets/images/home/products/1.jpg"
-                  alt="Banner"
-                  width="472"
-                  height="530"
-                  fixedPt="90.17%"
-                ></app-image>
+                <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="472" height="530"
+                  fixedPt="90.17%"></app-image>
               </figure>
               <div class="action text-center">
                 <span class="text-primary">
                   <h6><strong>Gaming</strong></h6>
                 </span>
-                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'accesorios-gaming' }"
+                  class="btn btn-primary btn-round">
+                  Ver ofertas</a>
               </div>
             </div>
           </div>
         </div>
-         <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
           <div class="content-left">
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
-                <app-image
-                  src="assets/images/home/products/2.jpg"
-                  alt="Banner"
-                  width="472"
-                  height="530"
-                  fixedPt="90.17%"
-                ></app-image>
+                <app-image src="assets/images/home/products/2.jpg" alt="Banner" width="472" height="530"
+                  fixedPt="90.17%"></app-image>
               </figure>
               <div class="action text-center">
                 <span class="text-primary">
                   <h6><strong>Computo</strong></h6>
                 </span>
-                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'computadoras' }"
+                  class="btn btn-primary btn-round">
+                  Ver ofertas</a>
               </div>
             </div>
           </div>
@@ -420,19 +312,16 @@
           <div class="content-right">
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
-                <app-image
-                  src="assets/images/home/products/3.jpg"
-                  alt="Banner"
-                  width="472"
-                  height="530"
-                  fixedPt="90.17%"
-                ></app-image>
+                <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                  fixedPt="90.17%"></app-image>
               </figure>
               <div class="action text-center">
                 <span class="text-primary">
                   <h6><strong>Telefonía</strong></h6>
                 </span>
-                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'telefonia' }"
+                  class="btn btn-primary btn-round">
+                  Ver ofertas</a>
               </div>
             </div>
           </div>
@@ -441,19 +330,16 @@
           <div class="content-right">
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
-                <app-image
-                  src="assets/images/home/products/4.jpg"
-                  alt="Banner"
-                  width="472"
-                  height="530"
-                  fixedPt="90.17%"
-                ></app-image>
+                <app-image src="assets/images/home/products/4.jpg" alt="Banner" width="472" height="530"
+                  fixedPt="90.17%"></app-image>
               </figure>
               <div class="action text-center">
                 <span class="text-primary">
                   <h6><strong>Audio</strong></h6>
                 </span>
-                <a href="#" class="btn btn-primary btn-round">Ver ofertas</a>
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'audio' }"
+                  class="btn btn-primary btn-round">
+                  Ver ofertas</a>
               </div>
             </div>
           </div>
@@ -464,8 +350,8 @@
   <!-- End Seccion 5 Ofertas Relampagos -->
 
   <!-- Seccion 6 Oferta espacial-->
-  <section class="video-banner bg-parallax mb-10" style="background-image: url(assets/images/home/oferta/banner-oferta.jpg)"
-    bgParallax>
+  <section class="video-banner bg-parallax mb-10"
+    style="background-image: url(assets/images/home/oferta/banner-oferta.jpg)" bgParallax>
     <!-- <div class="container">
       <div class="banner row d-flex">
         <div class="col-lg-4 mt-4 mt-lg-0 d-flex d-lg-block justify-content-center">
@@ -597,10 +483,8 @@
     </div>
   </section> -->
 
-  <div
-    class="cta bg-image bg-dark pt-4 pb-5 mb-0"
-    style="background-image: url('assets/images/banners/banner-newsletter.jpg')"
-  >
+  <div class="cta bg-image bg-dark pt-4 pb-5 mb-0"
+    style="background-image: url('assets/images/banners/banner-newsletter.jpg')">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-sm-10 col-md-8 col-lg-6">
@@ -615,13 +499,8 @@
 
           <form action="#">
             <div class="input-group input-group-round">
-              <input
-                type="email"
-                class="form-control form-control-white border-0"
-                placeholder="Enter your Email Address"
-                aria-label="Email Adress"
-                required
-              />
+              <input type="email" class="form-control form-control-white border-0"
+                placeholder="Enter your Email Address" aria-label="Email Adress" required />
               <div class="input-group-append">
                 <button class="btn btn-primary" type="submit">
                   <span>Subscribe</span><i class="icon-long-arrow-right"></i>
