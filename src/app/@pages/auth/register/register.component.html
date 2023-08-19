@@ -1,8 +1,7 @@
 <main class="main">
-  <app-page-header title="Registrar Usuario" subtitle=""></app-page-header>
   <div class="page-content">
     <div class="container">
-      <div class="form-box">
+      <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg'); background-repeat: no-repeat;">
         <form (ngSubmit)="registerUser()" #forma="ngForm">
           <div class="form-group">
             <div class="grid">
@@ -77,8 +76,15 @@
               <i class="icon-long-arrow-right"></i>
             </button>
           </div>
+          <div class="grid">
+            <div class="row">
+              <div class="col-12">
+                <h2>&nbsp;</h2>
+              </div>
+            </div>
+          </div>
         </form>
-        <div class="form-choice">
+        <!-- <div class="form-choice">
           <p class="text-center">o iniciar con</p>
           <div class="row">
             <div class="col-sm-6">
@@ -94,7 +100,7 @@
               </a>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

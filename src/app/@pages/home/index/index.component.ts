@@ -10,6 +10,12 @@ import { Product } from '@core/models/product.models';
 
 import { introSlider, brandSlider, reviewSlider } from '../data';
 import demo30 from '@assets/demo30.json';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MailService } from '@core/services/mail.service';
+import { IMail } from '@core/interfaces/mail.interface';
+import { first } from 'rxjs/operators';
+import { infoEventAlert, loadData } from '@shared/alert/alerts';
+import { TYPE_ALERT } from '@shared/alert/values.config';
 
 @Component({
   selector: 'app-index',
@@ -20,6 +26,8 @@ import demo30 from '@assets/demo30.json';
 export class IndexComponent implements OnInit {
 
   itemsProducts: any = demo30;
+
+  formData: FormGroup;
 
   products = [];
   topProducts = [];
@@ -41,9 +49,11 @@ export class IndexComponent implements OnInit {
   @ViewChild('customDots') customDots: any;
 
   constructor(
-    public utilsService: UtilsService,
     private modalService: ModalService,
+    private formBuilder: FormBuilder,
     private cartService: CartService,
+    private mailService: MailService,
+    public utilsService: UtilsService,
     public productService: ProductsService
   ) {
     // Mostrar el modal inicial
@@ -79,6 +89,20 @@ export class IndexComponent implements OnInit {
       });
       this.loaded = true;
     });
+
+    this.formData = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email, this.customEmailValidator]]
+    });
+  }
+
+  // Función de validación personalizada para verificar el dominio del correo electrónico
+  customEmailValidator(control) {
+    const email = control.value;
+    if (!email) {
+      return null;
+    }
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return regex.test(email) ? null : { invalidEmail: true };
   }
 
   today(): string {
@@ -135,4 +159,59 @@ export class IndexComponent implements OnInit {
     event.preventDefault();
     this.modalService.showVideoModal();
   }
+
+  onSubmit() {
+    if (!this.formData.valid) {
+      infoEventAlert('Es necesario un correo electrónico.', '');
+      return;
+    }
+
+    const email = this.formData.controls.email.value;
+    const receiptEmailInt = 'marketplace@daru.mx';
+    const subjectInt = 'Dar de Alta a Usuario';
+    const html = `Agregar este correo ${email} a la lista de contactos`;
+
+    const mail: IMail = {
+      to: receiptEmailInt,
+      subject: subjectInt,
+      html: html
+    };
+
+    this.mailService.send(mail).subscribe(
+      (response) => {
+        infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
+        this.formData.controls.email.setValue('');
+      },
+      (error) => {
+        infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
+      }
+    );
+  }
+
+
+  // onSubmit() {
+  //   if (this.formData.valid) {
+  //     loadData('Enviando el correo electronico', 'En unos minutos seras Team Daru');
+  //     const email = this.formData.controls.email.value;
+  //     const receiptEmailInt = 'marketplace@daru.mx';
+  //     const subjectInt = 'Dar de Alta a Usuario';
+  //     const html = `Agregar este correo ${email} a la lista de contactos`
+  //     const mail: IMail = {
+  //       to: receiptEmailInt,
+  //       subject: subjectInt,
+  //       html: html
+  //     };
+  //     this.mailService.send(mail).subscribe(
+  //       (response) => {
+  //         infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
+  //       },
+  //       (error) => {
+  //         infoEventAlert('Error al enviear el Correo electrónico:', '', TYPE_ALERT.ERROR);
+  //       }
+  //     );
+  //   } else {
+  //     infoEventAlert('Es necesario un correo electronico.', '');
+  //   }
+  // }
+
 }
