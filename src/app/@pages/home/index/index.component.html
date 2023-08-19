@@ -497,12 +497,13 @@
             </p>
           </div>
 
-          <form action="#">
+          <form (ngSubmit)="onSubmit()" [formGroup]="formData">
             <div class="input-group input-group-round">
-              <input type="email" class="form-control form-control-white border-0"
-                placeholder="Enter your Email Address" aria-label="Email Adress" required />
+              <input type="email" name="email" class="form-control" formControlName="email"
+                class="form-control form-control-white border-0" placeholder="Teclea tu Correo Electrónico"
+                aria-label="Correo Electrónico" required />
               <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">
+                <button class="btn btn-primary" type="submit" [disabled]="!formData.valid">
                   <span>Subscribe</span><i class="icon-long-arrow-right"></i>
                 </button>
               </div>
