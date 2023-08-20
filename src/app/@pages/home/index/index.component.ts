@@ -1,20 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-
 import { ModalService } from '@core/services/modal.service';
 import { UtilsService } from '@core/services/utils.service';
 import { CartService } from '@core/services/cart.service';
-
 import { environment } from 'src/environments/environment';
 import { ProductsService } from '@core/services/products.service';
 import { Product } from '@core/models/product.models';
-
 import { introSlider, brandSlider, reviewSlider } from '../data';
 import demo30 from '@assets/demo30.json';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MailService } from '@core/services/mail.service';
 import { IMail } from '@core/interfaces/mail.interface';
-import { first } from 'rxjs/operators';
-import { infoEventAlert, loadData } from '@shared/alert/alerts';
+import { infoEventAlert } from '@shared/alert/alerts';
 import { TYPE_ALERT } from '@shared/alert/values.config';
 
 @Component({
@@ -22,13 +18,9 @@ import { TYPE_ALERT } from '@shared/alert/values.config';
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
-
 export class IndexComponent implements OnInit {
-
   itemsProducts: any = demo30;
-
   formData: FormGroup;
-
   products = [];
   topProducts = [];
   newProducts = [];
@@ -42,7 +34,6 @@ export class IndexComponent implements OnInit {
   saleToday: Product;
   existSaleToday = false;
   index = 0;
-
   SERVER_URL = environment.SERVER_URL;
 
   @ViewChild('singleSlider') singleSlider: any;
@@ -55,18 +46,26 @@ export class IndexComponent implements OnInit {
     private mailService: MailService,
     public utilsService: UtilsService,
     public productService: ProductsService
-  ) {
-    // Mostrar el modal inicial
+  ) { }
+
+  ngOnInit(): void {
+    this.formData = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email, this.customEmailValidator]]
+    });
+    this.initializeProducts();
+  }
+
+  initializeProducts(): void {
     this.productService.getProducts(1, -1).subscribe(result => {
       this.products = result.products;
       this.products.forEach(p => {
         p.category.forEach(c => {
-          // this.renameKey(c.pivot, 'product_category_id', 'product-category_id');
+          // this.renameKey(c.pivot, 'product_category_id', 'product-category-id');
         });
       });
-      this.topProducts = utilsService.attrFilter(result.products, 'top');
-      this.newProducts = utilsService.attrFilter(result.products, 'new');
-      this.saleProducts = utilsService.attrFilter(result.products, 'sale');
+      this.topProducts = this.utilsService.attrFilter(result.products, 'top');
+      this.newProducts = this.utilsService.attrFilter(result.products, 'new');
+      this.saleProducts = this.utilsService.attrFilter(result.products, 'sale');
       let i = 0;
       let j = 0;
       this.saleProducts.forEach(sale => {
@@ -89,13 +88,8 @@ export class IndexComponent implements OnInit {
       });
       this.loaded = true;
     });
-
-    this.formData = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]]
-    });
   }
 
-  // Función de validación personalizada para verificar el dominio del correo electrónico
   customEmailValidator(control) {
     const email = control.value;
     if (!email) {
@@ -111,14 +105,6 @@ export class IndexComponent implements OnInit {
     const mesActual = fecha.getMonth() + 1;
     const diaActual = fecha.getDate();
     return (añoActual + '/' + mesActual + '/' + diaActual);
-  }
-
-  renameKey(obj, oldKey, newKey): void {
-    obj[newKey] = obj[oldKey];
-    delete obj[oldKey];
-  }
-
-  ngOnInit(): void {
   }
 
   addCart(event: Event): void {
@@ -145,7 +131,6 @@ export class IndexComponent implements OnInit {
   itemChange(e: any, self: any): void {
     this.customDots.nativeElement.querySelector('.custom-dot.active').classList.remove('active');
     this.customDots.nativeElement.querySelectorAll('.custom-dot')[e.item.index].classList.add('active');
-
     self.index = e.item.index;
   }
 
@@ -187,31 +172,4 @@ export class IndexComponent implements OnInit {
       }
     );
   }
-
-
-  // onSubmit() {
-  //   if (this.formData.valid) {
-  //     loadData('Enviando el correo electronico', 'En unos minutos seras Team Daru');
-  //     const email = this.formData.controls.email.value;
-  //     const receiptEmailInt = 'marketplace@daru.mx';
-  //     const subjectInt = 'Dar de Alta a Usuario';
-  //     const html = `Agregar este correo ${email} a la lista de contactos`
-  //     const mail: IMail = {
-  //       to: receiptEmailInt,
-  //       subject: subjectInt,
-  //       html: html
-  //     };
-  //     this.mailService.send(mail).subscribe(
-  //       (response) => {
-  //         infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
-  //       },
-  //       (error) => {
-  //         infoEventAlert('Error al enviear el Correo electrónico:', '', TYPE_ALERT.ERROR);
-  //       }
-  //     );
-  //   } else {
-  //     infoEventAlert('Es necesario un correo electronico.', '');
-  //   }
-  // }
-
 }

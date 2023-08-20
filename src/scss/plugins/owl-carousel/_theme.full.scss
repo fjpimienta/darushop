@@ -141,7 +141,7 @@ $dot-full-background-active: $primary-color  !default;
     .owl-dot {
       display: inline-block;
       zoom: 1;
-      *display: inline;
+      display: inline;
 
       span {
         width: $dot-full-width;
