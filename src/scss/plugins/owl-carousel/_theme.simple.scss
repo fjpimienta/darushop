@@ -94,7 +94,7 @@ $dot-simple-background-active: #cccccc !default;
     .owl-dot {
       display: inline-block;
       zoom: 1;
-      *display: inline;
+      display: inline;
 
       span {
         width: $dot-simple-width;
