@@ -1096,7 +1096,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
     charge.method = "bank_account";
-    charge.amount = totalCharge;
+    charge.amount = 101.01; // totalCharge;
     charge.description = "Cargo de prueba";
     charge.order_id = this.orderUniqueId;
     charge.device_session_id = this.deviceDataId;
