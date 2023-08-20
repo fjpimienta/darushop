@@ -19,7 +19,7 @@ Gutter Width: 15px
 }
 
 .section {
-	*zoom: 1;
+	zoom: 1;
 }
 
 .section .firstcolumn,
