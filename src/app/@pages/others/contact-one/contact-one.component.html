@@ -15,7 +15,8 @@
 
   <div class="container" style="background-image: url('assets/images/contact-header-bg.jpg')">
     <div class="page-header page-header-big text-center">
-      <h1 class="page-title text-white">¡Estamos aquí para ayudarte a lograr tus compras ideales!<span class="text-white">No dudes en ponerte en contacto con nosotros</span>
+      <h1 class="page-title text-white">¡Estamos aquí para ayudarte a lograr tus compras ideales!<span
+          class="text-white">No dudes en ponerte en contacto con nosotros</span>
       </h1>
       <!-- <h1 class="page-title">Contactanos<span>Mantente en contacto con nosotros</span></h1> -->
     </div>
@@ -69,9 +70,7 @@
           </div>
         </div>
         <div class="col-lg-6">
-          <h2 class="title mb-1">Alguna pregunta?</h2>
-          <p class="mb-2">Use el siguiente formulario para cualquir duda o pregunta.</p>
-
+          <h2 class="title mb-1">Cont&aacute;ctanos. Con gusto te responderemos</h2>
           <form (ngSubmit)="onSubmit()" [formGroup]="formData" class="contact-form mb-3">
             <div class="row">
               <div class="col-sm-6">
@@ -100,7 +99,7 @@
             </div>
 
             <label for="cmessage" class="sr-only">Mensaje</label>
-            <textarea class="form-control" cols="30" rows="4" id="cmessage" formControlName="cmessage" required
+            <textarea class="form-control" cols="30" rows="3" id="cmessage" formControlName="cmessage" required
               placeholder="Mensaje *"></textarea>
 
             <button type="submit" class="btn btn-outline-primary-2 btn-minwidth-sm">
@@ -110,15 +109,13 @@
           </form>
         </div>
       </div>
-
-      <hr class="mt-4 mb-5">
-
-      <div class="stores mb-4 mb-lg-5">
-
-      </div>
     </div>
+
+    <hr class="mb-1">
+
     <div id="map">
       <div *ngIf="apiLoaded | async">
+        <div class="text-center title mb-1">Ub&iacute;canos</div>
         <google-map width="400px" height="300px" [center]="{lat: 19.397467, lng: -99.1715642}" [zoom]="17"
           [options]="{ zoomControl: true, streetViewControl: false }" apiKey="YOUR_API_KEY">
         </google-map>
