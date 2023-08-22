@@ -1096,7 +1096,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
     charge.method = "bank_account";
-    charge.amount = 106.06; // totalCharge;
+    charge.amount = totalCharge;
     charge.description = "Cargo de prueba";
     charge.order_id = this.orderUniqueId;
     charge.device_session_id = this.deviceDataId;
@@ -1585,20 +1585,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 <td colspan="4"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
               </tr>
               <tr>
-                <td colspan="2">&nbsp;</td>
-                <td colspan="2">Datos de la Cuenta a Transferir</td>
+                <td colspan="1">&nbsp;</td>
+                <td colspan="3">Datos de la Cuenta a Transferir</td>
               </tr>
               <tr>
-                <td colspan="2">Banco</td>
-                <td colspan="2">BBVA Mexico (Pesos Mexicanos)</td>
+                <td colspan="1">Banco</td>
+                <td colspan="3">BBVA Mexico (Pesos Mexicanos)</td>
               </tr>
               <tr>
-                <td colspan="2">Nombre</td>
-                <td colspan="2">Daru Innovacion S de RL de CV</td>
+                <td colspan="1">Nombre</td>
+                <td colspan="3">Daru Innovacion S de RL de CV</td>
               </tr>
               <tr>
-                <td colspan="2">Clabe</td>
-                <td colspan="2">0121 80001201 4699 46</td>
+                <td colspan="1">Clabe</td>
+                <td colspan="3">0121 80001201 4699 46</td>
               </tr>
               <tr>
                 <td colspan="4">&nbsp;</td>
