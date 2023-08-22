@@ -768,7 +768,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               productShipment.producto = cartItem.sku;
               productShipment.cantidad = cartItem.qty;
               productShipment.precio = cartItem.price;
-              if (cartItem.promociones.disponible_en_promocion) {
+              if (cartItem.promociones && cartItem.promociones.disponible_en_promocion) {
                 productShipment.priceSupplier = cartItem.promociones.disponible_en_promocion;
               } else {
                 productShipment.priceSupplier = cartItem.suppliersProd.price;
