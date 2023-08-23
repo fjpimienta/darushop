@@ -1335,6 +1335,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
+        console.log('setOrder/enviosCva: ', enviosCva);
         const ProductosCva: ProductoCva[] = [];
         for (const idPS of Object.keys(warehouse.productShipments)) {
           const prod: ProductShipment = warehouse.productShipments[idPS];
@@ -1343,9 +1344,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productCva.cantidad = prod.cantidad;
           ProductosCva.push(productCva);
         }
+        console.log('setOrder/ProductosCva: ', ProductosCva);
         const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
         const estado = ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
         const ciudad = ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
+        console.log('setOrder/ciudadesCVA: ', ciudadesCVA);
+        console.log('setOrder/estado: ', estado);
+        console.log('setOrder/ciudad: ', ciudad);
         const orderCvaSupplier: OrderCva = {
           NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
           Paqueteria: '4',
@@ -1363,6 +1368,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Ciudad: ciudad,
           Atencion: this.removeAccents(user.name + ' ' + user.lastname)
         };
+        console.log('setOrder/orderCvaSupplier: ', orderCvaSupplier);
         return orderCvaSupplier;
       case 'ingram':
         return '';
