@@ -403,7 +403,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
     OpenPay.setSandboxMode();
     this.deviceDataId = OpenPay.deviceData.setup();
-    console.log('deviceSessionId: ', this.deviceDataId);
   }
 
   // Función de validación personalizada para la CLABE
@@ -442,13 +441,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case PAY_OPENPAY:
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
-              console.log('id: ', id);
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(id);
               console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
-                return await infoEventAlert(pagoOpenpay.message, TYPE_ALERT.ERROR);
+                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id);
@@ -1075,6 +1073,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.confirm = true;
 
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    console.log('chargeResult: ', chargeResult);
     if (chargeResult.status === false) {
       return { status: chargeResult.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
     }
@@ -1840,14 +1839,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await [];
   }
 
-  onSetBancos(event): void {
-    this.bankName = '';
-    if (event) {
-      const banco = event.value.split(':', 2);
-      this.bankName = banco[1];
-    }
-    console.log('this.bankName: ', this.bankName);
-  }
+  // onSetBancos(event): void {
+  //   this.bankName = '';
+  //   if (event) {
+  //     const banco = event.value.split(':', 2);
+  //     this.bankName = banco[1];
+  //   }
+  //   console.log('this.bankName: ', this.bankName);
+  // }
   //#endregion
 
   //#region Catalogos Externos por json
