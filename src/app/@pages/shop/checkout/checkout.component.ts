@@ -1214,11 +1214,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.customer = customer;
     charge.payment_plan = null;
     charge.use_card_points = "NONE";
-    charge.send_email = false;
-    charge.redirect_url = "https://daru.mx/";
-    charge.use_3d_secure = false;
+    charge.send_email = true;
+    charge.redirect_url = "http://www.openpay.mx/index.html?id=" + token;
+    charge.use_3d_secure = true;
     charge.confirm = true;
 
+    console.log('charge: ', charge);
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
     if (chargeResult.status === false) {
       return { status: chargeResult.status, message: chargeResult.message };
