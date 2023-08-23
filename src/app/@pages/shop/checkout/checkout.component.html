@@ -1,5 +1,6 @@
 <main class="main">
-  <app-page-header title="Ya casi es Tuyo!" subtitle="" image="assets/images/banners/banner-checkout.jpg"></app-page-header>
+  <app-page-header title="Ya casi es Tuyo!" subtitle=""
+    image="assets/images/banners/banner-checkout.jpg"></app-page-header>
   <nav class="breadcrumb-nav">
     <div class="container">
       <ol class="breadcrumb">
@@ -287,6 +288,7 @@
                           <div class="pymnts">
                             <input type="hidden" name="token_id" id="token_id" formControlName="token_id">
                             <form action="#" method="POST" id="payment-form">
+                              <input type="hidden" name="holder_name" id="holder_name" data-openpay-card="holder_name">
                               <div class="pymnt-itm card active">
                                 <!-- <h2>Tarjeta de crédito o débito</h2> -->
                                 <div class="openpay">
@@ -303,8 +305,9 @@
                                   <div class="sctn-row">
                                     <div class="sctn-col l">
                                       <label>Número de tarjeta</label>
-                                      <input type="text" autocomplete="off" data-openpay-card="card_number"
-                                        [(ngModel)]="numeroTarjetaFormateado"
+                                      <input type="hidden" name="card_number" id="card_number"
+                                        data-openpay-card="card_number">
+                                      <input type="text" autocomplete="off" [(ngModel)]="numeroTarjetaFormateado"
                                         (input)="formatearNumeroTarjeta(numeroTarjetaFormateado)" maxlength="19"
                                         (keypress)="bloquearLetras($event)">
                                     </div>
@@ -512,9 +515,9 @@
                   <div class="col-2"></div>
                   <div class="col-8">
                     <button type="submit" class="btn btn-outline-primary btn-order btn-block btn-round"
-                      [disabled]="!formData.valid">
+                      [disabled]="!formData.valid" (click)="onSubmit()">
                       <span class="btn-text">Realizar Pedido</span>
-                      <span class="btn-hover-text" (click)="onSubmit()">Realizando Pedido</span>
+                      <span class="btn-hover-text">Realizando Pedido</span>
                     </button>
                   </div>
                   <div class="col-2"></div>
