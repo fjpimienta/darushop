@@ -401,7 +401,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     });
     this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
-    // this.deviceDataId = OpenPay.deviceData.setup();
     OpenPay.setId('mbhvpztgt3rqse7zvxrc');
     OpenPay.setApiKey('pk_411efcdb08c148ceb97b36f146e42beb');
     OpenPay.setSandboxMode(true);
@@ -961,6 +960,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             supplierProd.idProveedor = supplier.slug;
             this.warehouse.suppliersProd = supplierProd;
             this.warehouses.push(this.warehouse);
+            console.log('this.warehouses: ', this.warehouses);
           }
         }
       }
@@ -1368,6 +1368,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async sendOrderSupplier(id: string): Promise<any> {
     // Cuando la consulta externa no requiere token
+    console.log('id: ', id);
     const delivery = new Delivery();
     delivery.id = id;
     delivery.deliveryId = id;
@@ -1390,6 +1391,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCvaResponse.error = '';
     orderCvaResponse.agentemail = '';
     orderCvaResponse.almacenmail = '';
+    console.log('this.warehouses: ', this.warehouses);
     // Generar modelo de cada proveedor
     for (const idWar of Object.keys(this.warehouses)) {
       const warehouse: Warehouse = this.warehouses[idWar];
@@ -1411,6 +1413,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         .then(async (result) => {
           return await result;
         });
+      console.log('orderNew: ', orderNew);
       if (orderNew) {
         switch (warehouse.suppliersProd.idProveedor) {
           case 'ct':
@@ -1460,6 +1463,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     }
     // TODO::Confirmar Pedido
+    console.log('delivery: ', delivery);
     return await delivery;
   }
   //#endregion Enviar Ordenes
@@ -1850,6 +1854,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               throw await error;
             }
           });
+        console.log('pedidosCva: ', pedidosCva);
         return await pedidosCva;
       case 'ct':
         const pedidosCt = await this.externalAuthService.setOrderCt(
@@ -1874,6 +1879,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               throw await error;
             }
           });
+        console.log('pedidosCva: ', pedidosCva);
         return await pedidosCt;
     }
     return await [];
