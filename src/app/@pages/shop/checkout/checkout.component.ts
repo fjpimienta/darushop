@@ -1279,6 +1279,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
+    console.log('setOrder/supplier: ', supplier);
+    console.log('setOrder/delivery: ', delivery);
+    console.log('setOrder/warehouse: ', warehouse);
+    console.log('setOrder/pedido: ', pedido);
     switch (supplier.slug) {
       case 'ct':
         const guiaConnect: GuiaConnect = new GuiaConnect();
@@ -1394,9 +1398,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     console.log('this.warehouses: ', this.warehouses);
     // Generar modelo de cada proveedor
     for (const idWar of Object.keys(this.warehouses)) {
+      console.log('idWar: ', idWar);
       const warehouse: Warehouse = this.warehouses[idWar];
+      console.log('idWar: ', idWar);
       const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
+      console.log('supplier: ', supplier);
       const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
+      console.log('order: ', order);
       switch (warehouse.suppliersProd.idProveedor) {
         case 'ct':
           // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
