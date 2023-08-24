@@ -571,7 +571,7 @@ export class ExternalAuthService extends ApiService {
           const fromObjectCVA = {
             paqueteria: 4,
             cp: warehouse.cp.padStart(5, '0'),
-            cp_sucursal: warehouse.productShipments[0].cp,
+            cp_sucursal: warehouse.productShipments[0].cp.padStart(5, '0'),
             productos: productShipmentCVA
           };
           const optionsCva = {
@@ -684,8 +684,8 @@ export class ExternalAuthService extends ApiService {
           productShipmentCVA.push(newPS);
         }
         const paqueteria = 4;
-        const cp = parseInt(warehouse.cp);
-        const cp_sucursal = parseInt(warehouse.productShipments[0].cp);
+        const cp = warehouse.cp.padStart(5, '0');
+        const cp_sucursal = warehouse.productShipments[0].cp.padStart(5, '0');
         const productosCva = productShipmentCVA;
         const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
         const shipmentCva = new Shipment();
@@ -1224,8 +1224,8 @@ export class ExternalAuthService extends ApiService {
 
   async getShippingCvaRates(
     paqueteria: number,
-    cp: number,
-    cp_sucursal: number,
+    cp: string,
+    cp_sucursal: string,
     productosCva: ProductShipmentCVA[]
   ): Promise<any> {
     return new Promise<any>((resolve, reject) => {
