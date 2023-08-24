@@ -1279,10 +1279,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
     const user = delivery.user;
     const dir = delivery.user.addresses[0];
-    console.log('setOrder/supplier: ', supplier);
-    console.log('setOrder/delivery: ', delivery);
-    console.log('setOrder/warehouse: ', warehouse);
-    console.log('setOrder/pedido: ', pedido);
     switch (supplier.slug) {
       case 'ct':
         const guiaConnect: GuiaConnect = new GuiaConnect();
@@ -1344,13 +1340,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           productCva.cantidad = prod.cantidad;
           ProductosCva.push(productCva);
         }
-        console.log('setOrder/ProductosCva: ', ProductosCva);
         const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
         const estado = ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
         const ciudad = ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
-        console.log('setOrder/ciudadesCVA: ', ciudadesCVA);
-        console.log('setOrder/estado: ', estado);
-        console.log('setOrder/ciudad: ', ciudad);
         const orderCvaSupplier: OrderCva = {
           NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
           Paqueteria: '4',
@@ -1401,16 +1393,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCvaResponse.error = '';
     orderCvaResponse.agentemail = '';
     orderCvaResponse.almacenmail = '';
-    console.log('this.warehouses: ', this.warehouses);
     // Generar modelo de cada proveedor
     for (const idWar of Object.keys(this.warehouses)) {
-      console.log('idWar: ', idWar);
       const warehouse: Warehouse = this.warehouses[idWar];
-      console.log('idWar: ', idWar);
       const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
-      console.log('supplier: ', supplier);
       const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
-      console.log('order: ', order);
       switch (warehouse.suppliersProd.idProveedor) {
         case 'ct':
           // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
@@ -1447,9 +1434,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               okReference: confirmarPedidoCt.confirmOrderCt.okReference
             };
             console.log('ctConfirmResponse:', ctConfirmResponse);
-
-
-
             delivery.orderCtConfirmResponse = ctConfirmResponse;
             break;
           case 'cva':
@@ -1893,7 +1877,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               throw await error;
             }
           });
-        console.log('pedidosCva: ', pedidosCva);
+        console.log('pedidosCt: ', pedidosCt);
         return await pedidosCt;
     }
     return await [];
