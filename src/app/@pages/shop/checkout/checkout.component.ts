@@ -776,6 +776,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+        } else {
+          infoEventAlert('El código postal no es correcto.', '');
         }
       } else {
         infoEventAlert('No se ha especificado un código correcto.', '');
