@@ -69,8 +69,8 @@ export const PAQUETERIASCVA_LIST_QUERY = gql`
 export const SHIPMENTS_CVA_RATES_QUERY = gql`
   query shippingCvaRates(
   $paqueteria: Int
-  $cp: Int
-  $cp_sucursal: Int
+  $cp: String
+  $cp_sucursal: String
   $productosCva: [ProductsShipmentCvaInput]
 ) {
     shippingCvaRates(
