@@ -59,10 +59,11 @@
               <input type="text" class="form-control" name="company"> -->
 
               <div class="row">
-                <div class="col-sm-6 form-check">
+                <div *ngIf="!this.idDelivery" class="col-sm-6 form-check">
                   <div class="row codigo_postal">
                     <div class="col-sm-9">
-                      <label class='align-bottom'>¿Conoces el Código Postal? Activar/Desactivar captura</label>
+                      <label class='align-bottom'>¿Conoces el Código Postal? Activar/Desactivar
+                        captura</label>
                     </div>
                     <div class="col-sm-3">
                       <input type="checkbox" name="byCodigopostal" class="form-control form-check-input align-bottom"
@@ -74,45 +75,55 @@
                   <label>Código Postal *</label>
                   <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
                     (blur)="onSetCps($event)" [attr.disabled]="!byCodigopostal ? 'true' : null">
-                  <!-- <label *ngIf="!byCodigopostal">Lista Códigos Postales*</label>
-                  <select *ngIf="!byCodigopostal" class="form-control" name="codigoPostal" required
-                    formControlName="codigoPostal" [attr.disabled]="byCodigopostal ? 'true' : null">
-                    <option [ngValue]="''" [selected]="'' == codigoPostal">Elije un CP</option>
-                    <option *ngFor="let cp of codigosPostales" [ngValue]="cp">
-                      {{cp}}
-                    </option>
-                  </select> -->
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-sm-3 form-group">
                   <label>Pais *</label>
-                  <select class="form-control" name="selectCountry" required formControlName="selectCountry"
-                    (change)="onSetEstados($event.target)">
+                  <select *ngIf="!this.idDelivery" class="form-control" name="selectCountry" required
+                    formControlName="selectCountry" (change)="onSetEstados($event.target)">
                     <option [ngValue]="''" [selected]="'' == selectCountry.c_pais">Elije un País</option>
                     <option *ngFor="let country of countrys" [ngValue]="country.c_pais">
                       {{country.d_pais}}
                     </option>
                   </select>
+                  <select *ngIf="this.idDelivery" class="form-control" name="selectCountry" required
+                    formControlName="selectCountry" [attr.disabled]="true">
+                    <option [ngValue]="selectCountry.c_pais" [selected]="'' == selectCountry.c_pais">
+                      {{selectCountry.d_pais}}
+                    </option>
+                  </select>
                 </div>
                 <div class="col-sm-3 form-group">
                   <label>Estado *</label>
-                  <select class="form-control" name="selectEstado" required formControlName="selectEstado"
-                    (change)="onSetMunicipios($event.target)">
+                  <select *ngIf="!this.idDelivery" class="form-control" name="selectEstado" required
+                    formControlName="selectEstado" (change)="onSetMunicipios($event.target)">
                     <option [ngValue]="''" [selected]="'' == selectEstado.c_estado">Elije un Estado</option>
                     <option *ngFor="let estado of estados" [ngValue]="estado.c_estado">
                       {{estado.d_estado}}
                     </option>
                   </select>
+                  <select *ngIf="this.idDelivery" class="form-control" name="selectEstado" required
+                    formControlName="selectEstado" [attr.disabled]="true">
+                    <option [ngValue]="selectEstado.c_estado" [selected]="'' == selectEstado.c_estado">
+                      {{selectEstado.d_estado}}
+                    </option>
+                  </select>
                 </div>
                 <div class="col-sm-6 form-group">
                   <label>Municipio *</label>
-                  <select class="form-control" name="selectMunicipio" required formControlName="selectMunicipio"
-                    (change)="onSetColonias($event.target)">
+                  <select *ngIf="!this.idDelivery" class="form-control" name="selectMunicipio" required
+                    formControlName="selectMunicipio" (change)="onSetColonias($event.target)">
                     <option [ngValue]="''" [selected]="'' == selectMunicipio.c_mnpio">Elije un Municipio</option>
                     <option *ngFor="let municipio of municipios" [ngValue]="municipio.c_mnpio">
                       {{municipio.D_mnpio}}
+                    </option>
+                  </select>
+                  <select *ngIf="this.idDelivery" class="form-control" name="selectMunicipio" required
+                    formControlName="selectMunicipio" [attr.disabled]="true">
+                    <option [ngValue]="selectMunicipio.c_mnpio" [selected]="'' == selectMunicipio.c_mnpio">
+                      {{selectMunicipio.D_mnpio}}
                     </option>
                   </select>
                 </div>
@@ -122,7 +133,8 @@
                 <div class="col-sm-6">
                   <label>Colonia *</label>
                   <input *ngIf="!byCodigopostal" type="text" name="selectColonia" class="form-control"
-                    formControlName="selectColonia" placeholder="" required>
+                    formControlName="selectColonia" placeholder="" [attr.disabled]="idDelivery ? 'true' : null"
+                    required>
                   <select *ngIf="byCodigopostal" class="form-control" name="selectColonia"
                     formControlName="selectColonia" required (change)="onSetCps(null)">
                     <option [ngValue]="''" [selected]="'' == selectColonia">Elije la Colonia</option>
@@ -134,7 +146,7 @@
                 <div class="col-sm-6">
                   <label>Dirección *</label>
                   <input type="text" class="form-control" name="directions" formControlName="directions"
-                    placeholder="Calle" required>
+                    placeholder="Calle" [attr.disabled]="idDelivery ? 'true' : null" required>
                 </div>
               </div>
 
@@ -142,12 +154,12 @@
                 <div class="col-sm-6">
                   <label>N&uacute;mero Exterior *</label>
                   <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
-                    placeholder="N&uacute;mero Exterior" required>
+                    placeholder="N&uacute;mero Exterior" [attr.disabled]="idDelivery ? 'true' : null" required>
                 </div>
                 <div class="col-sm-6">
                   <label>N&uacute;mero Interior</label>
                   <input type="text" class="form-control" name="interiorNumber" formControlName="interiorNumber"
-                    placeholder="N&uacute;mero Interior">
+                    placeholder="N&uacute;mero Interior" [attr.disabled]="idDelivery ? 'true' : null">
                 </div>
               </div>
 
@@ -155,9 +167,8 @@
                 <input type="checkbox" class="custom-control-input" id="crearcuenta" name="crearcuenta"
                   formControlName="crearcuenta">
                 <label class="custom-control-label" for="crearcuenta">Crear una cuenta?</label>
-              </div> -->
-
-              <!-- <div class="form-group">
+              </div>
+              <div class="form-group">
                 <div class="custom-control custom-checkbox mt-0 address-box">
                   <input type="checkbox" class="custom-control-input" id="checkout-diff-address"
                     (change)="formToggle($event)">
@@ -223,9 +234,10 @@
 
               <label>Referencias de Entrega *</label>
               <textarea class="form-control" cols="30" rows="4" name="references" formControlName="references"
-                required></textarea>
+                [attr.disabled]="idDelivery ? 'true' : null" required></textarea>
             </div>
             <aside class="col-lg-5">
+              <div class="row">&nbsp;</div>
               <div class="summary">
                 <h3 class="summary-title">Tu orden</h3>
 
@@ -272,7 +284,7 @@
                   </tbody>
                 </table>
 
-                <app-accordion adClass="accordion-summary" id="accordion-payment">
+                <app-accordion *ngIf="!this.idDelivery" adClass="accordion-summary" id="accordion-payment">
                   <div class="card">
                     <div class="card-header" id="heading-7">
                       <h2 class="card-title">
@@ -511,17 +523,24 @@
                     </div>
                   </div> -->
                 </app-accordion>
+                <div class="row">&nbsp;</div>
                 <div class="row">
                   <div class="col-2"></div>
                   <div class="col-8 text-center">
-                    <button type="submit" class="btn btn-primary btn-round btn-shadow"
+                    <button *ngIf="!this.idDelivery" type="submit" class="btn btn-primary btn-round btn-shadow"
                       [disabled]="!formData.valid" (click)="onSubmit()">
                       <span class="btn-text btn-primary">Realizar Pedido</span>
                       <span class="btn-hover-text">Realizando Pedido</span>
                     </button>
+                    <button *ngIf="this.idDelivery" type="button" class="btn btn-primary btn-round btn-shadow"
+                      (click)="onSubmitCapture()">
+                      <span class="btn-text btn-primary">Confirmar Pedido</span>
+                      <span class="btn-hover-text">Confirmando Pedido</span>
+                    </button>
                   </div>
                   <div class="col-2"></div>
                 </div>
+                <div class="row">&nbsp;</div>
               </div>
             </aside>
           </div>

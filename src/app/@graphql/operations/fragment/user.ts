@@ -22,6 +22,8 @@ export const USER_FRAGMENT = gql`
       d_ciudad
       d_asenta
       directions
+      outdoorNumber
+      interiorNumber
       phone
       references
       d_codigo
