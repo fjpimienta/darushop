@@ -532,8 +532,8 @@
                       <span class="btn-text btn-primary">Realizar Pedido</span>
                       <span class="btn-hover-text">Realizando Pedido</span>
                     </button>
-                    <button *ngIf="this.idDelivery" type="submit" class="btn btn-primary btn-round btn-shadow"
-                      [disabled]="!formData.valid" (click)="onSubmit()">
+                    <button *ngIf="this.idDelivery" type="button" class="btn btn-primary btn-round btn-shadow"
+                      (click)="onSubmitCapture()">
                       <span class="btn-text btn-primary">Confirmar Pedido</span>
                       <span class="btn-hover-text">Confirmando Pedido</span>
                     </button>

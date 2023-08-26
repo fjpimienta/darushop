@@ -130,6 +130,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   ciudadesCVA = [];
 
   isSubmitting = false;
+  isSubmittingCapture = false;
 
   deviceDataId: string = '';
   orderUniqueId: string = '';
@@ -139,6 +140,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   loaded = false;
   idDelivery: string = '';
+  idTransaction: string = '';
 
   constructor(
     private router: Router,
@@ -163,10 +165,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     this.activeRoute.queryParams.subscribe(params => {
       if (params.id) {
-        this.idDelivery = params.id;
+        this.idTransaction = params.id;
+      }
+      if (params.idOrder) {
+        this.idDelivery = params.idOrder;
       }
       this.loaded = true;
-      console.log('this.idDelivery: ', this.idDelivery);
+      console.log(`this.idDelivery: ${this.idDelivery}; this.idTransaction: ${this.idTransaction}`);
     });
 
     this.stripeCustomer = '';
@@ -602,12 +607,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Recuperar tokenCard
               const tokenCard = await this.tokenCardOpenpay();
               // Realizar Cargo con la Tarjeta
-              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id);
+              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, id);
               console.log('pagoOpenpay: ', pagoOpenpay);
-              // if (pagoOpenpay.status === false) {
-              //   this.isSubmitting = false;
-              //   return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
-              // }
+              if (pagoOpenpay.status === false) {
+                this.isSubmitting = false;
+                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
+              }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id);
               console.log('OrderSupplier: ', OrderSupplier);
@@ -700,6 +705,53 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
+  async onSubmitCapture(): Promise<any> {
+    if (!this.isSubmittingCapture) {
+      this.isSubmittingCapture = true;
+      if (!this.idDelivery) {
+        this.isSubmitting = false;
+        return await infoEventAlert('No se encuentra el parametro: idOrder.', '');
+      }
+      if (!this.idTransaction) {
+        this.isSubmitting = false;
+        return await infoEventAlert('No se encuentra el parametro: id.', '');
+      }
+      // Realizar Cargo con la Tarjeta
+      const amout = parseFloat(this.totalPagar);
+      const pagoOpenpayCapture = await this.payOpenpayCapture(this.idTransaction, amout);
+      console.log('pagoOpenpayCapture: ', pagoOpenpayCapture);
+      if (pagoOpenpayCapture.status === false) {
+        this.isSubmitting = false;
+        return await infoEventAlert('Error al realizar la autorizacion del cargo.', pagoOpenpayCapture.message, TYPE_ALERT.ERROR);
+      }
+
+      // TODO Actualizar Delivery
+
+      const NewProperty = 'receipt_email';
+      let internalEmail = false;
+      let typeAlert = TYPE_ALERT.SUCCESS;
+      let sendEmail = this.delivery.user.email;
+      let messageDelivery = 'El Pedido se ha realizado correctamente';
+      if (pagoOpenpayCapture.statusError) {
+        internalEmail = true;
+        this.isSubmitting = false;
+        typeAlert = TYPE_ALERT.WARNING;
+        sendEmail = 'marketing@daru.mx';
+        messageDelivery = pagoOpenpayCapture.messageError;
+      } else {
+        this.cartService.clearCart(false);
+        this.router.navigate(['/shop/offers/list']);
+      }
+      // Si compra es OK, continua.
+      pagoOpenpayCapture[NewProperty] = sendEmail;
+      console.log('OrderSupplier: ', pagoOpenpayCapture);
+      this.mailService.sendEmail(pagoOpenpayCapture, messageDelivery, '', internalEmail, this.totalEnvios);
+      await infoEventAlert(messageDelivery, '', typeAlert);
+    } else {
+      console.log('onSubmitCapture/this.isSubmittingCapture');
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscr.unsubscribe();
     document.querySelector('body').removeEventListener('click', () => this.clearOpacity());
@@ -708,7 +760,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Metodos
   onSetDelivery(formData: FormGroup, delivery: Delivery) {
-    console.log('formData: ', formData);
     console.log('Delivery: ', delivery);
     this.formData.controls.name.setValue(delivery.user.name);
     this.formData.controls.lastname.setValue(delivery.user.lastname);
@@ -730,20 +781,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.formData.controls.outdoorNumber.setValue(delivery.user.addresses[0].outdoorNumber);
     this.formData.controls.interiorNumber.setValue(delivery.user.addresses[0].interiorNumber);
     this.formData.controls.references.setValue(delivery.user.addresses[0].references);
-    console.log('delivery.warehouses[0].shipments: ', delivery.warehouses[0].shipments);
-    // this.shipments = delivery.warehouses[0].shipments;
-    for (const idS of Object.keys(delivery.warehouses[0].shipments)) {
-      const ship: Shipment = delivery.warehouses[0].shipments[idS];
-      ship.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
-      this.shipments.push(ship);
+    if (!this.shipments || this.shipments.length <= 0) {
+      this.shipments = [];
+      for (const idS of Object.keys(delivery.warehouses[0].shipments)) {
+        const ship: Shipment = delivery.warehouses[0].shipments[idS];
+        ship.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+        this.shipments.push(ship);
+      }
     }
-    this.cartItems = [];
     if (!this.cartItems || this.cartItems.length <= 0) {
+      this.cartItems = [];
       for (const idC of Object.keys(delivery.warehouses[0].products)) {
         const cartItem: CartItem = delivery.warehouses[0].products[idC];
         this.cartItems.push(cartItem);
       }
     }
+    this.totalEnvios = this.shipments[0].costo.toFixed(2).toString();
+    this.changeShipping(this.shipments[0].costo);
   }
 
   onSetUser(formData: FormGroup, stripeCustomer: string): UserBasicInput {
@@ -1223,7 +1277,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  async payOpenpay_1(token: string): Promise<any> {
+  async payOpenpayCapture(idChargeOpenpay: string, amount: number): Promise<any> {
+    const captureTransactionOpenpay = { amount }
+    console.log(`idChargeOpenpay: ${idChargeOpenpay}, amount: ${amount}`)
+    const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
+    if (createResult.status === false) {
+      return { status: createResult.status, message: createResult.message };
+    }
+    return await createResult;
+  }
+
+  async payOpenpay(token: string, id: string): Promise<any> {
     const totalCharge = parseFloat(this.totalPagar);
     this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
 
@@ -1256,10 +1320,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     customer.address = address;
 
     charge.customer = customer;
-    charge.payment_plan = null;
-    charge.use_card_points = "NONE";
     charge.send_email = true;
-    charge.redirect_url = "http://www.openpay.mx/index.html?id=" + token;
+    charge.redirect_url = "https://localhost:4200/shop/checkout?idOrder=" + id;
     charge.use_3d_secure = true;
     charge.confirm = true;
 
@@ -1269,89 +1331,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       return { status: chargeResult.status, message: chargeResult.message };
     }
 
-    const idChargeOpenpay = chargeResult.createChargeOpenpay.id;
-    const captureTransactionOpenpay = { amount: totalCharge }
-    const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
-    if (createResult.status === false) {
-      return { status: createResult.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
-    }
-    return await createResult;
-  }
-
-  async payOpenpay(token: string): Promise<any> {
-    // const card_numberF = document.querySelector<HTMLInputElement>('[data-openpay-card="card_number"]');
-    // const card_number = card_numberF.value.replace(/-/g, '');       // Remover los guiones del número de tarjeta antes de enviarlo
-    // const expiration_month = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_month"]');
-    // const expiration_year = document.querySelector<HTMLInputElement>('[data-openpay-card="expiration_year"]');
-    // const cvv2 = document.querySelector<HTMLInputElement>('[data-openpay-card="cvv2"]');
-    // const holder_name = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
-    // const card: CardOpenpayInput = new CardOpenpayInput();
-
-    // card.card_number = card_number;
-    // card.holder_name = holder_name;
-    // card.expiration_year = expiration_year.value;
-    // card.expiration_month = expiration_month.value;
-    // card.cvv2 = cvv2.value;
-    // const cardResponse = await this.chargeOpenpayService.addCard(card);
-
-    // if (cardResponse.status === false) {
-    //   return { status: cardResponse.status, message: cardResponse.message };
-    // }
-
-    // const cardNew = cardResponse.createCardOpenpay;
-    const totalCharge = parseFloat(this.totalPagar);
-    this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
-
-    const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
-    charge.method = "card";
-    // charge.source_id = cardNew.id;
-    charge.source_id = token;
-    charge.amount = totalCharge;
-    charge.currency = "MXN";
-    charge.description = "Cargo de prueba";
-    charge.order_id = this.orderUniqueId;
-    charge.device_session_id = this.deviceDataId;
-    charge.capture = false;
-
-    const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
-    customer.external_id = this.orderUniqueId;
-    customer.name = this.formData.controls.name.value;
-    customer.last_name = this.formData.controls.lastname.value;
-    customer.email = this.formData.controls.email.value;
-    customer.phone_number = this.formData.controls.phone.value;
-    customer.clabe = "";
-
-    const address: AddressOpenpayInput = new AddressOpenpayInput();
-    address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
-    address.line2 = this.formData.controls.selectColonia.value;
-    address.line3 = this.formData.controls.references.value;
-    address.postal_code = this.formData.controls.codigoPostal.value;
-    address.city = this.selectMunicipio.D_mnpio;
-    address.state = this.selectEstado.d_estado;
-    address.country_code = "MX";
-    customer.address = address;
-
-    charge.customer = customer;
-    charge.payment_plan = null;
-    charge.use_card_points = "NONE";
-    charge.send_email = true;
-    charge.redirect_url = "http://www.openpay.mx/index.html?id=" + token;
-    charge.use_3d_secure = true;
-    charge.confirm = true;
-
-    console.log('charge: ', charge);
-    const chargeResult = await this.chargeOpenpayService.createCharge(charge);
-    if (chargeResult.status === false) {
-      return { status: chargeResult.status, message: chargeResult.message };
-    }
-
-    const idChargeOpenpay = chargeResult.createChargeOpenpay.id;
-    const captureTransactionOpenpay = { amount: totalCharge }
-    const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
-    if (createResult.status === false) {
-      return { status: createResult.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
-    }
-    return await createResult;
+    return await chargeResult;
   }
 
   async payOpenpaySpei(id: string): Promise<any> {

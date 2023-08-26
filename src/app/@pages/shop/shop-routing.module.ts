@@ -43,7 +43,7 @@ const routes: Routes = [
     component: CheckoutComponent
   },
   {
-    path: 'checkout/:order',
+    path: 'checkout/:idOrder/:id',
     component: CheckoutComponent
   },
   {
