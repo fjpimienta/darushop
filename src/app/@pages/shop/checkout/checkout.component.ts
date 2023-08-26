@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CartService } from '@core/services/cart.service';
 import { CountrysService } from '@core/services/countrys.service';
@@ -17,7 +17,7 @@ import { CURRENCIES_SYMBOL, CURRENCY_LIST } from '@mugan86/ng-shop-ui';
 import { CURRENCY_CODE } from '@core/constants/config';
 import { infoEventAlert, loadData } from '@shared/alert/alerts';
 import { CustomersService } from '@core/services/stripe/customers.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ICustomer, IResultStripeCustomer } from '@core/interfaces/stripe/customer.interface';
 import { ChargeService } from '@core/services/stripe/charge.service';
 import { IPayment } from '@core/interfaces/stripe/payment.interface';
@@ -38,17 +38,16 @@ import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
-import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER, SF } from '@core/constants/constants';
+import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
 import { EnvioCt, GuiaConnect, OrderCt, OrderCtConfirm, ProductoCt } from '@core/models/suppliers/orderct.models';
 import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
 import { OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
-import { HttpClient } from '@angular/common/http';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
 import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
-import { AddressOpenpayInput, BankAccountOpenpayInput, CardOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
+import { AddressOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
 import * as crypto from 'crypto-js';
 
 declare var $: any;
@@ -66,7 +65,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   formData: FormGroup;
   formDataCard: FormGroup;
-  formDataSpei: FormGroup;
   cartItems: CartItem[] = [];
   countrys: Country[];
   selectCountry: Country;
@@ -139,9 +137,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   numeroClabeFormateada: string = '';
   bankName: string;
 
+  loaded = false;
+  idDelivery: string = '';
+
   constructor(
     private router: Router,
-    private httpClient: HttpClient,
+    private el: ElementRef,
+    public activeRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     public cartService: CartService,
     public countrysService: CountrysService,
@@ -158,6 +160,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public deliverysService: DeliverysService,
     public chargeOpenpayService: ChargeOpenpayService
   ) {
+
+    this.activeRoute.queryParams.subscribe(params => {
+      if (params.id) {
+        this.idDelivery = params.id;
+      }
+      this.loaded = true;
+      console.log('this.idDelivery: ', this.idDelivery);
+    });
 
     this.stripeCustomer = '';
     this.errorSaveUser = false;
@@ -256,7 +266,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   }
                   // Si compra es OK, continua.
                   OrderSupplier[NewProperty] = sendEmail;
-                  this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
+                  this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios);
                   await infoEventAlert(messageDelivery, '', typeAlert);
                 } else {
                   await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
@@ -322,11 +332,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       existeMetodoPago: [false],
       existePaqueteria: [false],
       token_id: ['']
-    });
-
-    this.formDataSpei = this.formBuilder.group({
-      bankName: ['', Validators.required],
-      clabe: ['', [Validators.required, this.validateCLABE.bind(this)]]
     });
 
     // Obtiene los datos de la sesión
@@ -404,6 +409,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     OpenPay.setId('mbhvpztgt3rqse7zvxrc');
     OpenPay.setApiKey('pk_411efcdb08c148ceb97b36f146e42beb');
     OpenPay.setSandboxMode(true);
+
+
+    if (this.idDelivery) {
+      const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
+        console.log('result: ', result.delivery);
+        if (result.delivery.delivery) {
+          this.onSetDelivery(this.formData, result.delivery.delivery);
+        }
+        return result.delivery.delivery;
+      });
+      console.log('delivery: ', delivery);
+    }
+
   }
 
   // Función de validación personalizada para la CLABE
@@ -586,10 +604,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(tokenCard.data.id);
               console.log('pagoOpenpay: ', pagoOpenpay);
-              if (pagoOpenpay.status === false) {
-                this.isSubmitting = false;
-                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
-              }
+              // if (pagoOpenpay.status === false) {
+              //   this.isSubmitting = false;
+              //   return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
+              // }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id);
               console.log('OrderSupplier: ', OrderSupplier);
@@ -618,7 +636,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Si compra es OK, continua.
               OrderSupplier[NewProperty] = sendEmail;
               console.log('OrderSupplier: ', OrderSupplier);
-              this.sendEmail(OrderSupplier, messageDelivery, '', internalEmail);
+              this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios);
               await infoEventAlert(messageDelivery, '', typeAlert);
               break;
             case PAY_TRANSFER:
@@ -660,7 +678,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Si compra es OK, continua.
               OrderSupplierT[NewPropertyT] = sendEmailT;
               console.log('OrderSupplierT: ', OrderSupplierT);
-              this.sendEmailSpei(OrderSupplierT, messageDeliveryT, '', internalEmailT);
+              this.mailService.sendEmailSpei(OrderSupplierT, messageDeliveryT, '', internalEmailT, this.totalEnvios);
               await infoEventAlert(messageDeliveryT, '', typeAlertT);
               break;
             case PAY_DEPOSIT:
@@ -689,6 +707,45 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Metodos Componentes
 
   //#region Metodos
+  onSetDelivery(formData: FormGroup, delivery: Delivery) {
+    console.log('formData: ', formData);
+    console.log('Delivery: ', delivery);
+    this.formData.controls.name.setValue(delivery.user.name);
+    this.formData.controls.lastname.setValue(delivery.user.lastname);
+    this.formData.controls.phone.setValue(delivery.user.phone);
+    this.formData.controls.email.setValue(delivery.user.email);
+    this.formData.controls.codigoPostal.setValue(delivery.user.addresses[0].d_codigo);
+    this.formData.controls.selectCountry.setValue(delivery.user.addresses[0].c_pais);
+    this.selectCountry.c_pais = delivery.user.addresses[0].c_pais;
+    this.selectCountry.d_pais = delivery.user.addresses[0].d_pais;
+    this.formData.controls.selectEstado.setValue(delivery.user.addresses[0].c_estado);
+    this.selectEstado.c_estado = delivery.user.addresses[0].c_estado;
+    this.selectEstado.d_estado = delivery.user.addresses[0].d_estado;
+    this.formData.controls.selectMunicipio.setValue(delivery.user.addresses[0].c_mnpio);
+    this.selectMunicipio.c_mnpio = delivery.user.addresses[0].c_mnpio;
+    this.selectMunicipio.D_mnpio = delivery.user.addresses[0].d_mnpio;
+    this.formData.controls.selectColonia.setValue(delivery.user.addresses[0].d_asenta);
+    this.selectColonia = delivery.user.addresses[0].d_asenta;
+    this.formData.controls.directions.setValue(delivery.user.addresses[0].directions);
+    this.formData.controls.outdoorNumber.setValue(delivery.user.addresses[0].outdoorNumber);
+    this.formData.controls.interiorNumber.setValue(delivery.user.addresses[0].interiorNumber);
+    this.formData.controls.references.setValue(delivery.user.addresses[0].references);
+    console.log('delivery.warehouses[0].shipments: ', delivery.warehouses[0].shipments);
+    // this.shipments = delivery.warehouses[0].shipments;
+    for (const idS of Object.keys(delivery.warehouses[0].shipments)) {
+      const ship: Shipment = delivery.warehouses[0].shipments[idS];
+      ship.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+      this.shipments.push(ship);
+    }
+    this.cartItems = [];
+    if (!this.cartItems || this.cartItems.length <= 0) {
+      for (const idC of Object.keys(delivery.warehouses[0].products)) {
+        const cartItem: CartItem = delivery.warehouses[0].products[idC];
+        this.cartItems.push(cartItem);
+      }
+    }
+  }
+
   onSetUser(formData: FormGroup, stripeCustomer: string): UserBasicInput {
     const register = new UserBasicInput();
     register.id = '';
@@ -882,6 +939,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         let supplier = new Supplier();
         supplier = suppliers[supId];
         const shipmentsSupp = [];
+        const carItemsWarehouse = [];
         const supplierProd = new SupplierProd();
         const warehouseNacional = new Warehouse();
         const productsNacional: ProductShipment[] = [];
@@ -958,9 +1016,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               shipmentsSupp.push(shipmentsCost[shipId]);
               shipmentsEnd.push(shipmentsCost[shipId]);
             }
+            // carItemsWarehouse
+            for (const cartId of Object.keys(this.cartItems)) {
+              carItemsWarehouse.push(this.cartItems[cartId]);
+            }
             this.warehouse.shipments = shipmentsSupp;
             supplierProd.idProveedor = supplier.slug;
             this.warehouse.suppliersProd = supplierProd;
+            this.warehouse.products = carItemsWarehouse;
             this.warehouses.push(this.warehouse);
             console.log('this.warehouses: ', this.warehouses);
           }
@@ -1158,6 +1221,61 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // Bloquear la tecla presionada si no es un número
       event.preventDefault();
     }
+  }
+
+  async payOpenpay_1(token: string): Promise<any> {
+    const totalCharge = parseFloat(this.totalPagar);
+    this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
+
+    const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
+    charge.method = "card";
+    charge.source_id = token;
+    charge.amount = totalCharge;
+    charge.currency = "MXN";
+    charge.description = "Cargo de prueba";
+    charge.order_id = this.orderUniqueId;
+    charge.device_session_id = this.deviceDataId;
+    charge.capture = true;
+
+    const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
+    customer.external_id = this.orderUniqueId;
+    customer.name = this.formData.controls.name.value;
+    customer.last_name = this.formData.controls.lastname.value;
+    customer.email = this.formData.controls.email.value;
+    customer.phone_number = this.formData.controls.phone.value;
+    customer.clabe = "";
+
+    const address: AddressOpenpayInput = new AddressOpenpayInput();
+    address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
+    address.line2 = this.formData.controls.selectColonia.value;
+    address.line3 = this.formData.controls.references.value;
+    address.postal_code = this.formData.controls.codigoPostal.value;
+    address.city = this.selectMunicipio.D_mnpio;
+    address.state = this.selectEstado.d_estado;
+    address.country_code = "MX";
+    customer.address = address;
+
+    charge.customer = customer;
+    charge.payment_plan = null;
+    charge.use_card_points = "NONE";
+    charge.send_email = true;
+    charge.redirect_url = "http://www.openpay.mx/index.html?id=" + token;
+    charge.use_3d_secure = true;
+    charge.confirm = true;
+
+    console.log('charge: ', charge);
+    const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    if (chargeResult.status === false) {
+      return { status: chargeResult.status, message: chargeResult.message };
+    }
+
+    const idChargeOpenpay = chargeResult.createChargeOpenpay.id;
+    const captureTransactionOpenpay = { amount: totalCharge }
+    const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
+    if (createResult.status === false) {
+      return { status: createResult.status, message: 'No se pudo confirmar el pago. Intente mas tarde.' };
+    }
+    return await createResult;
   }
 
   async payOpenpay(token: string): Promise<any> {
@@ -1467,330 +1585,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await delivery;
   }
   //#endregion Enviar Ordenes
-
-  //#region Emails  //ICharge
-  sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false): void {
-    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
-    const subject = issue !== '' ? issue : 'Confirmación del pedido';
-    const productos: ProductShipment[] = [];
-    let totalProd = 0.0;
-    for (const idW of Object.keys(charge.warehouses)) {
-      const warehouse = charge.warehouses[idW];
-      for (const idP of Object.keys(warehouse.productShipments)) {
-        const prod = warehouse.productShipments[idP];
-        totalProd += (prod.precio * prod.cantidad);
-        productos.push(prod);
-      }
-    }
-    const total = totalProd + parseFloat(this.totalEnvios);
-
-    // const productos = charge.warehouses[0].productShipments;
-
-    const productRows = productos.map((producto: any) => `
-        <tr>
-          <td>${producto.name}</td>
-          <td>${producto.cantidad}</td>
-          <td>${producto.precio}</td>
-          <td>${producto.total}</td>
-        </tr>
-      `).join('');
-    const html = message !== '' ? message : `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nota de Compra</title>
-        <style>
-          /* Estilos generales */
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-          }
-          .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          }
-          h1 {
-            color: #333333;
-            margin-top: 0;
-          }
-          p {
-            color: #666666;
-            line-height: 1.5;
-            font-size: 10px; /* Tamaño de letra de los párrafos */
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px; /* Tamaño de letra de los párrafos */
-          }
-          th, td {
-            padding: 10px;
-            border-bottom: 1px solid #dddddd;
-          }
-          th {
-            text-align: left;
-            font-weight: bold;
-          }
-          tfoot td {
-            text-align: right;
-            font-weight: bold;
-          }
-          foot {
-            color: #666666;
-            font-size: 8px; /* Tamaño de letra de los párrafos */
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Nota de Compra</h1>
-          <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
-          <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
-          <table>
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${productRows}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2"><strong>Subtotal:</strong></td>
-                <td colspan="2">$ ${totalProd.toFixed(2).toString()}</td>
-              </tr>
-              <tr>
-                <td colspan="2"><strong>Costo Envio:</strong></td>
-                <td colspan="2">$ ${this.totalEnvios}</td>
-              </tr>
-              <tr>
-                <td colspan="2"><strong>Total:</strong></td>
-                <td colspan="2">$ ${total.toFixed(2).toString()}</td>
-              </tr>
-            </tfoot>
-          </table>
-          <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
-          <p>Saludos cordiales,</p>
-          <p>DARU</p>
-          <hr>
-          <hr>
-          <p class="foot">
-            Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
-          </p>
-        </div>
-      </body>
-      </html>
-      `;
-    // const subject
-    const mail: IMail = {
-      to: receiptEmail,
-      subject,
-      html
-    };
-    this.mailService.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
-    if (internal) {                                                        // Correos internos
-      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
-      const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
-      let htmlInt = '';
-      if (charge.orderCtResponse) {
-        htmlInt = 'Pedido de CT';
-      }
-      if (charge.orderCvaResponse) {
-        htmlInt = 'Pedido de CVA';
-      }
-      const mailInt: IMail = {
-        to: receiptEmailInt,
-        subject: subjectInt,
-        html: htmlInt
-      };
-      this.mailService.send(mailInt).pipe(first()).subscribe();                      // Envio de correo externo.
-    }
-  }
-
-  sendEmailSpei(charge: any, issue: string = '', message: string = '', internal: boolean = false): void {
-    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
-    const subject = issue !== '' ? issue : 'Confirmación del pedido';
-    const productos: ProductShipment[] = [];
-    let totalProd = 0.0;
-    for (const idW of Object.keys(charge.warehouses)) {
-      const warehouse = charge.warehouses[idW];
-      for (const idP of Object.keys(warehouse.productShipments)) {
-        const prod = warehouse.productShipments[idP];
-        totalProd += (prod.precio * prod.cantidad);
-        productos.push(prod);
-      }
-    }
-    const total = totalProd + parseFloat(this.totalEnvios);
-
-    // const productos = charge.warehouses[0].productShipments;
-
-    const productRows = productos.map((producto: any) => `
-        <tr>
-          <td>${producto.name}</td>
-          <td>${producto.cantidad}</td>
-          <td>${producto.precio}</td>
-          <td>${producto.total}</td>
-        </tr>
-      `).join('');
-    const html = message !== '' ? message : `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nota de Compra</title>
-        <style>
-          /* Estilos generales */
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-          }
-          .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          }
-          h1 {
-            color: #333333;
-            margin-top: 0;
-          }
-          p {
-            color: #666666;
-            line-height: 1.5;
-            font-size: 10px; /* Tamaño de letra de los párrafos */
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px; /* Tamaño de letra de los párrafos */
-          }
-          th, td {
-            padding: 10px;
-            border-bottom: 1px solid #dddddd;
-          }
-          th {
-            text-align: left;
-            font-weight: bold;
-          }
-          tfoot td {
-            text-align: right;
-            font-weight: bold;
-          }
-          foot {
-            color: #666666;
-            font-size: 8px; /* Tamaño de letra de los párrafos */
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Nota de Compra</h1>
-          <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
-          <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
-          <table>
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${productRows}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2"><strong>Subtotal:</strong></td>
-                <td colspan="2">$ ${totalProd.toFixed(2).toString()}</td>
-              </tr>
-              <tr>
-                <td colspan="2"><strong>Costo Envio:</strong></td>
-                <td colspan="2">$ ${this.totalEnvios}</td>
-              </tr>
-              <tr>
-                <td colspan="2"><strong>Total:</strong></td>
-                <td colspan="2">$ ${total.toFixed(2).toString()}</td>
-              </tr>
-              <tr>
-                <td colspan="4"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
-              </tr>
-              <tr>
-                <td colspan="1">&nbsp;</td>
-                <td colspan="3">Datos de la Cuenta a Transferir</td>
-              </tr>
-              <tr>
-                <td colspan="1">Banco</td>
-                <td colspan="3">BBVA Mexico (Pesos Mexicanos)</td>
-              </tr>
-              <tr>
-                <td colspan="1">Nombre</td>
-                <td colspan="3">Daru Innovacion S de RL de CV</td>
-              </tr>
-              <tr>
-                <td colspan="1">Clabe</td>
-                <td colspan="3">0121 80001201 4699 46</td>
-              </tr>
-              <tr>
-                <td colspan="4">&nbsp;</td>
-              </tr>
-            </tfoot>
-          </table>
-          <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
-          <p>Saludos cordiales,</p>
-          <p>DARU</p>
-          <hr>
-          <hr>
-          <p class="foot">
-            Este mensaje contiene información de DARU, la cual es de carácter privilegiada, confidencial y de acceso restringido conforme a la ley aplicable. Si el lector de este mensaje no es el destinatario previsto, empleado o agente responsable de la transmisión del mensaje al destinatario, se le notifica por este medio que cualquier divulgación, difusión, distribución, retransmisión, reproducción, alteración y/o copiado, total o parcial, de este mensaje y su contenido está expresamente prohibido. Si usted ha recibido esta comunicación por error, notifique por favor inmediatamente al remitente del presente correo electrónico, y posteriormente elimine el mismo.
-          </p>
-        </div>
-      </body>
-      </html>
-      `;
-    // const subject
-    const mail: IMail = {
-      to: receiptEmail,
-      subject,
-      html
-    };
-    this.mailService.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
-    if (internal) {                                                        // Correos internos
-      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
-      const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
-      let htmlInt = '';
-      if (charge.orderCtResponse) {
-        htmlInt = 'Pedido de CT';
-      }
-      if (charge.orderCvaResponse) {
-        htmlInt = 'Pedido de CVA';
-      }
-      const mailInt: IMail = {
-        to: receiptEmailInt,
-        subject: subjectInt,
-        html: htmlInt
-      };
-      this.mailService.send(mailInt).pipe(first()).subscribe();                      // Envio de correo externo.
-    }
-  }
-  //#endregion Emails
 
   //#region Direccion
   onSetEstados(event): void {
