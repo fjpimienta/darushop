@@ -42,8 +42,8 @@ export const DELIVERY_QUERY = gql`
   ${DELIVERY_FRAGMENT}
 `;
 export const DELIVERY_DATA_QUERY = gql`
-   query deliveryData($include: Boolean!) {
-      delivery{
+   query deliveryData($id: ID!) {
+      delivery(id: $id){
          status
          message
          delivery {

@@ -145,6 +145,8 @@ export class ChargeOpenpayService extends ApiService {
   async captureCharge(idChargeOpenpay: String,
     captureTransactionOpenpay: CaptureChargeOpenpayInput): Promise<any> {
     return new Promise<any>((resolve, reject) => {
+      console.log(`idChargeOpenpay: ${idChargeOpenpay}, amount: ${captureTransactionOpenpay.amount}`);
+      console.log('captureTransactionOpenpay: ', captureTransactionOpenpay);
       this.get(CAPTURE_CHARGE_OPENPAY, { idChargeOpenpay, captureTransactionOpenpay }).subscribe(
         (result: any) => {
           resolve(result.captureChargeOpenpay);

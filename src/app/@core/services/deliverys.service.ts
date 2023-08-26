@@ -74,7 +74,7 @@ export class DeliverysService extends ApiService {
   async getDelivery(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.get(DELIVERY_DATA_QUERY, {
-        include: true, id
+        id
       }, {}).subscribe(
         (result: any) => {
           resolve(result);
