@@ -420,6 +420,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
         console.log('result: ', result.delivery);
         if (result.delivery.delivery) {
+          this.delivery = result.delivery.delivery;
           this.onSetDelivery(this.formData, result.delivery.delivery);
         }
         return result.delivery.delivery;
@@ -604,15 +605,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case PAY_OPENPAY:
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
-              // Recuperar tokenCard
-              const tokenCard = await this.tokenCardOpenpay();
-              // Realizar Cargo con la Tarjeta
-              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, id);
-              console.log('pagoOpenpay: ', pagoOpenpay);
-              if (pagoOpenpay.status === false) {
-                this.isSubmitting = false;
-                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
-              }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id);
               console.log('OrderSupplier: ', OrderSupplier);
@@ -623,26 +615,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Registrar Pedido en DARU.
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
-              const NewProperty = 'receipt_email';
-              let internalEmail = false;
-              let typeAlert = TYPE_ALERT.SUCCESS;
-              let sendEmail = OrderSupplier.user.email;
-              let messageDelivery = 'El Pedido se ha realizado correctamente';
-              if (OrderSupplier.statusError) {
-                internalEmail = true;
+              if (deliverySave.error) {
                 this.isSubmitting = false;
-                typeAlert = TYPE_ALERT.WARNING;
-                sendEmail = 'marketing@daru.mx';
-                messageDelivery = OrderSupplier.messageError;
-              } else {
-                this.cartService.clearCart(false);
-                this.router.navigate(['/shop/offers/list']);
+                return await infoEventAlert(deliverySave.messageError, TYPE_ALERT.ERROR);
               }
-              // Si compra es OK, continua.
-              OrderSupplier[NewProperty] = sendEmail;
-              console.log('OrderSupplier: ', OrderSupplier);
-              this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios);
-              await infoEventAlert(messageDelivery, '', typeAlert);
+              // Recuperar tokenCard
+              const tokenCard = await this.tokenCardOpenpay();
+              console.log('tokenCard: ', tokenCard);
+              if (!tokenCard) {
+                this.isSubmitting = false;
+                return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
+              }
+              // Realizar Cargo con la Tarjeta
+              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, id, this.formData);
+              console.log('pagoOpenpay: ', pagoOpenpay);
+              if (pagoOpenpay.status === false) {
+                this.isSubmitting = false;
+                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
+              }
+              console.log('pagoOpenpay.createChargeOpenpay: ', pagoOpenpay.createChargeOpenpay);
+              console.log('pagoOpenpay.createChargeOpenpay.payment_method.url: ', pagoOpenpay.createChargeOpenpay.payment_method.url);
+              if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
+                window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
+              }
               break;
             case PAY_TRANSFER:
               // Recuperar siguiente idT
@@ -725,28 +720,36 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return await infoEventAlert('Error al realizar la autorizacion del cargo.', pagoOpenpayCapture.message, TYPE_ALERT.ERROR);
       }
 
-      // TODO Actualizar Delivery
+      // Update Pedido en DARU.
+      const deliverySave = await this.deliverysService.update(this.delivery);
+      console.log('deliverySave: ', deliverySave);
+      if (deliverySave.error) {
+        this.isSubmitting = false;
+        return await infoEventAlert(deliverySave.messageError, TYPE_ALERT.ERROR);
+      }
 
+      // Enviar correo
       const NewProperty = 'receipt_email';
       let internalEmail = false;
       let typeAlert = TYPE_ALERT.SUCCESS;
-      let sendEmail = this.delivery.user.email;
+      let sendEmail = deliverySave.user.email;
       let messageDelivery = 'El Pedido se ha realizado correctamente';
-      if (pagoOpenpayCapture.statusError) {
+      if (deliverySave.statusError) {
         internalEmail = true;
         this.isSubmitting = false;
         typeAlert = TYPE_ALERT.WARNING;
         sendEmail = 'marketing@daru.mx';
-        messageDelivery = pagoOpenpayCapture.messageError;
+        messageDelivery = deliverySave.messageError;
       } else {
         this.cartService.clearCart(false);
         this.router.navigate(['/shop/offers/list']);
       }
       // Si compra es OK, continua.
-      pagoOpenpayCapture[NewProperty] = sendEmail;
-      console.log('OrderSupplier: ', pagoOpenpayCapture);
-      this.mailService.sendEmail(pagoOpenpayCapture, messageDelivery, '', internalEmail, this.totalEnvios);
+      deliverySave[NewProperty] = sendEmail;
+      console.log('OrderSupplier: ', deliverySave);
+      this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);
       await infoEventAlert(messageDelivery, '', typeAlert);
+
     } else {
       console.log('onSubmitCapture/this.isSubmittingCapture');
     }
@@ -1287,7 +1290,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await createResult;
   }
 
-  async payOpenpay(token: string, id: string): Promise<any> {
+  async payOpenpay(token: string, id: string, formData: FormGroup): Promise<any> {
     const totalCharge = parseFloat(this.totalPagar);
     this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
 
@@ -1303,17 +1306,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
     customer.external_id = this.orderUniqueId;
-    customer.name = this.formData.controls.name.value;
-    customer.last_name = this.formData.controls.lastname.value;
-    customer.email = this.formData.controls.email.value;
-    customer.phone_number = this.formData.controls.phone.value;
+    customer.name = formData.controls.name.value;
+    customer.last_name = formData.controls.lastname.value;
+    customer.email = formData.controls.email.value;
+    customer.phone_number = formData.controls.phone.value;
     customer.clabe = "";
 
     const address: AddressOpenpayInput = new AddressOpenpayInput();
-    address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
-    address.line2 = this.formData.controls.selectColonia.value;
-    address.line3 = this.formData.controls.references.value;
-    address.postal_code = this.formData.controls.codigoPostal.value;
+    address.line1 = formData.controls.directions.value + ' ' + formData.controls.outdoorNumber.value;
+    address.line2 = formData.controls.selectColonia.value;
+    address.line3 = formData.controls.references.value;
+    address.postal_code = formData.controls.codigoPostal.value;
     address.city = this.selectMunicipio.D_mnpio;
     address.state = this.selectEstado.d_estado;
     address.country_code = "MX";
@@ -1325,7 +1328,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.use_3d_secure = true;
     charge.confirm = true;
 
-    console.log('charge: ', charge);
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
     if (chargeResult.status === false) {
       return { status: chargeResult.status, message: chargeResult.message };
@@ -1445,7 +1447,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const ciudad = ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
         const orderCvaSupplier: OrderCva = {
           NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
-          Paqueteria: '4',
+          Paqueteria: '554',
           CodigoSucursal: warehouse.productShipments[0].almacen,
           PedidoBO: 'N',
           Observaciones: 'Pedido de Prueba',
