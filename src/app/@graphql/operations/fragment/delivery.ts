@@ -37,7 +37,6 @@ export const DELIVERY_FRAGMENT = gql`
         cp
         name
         estado
-        ciudad
         latitud
         longitud
         suppliersProd {
