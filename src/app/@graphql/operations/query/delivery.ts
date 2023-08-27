@@ -42,8 +42,8 @@ export const DELIVERY_QUERY = gql`
   ${DELIVERY_FRAGMENT}
 `;
 export const DELIVERY_DATA_QUERY = gql`
-   query deliveryData($id: ID!) {
-      delivery(id: $id){
+   query deliveryDataId($deliveryId: String!) {
+      delivery(deliveryId: $deliveryId){
          status
          message
          delivery {

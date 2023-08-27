@@ -171,7 +171,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.idDelivery = params.idOrder;
       }
       this.loaded = true;
-      console.log(`this.idDelivery: ${this.idDelivery}; this.idTransaction: ${this.idTransaction}`);
     });
 
     this.stripeCustomer = '';
@@ -248,8 +247,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 if (result.status) {
                   // Recuperar siguiente id
                   const id = await this.deliverysService.next();
+                  const deliveryId = this.generarNumeroAleatorioEncriptado();
                   // Generar Orden de Compra con Proveedores
-                  const OrderSupplier = await this.sendOrderSupplier(id);
+                  const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
                   console.log('OrderSupplier: ', OrderSupplier);
                   // Registrar Pedido en DARU.
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
@@ -290,7 +290,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Metodos Componente
   ngOnInit(): void {
-    console.clear();
+    // console.clear();
+    console.log(`this.idDelivery: ${this.idDelivery}; this.idTransaction: ${this.idTransaction}`);
+    const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
+      console.log('result: ', result.delivery);
+      if (result.delivery.delivery) {
+        this.delivery = result.delivery.delivery;
+        this.onSetDelivery(this.formData, result.delivery.delivery);
+      }
+      return result.delivery.delivery;
+    });
+    console.log('delivery: ', delivery);
+    console.log('this.delivery: ', this.delivery);
+
     this.countrys = [];
     this.selectCountry = new Country();
     this.estados = [];
@@ -414,20 +426,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     OpenPay.setId('mbhvpztgt3rqse7zvxrc');
     OpenPay.setApiKey('pk_411efcdb08c148ceb97b36f146e42beb');
     OpenPay.setSandboxMode(true);
-
-
-    if (this.idDelivery) {
-      const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
-        console.log('result: ', result.delivery);
-        if (result.delivery.delivery) {
-          this.delivery = result.delivery.delivery;
-          this.onSetDelivery(this.formData, result.delivery.delivery);
-        }
-        return result.delivery.delivery;
-      });
-      console.log('delivery: ', delivery);
-    }
-
   }
 
   // Función de validación personalizada para la CLABE
@@ -605,8 +603,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case PAY_OPENPAY:
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
+              const deliveryId = this.generarNumeroAleatorioEncriptado();
+              console.log(`id: ${id}; deliveryId: ${deliveryId}`);
               // Generar Orden de Compra con Proveedores
-              const OrderSupplier = await this.sendOrderSupplier(id);
+              const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
               console.log('OrderSupplier: ', OrderSupplier);
               if (OrderSupplier.error) {
                 this.isSubmitting = false;
@@ -627,7 +627,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
-              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, id, this.formData);
+              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, OrderSupplier.deliveryId, this.formData);
               console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
@@ -642,6 +642,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case PAY_TRANSFER:
               // Recuperar siguiente idT
               const idT = await this.deliverysService.next();
+              const deliveryIdT = this.generarNumeroAleatorioEncriptado();
               console.log('idT: ', idT);
               // Realizar Cargo con la Tarjeta
               const pagoOpenpayT = await this.payOpenpaySpei(idT);
@@ -651,7 +652,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await infoEventAlert(pagoOpenpayT.message, TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
-              const OrderSupplierT = await this.sendOrderSupplier(idT);
+              const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
               console.log('OrderSupplierT: ', OrderSupplierT);
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
@@ -711,45 +712,47 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         return await infoEventAlert('No se encuentra el parametro: id.', '');
       }
-      // Realizar Cargo con la Tarjeta
-      const amout = parseFloat(this.totalPagar);
-      const pagoOpenpayCapture = await this.payOpenpayCapture(this.idTransaction, amout);
-      console.log('pagoOpenpayCapture: ', pagoOpenpayCapture);
-      if (pagoOpenpayCapture.status === false) {
-        this.isSubmitting = false;
-        return await infoEventAlert('Error al realizar la autorizacion del cargo.', pagoOpenpayCapture.message, TYPE_ALERT.ERROR);
-      }
+      // // Realizar Cargo con la Tarjeta
+      // const amout = parseFloat(this.totalPagar);
+      // const pagoOpenpayCapture = await this.payOpenpayCapture(this.idTransaction, amout);
+      // console.log('pagoOpenpayCapture: ', pagoOpenpayCapture);
+      // if (pagoOpenpayCapture.status === false) {
+      //   this.isSubmitting = false;
+      //   return await infoEventAlert('Error al realizar la autorizacion del cargo.', pagoOpenpayCapture.message, TYPE_ALERT.ERROR);
+      // }
 
       // Update Pedido en DARU.
-      const deliverySave = await this.deliverysService.update(this.delivery);
-      console.log('deliverySave: ', deliverySave);
-      if (deliverySave.error) {
-        this.isSubmitting = false;
-        return await infoEventAlert(deliverySave.messageError, TYPE_ALERT.ERROR);
-      }
+      // const deliverySave = await this.deliverysService.update(this.delivery);
+      // console.log('1-deliverySave: ', deliverySave);
+
+      const deliverySave = this.delivery;
 
       // Enviar correo
       const NewProperty = 'receipt_email';
       let internalEmail = false;
       let typeAlert = TYPE_ALERT.SUCCESS;
-      let sendEmail = deliverySave.user.email;
+      let sendEmail = this.delivery.user.email;
       let messageDelivery = 'El Pedido se ha realizado correctamente';
-      if (deliverySave.statusError) {
-        internalEmail = true;
-        this.isSubmitting = false;
-        typeAlert = TYPE_ALERT.WARNING;
-        sendEmail = 'marketing@daru.mx';
-        messageDelivery = deliverySave.messageError;
-      } else {
-        this.cartService.clearCart(false);
-        this.router.navigate(['/shop/offers/list']);
-      }
+      // if (deliverySave.status === false) {
+      //   this.isSubmitting = false;
+      //   internalEmail = true;
+      //   typeAlert = TYPE_ALERT.ERROR;
+      //   sendEmail = 'marketing@daru.mx';
+      //   messageDelivery = deliverySave.message;
+      //   this.delivery[NewProperty] = sendEmail;
+      //   console.log('messageDelivery: ', messageDelivery);
+      //   this.mailService.sendEmail(this.delivery, messageDelivery, '', internalEmail, this.totalEnvios);
+      //   console.log('mailService: ');
+      //   return await infoEventAlert('Error al Guardar el Pedido', deliverySave.message, typeAlert);
+      // }
       // Si compra es OK, continua.
       deliverySave[NewProperty] = sendEmail;
-      console.log('OrderSupplier: ', deliverySave);
       this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);
-      await infoEventAlert(messageDelivery, '', typeAlert);
+      console.log('this.mailService.sendEmail');
+      this.cartService.clearCart(false);
+      this.router.navigate(['/shop/offers/list']);
 
+      await infoEventAlert(messageDelivery, '', typeAlert);
     } else {
       console.log('onSubmitCapture/this.isSubmittingCapture');
     }
@@ -763,7 +766,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Metodos
   onSetDelivery(formData: FormGroup, delivery: Delivery) {
-    console.log('Delivery: ', delivery);
     this.formData.controls.name.setValue(delivery.user.name);
     this.formData.controls.lastname.setValue(delivery.user.lastname);
     this.formData.controls.phone.setValue(delivery.user.phone);
@@ -1224,16 +1226,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   generarNumeroAleatorioEncriptado(): string {
-    // Paso 1: Generar un número aleatorio entre 0 y 999999
-    const numeroAleatorio = Math.floor(Math.random() * 1000000);
-    // Paso 2: Convertir el número en una cadena
-    const numeroEnCadena = numeroAleatorio.toString();
-    // Paso 3: Encriptar la cadena utilizando AES de crypto
-    const claveEncriptacion = 'mi_clave_secreta'; // Reemplaza esto con una clave segura
-    const iv = crypto.lib.WordArray.random(16); // Generar un vector de inicialización aleatorio
-    const encrypted = crypto.AES.encrypt(numeroEnCadena, claveEncriptacion, { iv: iv });
-    // Truncar o recortar el resultado del cifrado a 32 caracteres
-    const resultadoEncriptado32 = encrypted.toString().slice(0, 32);
+    const numeroAleatorio = Math.floor(Math.random() * 1000000);      // Paso 1: Generar un número aleatorio entre 0 y 999999
+    const numeroEnCadena = numeroAleatorio.toString();                // Paso 2: Convertir el número en una cadena
+    const claveEncriptacion = environment.KEY_SECRET;                 //          Reemplaza esto con una clave segura
+    const iv = crypto.lib.WordArray.random(16);                       //          Generar un vector de inicialización aleatorio
+    const encrypted = crypto.AES.encrypt(                             // Paso 3: Encriptar la cadena utilizando AES de crypto
+      numeroEnCadena, claveEncriptacion, { iv: iv }
+    );
+    const resultadoEncriptado = encrypted.toString().slice(0, 32);    // Truncar o recortar el resultado del cifrado a 32 caracteres
+    const resultadoEncriptado32 = resultadoEncriptado.replace(/[^a-zA-Z0-9]/g, '');   // Quitar cualquier carácter que no sea letra o número
     return resultadoEncriptado32;
   }
 
@@ -1290,9 +1291,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await createResult;
   }
 
-  async payOpenpay(token: string, id: string, formData: FormGroup): Promise<any> {
+  async payOpenpay(token: string, orderUniqueId: string, formData: FormGroup): Promise<any> {
     const totalCharge = parseFloat(this.totalPagar);
-    this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
 
     const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
     charge.method = "card";
@@ -1300,12 +1300,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.amount = totalCharge;
     charge.currency = "MXN";
     charge.description = "Cargo de prueba";
-    charge.order_id = this.orderUniqueId;
+    charge.order_id = orderUniqueId;
     charge.device_session_id = this.deviceDataId;
     charge.capture = true;
 
     const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
-    customer.external_id = this.orderUniqueId;
+    customer.external_id = orderUniqueId;
     customer.name = formData.controls.name.value;
     customer.last_name = formData.controls.lastname.value;
     customer.email = formData.controls.email.value;
@@ -1324,7 +1324,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     charge.customer = customer;
     charge.send_email = true;
-    charge.redirect_url = "https://localhost:4200/shop/checkout?idOrder=" + id;
+    charge.redirect_url = "https://localhost:4200/shop/checkout?idOrder=" + orderUniqueId;
     charge.use_3d_secure = true;
     charge.confirm = true;
 
@@ -1336,21 +1336,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await chargeResult;
   }
 
-  async payOpenpaySpei(id: string): Promise<any> {
+  async payOpenpaySpei(orderUniqueId: string): Promise<any> {
     const holder_name = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
 
     const totalCharge = parseFloat(this.totalPagar);
-    this.orderUniqueId = this.generarNumeroAleatorioEncriptado();
 
     const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
     charge.method = "bank_account";
     charge.amount = totalCharge;
     charge.description = "Cargo de prueba";
-    charge.order_id = this.orderUniqueId;
+    charge.order_id = orderUniqueId;
     charge.device_session_id = this.deviceDataId;
 
     const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
-    customer.external_id = this.orderUniqueId;
+    customer.external_id = orderUniqueId;
     customer.name = this.formData.controls.name.value;
     customer.last_name = this.formData.controls.lastname.value;
     customer.email = this.formData.controls.email.value;
@@ -1443,11 +1442,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           ProductosCva.push(productCva);
         }
         const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
-        const estado = ciudadesCVA.find(city => city.estado.toUpperCase() === dir.d_estado.toUpperCase()).id;
-        const ciudad = ciudadesCVA.find(city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()).clave;
+        console.log('ciudadesCVA: ', ciudadesCVA);
+        console.log('dir: ', dir);
+        console.log('this.quitarAcentos(dir.d_estado.toUpperCase()): ', this.quitarAcentos(dir.d_estado.toUpperCase()));
+        const estado = ciudadesCVA.find(
+          city => this.quitarAcentos(city.estado.toUpperCase()) === this.quitarAcentos(dir.d_estado.toUpperCase())
+        ).id;
+        console.log('estado: ', estado);
+        const ciudad = ciudadesCVA.find(
+          city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()
+        ).clave;
+        console.log('estado: ', estado);
         const orderCvaSupplier: OrderCva = {
           NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
-          Paqueteria: '554',
+          Paqueteria: '4',
           CodigoSucursal: warehouse.productShipments[0].almacen,
           PedidoBO: 'N',
           Observaciones: 'Pedido de Prueba',
@@ -1470,12 +1478,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  async sendOrderSupplier(id: string): Promise<any> {
-    // Cuando la consulta externa no requiere token
-    console.log('id: ', id);
+  async sendOrderSupplier(id: string, deliveryId: string): Promise<any> {
     const delivery = new Delivery();
     delivery.id = id;
-    delivery.deliveryId = id;
+    delivery.deliveryId = deliveryId;
     delivery.statusError = false;
     delivery.messageError = '';
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
@@ -1500,6 +1506,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const warehouse: Warehouse = this.warehouses[idWar];
       const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
       const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
+      console.log('order: ', order);
       switch (warehouse.suppliersProd.idProveedor) {
         case 'ct':
           // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
@@ -1523,19 +1530,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             orderCtResponse = orderNew;
             delivery.ordersCt = ordersCt;
             delivery.orderCtResponse = orderCtResponse;
-
             const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
             orderCtConfirm.folio = orderNew.pedidoWeb;
-
             const confirmarPedidoCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio);
-            console.log('confirmarPedidoCt:', confirmarPedidoCt);
-
             const ctConfirmResponse: OrderCtConfirmResponse = {
               okCode: confirmarPedidoCt.confirmOrderCt.okCode.toString(),
               okMessage: confirmarPedidoCt.confirmOrderCt.okMessage,
               okReference: confirmarPedidoCt.confirmOrderCt.okReference
             };
-            console.log('ctConfirmResponse:', ctConfirmResponse);
             delivery.orderCtConfirmResponse = ctConfirmResponse;
             break;
           case 'cva':
@@ -1781,5 +1783,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion
 
   //#region Catalogos Generales
+  quitarAcentos(cadena: string): string {
+    return cadena.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
   //#endregion
 }

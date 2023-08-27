@@ -71,10 +71,10 @@ export class DeliverysService extends ApiService {
     });
   }
 
-  async getDelivery(id: string): Promise<any> {
+  async getDelivery(deliveryId: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.get(DELIVERY_DATA_QUERY, {
-        id
+        deliveryId
       }, {}).subscribe(
         (result: any) => {
           resolve(result);
