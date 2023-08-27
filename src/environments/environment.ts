@@ -10,7 +10,8 @@ export const environment = {
   upload: 'https://api.daru.mx:3000/uploads',
   uploadsUrl: 'https://api.daru.mx:3000/uploads',
   demo: 'demo30',
-  SERVER_URL: '' // SERVER_URL: 'http://localhost:4200'
+  SERVER_URL: '',
+  KEY_SECRET: 'DARU2023##!!..'
 };
 
 /*
