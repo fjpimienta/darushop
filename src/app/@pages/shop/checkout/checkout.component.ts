@@ -643,20 +643,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Recuperar siguiente idT
               const idT = await this.deliverysService.next();
               const deliveryIdT = this.generarNumeroAleatorioEncriptado();
-              console.log('payOpenpaySpei/idT: ', deliveryIdT);
               // Realizar Cargo con la Tarjeta
               const pagoOpenpayT = await this.payOpenpaySpei(deliveryIdT);
               console.log('pagoOpenpayT: ', pagoOpenpayT);
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
-                return await infoEventAlert(pagoOpenpayT.message, TYPE_ALERT.ERROR);
+                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpayT.message, TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
               console.log('OrderSupplierT: ', OrderSupplierT);
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
-                return await infoEventAlert(OrderSupplierT.messageError, TYPE_ALERT.ERROR);
+                return await infoEventAlert('Error al realizar el cargo.', OrderSupplierT.messageError, TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
@@ -1371,7 +1370,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     console.log('charge: ', charge);
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
     if (chargeResult.status === false) {
-      return { status: chargeResult.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
+      return { status: chargeResult.status, message: chargeResult.message};
     }
     return await chargeResult;
   }
