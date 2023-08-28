@@ -643,9 +643,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Recuperar siguiente idT
               const idT = await this.deliverysService.next();
               const deliveryIdT = this.generarNumeroAleatorioEncriptado();
-              console.log('idT: ', idT);
+              console.log('payOpenpaySpei/idT: ', deliveryIdT);
               // Realizar Cargo con la Tarjeta
-              const pagoOpenpayT = await this.payOpenpaySpei(idT);
+              const pagoOpenpayT = await this.payOpenpaySpei(deliveryIdT);
               console.log('pagoOpenpayT: ', pagoOpenpayT);
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
@@ -1368,6 +1368,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     charge.customer = customer;
 
+    console.log('charge: ', charge);
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
     if (chargeResult.status === false) {
       return { status: chargeResult.status, message: 'No se pudo cargar el pago. Intente mas tarde.' };
