@@ -74,7 +74,7 @@
                 <div class="col-sm-6 form-group">
                   <label>Código Postal *</label>
                   <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
-                    (blur)="onSetCps($event)" [attr.disabled]="!byCodigopostal ? 'true' : null">
+                    (blur)="onSetCps($event)" autocomplete="off" [attr.disabled]="!byCodigopostal ? 'true' : null">
                 </div>
               </div>
 
