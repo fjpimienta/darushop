@@ -86,7 +86,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
           const br = new Catalog();
           br.id = j.toString();
           br.slug = categorie;
-          br.description = categorie.toUpperCase();
+          br.description = categorie.toUpperCase().toString().slice(0, 32);
           this.categories.push(br);
         });
         for (const cat of this.categories) {
