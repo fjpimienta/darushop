@@ -3,16 +3,16 @@
   margin-bottom: 3rem;
   padding-left: 0.8rem;
   padding-right: 0.8rem;
-  height: 250px;
-  overflow-y: scroll;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .menu .megamenu.megamenu-sm {
   left: 0;
   right: auto;
   width: 310px;
-  height: 250px;
-  overflow-y: scroll;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .sticky-header.fixed.header-middle .menu>li>a{
@@ -22,6 +22,3 @@
 .header-middle .menu>li:not(:hover):not(.active):not(.show)>a{
   color:#fff;
 }
-
-
-
