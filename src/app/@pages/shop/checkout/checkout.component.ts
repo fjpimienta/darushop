@@ -1066,8 +1066,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     shipment.lugarEnvio = resultShip[key].lugarEnvio.toLocaleUpperCase();
                     shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                   }
+                  console.log('push/shipments: ', shipments);
                   shipments.push(shipment);
                 }
+                console.log('shipments: ', shipments);
                 return await shipments;
               });
             for (const shipId of Object.keys(shipmentsCost)) {
@@ -1370,7 +1372,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     console.log('charge: ', charge);
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
     if (chargeResult.status === false) {
-      return { status: chargeResult.status, message: chargeResult.message};
+      return { status: chargeResult.status, message: chargeResult.message };
     }
     return await chargeResult;
   }
