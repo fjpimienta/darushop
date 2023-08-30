@@ -86,7 +86,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
           const br = new Catalog();
           br.id = j.toString();
           br.slug = categorie;
-          br.description = categorie.toUpperCase().toString().slice(0, 32);
+          br.description = categorie.toUpperCase().toString().slice(0, 32).replace(/-/g, ' ');
           this.categories.push(br);
         });
         for (const cat of this.categories) {
@@ -101,7 +101,6 @@ export class MainMenuComponent implements OnInit, OnDestroy {
           this.categoriesTmp = this.categories;
         }
       });
-
   }
 
   ngOnInit(): void {
