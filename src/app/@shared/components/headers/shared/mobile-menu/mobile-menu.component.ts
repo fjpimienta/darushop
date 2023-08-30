@@ -3,6 +3,7 @@ import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Catalog } from '@core/models/catalog.models';
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
+import { ProductsService } from '@core/services/products.service';
 import { Subscription } from 'rxjs';
 
 declare var $: any;
@@ -30,7 +31,8 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     public brandsService: BrandsService,
-    public categoriesService: CategoriesService
+    public categoriesService: CategoriesService,
+    public productService: ProductsService
   ) {
     this.subscr = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -48,16 +50,37 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
     });
     this.categories = [];
     this.categoriesTmp = [];
-    this.categoriesService.getCategories(1, -1).subscribe(result => {
-      result.categories.forEach(cat => {
-        cat.param = {
-          category: cat.slug,
-          description: cat.description
-        };
+    this.productService.getProducts(1, -1, '', false)
+      .subscribe(result => {
+        const resultCategorie = result;
+        const categoriesProd = resultCategorie.products.reduce((products, product) => {
+          if (!products[product.category[0].slug]) {
+            products[product.category[0].slug] = [];
+          }
+          products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
+          return products;
+        }, {});
+        let j = 0;
+        Object.keys(categoriesProd).forEach((categorie) => {
+          j += 1;
+          const br = new Catalog();
+          br.id = j.toString();
+          br.slug = categorie;
+          br.description = categorie.toUpperCase().toString().slice(0, 32).replace(/-/g, ' ');
+          this.categories.push(br);
+        });
+        for (const cat of this.categories) {
+          cat.param = {
+            category: cat.slug,
+            description: cat.description
+          };
+          this.categoriesTmp.push(cat);
+        }
+        if (this.categories.length !== this.categoriesTmp.length) {
+          this.categories = result.categories;
+          this.categoriesTmp = this.categories;
+        }
       });
-      this.categories = result.categories;
-      this.categoriesTmp = this.categories;
-    });
   }
 
   ngOnInit(): void {
