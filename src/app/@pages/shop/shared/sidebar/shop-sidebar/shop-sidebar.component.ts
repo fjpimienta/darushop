@@ -68,7 +68,7 @@ export class ShopSidebarComponent implements OnInit {
             const br = new Catalog();
             br.id = j.toString();
             br.slug = categorie;
-            br.description = categorie.toUpperCase();
+            br.description = categorie.toUpperCase().toString().slice(0, 32).replace(/-/g, ' ');
             this.categories.push(br);
           });
 
