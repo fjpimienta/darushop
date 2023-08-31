@@ -1,61 +1,62 @@
-<!-- <div class="soon" style="background-image: url(assets/images/backgrounds/daru_espera_1.jpg)"> -->
+<div class="soon" style="background-image: url(assets/images/backgrounds/daru_espera_2.jpg)">
 
-<div class="soon">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 col-lg-12">
-        <div class="soon-content text-center">
-          <div class="soon-content-wrapper">
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-
-
-            <img src="assets/images/logo-icon.png" alt="Logo" class="soon-logo mx-auto">
-            <!-- <h1 class="soon-title">Proximamente...</h1> -->
-            <app-count-down until="2023-05-01" format="DHMS" wrap="coming-countdown countdown-separator">
-            </app-count-down>
-
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-            <br class="mt-2 mb-3 mt-md-3">
-            <!-- <p>We are currently working on an awesome new site. Stay tuned for more information.
+  <div class="soon">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 col-lg-12">
+          <div class="soon-content text-center">
+            <div class="soon-content-wrapper">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <br class="mt-2 mb-3 mt-md-3">
+              <!-- <img src="assets/images/logo-icon.png" alt="Logo" class="soon-logo mx-auto">
+            <h1 class="soon-title">Proximamente...</h1> -->
+              <app-count-down until="2023-10-01" format="DHMS" wrap="coming-countdown countdown-separator">
+              </app-count-down>
+              <br class="mt-2 mb-3 mt-md-3">
+              <!-- <p>We are currently working on an awesome new site. Stay tuned for more information.
               Subscribe to our newsletter to stay updated on our progress.</p> -->
-            <form action="#">
-              <div class="input-group mb-5">
-                <input type="email" class="form-control bg-transparent"
-                  placeholder="Tu direccion de Correo Electr&oacute;nico" required>
-                <div class="input-group-append">
-                  <button class="btn btn-outline-primary-2" type="submit">
-                    <span>Subscribete!!!</span>
-                    <i class="icon-long-arrow-right"></i>
-                  </button>
+              <form (ngSubmit)="onSubmit()" [formGroup]="formData">
+                <div class="input-group mb-5">
+                  <input type="email" name="email" formControlName="email" class="form-control bg-transparent"
+                    placeholder="Correo Electr&oacute;nico" required>
+                  <div class="input-group-append">
+                    <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid">
+                      <span>Subscribete!!!</span>
+                      <i class="icon-long-arrow-right"></i>
+                    </button>
+                  </div>
                 </div>
+              </form>
+              <div class="social-icons justify-content-center mb-0">
+                <a class="social-icon" style="background-color: #3b5998; color: white;" href="javascript:;">
+                  <i class="fa-brands fa-facebook"></i>
+                </a>
+                <a class="social-icon" style="background-color: #55acee; color: white;" href="javascript:;">
+                  <i class="fa-brands fa-x-twitter"></i>
+                </a>
+                <a class="social-icon" style="background-color: #ac2bac; color: white;" href="javascript:;"><i
+                    class="fa-brands fa-instagram"></i>
+                </a>
+                <a class="social-icon" style="background-color: #ed302f; color: white;" href="javascript:;"><i
+                    class="fa-brands fa-youtube"></i>
+                </a>
+                <a class="social-icon" style="background-color: #c61118; color: white;" href="javascript:;"><i
+                    class="fa-brands fa-pinterest"></i>
+                </a>
               </div>
-            </form>
-            <div class="social-icons justify-content-center mb-0">
-              <a class="social-icon" style="background-color: #3b5998; color: white;" href="javascript:;">
-                <i class="icon-facebook-f"></i>
-              </a>
-              <a class="social-icon" style="background-color: #55acee; color: white;" href="javascript:;"><i class="icon-twitter"></i>
-              </a>
-              <a class="social-icon" style="background-color: #ac2bac; color: white;" href="javascript:;"><i
-                  class="icon-instagram"></i>
-              </a>
-              <a class="social-icon" style="background-color: #ed302f; color: white;" href="javascript:;"><i class="icon-youtube"></i>
-              </a>
-              <a class="social-icon" style="background-color: #c61118; color: white;" href="javascript:;"><i
-                  class="icon-pinterest"></i>
-              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- <div class="soon-bg bg-image"></div> -->
   </div>
-  <!-- <div class="soon-bg bg-image"></div> -->
-</div>

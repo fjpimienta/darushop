@@ -22,6 +22,7 @@
     "@angular/platform-browser": "13.4.0",
     "@angular/platform-browser-dynamic": "13.4.0",
     "@angular/router": "13.4.0",
+    "@fortawesome/fontawesome-free": "^6.4.2",
     "@mugan86/ng-shop-ui": "^0.2.3",
     "@mugan86/stripe-payment-form": "^0.2.5",
     "@ng-bootstrap/ng-bootstrap": "^10.0.0",
