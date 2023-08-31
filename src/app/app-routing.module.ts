@@ -16,12 +16,6 @@ const routes: Routes = [
     path: 'soon',
     component: ComingSoonPageComponent
   },
-  // Quitar
-  {
-    path: '',
-    component: ComingSoonPageComponent
-  },
-  // Quitar
   {
     path: '',
     component: LayoutComponent,
