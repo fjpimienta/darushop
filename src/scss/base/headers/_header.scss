@@ -16,7 +16,11 @@
   position: relative;
   left: 0;
   right: 0;
-  height: 127px !important;
+  height: 135px !important;
+}
+
+.w-100 {
+  height: 90px !important;
 }
 
 .sticky-wrapper {
@@ -894,7 +898,7 @@
 }
 
 .mobile-menu-wrapper .nav-item.show .nav-link {
-  color: $primary-color  !important;
+  color: $primary-color !important;
 }
 
 .notification {
