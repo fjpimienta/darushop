@@ -1,6 +1,6 @@
 <main class="main home-page skeleton-body">
   <!-- Seccion 1 Banner Principal -->
-  <section class="intro-section mt-50">
+  <section class="intro-section mt-20">
     <div class="banner">
       <figure>
         <img src="assets/images/home/banners/01.jpg" width="1903" height="780" alt="Image Desc" />
@@ -15,7 +15,9 @@
         </p> -->
         <div class="banner-action" contentAnim aniName="fadeInUpShorter">
           <a routerLink="/register" class="btn btn-cart btn-primary btn-round btn-cart-home">Registrate en DARU TEAM</a>
-          <!-- <a routerLink="/shop/products" class="btn btn-outline-white btn-round">Ver m&aacute;s</a> -->
+        </div>
+        <div class="banner-action" contentAnim aniName="fadeInUpShorter">
+          <a routerLink="/shop/products" class="btn btn-success btn-round">Ver m&aacute;s</a>
         </div>
       </div>
     </div>
@@ -23,6 +25,134 @@
   <!-- End Seccion 1 -->
 
   <!-- Seccion 2 Categorías Populares -->
+  <section class="intro-section">
+    <div class="container">
+      <div class="heading mb-0 text-center">
+        <h2 class="title-home mb-1" contentAnim aniName="blurIn">
+          <a routerLink="/shop/categorys">Categorías</a>
+        </h2>
+        <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
+          Populares
+        </h2>
+      </div>
+      <div class="cat-blocks-container" contentAnim>
+        <div class="row">
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'computadoras-gaming' }"
+                  class="cat-block">
+                  <figure>
+                    <img src="assets/images/home/categorias/gaming.png" width="131" height="76" alt="Category image" />
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Computadoras & Tablets</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'video-vigilancia' }" class="cat-block">
+                  <figure>
+                    <span>
+                      <img src="assets/images/home/categorias/televisores.png" width="131" height="76"
+                        alt="Category image" />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Televisión & Video</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'accesorios-para-electronica' }"
+                  class="cat-block">
+                  <figure>
+                    <span>
+                      <img src="assets/images/home/categorias/celulares.png" width="131" height="76"
+                        alt="Category image" />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Celulares & Accesorios</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'televisions' }" class="cat-block">
+                  <figure>
+                    <span>
+                      <img src="assets/images/home/categorias/fotografia.png" width="131" height="76"
+                        alt="Category image" />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Cámara & Fotografía</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'audio' }" class="cat-block">
+                  <figure>
+                    <span>
+                      <img src="assets/images/home/categorias/audio.png" width="131" height="76" alt="Category image" />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Audio & Equipos de Sonido</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2">
+            <div class="content-center">
+              <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'watches' }" class="cat-block">
+                  <figure>
+                    <span>
+                      <img src="assets/images/home/categorias/consolas.png" width="131" height="76"
+                        alt="Category image" />
+                    </span>
+                  </figure>
+                  <div class="action text-center">
+                    <span>
+                      <h6 class="icon-box-title">Consolas & Videojuegos</h6>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- End Seccion 2 -->
 
   <!-- Seccion 3 Mecanica Compra -->
