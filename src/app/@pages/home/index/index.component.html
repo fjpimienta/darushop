@@ -6,11 +6,11 @@
         <img src="assets/images/home/banners/01.jpg" width="1903" height="780" alt="Image Desc" />
       </figure>
       <div class="banner-content">
-        <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">Descubre todo lo que <br> DARU</h2>
+        <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">Descubre todo <br> lo que DARU</h2>
         <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">tiene para ti.</h3>
         <p>&nbsp;<br></p>
         <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-          <a routerLink="/register" class="btn btn-cart btn-primary btn-round btn-cart-home">Registrate en DARU TEAM</a>
+          <a routerLink="/register" class="btn btn-primary btn-round btn-cart-home">Registrate en DARU TEAM</a>
         </div>
         <div class="banner-action" contentAnim aniName="fadeInUpShorter">
           <a routerLink="/shop/products" class="btn btn-success btn-round">Ver m&aacute;s</a>
@@ -169,15 +169,16 @@
         </div>
         <div class="col-lg-8" contentAnim aniName="fadeInRightShorter">
           <div class="banner-content">
-            <h3 class="banner-subtitle text-white">Se parte de DARU</h3>
-            <h2 class="banner-title text-white mb-1">con un solo click</h2>
-            <span class="text-white">Integrate a la comunidad DARU para disfrutar de grandes
-              beneficios</span>
+            <h2 class="banner-title" contentAnim aniName="fadeInUpShorter">Se parte de DARU</h2>
+            <h3 class="banner-info" contentAnim aniName="fadeInUpShorter">Integrate a la comunidad DARU
+              <br> para disfrutar de grandes beneficios.
+            </h3>
+            <span class="banner-info">&nbsp;</span>
             <div class="banner-info mb-2">
               <ul class="info-list text-white">
                 <li>
                   <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Envíos gratis</span>
+                  <span class="info-content">Descuentos por apertura</span>
                 </li>
                 <li>
                   <span class="info-icon"><i class="icon-check"></i></span>
@@ -185,17 +186,18 @@
                 </li>
                 <li>
                   <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Ofertas premier</span>
+                  <span class="info-content">Ofertas todo el tiempo</span>
                 </li>
               </ul>
             </div>
             <div class="action">
-              <!--  <span class="price text-white">
+              <!--
+              <span class="price text-white">
                 <sup>$</sup><strong>259</strong><sup>.99</sup>
               </span>
-              -->
               <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
-                (click)="addCart($event)">Regístrate</a>
+                (click)="addCart($event)">Compralo</a>
+              -->
             </div>
           </div>
         </div>
@@ -216,8 +218,8 @@
                 <i class="icon-truck"></i>
               </span>
               <div classs="icon-box-content">
-                <h3 class="icon-box-title">Envíos Gratis</h3>
-                <p>en compras mayores de $300</p>
+                <h3 class="icon-box-title">Envíos Gratis *Aplican Restricciones</h3>
+                <p>en compras mayores de $1,000</p>
               </div>
             </div>
           </div>
@@ -358,22 +360,21 @@
   <!-- End Seccion 5 Ofertas Relampagos -->
 
   <!-- Seccion 6 Oferta espacial-->
-  <section class="video-banner bg-parallax mb-10"
-    style="background-image: url(assets/images/home/oferta/banner-oferta.jpg)" bgParallax>
-    <!-- <div class="container">
-      <div class="banner row d-flex">
-        <div class="col-lg-4 mt-4 mt-lg-0 d-flex d-lg-block justify-content-center">
-          <figure class="banner-img">
-            <img src="assets/images/home/products/headphone-1.png"
-              width="579"
-              height="653"
-              alt="Product"
-            />
-          </figure>
+  <section class="video-banner bg-parallax" bgParallax>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <video autoplay muted loop style="width: 100%; height: auto;">
+            <source src="assets/images/home/banners/DARU_04.mp4" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+          </video>
         </div>
+        <div class="col-md-4"></div>
       </div>
-    </div> -->
+    </div>
   </section>
+
   <!-- End Seccion 6 Oferta especial-->
 
   <!--  Seccion 7 Marcas destacadas -->
