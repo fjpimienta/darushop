@@ -6,11 +6,11 @@
         <img src="assets/images/home/banners/01.jpg" width="1903" height="780" alt="Image Desc" />
       </figure>
       <div class="banner-content">
-        <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">Descubre todo lo que <br> DARU</h2>
+        <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">Descubre todo <br> lo que DARU</h2>
         <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">tiene para ti.</h3>
         <p>&nbsp;<br></p>
         <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-          <a routerLink="/register" class="btn btn-cart btn-primary btn-round btn-cart-home">Registrate en DARU TEAM</a>
+          <a routerLink="/register" class="btn btn-primary btn-round btn-cart-home">Registrate en DARU TEAM</a>
         </div>
         <div class="banner-action" contentAnim aniName="fadeInUpShorter">
           <a routerLink="/shop/products" class="btn btn-success btn-round">Ver m&aacute;s</a>
@@ -38,8 +38,9 @@
               <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
                 <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'computadoras-gaming' }"
                   class="cat-block">
-                  <figure>
-                    <img src="assets/images/home/categorias/computo.png" width="131" height="76" alt="Category image" />
+                  <figure class="text-center">
+                    <img src="assets/images/home/categorias/computo.png" width="131" height="76"
+                      alt="Computadoras & Tablets" style="display: block; margin: 0 auto;" />
                   </figure>
                   <div class="action text-center">
                     <span>
@@ -57,7 +58,7 @@
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/televisores.png" width="131" height="76"
-                        alt="Category image" />
+                        alt="Televisión & Video" style="display: block; margin: 0 auto;" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -77,7 +78,7 @@
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/celulares.png" width="131" height="76"
-                        alt="Category image" />
+                        alt="Celulares & Accesorios" style="display: block; margin: 0 auto;" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -96,7 +97,7 @@
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/fotografia.png" width="131" height="76"
-                        alt="Category image" />
+                        alt="Cámara & Fotografía" style="display: block; margin: 0 auto;" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -114,7 +115,8 @@
                 <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'audio' }" class="cat-block">
                   <figure>
                     <span>
-                      <img src="assets/images/home/categorias/audio.png" width="131" height="76" alt="Category image" />
+                      <img src="assets/images/home/categorias/audio.png" width="131" height="76"
+                        alt="Audio & Equipos de Sonido" style="display: block; margin: 0 auto;" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -133,7 +135,7 @@
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/gaming.png" width="131" height="76"
-                        alt="Category image" />
+                        alt="Consolas & Videojuegos" style="display: block; margin: 0 auto;" />
                     </span>
                   </figure>
                   <div class="action text-center">
@@ -152,15 +154,132 @@
   <!-- End Seccion 2 -->
 
   <!-- Seccion 3 Mecanica Compra -->
+  <section class="overview mt-5">
+    <div class="container">
+      <figure class="bg-image">
+        <img src="assets/images/home/bg-circle.png" alt="Background" width="799" height="760" />
+      </figure>
+    </div>
+    <div class="container banner-container">
+      <div class="banner row d-flex">
+        <div class="col-lg-4 order-lg-last" contentAnim aniName="fadeInLeftShorter">
+          <figure class="banner-img">
+            <img src="assets/images/home/comunidad/comunidad-daru-2.png" alt="Product" width="901" height="532" />
+          </figure>
+        </div>
+        <div class="col-lg-8" contentAnim aniName="fadeInRightShorter">
+          <div class="banner-content">
+            <h2 class="banner-title" contentAnim aniName="fadeInUpShorter">Se parte de DARU</h2>
+            <h3 class="banner-info" contentAnim aniName="fadeInUpShorter">Integrate a la comunidad DARU
+              <br> para disfrutar de grandes beneficios.
+            </h3>
+            <span class="banner-info">&nbsp;</span>
+            <div class="banner-info mb-2">
+              <ul class="info-list text-white">
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Descuentos por apertura</span>
+                </li>
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Elige tu método de pago</span>
+                </li>
+                <li>
+                  <span class="info-icon"><i class="icon-check"></i></span>
+                  <span class="info-content">Ofertas todo el tiempo</span>
+                </li>
+              </ul>
+            </div>
+            <div class="action">
+              <!--
+              <span class="price text-white">
+                <sup>$</sup><strong>259</strong><sup>.99</sup>
+              </span>
+              <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
+                (click)="addCart($event)">Compralo</a>
+              -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- End Seccion 3  -->
 
   <!-- Seccion 4 Beneficios -->
+  <section class="sound-section hub-home">
+    <!-- <section class="sound-section" style="background-image: url(assets/images/home/banners/02.jpg)"> -->
+    <div class="icon-boxes-container mb-2">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="icon-truck"></i>
+              </span>
+              <div classs="icon-box-content">
+                <h3 class="icon-box-title">Envíos Gratis *Aplican Restricciones</h3>
+                <p>en compras mayores de $1,000</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="icon-rotate-left"></i>
+              </span>
+              <div classs="icon-box-content">
+                <h3 class="icon-box-title">Devolución gratuita</h3>
+                <p>en 30 días</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="icon-info-circle"></i>
+              </span>
+              <div classs="icon-box-content">
+                <h3 class="icon-box-title">Obtén un 20%</h3>
+                <p>en 1 artículo en tu primera compra</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
+            <div class="icon-box icon-box-side">
+              <span class="icon-box-icon text-dark">
+                <i class="bi bi-credit-card"></i>
+              </span>
+              <div classs="icon-box-content">
+                <h3 class="icon-box-title">Pago</h3>
+                <p>aceptamos todas las tarjetas bancarias</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- End Seccion 4 Beneficios -->
 
   <!-- Seccion 5 Ofertas Relampagos -->
   <!-- End Seccion 5 Ofertas Relampagos -->
 
   <!-- Seccion 6 Oferta espacial-->
+  <section class="video-banner bg-parallax" bgParallax>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <video autoplay muted loop style="width: 100%; height: auto;">
+            <source src="assets/images/home/banners/DARU_04.mp4" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+          </video>
+        </div>
+        <div class="col-md-4"></div>
+      </div>
+    </div>
+  </section>
   <!-- End Seccion 6 Oferta especial-->
 
   <!--  Seccion 7 Marcas destacadas -->

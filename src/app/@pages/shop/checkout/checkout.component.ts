@@ -252,6 +252,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
                   console.log('OrderSupplier: ', OrderSupplier);
                   // Registrar Pedido en DARU.
+                  OrderSupplier.cliente = OrderSupplier.user.email;
+                  OrderSupplier.importe = this.totalPagar;
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
                   console.log('deliverySave: ', deliverySave);
                   const NewProperty = 'receipt_email';
@@ -613,6 +615,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await infoEventAlert(OrderSupplier.messageError, TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
+              OrderSupplier.cliente = OrderSupplier.user.email;
+              OrderSupplier.importe = this.totalPagar;
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
@@ -1484,6 +1488,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const delivery = new Delivery();
     delivery.id = id;
     delivery.deliveryId = deliveryId;
+    delivery.cliente = '';
+    delivery.importe = 0;
     delivery.statusError = false;
     delivery.messageError = '';
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
