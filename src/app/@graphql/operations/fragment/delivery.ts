@@ -4,6 +4,9 @@ export const DELIVERY_FRAGMENT = gql`
     fragment DeliveryObject on Delivery {
       id
       deliveryId
+      cliente
+      importe
+      registerDate
       user {
         id
         name
