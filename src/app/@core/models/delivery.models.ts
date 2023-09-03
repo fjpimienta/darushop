@@ -11,6 +11,8 @@ import { Warehouse } from './warehouse.models';
 export class Delivery {
   id: string;
   deliveryId: string;
+  cliente: string;
+  importe: number;
   registerDate?: string;
   user: UserInput;
   warehouses: Warehouse[];
