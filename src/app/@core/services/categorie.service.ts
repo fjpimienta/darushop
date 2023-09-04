@@ -63,9 +63,9 @@ export class CategoriesService extends ApiService {
       );
   }
 
-  getCategories(page: number = 1, itemsPage: number = 10) {
+  getCategories(page: number = 1, itemsPage: number = 10, filterName: String = "") {
     return this.get(CATEGORIES_LIST_QUERY, {
-      itemsPage, page
+      page, itemsPage, filterName
     }).pipe(map((result: any) => {
       return result.categories;
     }));
