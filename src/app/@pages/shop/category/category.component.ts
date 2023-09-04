@@ -70,8 +70,14 @@ export class CategoryComponent implements OnInit {
       }
       this.categories = null;
       if (params.category) {
-        this.categories = [];
-        this.categories.push(params.category);
+        this.categoriesService.getCategories(
+          1, -1, params.category
+        ).subscribe(result => {
+          this.categories = [];
+          result.categories.forEach(cat => {
+            this.categories.push(cat.slug);
+          });
+        });
       }
       if (params.page) {
         this.page = parseInt(params.page, 10);
