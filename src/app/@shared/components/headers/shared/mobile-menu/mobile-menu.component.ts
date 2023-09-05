@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Catalog } from '@core/models/catalog.models';
+import { CatalogGroup } from '@core/models/cataloggroup.models';
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
-import { ProductsService } from '@core/services/products.service';
+import { CategorysGroupsService } from '@core/services/categorygroup.service';
 import { Subscription } from 'rxjs';
 
 declare var $: any;
@@ -23,6 +24,7 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
   brandsTmp: Catalog[];
   categories: Catalog[];
   categoriesTmp: Catalog[];
+  categorysGroup: CatalogGroup[] = [];
   searchQuery: string = '';
   searchQueryCat: string = '';
 
@@ -32,7 +34,7 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
     private router: Router,
     public brandsService: BrandsService,
     public categoriesService: CategoriesService,
-    public productService: ProductsService
+    public categorysgroupService: CategorysGroupsService
   ) {
     this.subscr = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -48,39 +50,30 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
       this.brands = result.brands;
       this.brandsTmp = this.brands;
     });
+    let j = 0;
     this.categories = [];
     this.categoriesTmp = [];
-    this.productService.getProducts(1, -1, '', false)
-      .subscribe(result => {
-        const resultCategorie = result;
-        const categoriesProd = resultCategorie.products.reduce((products, product) => {
-          if (!products[product.category[0].slug]) {
-            products[product.category[0].slug] = [];
-          }
-          products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
-          return products;
-        }, {});
-        let j = 0;
-        Object.keys(categoriesProd).forEach((categorie) => {
-          j += 1;
-          const br = new Catalog();
-          br.id = j.toString();
-          br.slug = categorie;
-          br.description = categorie.toUpperCase().toString().slice(0, 32).replace(/-/g, ' ');
-          this.categories.push(br);
-        });
-        for (const cat of this.categories) {
-          cat.param = {
-            category: cat.slug,
-            description: cat.description
-          };
-          this.categoriesTmp.push(cat);
-        }
-        if (this.categories.length !== this.categoriesTmp.length) {
-          this.categories = result.categories;
-          this.categoriesTmp = this.categories;
-        }
+    this.categorysgroupService.getCategorysGroup().subscribe(result => {
+      result.categorysgroups.forEach(category => {
+        const categoryGroup = new CatalogGroup();
+        categoryGroup.total = category.total;
+        categoryGroup.name = category._id[0].name;
+        categoryGroup.slug = category._id[0].slug;
+        this.categorysGroup.push(categoryGroup);
+        j += 1;
+        const br = new Catalog();
+        br.id = j.toString();
+        br.slug = category._id[0].slug;
+        br.description = category._id[0].name.toUpperCase().toString().slice(0, 32);
+        br.total = category.total;
+        br.param = {
+          category: br.slug,
+          description: br.description
+        };
+        this.categories.push(br);
+        this.categoriesTmp.push(br);
       });
+    });
   }
 
   ngOnInit(): void {
