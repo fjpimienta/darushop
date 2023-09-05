@@ -4,10 +4,8 @@ import { Subscription } from 'rxjs';
 import { Catalog } from '@core/models/catalog.models';
 import { BrandsService } from '@core/services/brand.service';
 import { CategoriesService } from '@core/services/categorie.service';
-import { BrandsGroupsService } from '@core/services/brandgroup.service';
 import { CategorysGroupsService } from '@core/services/categorygroup.service';
 import { CatalogGroup } from '@core/models/cataloggroup.models';
-import { ProductsService } from '@core/services/products.service';
 
 @Component({
   selector: 'app-main-menu',
@@ -32,9 +30,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     private router: Router,
     public brandsService: BrandsService,
     public categoriesService: CategoriesService,
-    public brandsgroupService: BrandsGroupsService,
-    public categorysgroupService: CategorysGroupsService,
-    public productService: ProductsService
+    public categorysgroupService: CategorysGroupsService
   ) {
     this.subscr = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -43,15 +39,9 @@ export class MainMenuComponent implements OnInit, OnDestroy {
         this.current = event.url;
       }
     });
-    this.brandsgroupService.getBrandsGroup().subscribe(result => {
-      result.brandsgroups.forEach(brand => {
-        const brandGroup = new CatalogGroup();
-        brandGroup.total = brand.total;
-        brandGroup.name = brand._id[0].name;
-        brandGroup.slug = brand._id[0].slug;
-        this.brandsGroup.push(brandGroup);
-      });
-    });
+    let j = 0;
+    this.categories = [];
+    this.categoriesTmp = [];
     this.categorysgroupService.getCategorysGroup().subscribe(result => {
       result.categorysgroups.forEach(category => {
         const categoryGroup = new CatalogGroup();
@@ -59,48 +49,26 @@ export class MainMenuComponent implements OnInit, OnDestroy {
         categoryGroup.name = category._id[0].name;
         categoryGroup.slug = category._id[0].slug;
         this.categorysGroup.push(categoryGroup);
+        j += 1;
+        const br = new Catalog();
+        br.id = j.toString();
+        br.slug = category._id[0].slug;
+        br.description = category._id[0].name.toUpperCase().toString().slice(0, 32);
+        br.total = category.total;
+        br.param = {
+          category: br.slug,
+          description: br.description
+        };
+        this.categories.push(br);
+        this.categoriesTmp.push(br);
       });
     });
-
     this.brands = [];
     this.brandsTmp = [];
     this.brandsService.getBrands(1, -1).subscribe(result => {
       this.brands = result.brands;
       this.brandsTmp = this.brands;
     });
-    this.categories = [];
-    this.categoriesTmp = [];
-    this.productService.getProducts(1, -1, '', false)
-      .subscribe(result => {
-        const resultCategorie = result;
-        const categoriesProd = resultCategorie.products.reduce((products, product) => {
-          if (!products[product.category[0].slug]) {
-            products[product.category[0].slug] = [];
-          }
-          products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
-          return products;
-        }, {});
-        let j = 0;
-        Object.keys(categoriesProd).forEach((categorie) => {
-          j += 1;
-          const br = new Catalog();
-          br.id = j.toString();
-          br.slug = categorie;
-          br.description = categorie.toUpperCase().toString().slice(0, 32).replace(/-/g, ' ');
-          this.categories.push(br);
-        });
-        for (const cat of this.categories) {
-          cat.param = {
-            category: cat.slug,
-            description: cat.description
-          };
-          this.categoriesTmp.push(cat);
-        }
-        if (this.categories.length !== this.categoriesTmp.length) {
-          this.categories = result.categories;
-          this.categoriesTmp = this.categories;
-        }
-      });
   }
 
   ngOnInit(): void {
