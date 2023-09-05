@@ -40,13 +40,12 @@
   margin-bottom: 0.5rem;
 }
 
-.icon-box-side p {
-  color: black !important;
-}
-
 .cat-blocks-container {
   background-color: #333333 !important;
-  // color: white !important;
+}
+
+.icon-boxes-container {
+  background-color: #333333 !important;
 }
 
 .icon-box-title {
@@ -66,5 +65,17 @@
 
   .subtitle-home {
     color: #5bef97 !important;
+  }
+}
+
+.gallery {
+  .heading {
+    .subtitle {
+      color: #4b02fc !important;
+    }
+
+    .subtitle-home {
+      color: #333333 !important;
+    }
   }
 }
