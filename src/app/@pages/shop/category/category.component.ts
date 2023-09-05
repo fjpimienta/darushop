@@ -78,10 +78,6 @@ export class CategoryComponent implements OnInit {
           brands.push(params.brands);
           this.products = utilsService.braFilter(this.products, brands);
         }
-        if (params.category) {
-          category.push(params.category);
-          this.products = utilsService.catFilter(this.products, category);
-        }
         if (this.orderBy) {
           this.products.sort((a, b) => {
             const nameA = a.name.toUpperCase(); // Convertir a mayúsculas para asegurar un ordenamiento sin distinción entre mayúsculas y minúsculas
