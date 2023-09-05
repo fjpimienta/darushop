@@ -28,7 +28,7 @@ export class CategoryComponent implements OnInit {
   firstLoad = false;
   brands = [];
   categories = [];
-  offer: boolean;
+  offer: boolean = false;
   brandsProd: Catalog[] = [];
   categoriesProd: Catalog[] = [];
 
@@ -48,20 +48,9 @@ export class CategoryComponent implements OnInit {
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
       this.offer = false;
-
-      this.pageTitle = params.description;
-
-      if (params.searchTerm) {
-        this.searchTerm = params.searchTerm;
-      } else {
-        this.searchTerm = '';
-      }
-
-      if (params.orderBy) {
-        this.orderBy = params.orderBy;
-      } else {
-        this.orderBy = 'default';
-      }
+      this.pageTitle = params.description || 'List';
+      this.searchTerm = params.searchTerm || '';
+      this.orderBy = params.orderBy || '';
 
       this.brands = null;
       if (params.brand) {
@@ -70,20 +59,10 @@ export class CategoryComponent implements OnInit {
       }
       this.categories = null;
       if (params.category) {
-        this.categoriesService.getCategories(
-          1, -1, params.category
-        ).subscribe(result => {
-          this.categories = [];
-          result.categories.forEach(cat => {
-            this.categories.push(cat.slug);
-          });
-        });
+        this.categories = [];
+        this.categories.push(params.category);
       }
-      if (params.page) {
-        this.page = parseInt(params.page, 10);
-      } else {
-        this.page = 1;
-      }
+      this.page = params.page ? parseInt(params.page, 10) : 1;
       this.perPage = 48;
       this.productService.getProducts(
         this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
@@ -103,6 +82,19 @@ export class CategoryComponent implements OnInit {
           category.push(params.category);
           this.products = utilsService.catFilter(this.products, category);
         }
+        if (this.orderBy) {
+          this.products.sort((a, b) => {
+            const nameA = a.name.toUpperCase(); // Convertir a mayúsculas para asegurar un ordenamiento sin distinción entre mayúsculas y minúsculas
+            const nameB = b.name.toUpperCase();
+            if (nameA < nameB) {
+              return -1; // a debe aparecer antes que b
+            } else if (nameA > nameB) {
+              return 1; // b debe aparecer antes que a
+            } else {
+              return 0; // a y b son iguales en términos de orden
+            }
+          });
+        }
         this.loaded = true;
         this.totalCount = result.info.total;
         if (this.perPage >= this.totalCount) {
@@ -117,14 +109,12 @@ export class CategoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (window.innerWidth > 991) { this.toggle = false; }
-    else { this.toggle = true; }
+    this.toggle = window.innerWidth <= 991;
   }
 
   @HostListener('window: resize', ['$event'])
   onResize(event: Event): void {
-    if (window.innerWidth > 991) { this.toggle = false; }
-    else { this.toggle = true; }
+    this.toggle = window.innerWidth <= 991;
   }
 
   changeOrderBy(event: any): void {

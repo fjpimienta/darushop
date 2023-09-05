@@ -43,3 +43,28 @@
 .icon-box-side p {
   color: black !important;
 }
+
+.cat-blocks-container {
+  background-color: #333333 !important;
+  // color: white !important;
+}
+
+.icon-box-title {
+  color: white !important;
+  font-weight: 400;
+  font-size: 1.8rem;
+  letter-spacing: -.025em;
+  margin-bottom: 0.9rem;
+}
+
+.intro-section {
+  background-color: #333333 !important;
+
+  .subtitle {
+    color: white !important;
+  }
+
+  .subtitle-home {
+    color: #5bef97 !important;
+  }
+}

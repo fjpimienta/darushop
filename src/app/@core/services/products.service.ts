@@ -13,7 +13,6 @@ export class ProductsService extends ApiService {
     super(apollo);
   }
 
-  // tslint:disable-next-line: typedef
   getProducts(
     page: number = 1,
     itemsPage: number = 12,
@@ -29,7 +28,6 @@ export class ProductsService extends ApiService {
     }));
   }
 
-  // tslint:disable-next-line: typedef
   getProduct(id: string) {
     return this.get(PRODUCT_QUERY, {
       id
