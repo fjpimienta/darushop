@@ -41,8 +41,8 @@
                                 </div>
                               </li>
                               <li *ngFor="let categorie of categoriesTmp" routerLinkActive="active">
-                                <a routerLink="/shop/category"
-                                  [queryParams]="categorie.param">{{categorie.description}}</a>
+                                <a [routerLink]="['/shop/category']" [queryParams]="{category: categorie.slug}">{{
+                                  categorie.description }}</a>
                               </li>
                             </ul>
                           </div>
