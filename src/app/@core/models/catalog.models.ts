@@ -6,6 +6,7 @@ export class Catalog {
   description: string;
   slug: string;
   active: boolean;
+  total?: number;
   param: {
     category: string,
     description: string
