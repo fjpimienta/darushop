@@ -33,8 +33,7 @@
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
               <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
-                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'computadoras' }"
-                  class="cat-block">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'computadoras' }" class="cat-block">
                   <figure class="text-center">
                     <img src="assets/images/home/categorias/computo.jpg" width="131" height="76"
                       alt="Computadoras & Tablets" style="display: block; margin: 0 auto;" />
@@ -70,8 +69,7 @@
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
               <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
-                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'telefonia' }"
-                  class="cat-block">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'telefonia' }" class="cat-block">
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/celulares.jpg" width="131" height="76"
@@ -211,7 +209,7 @@
         <div class="row">
           <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
             <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-dark">
+              <span class="icon-box-icon text-secondary">
                 <i class="icon-truck"></i>
               </span>
               <div classs="icon-box-content">
@@ -222,7 +220,7 @@
           </div>
           <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
             <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-dark">
+              <span class="icon-box-icon text-secondary">
                 <i class="icon-rotate-left"></i>
               </span>
               <div classs="icon-box-content">
@@ -233,7 +231,7 @@
           </div>
           <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
             <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-dark">
+              <span class="icon-box-icon text-secondary">
                 <i class="icon-info-circle"></i>
               </span>
               <div classs="icon-box-content">
@@ -244,12 +242,13 @@
           </div>
           <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
             <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-dark">
-                <i class="bi bi-credit-card"></i>
+              <span class="icon-box-icon text-secondary">
+                <i class="icon-cc-visa"></i>
+                <i class="icon-cc-mastercard"></i>
               </span>
               <div classs="icon-box-content">
                 <h3 class="icon-box-title">Pago</h3>
-                <p>aceptamos todas las tarjetas bancarias</p>
+                <p>Aceptamos todas las tarjetas bancarias</p>
               </div>
             </div>
           </div>
@@ -262,11 +261,8 @@
   <!-- Seccion 5 Ofertas Relampagos -->
   <section class="gallery pt-2">
     <div class="heading mb-0 text-center">
-      <h2 class="title-home mb-1" contentAnim aniName="blurIn">
-        <a routerLink="/shop/offers">Ofertas</a>
-      </h2>
       <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
-        Relámpago
+        Ofertas <span class="subtitle-home" contentAnim aniName="blurIn">Relámpago</span>
       </h2>
     </div>
     <div class="container">
@@ -284,7 +280,7 @@
                 <span class="text-primary">
                   <h6><strong>Gaming</strong></h6>
                 </span>
-                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'accesorios-gaming' }"
+                <a routerLink="/shop/offers/4cols" [queryParams]="{ category: 'accesorios-gaming' }"
                   class="btn btn-primary btn-round">
                   Ver ofertas</a>
               </div>
@@ -304,7 +300,7 @@
                 <span class="text-primary">
                   <h6><strong>Computo</strong></h6>
                 </span>
-                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'computadoras' }"
+                <a routerLink="/shop/offers/4cols" [queryParams]="{ category: 'computadoras' }"
                   class="btn btn-primary btn-round">
                   Ver ofertas</a>
               </div>
@@ -324,7 +320,7 @@
                 <span class="text-primary">
                   <h6><strong>Telefonía</strong></h6>
                 </span>
-                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'telefonia' }"
+                <a routerLink="/shop/offers/4cols" [queryParams]="{ category: 'telefono' }"
                   class="btn btn-primary btn-round">
                   Ver ofertas</a>
               </div>
@@ -344,7 +340,7 @@
                 <span class="text-primary">
                   <h6><strong>Audio</strong></h6>
                 </span>
-                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'audio' }"
+                <a routerLink="/shop/offers/4cols" [queryParams]="{ category: 'auriculares-y-diademas' }"
                   class="btn btn-primary btn-round">
                   Ver ofertas</a>
               </div>
