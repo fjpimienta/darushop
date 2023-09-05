@@ -63,11 +63,7 @@ export class BrandComponent implements OnInit {
         this.searchTerm = '';
       }
 
-      if (params.orderBy) {
-        this.orderBy = params.orderBy;
-      } else {
-        this.orderBy = 'default';
-      }
+      this.orderBy = params.orderBy || '';
 
       this.brands = null;
       if (params.brand) {
@@ -103,6 +99,19 @@ export class BrandComponent implements OnInit {
         if (params.category) {
           category.push(params.category);
           this.products = utilsService.catFilter(this.products, category);
+        }
+        if (this.orderBy) {
+          this.products.sort((a, b) => {
+            const nameA = a.name.toUpperCase(); // Convertir a mayúsculas para asegurar un ordenamiento sin distinción entre mayúsculas y minúsculas
+            const nameB = b.name.toUpperCase();
+            if (nameA < nameB) {
+              return -1; // a debe aparecer antes que b
+            } else if (nameA > nameB) {
+              return 1; // b debe aparecer antes que a
+            } else {
+              return 0; // a y b son iguales en términos de orden
+            }
+          });
         }
         this.loaded = true;
         this.totalCount = result.info.total;

@@ -15,10 +15,10 @@ import { UtilsService } from '@core/services/utils.service';
 })
 export class CategoryComponent implements OnInit {
 
-  products: any[] = [];
+  products = [];
   page = 1;
   perPage = 48;
-  type: string = 'list';
+  type: 'list';
   totalCount = 0;
   orderBy = 'default';
   pageTitle = 'List';
@@ -26,8 +26,8 @@ export class CategoryComponent implements OnInit {
   searchTerm = '';
   loaded = false;
   firstLoad = false;
-  brands: string[] = [];
-  categories: string[] = [];
+  brands = [];
+  categories = [];
   offer: boolean = false;
   brandsProd: Catalog[] = [];
   categoriesProd: Catalog[] = [];
@@ -48,37 +48,63 @@ export class CategoryComponent implements OnInit {
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
       this.offer = false;
-
       this.pageTitle = params.description || 'List';
-
       this.searchTerm = params.searchTerm || '';
+      this.orderBy = params.orderBy || '';
 
-      this.orderBy = params.orderBy || 'default';
-
-      this.brands = params.brand ? params.brand.split(',') : [];
-
-      this.categories = params.category ? [params.category] : [];
-      console.log('params.category: ', params.category);
-      console.log('this.categories.0: ', this.categories);
-
-      this.page = params.page ? parseInt(params.page, 10) : 1;
-
-      this.perPage = 48;
-
-      if (this.categories.length > 0) {
-        const category = this.categories[0];
-        console.log('category: ', category);
-        this.categoriesService.getCategories(1, -1, category).subscribe(result => {
-          console.log('result: ', result);
-          if (result.categories.length > 0) {
-            this.categories = result.categories.map(cat => cat.slug);
-          }
-          console.log('this.categories.1: ', this.categories);
-          this.loadProducts();
-        });
-      } else {
-        this.loadProducts();
+      this.brands = null;
+      if (params.brand) {
+        this.brands = [];
+        this.brands = params.brand.split(',');
       }
+      this.categories = null;
+      if (params.category) {
+        this.categories = [];
+        this.categories.push(params.category);
+      }
+      this.page = params.page ? parseInt(params.page, 10) : 1;
+      this.perPage = 48;
+      this.productService.getProducts(
+        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+      ).subscribe(result => {
+        this.products = result.products;
+        const category = [[]];
+        let brands: string[] = [];
+        if (params.brand) {
+          brands = params.brand.split(',');
+          this.products = utilsService.braFilter(this.products, brands);
+        }
+        if (params.brands) {
+          brands.push(params.brands);
+          this.products = utilsService.braFilter(this.products, brands);
+        }
+        if (params.category) {
+          category.push(params.category);
+          this.products = utilsService.catFilter(this.products, category);
+        }
+        if (this.orderBy) {
+          this.products.sort((a, b) => {
+            const nameA = a.name.toUpperCase(); // Convertir a mayúsculas para asegurar un ordenamiento sin distinción entre mayúsculas y minúsculas
+            const nameB = b.name.toUpperCase();
+            if (nameA < nameB) {
+              return -1; // a debe aparecer antes que b
+            } else if (nameA > nameB) {
+              return 1; // b debe aparecer antes que a
+            } else {
+              return 0; // a y b son iguales en términos de orden
+            }
+          });
+        }
+        this.loaded = true;
+        this.totalCount = result.info.total;
+        if (this.perPage >= this.totalCount) {
+          this.perPage = this.totalCount;
+        }
+        if (!this.firstLoad) {
+          this.firstLoad = true;
+        }
+        this.utilsService.scrollToPageContent();
+      });
     });
   }
 
@@ -86,7 +112,7 @@ export class CategoryComponent implements OnInit {
     this.toggle = window.innerWidth <= 991;
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window: resize', ['$event'])
   onResize(event: Event): void {
     this.toggle = window.innerWidth <= 991;
   }
@@ -96,48 +122,15 @@ export class CategoryComponent implements OnInit {
   }
 
   toggleSidebar(): void {
-    const body = document.querySelector('body');
-    if (body && body.classList.contains('sidebar-filter-active')) {
-      body.classList.remove('sidebar-filter-active');
-    } else if (body) {
-      body.classList.add('sidebar-filter-active');
+    if (document.querySelector('body').classList.contains('sidebar-filter-active')) {
+      document.querySelector('body').classList.remove('sidebar-filter-active');
+    }
+    else {
+      document.querySelector('body').classList.add('sidebar-filter-active');
     }
   }
 
   hideSidebar(): void {
-    const body = document.querySelector('body');
-    if (body) {
-      body.classList.remove('sidebar-filter-active');
-    }
-  }
-
-  private loadProducts(): void {
-    console.log('this.page: ', this.page);
-    console.log('this.perPage: ', this.perPage);
-    console.log('this.searchTerm.toLowerCase(): ', this.searchTerm.toLowerCase());
-    console.log('this.offer: ', this.offer);
-    console.log('this.brands: ', this.brands);
-    console.log('this.categories.2: ', this.categories);
-    this.productService.getProducts(
-      this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
-    ).subscribe(result => {
-      console.log('getProducts/result: ', result);
-      this.products = result.products;
-      if (this.brands.length > 0) {
-        this.products = this.utilsService.braFilter(this.products, this.brands);
-      }
-      if (this.categories.length > 0) {
-        this.products = this.utilsService.catFilter(this.products, this.categories);
-      }
-      this.loaded = true;
-      this.totalCount = result.info.total;
-      if (this.perPage >= this.totalCount) {
-        this.perPage = this.totalCount;
-      }
-      if (!this.firstLoad) {
-        this.firstLoad = true;
-      }
-      this.utilsService.scrollToPageContent();
-    });
+    document.querySelector('body').classList.remove('sidebar-filter-active');
   }
 }
