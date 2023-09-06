@@ -20,6 +20,10 @@
   letter-spacing: -.025em;
   color: #5bef97 !important;
   text-align: left;
+
+  @media (max-width: 767px) {
+    font-size: 4rem; // Cambia el tamaño de la fuente para dispositivos móviles
+  }
 }
 
 .home-page .banner .banner-subtitle {
