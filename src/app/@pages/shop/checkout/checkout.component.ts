@@ -1274,16 +1274,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  bloquearLetras(event: KeyboardEvent) {
+  bloquearLetras(event: Event) {
     // Obtener el valor actual del input
     const valorInput = (event.target as HTMLInputElement).value;
-    // Obtener el código ASCII de la tecla presionada
-    const charCode = event.which ? event.which : event.keyCode;
-    // Verificar si el código corresponde a un número (entre 48 y 57 son números)
-    if (charCode < 48 || charCode > 57) {
-      // Bloquear la tecla presionada si no es un número
-      event.preventDefault();
-    }
+    // Reemplazar cualquier caracter que no sea número con una cadena vacía
+    const valorNumerico = valorInput.replace(/[^0-9]/g, '');
+    // Asignar el valor numérico de vuelta al campo de entrada
+    (event.target as HTMLInputElement).value = valorNumerico;
   }
 
   async payOpenpayCapture(idChargeOpenpay: string, amount: number): Promise<any> {

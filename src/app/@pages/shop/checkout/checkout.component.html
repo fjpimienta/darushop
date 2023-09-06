@@ -47,7 +47,7 @@
                 <div class="col-sm-6">
                   <label>Teléfono *</label>
                   <input type="phone" class="form-control" name="phone" formControlName="phone"
-                    (keypress)="bloquearLetras($event)" required>
+                    (input)="bloquearLetras($event)" required>
                 </div>
                 <div class="col-sm-6">
                   <label>Correo Electrónico *</label>
@@ -59,19 +59,19 @@
               <input type="text" class="form-control" name="company"> -->
 
               <div class="row">
-                <div *ngIf="!this.idDelivery" class="col-sm-6 form-check">
-                  <div class="row codigo_postal">
-                    <div class="col-sm-9">
-                      <label class='align-bottom'>¿Conoces el Código Postal? Activar/Desactivar
-                        captura</label>
+                <div *ngIf="!idDelivery" class="col-sm-6 col-12 form-check">
+                  <div class="row codigo_postal align-items-center">
+                    <div class="col-sm-10 col-8">
+                      <label class="align-middle">¿Conoces el Código Postal? Activar/Desactivar Codigo</label>
                     </div>
-                    <div class="col-sm-3">
-                      <input type="checkbox" name="byCodigopostal" class="form-control form-check-input align-bottom"
+                    <div class="col-sm-2 col-4 d-flex align-items-center">
+                      <!-- Utilizamos d-flex y align-items-center para alinear verticalmente el checkbox -->
+                      <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
                         (change)="onActiveCP()" formControlName="byCodigopostal">
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-6 form-group">
+                <div class="col-sm-6 col-12 form-group">
                   <label>Código Postal *</label>
                   <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
                     (blur)="onSetCps($event)" autocomplete="off" [attr.disabled]="!byCodigopostal ? 'true' : null">
@@ -321,7 +321,7 @@
                                         data-openpay-card="card_number">
                                       <input type="text" autocomplete="off" [(ngModel)]="numeroTarjetaFormateado"
                                         (input)="formatearNumeroTarjeta(numeroTarjetaFormateado)" maxlength="19"
-                                        (keypress)="bloquearLetras($event)">
+                                        (input)="bloquearLetras($event)">
                                     </div>
                                   </div>
                                   <div class="sctn-row">
@@ -329,17 +329,17 @@
                                       <label>Fecha de expiración</label>
                                       <div class="sctn-col half l"><input type="text" placeholder="Mes"
                                           data-openpay-card="expiration_month" maxlength="2"
-                                          (keypress)="bloquearLetras($event)"></div>
+                                          (input)="bloquearLetras($event)"></div>
                                       <div class="sctn-col half l"><input type="text" placeholder="Año"
                                           data-openpay-card="expiration_year" maxlength="2"
-                                          (keypress)="bloquearLetras($event)"></div>
+                                          (input)="bloquearLetras($event)"></div>
                                     </div>
                                   </div>
                                   <div class="sctn-row">
                                     <div class="sctn-col cvv"><label>Código de seguridad</label>
                                       <div class="sctn-col half l"><input type="text" placeholder="3 dígitos"
                                           autocomplete="off" data-openpay-card="cvv2" maxlength="3"
-                                          (keypress)="bloquearLetras($event)">
+                                          (input)="bloquearLetras($event)">
                                       </div>
                                     </div>
                                   </div>
