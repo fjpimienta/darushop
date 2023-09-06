@@ -1,21 +1,22 @@
-.footer-bottom .container, .footer-bottom .container-fluid{
+.footer-bottom .container,
+.footer-bottom .container-fluid {
   background-color: #333;
-  padding-bottom:0 ;
+  padding-bottom: 0;
   padding-top: 0;
 }
 
-.footer-copyright{
-  color:#fff;
+.footer-copyright {
+  color: #fff;
   margin-top: 0;
   font-size: 1rem;
 }
 
-.footer ul li a{
-  color:#000;
+.footer ul li a {
+  color: #fff;
 }
 
-.widget-call a{
-  color:#000;
+.widget-call a {
+  color: #fff;
 }
 
 .story-box {
@@ -33,24 +34,23 @@
   margin: auto;
 }
 
-.footer{
-  background-color: #f7f7f7;
-  }
+.footer {
+  background-color: #333333;
+}
 
-
-
-.footer .widget-title{
-  color:#4b02fc;
+.footer .widget-title {
+  color: #4b02fc;
 }
 
 //iconos sociales
 
-.social-icon{
+.social-icon {
   background-color: #5bef97;
-  color:#4b02fc;
+  color: #4b02fc;
 }
 
-  .footer .social-icon:hover, .footer .social-icon:focus{
-      background-color: #4b02fc;
-      color: #fff;
-    }
+.footer .social-icon:hover,
+.footer .social-icon:focus {
+  background-color: #4b02fc;
+  color: #fff;
+}
