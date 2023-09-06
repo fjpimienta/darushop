@@ -47,11 +47,23 @@
                 <div class="col-sm-6">
                   <label>Teléfono *</label>
                   <input type="phone" class="form-control" name="phone" formControlName="phone"
-                    (keypress)="bloquearLetras($event)" required>
+                    (input)="bloquearLetras($event)" maxlength='10' required>
+                  <div
+                    *ngIf="formData.get('phone').invalid && (formData.get('phone').dirty || formData.get('phone').touched)">
+                    <div *ngIf="formData.get('phone').hasError('required')">El teléfono es requerido.</div>
+                    <div *ngIf="formData.get('phone').hasError('pattern')">El teléfono debe contener 10 números.
+                    </div>
+                  </div>
                 </div>
                 <div class="col-sm-6">
                   <label>Correo Electrónico *</label>
                   <input type="email" name="email" class="form-control" formControlName="email" required>
+                  <div
+                    *ngIf="formData.get('email').invalid && (formData.get('email').dirty || formData.get('email').touched)">
+                    <div *ngIf="formData.get('email').hasError('required')">El correo electrónico es requerido.</div>
+                    <div *ngIf="formData.get('email').hasError('email')">Ingrese una dirección de correo electrónico
+                      válida.</div>
+                  </div>
                 </div>
               </div>
 
@@ -59,22 +71,29 @@
               <input type="text" class="form-control" name="company"> -->
 
               <div class="row">
-                <div *ngIf="!this.idDelivery" class="col-sm-6 form-check">
-                  <div class="row codigo_postal">
-                    <div class="col-sm-9">
-                      <label class='align-bottom'>¿Conoces el Código Postal? Activar/Desactivar
-                        captura</label>
+                <div *ngIf="!idDelivery" class="col-sm-6 col-12 form-check">
+                  <div class="row codigo_postal align-items-center">
+                    <div class="col-sm-10 col-8">
+                      <label class="align-middle">¿Conoces el Código Postal? Activar/Desactivar Codigo</label>
                     </div>
-                    <div class="col-sm-3">
-                      <input type="checkbox" name="byCodigopostal" class="form-control form-check-input align-bottom"
+                    <div class="col-sm-2 col-4 d-flex align-items-center">
+                      <!-- Utilizamos d-flex y align-items-center para alinear verticalmente el checkbox -->
+                      <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
                         (change)="onActiveCP()" formControlName="byCodigopostal">
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-6 form-group">
+                <div class="col-sm-6 col-12 form-group">
                   <label>Código Postal *</label>
                   <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
-                    (blur)="onSetCps($event)" autocomplete="off" [attr.disabled]="!byCodigopostal ? 'true' : null">
+                    (blur)="onSetCps($event)" autocomplete="off" (input)="bloquearLetras($event)" maxlength="5"
+                    [attr.disabled]="!byCodigopostal ? 'true' : null">
+                  <div
+                    *ngIf="formData.get('codigoPostal').invalid && (formData.get('codigoPostal').dirty || formData.get('codigoPostal').touched)">
+                    <div *ngIf="formData.get('codigoPostal').hasError('required')">El código postal es requerido.</div>
+                    <div *ngIf="formData.get('codigoPostal').hasError('pattern')">Ingrese un código postal válido de 4 o
+                      5 dígitos.</div>
+                  </div>
                 </div>
               </div>
 
@@ -154,12 +173,13 @@
                 <div class="col-sm-6">
                   <label>N&uacute;mero Exterior *</label>
                   <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
-                    placeholder="N&uacute;mero Exterior" [attr.disabled]="idDelivery ? 'true' : null" required>
+                    placeholder="N&uacute;mero Exterior" [attr.disabled]="idDelivery ? 'true' : null" maxlength="10"
+                    required>
                 </div>
                 <div class="col-sm-6">
                   <label>N&uacute;mero Interior</label>
                   <input type="text" class="form-control" name="interiorNumber" formControlName="interiorNumber"
-                    placeholder="N&uacute;mero Interior" [attr.disabled]="idDelivery ? 'true' : null">
+                    placeholder="N&uacute;mero Interior" [attr.disabled]="idDelivery ? 'true' : null" maxlength="10">
                 </div>
               </div>
 
@@ -321,7 +341,7 @@
                                         data-openpay-card="card_number">
                                       <input type="text" autocomplete="off" [(ngModel)]="numeroTarjetaFormateado"
                                         (input)="formatearNumeroTarjeta(numeroTarjetaFormateado)" maxlength="19"
-                                        (keypress)="bloquearLetras($event)">
+                                        (input)="bloquearLetras($event)">
                                     </div>
                                   </div>
                                   <div class="sctn-row">
@@ -329,17 +349,17 @@
                                       <label>Fecha de expiración</label>
                                       <div class="sctn-col half l"><input type="text" placeholder="Mes"
                                           data-openpay-card="expiration_month" maxlength="2"
-                                          (keypress)="bloquearLetras($event)"></div>
+                                          (input)="bloquearLetras($event)"></div>
                                       <div class="sctn-col half l"><input type="text" placeholder="Año"
                                           data-openpay-card="expiration_year" maxlength="2"
-                                          (keypress)="bloquearLetras($event)"></div>
+                                          (input)="bloquearLetras($event)"></div>
                                     </div>
                                   </div>
                                   <div class="sctn-row">
                                     <div class="sctn-col cvv"><label>Código de seguridad</label>
                                       <div class="sctn-col half l"><input type="text" placeholder="3 dígitos"
                                           autocomplete="off" data-openpay-card="cvv2" maxlength="3"
-                                          (keypress)="bloquearLetras($event)">
+                                          (input)="bloquearLetras($event)">
                                       </div>
                                     </div>
                                   </div>
