@@ -47,11 +47,23 @@
                 <div class="col-sm-6">
                   <label>Teléfono *</label>
                   <input type="phone" class="form-control" name="phone" formControlName="phone"
-                    (input)="bloquearLetras($event)" required>
+                    (input)="bloquearLetras($event)" maxlength='10' required>
+                  <div
+                    *ngIf="formData.get('phone').invalid && (formData.get('phone').dirty || formData.get('phone').touched)">
+                    <div *ngIf="formData.get('phone').hasError('required')">El teléfono es requerido.</div>
+                    <div *ngIf="formData.get('phone').hasError('pattern')">El teléfono debe contener 10 números.
+                    </div>
+                  </div>
                 </div>
                 <div class="col-sm-6">
                   <label>Correo Electrónico *</label>
                   <input type="email" name="email" class="form-control" formControlName="email" required>
+                  <div
+                    *ngIf="formData.get('email').invalid && (formData.get('email').dirty || formData.get('email').touched)">
+                    <div *ngIf="formData.get('email').hasError('required')">El correo electrónico es requerido.</div>
+                    <div *ngIf="formData.get('email').hasError('email')">Ingrese una dirección de correo electrónico
+                      válida.</div>
+                  </div>
                 </div>
               </div>
 
@@ -74,7 +86,14 @@
                 <div class="col-sm-6 col-12 form-group">
                   <label>Código Postal *</label>
                   <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
-                    (blur)="onSetCps($event)" autocomplete="off" [attr.disabled]="!byCodigopostal ? 'true' : null">
+                    (blur)="onSetCps($event)" autocomplete="off" (input)="bloquearLetras($event)" maxlength="5"
+                    [attr.disabled]="!byCodigopostal ? 'true' : null">
+                  <div
+                    *ngIf="formData.get('codigoPostal').invalid && (formData.get('codigoPostal').dirty || formData.get('codigoPostal').touched)">
+                    <div *ngIf="formData.get('codigoPostal').hasError('required')">El código postal es requerido.</div>
+                    <div *ngIf="formData.get('codigoPostal').hasError('pattern')">Ingrese un código postal válido de 4 o
+                      5 dígitos.</div>
+                  </div>
                 </div>
               </div>
 
@@ -154,12 +173,13 @@
                 <div class="col-sm-6">
                   <label>N&uacute;mero Exterior *</label>
                   <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
-                    placeholder="N&uacute;mero Exterior" [attr.disabled]="idDelivery ? 'true' : null" required>
+                    placeholder="N&uacute;mero Exterior" [attr.disabled]="idDelivery ? 'true' : null" maxlength="10"
+                    required>
                 </div>
                 <div class="col-sm-6">
                   <label>N&uacute;mero Interior</label>
                   <input type="text" class="form-control" name="interiorNumber" formControlName="interiorNumber"
-                    placeholder="N&uacute;mero Interior" [attr.disabled]="idDelivery ? 'true' : null">
+                    placeholder="N&uacute;mero Interior" [attr.disabled]="idDelivery ? 'true' : null" maxlength="10">
                 </div>
               </div>
 
