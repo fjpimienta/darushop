@@ -253,7 +253,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   console.log('OrderSupplier: ', OrderSupplier);
                   // Registrar Pedido en DARU.
                   OrderSupplier.cliente = OrderSupplier.user.email;
-                  OrderSupplier.importe = this.totalPagar;
+                  OrderSupplier.importe = parseFloat(this.totalPagar);
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
                   console.log('deliverySave: ', deliverySave);
                   const NewProperty = 'receipt_email';
@@ -598,11 +598,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
         loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
         if (this.existeMetodoPago) {
+          if (this.numeroTarjetaFormateado === '') {
+            this.isSubmitting = false;
+            return await infoEventAlert('Verificar los datos de la Tarjeta de Credito.', '');
+          }
           switch (this.typePay) {
             case PAY_STRIPE:
               this.payStripe();
               break;
             case PAY_OPENPAY:
+              // Recuperar tokenCard
+              const tokenCard = await this.tokenCardOpenpay();
+              console.log('tokenCard: ', tokenCard);
+              if (!tokenCard) {
+                this.isSubmitting = false;
+                return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
+              }
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
               const deliveryId = this.generarNumeroAleatorioEncriptado();
@@ -616,19 +627,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
-              OrderSupplier.importe = this.totalPagar;
+              OrderSupplier.importe = parseFloat(this.totalPagar);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
                 return await infoEventAlert(deliverySave.messageError, TYPE_ALERT.ERROR);
-              }
-              // Recuperar tokenCard
-              const tokenCard = await this.tokenCardOpenpay();
-              console.log('tokenCard: ', tokenCard);
-              if (!tokenCard) {
-                this.isSubmitting = false;
-                return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, OrderSupplier.deliveryId, this.formData);
@@ -895,6 +899,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+          if (this.shipments.length <= 0) {
+            infoEventAlert('Hay un problema con las paqueterias para el envio. Intentar más tarde.', '');
+          }
         } else {
           infoEventAlert('El código postal no es correcto.', '');
         }
@@ -908,6 +915,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
+    console.log('cotizacionEnvios: ', cotizacionEnvios);
     if (cotizacionEnvios[0].costo <= 0) {
       const externos = await this.onCotizarEnviosExternos(cp, estado);
       if (externos.length > 0) {
