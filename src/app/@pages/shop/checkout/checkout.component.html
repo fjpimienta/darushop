@@ -19,14 +19,15 @@
   <div class="page-content">
     <div class="checkout">
       <div class="container">
-        <!-- <div class="checkout-discount">
-                    <form action="#" id="checkout-discount-form">
-                        <input type="text" class="form-control" required id="checkout-discount-input"
-                            (click)="addOpacity($event)">
-                        <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to
-                                enter your code</span></label>
-                    </form>
-                </div> -->
+        <div class="checkout-discount">
+          <form action="#" id="checkout-discount-form">
+            <input type="text" class="form-control" (input)="convertToUppercase($event)" required
+              id="checkout-discount-input" maxlength="11" (click)="addOpacity($event)"
+              (blur)="validateDiscount($event)">
+            <label for="checkout-discount-input" class="text-truncate">Tienes un CUPÓN de descuento? <span>Introduce tu
+                código aqui</span></label>
+          </form>
+        </div>
         <form (ngSubmit)="onSubmit()" [formGroup]="formData">
           <div class="row">
             <div class="col-lg-7">
