@@ -49,6 +49,8 @@ import { IAddress } from '@core/interfaces/user.interface';
 import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
 import { AddressOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
 import * as crypto from 'crypto-js';
+import { CuponsService } from '@core/services/cupon.service';
+import { ICatalog } from '@core/interfaces/catalog.interface';
 
 declare var $: any;
 declare var OpenPay: any
@@ -90,6 +92,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   deliverys: Delivery[];
   suppliers: [ISupplier];
   shippings: [IShipping];
+  discount: ICatalog;
 
   session: IMeData = {
     status: false
@@ -160,7 +163,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private externalAuthService: ExternalAuthService,
     public shippingsService: ShippingsService,
     public deliverysService: DeliverysService,
-    public chargeOpenpayService: ChargeOpenpayService
+    public chargeOpenpayService: ChargeOpenpayService,
+    public cuponsService: CuponsService
   ) {
 
     this.activeRoute.queryParams.subscribe(params => {
@@ -1170,21 +1174,34 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   convertToUppercase(event: any) {
     let inputValue = event.target.value.toUpperCase();
-
     // Eliminar caracteres no válidos
     inputValue = inputValue.replace(/[^A-Z0-9]/g, '');
-
     // Limitar a 11 caracteres alfanuméricos
     if (inputValue.length > 11) {
       inputValue = inputValue.slice(0, 11);
     }
-
     // Formatear como "DARU-XXXXXX"
     if (inputValue.length >= 5) {
       inputValue = "DARU-" + inputValue.slice(4); // Mantener solo los últimos 6 caracteres
     }
-
     event.target.value = inputValue;
+  }
+
+  async validateDiscount(event: any): Promise<void> {
+    const inputValue = event.target.value;
+    const discount = await this.cuponsService.getCupon(inputValue)  // Recuperar el descuento del cupon.
+      .then(async result => {
+        return await result.cupon;
+      });
+    console.log('discount: ', discount);
+    if (discount) {
+      console.log("Cupón válido");
+      this.discount = discount.cupon;
+    } else {
+      console.log("Cupón no válido");
+      infoEventAlert('El código introducido no es correcto.', 'Intentar de nuevo');
+      event.target.value = '';
+    }
   }
 
   async onHabilitaPago(payMent: string): Promise<void> {

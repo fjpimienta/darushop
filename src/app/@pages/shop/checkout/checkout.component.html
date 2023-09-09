@@ -22,7 +22,8 @@
         <div class="checkout-discount">
           <form action="#" id="checkout-discount-form">
             <input type="text" class="form-control" (input)="convertToUppercase($event)" required
-              id="checkout-discount-input" maxlength="11" (click)="addOpacity($event)">
+              id="checkout-discount-input" maxlength="11" (click)="addOpacity($event)"
+              (blur)="validateDiscount($event)">
             <label for="checkout-discount-input" class="text-truncate">Tienes un CUPÓN de descuento? <span>Introduce tu
                 código aqui</span></label>
           </form>
