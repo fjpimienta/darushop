@@ -8,9 +8,9 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/shop/products">Productos</a>
+          <a routerLink="/shop/dashboard">Dashboard</a>
         </li>
-        <li class="breadcrumb-item active">Monto a Verificar {{ (cartService.priceTotal | async).toFixed(2) | currency}}
+        <li class="breadcrumb-item active">Importe {{ (cartService.priceTotal | async).toFixed(2) | currency}}
         </li>
       </ol>
     </div>
