@@ -92,7 +92,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   deliverys: Delivery[];
   suppliers: [ISupplier];
   shippings: [IShipping];
-  discount: ICatalog;
+  cupon: ICatalog;
 
   session: IMeData = {
     status: false
@@ -602,16 +602,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
         loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
         if (this.existeMetodoPago) {
-          if (this.numeroTarjetaFormateado === '') {
-            this.isSubmitting = false;
-            return await infoEventAlert('Verificar los datos de la Tarjeta de Credito.', '');
-          }
           switch (this.typePay) {
             case PAY_STRIPE:
               this.payStripe();
               break;
             case PAY_OPENPAY:
               // Recuperar tokenCard
+              if (this.numeroTarjetaFormateado === '') {
+                this.isSubmitting = false;
+                return await infoEventAlert('Verificar los datos de la Tarjeta de Credito.', '');
+              }
               const tokenCard = await this.tokenCardOpenpay();
               console.log('tokenCard: ', tokenCard);
               if (!tokenCard) {
@@ -1189,14 +1189,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async validateDiscount(event: any): Promise<void> {
     const inputValue = event.target.value;
-    const discount = await this.cuponsService.getCupon(inputValue)  // Recuperar el descuento del cupon.
+    const cupon = await this.cuponsService.getCupon(inputValue)  // Recuperar el descuento del cupon.
       .then(async result => {
         return await result.cupon;
       });
-    console.log('discount: ', discount);
-    if (discount) {
+    console.log('cupon: ', cupon);
+    if (cupon) {
       console.log("Cupón válido");
-      this.discount = discount.cupon;
+      this.cupon = cupon.cupon;
     } else {
       console.log("Cupón no válido");
       infoEventAlert('El código introducido no es correcto.', 'Intentar de nuevo');
@@ -1529,6 +1529,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.id = id;
     delivery.deliveryId = deliveryId;
     delivery.cliente = '';
+    delivery.discount = 0;
     delivery.importe = 0;
     delivery.statusError = false;
     delivery.messageError = '';
@@ -1549,6 +1550,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     orderCvaResponse.error = '';
     orderCvaResponse.agentemail = '';
     orderCvaResponse.almacenmail = '';
+    if (this.cupon) {
+      delivery.cupon = this.cupon;
+    }
     // Generar modelo de cada proveedor
     for (const idWar of Object.keys(this.warehouses)) {
       const warehouse: Warehouse = this.warehouses[idWar];

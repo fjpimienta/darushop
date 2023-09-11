@@ -5,6 +5,14 @@ export const DELIVERY_FRAGMENT = gql`
       id
       deliveryId
       cliente
+      cupon {
+        id
+        description
+        slug
+        order
+        active
+      }
+      discount
       importe
       registerDate
       user {
