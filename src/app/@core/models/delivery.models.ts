@@ -1,3 +1,4 @@
+import { Catalog } from './catalog.models';
 import { OrderCt } from './suppliers/orderct.models';
 import { OrderCtConfirmResponse, OrderCtResponse } from './suppliers/orderctresponse.models';
 import { OrderCva } from './suppliers/ordercva.models';
@@ -12,6 +13,8 @@ export class Delivery {
   id: string;
   deliveryId: string;
   cliente: string;
+  cupon: Catalog;
+  discount: number;
   importe: number;
   registerDate?: string;
   user: UserInput;
