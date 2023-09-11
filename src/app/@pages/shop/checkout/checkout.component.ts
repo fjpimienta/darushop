@@ -254,10 +254,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   const deliveryId = this.generarNumeroAleatorioEncriptado();
                   // Generar Orden de Compra con Proveedores
                   const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-                  console.log('OrderSupplier: ', OrderSupplier);
                   // Registrar Pedido en DARU.
                   OrderSupplier.cliente = OrderSupplier.user.email;
-                  OrderSupplier.importe = parseFloat(this.totalPagar);
+                  let totalPagar = parseFloat(this.totalPagar);
+                  let discount = 0;
+                  if (this.cupon) {
+                    discount = this.cupon.order;
+                    const subTotal = parseFloat(this.totalPagar) * discount / 100;
+                    totalPagar = totalPagar + subTotal;
+                  }
+                  OrderSupplier.discount = discount;
+                  OrderSupplier.importe = totalPagar;
+                  console.log('OrderSupplier: ', OrderSupplier);
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
                   console.log('deliverySave: ', deliverySave);
                   const NewProperty = 'receipt_email';
@@ -621,17 +629,24 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
               const deliveryId = this.generarNumeroAleatorioEncriptado();
-              console.log(`id: ${id}; deliveryId: ${deliveryId}`);
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-              console.log('OrderSupplier: ', OrderSupplier);
               if (OrderSupplier.error) {
                 this.isSubmitting = false;
                 return await infoEventAlert(OrderSupplier.messageError, TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
-              OrderSupplier.importe = parseFloat(this.totalPagar);
+              let discount = 0;
+              let totalPagar = parseFloat(this.totalPagar);
+              if (this.cupon) {
+                discount = this.cupon.order;
+                const subTotal = parseFloat(this.totalPagar) * discount / 100;
+                totalPagar = totalPagar + subTotal;
+              }
+              OrderSupplier.discount = discount;
+              OrderSupplier.importe = totalPagar;
+              console.log('OrderSupplier: ', OrderSupplier);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
@@ -670,8 +685,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await infoEventAlert('Error al realizar el cargo.', OrderSupplierT.messageError, TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
+              OrderSupplierT.cliente = OrderSupplierT.user.email;
+              let discountT = 0;
+              let totalPagarT = parseFloat(this.totalPagar);
+              if (this.cupon) {
+                discountT = this.cupon.order;
+                const subTotalT = parseFloat(this.totalPagar) * discountT / 100;
+                totalPagarT = totalPagarT + subTotalT;
+              }
+              OrderSupplierT.discount = discountT;
+              OrderSupplierT.importe = totalPagarT;
+              console.log('OrderSupplierT: ', OrderSupplierT);
               const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
               console.log('deliverySaveT: ', deliverySaveT);
+              if (deliverySaveT.error) {
+                this.isSubmitting = false;
+                return await infoEventAlert(deliverySaveT.messageError, TYPE_ALERT.ERROR);
+              }
               const NewPropertyT = 'receipt_email';
               let internalEmailT = false;
               let typeAlertT = TYPE_ALERT.SUCCESS;
