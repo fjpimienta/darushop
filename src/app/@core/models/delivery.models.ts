@@ -13,7 +13,7 @@ export class Delivery {
   id: string;
   deliveryId: string;
   cliente: string;
-  cupon: Catalog;
+  cupon?: Catalog;
   discount: number;
   importe: number;
   registerDate?: string;
