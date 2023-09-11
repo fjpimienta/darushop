@@ -10,7 +10,7 @@ export interface IDelivery {
   id: string;
   deliveryId: string;
   cliente: string;
-  cupon: ICatalog;
+  cupon?: ICatalog;
   discount: number;
   importe: number;
   registerDate?: string;
