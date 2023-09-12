@@ -62,7 +62,7 @@
 
 .checkout-discount {
   position: relative;
-  max-width: 450px;
+  max-width: 400px;
   margin-bottom: .5rem;
 
   label {
@@ -178,6 +178,13 @@
     line-height: 1.67;
     border: none;
     background-color: transparent;
+
+    @media (max-width: 767px) {
+      // Estilos específicos para dispositivos móviles
+      font-size: 1rem;
+      padding: 1rem; // Ejemplo de ajuste de padding para dispositivos móviles
+      left: -1rem;
+    }
   }
 
   .card-title {
@@ -241,11 +248,21 @@
           background-color: $primary-color;
         }
       }
+
+      @media (max-width: 767px) {
+        // Estilos específicos para dispositivos móviles
+        padding: .5rem 0 .5rem 2rem; // Ajuste de padding para dispositivos móviles
+      }
     }
   }
 
   .card-body {
     padding: .4rem 0 .8rem 3rem;
+
+    @media (max-width: 767px) {
+      // Estilos específicos para dispositivos móviles
+      padding: .2rem 0 .4rem 2rem; // Ajuste de padding para dispositivos móviles
+    }
   }
 }
 
@@ -255,7 +272,7 @@
 
   &:hover,
   &:focus {
-    color: $primary-color  !important;
+    color: $primary-color !important;
   }
 }
 
