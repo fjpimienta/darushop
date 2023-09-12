@@ -107,7 +107,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   token: string;
   totalPagar: string;
   totalEnvios: string;
-  discountPorc: string;
+  discountPorc: string = '0';
   discount: string;
   resultCustomer: IResultStripeCustomer;
 
