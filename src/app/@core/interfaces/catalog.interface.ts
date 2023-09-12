@@ -3,6 +3,7 @@ export interface ICatalog {
   description: string;
   slug: string;
   active: boolean;
+  order?: number;
   // suppliersCat: ISupplierCat[];
 }
 

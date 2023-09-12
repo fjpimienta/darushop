@@ -4,11 +4,14 @@ import { IOrderCtResponse } from './suppliers/orderctresponse.interface';
 import { IOrderCvaResponse } from './suppliers/ordercvaresponse.interface';
 import { IWarehouse } from './warehouses.interface';
 import { IUser } from './user.interface';
+import { ICatalog } from './catalog.interface';
 
 export interface IDelivery {
   id: string;
   deliveryId: string;
   cliente: string;
+  cupon?: ICatalog;
+  discount: number;
   importe: number;
   registerDate?: string;
   user: IUser;
