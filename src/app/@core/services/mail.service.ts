@@ -39,10 +39,18 @@ export class MailService extends ApiService {
         productos.push(prod);
       }
     }
-    const total = totalProd + parseFloat(totalEnvios);
-
-    // const productos = charge.warehouses[0].productShipments;
-
+    const discount = charge.discount;
+    let rowDiscount = '';
+    if (Number.isInteger(discount) && discount > 0) {
+      rowDiscount = `
+                      <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td colspan="2"><strong>Descuento:</strong></td>
+                        <td colspan="4" class="number">$ ${discount.toFixed(2).toString()}</td>
+                      </tr>
+                    `
+    }
+    const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
     const productRows = productos.map((producto: any) => `
         <tr>
           <td>${producto.name}</td>
@@ -138,6 +146,7 @@ export class MailService extends ApiService {
                 <td colspan="2"><strong>Costo Envio:</strong></td>
                 <td colspan="4" class="number">$ ${totalEnvios}</td>
               </tr>
+              ${rowDiscount}
               <tr>
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Total:</strong></td>
@@ -196,10 +205,18 @@ export class MailService extends ApiService {
         productos.push(prod);
       }
     }
-    const total = totalProd + parseFloat(totalEnvios);
-
-    // const productos = charge.warehouses[0].productShipments;
-
+    const discount = charge.discount;
+    let rowDiscount = '';
+    if (Number.isInteger(discount) && discount > 0) {
+      rowDiscount = `
+                      <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td colspan="2"><strong>Descuento:</strong></td>
+                        <td colspan="4" class="number">$ ${discount.toFixed(2).toString()}</td>
+                      </tr>
+                    `
+    }
+    const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
     const productRows = productos.map((producto: any) => `
         <tr>
           <td>${producto.name}</td>
@@ -291,6 +308,7 @@ export class MailService extends ApiService {
                 <td colspan="2"><strong>Costo Envio:</strong></td>
                 <td colspan="4" class="number">$ ${totalEnvios}</td>
               </tr>
+              ${rowDiscount}
               <tr>
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Total:</strong></td>
