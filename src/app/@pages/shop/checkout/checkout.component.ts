@@ -142,7 +142,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   bankName: string;
 
   loaded = false;
-  idDelivery: string = '';
+  idDelivery: string;
   idTransaction: string = '';
 
   constructor(
@@ -304,19 +304,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Metodos Componente
   ngOnInit(): void {
-    // console.clear();
-    console.log(`this.idDelivery: ${this.idDelivery}; this.idTransaction: ${this.idTransaction}`);
-    const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
-      console.log('result: ', result.delivery);
-      if (result.delivery.delivery) {
-        this.delivery = result.delivery.delivery;
-        this.onSetDelivery(this.formData, result.delivery.delivery);
-      }
-      return result.delivery.delivery;
-    });
-    console.log('delivery: ', delivery);
-    console.log('this.delivery: ', this.delivery);
-
+    console.clear();
+    if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
+      console.log(`this.idDelivery: ${this.idDelivery}; this.idTransaction: ${this.idTransaction}`);
+      const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
+        console.log('result: ', result.delivery);
+        if (result.delivery.delivery) {
+          this.delivery = result.delivery.delivery;
+          this.onSetDelivery(this.formData, result.delivery.delivery);
+        }
+        return result.delivery.delivery;
+      });
+      console.log('delivery: ', delivery);
+      console.log('this.delivery: ', this.delivery);
+    }
     this.countrys = [];
     this.selectCountry = new Country();
     this.estados = [];
@@ -474,133 +475,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         },
         (error: any) => {
           this.isSubmitting = false;
-          const description = this.decodeError(error.data)
+          const description = this.chargeOpenpayService.decodeError(error.data)
           infoEventAlert('No se puedo procesar el cargo.', description, TYPE_ALERT.ERROR);
           reject(error);
         }
       );
     });
-  }
-
-  decodeError(error: any) {
-    switch (error.error_code) {
-      case 1000:
-        return 'Ocurrió un error interno en el servidor de Openpay.';
-      case 1001:
-        if (error.description.includes('cvv2 length must be 3 digits')) {
-          return 'El código de seguridad de la tarjeta (CVV2) debe ser de 3 digitos.';
-        } else if (error.description.includes('expiration_year')) {
-          return 'El año debe ser de 2 digitos.';
-        } else if (error.description.includes('expiration_month')) {
-          return 'El mes debe ser de 2 digitos. De 01 a 12';
-        } else if (error.description.includes('expiration_month length must be 2 digits')) {
-          return 'El mes debe ser de 2 digitos. De 01 a 12';
-        } else {
-          return `No es posible la asignacion de la tarjeta: ${error.error_code}`;
-        }
-      case 1002:
-        return 'La llamada no esta autenticada o la autenticación es incorrecta.';
-      case 1003:
-        return 'La operación no se pudo completar por que el valor de uno o más de los parámetros no es correcto.';
-      case 1004:
-        return 'Un servicio necesario para el procesamiento de la transacción no se encuentra disponible.';
-      case 1005:
-        return 'Uno de los recursos requeridos no existe.';
-      case 1006:
-        return 'Ya existe una transacción con el mismo ID de orden.';
-      case 1007:
-        return 'La transferencia de fondos entre una cuenta de banco o tarjeta y la cuenta de Openpay no fue aceptada.';
-      case 1008:
-        return 'Una de las cuentas requeridas en la petición se encuentra desactivada.';
-      case 1009:
-        return 'El cuerpo de la petición es demasiado grande.';
-      case 1010:
-        return 'Se esta utilizando la llave pública para hacer una llamada que requiere la llave privada, o bien, se esta usando la llave privada desde JavaScript.';
-      case 1011:
-        return 'Se solicita un recurso que esta marcado como eliminado.';
-      case 1012:
-        return 'El monto transacción esta fuera de los limites permitidos.';
-      case 1013:
-        return 'La operación no esta permitida para el recurso.';
-      case 1014:
-        return 'La cuenta esta inactiva.';
-      case 1015:
-        return 'No se ha obtenido respuesta de la solicitud realizada al servicio.';
-      case 1016:
-        return 'El mail del comercio ya ha sido procesada.';
-      case 1017:
-        return 'El gateway no se encuentra disponible en ese momento.';
-      case 1018:
-        return 'El número de intentos de cargo es mayor al permitido.';
-      case 1020:
-        return 'El número de dígitos decimales es inválido para esta moneda.';
-      case 1023:
-        return 'Se han terminado las transacciones incluidas en tu paquete. Para contratar otro paquete contacta a soporte@openpay.mx.';
-      case 1024:
-        return 'El monto de la transacción excede su límite de transacciones permitido por TPV.';
-      case 1025:
-        return 'Se han bloqueado las transacciones CoDi contratadas en tu plan.';
-      case 2001:
-        return 'La cuenta de banco con esta CLABE ya se encuentra registrada en el cliente.';
-      case 2003:
-        return 'El cliente con este identificador externo (External ID) ya existe.';
-      case 2004:
-        return 'El número de tarjeta no es valido.';
-      case 2005:
-        return 'La fecha de expiración de la tarjeta es anterior a la fecha actual.';
-      case 2006:
-        return 'El código de seguridad de la tarjeta (CVV2) no fue proporcionado.';
-      case 2007:
-        return 'El número de tarjeta es de prueba, solamente puede usarse en Sandbox.';
-      case 2008:
-        return 'La tarjeta no es valida para pago con puntos.';
-      case 2009:
-        return 'El código de seguridad de la tarjeta (CVV2) es inválido.';
-      case 2010:
-        return 'Autenticación 3D Secure fallida.';
-      case 2011:
-        return 'Tipo de tarjeta no soportada.';
-      case 3001:
-        return 'La tarjeta fue declinada por el banco.';
-      case 3002:
-        return 'La tarjeta ha expirado.';
-      case 3003:
-        return 'La tarjeta no tiene fondos suficientes.';
-      case 3004:
-        return 'Tarjeta no válida para compra. (3004)'; // La tarjeta ha sido identificada como una tarjeta robada
-      case 3005:
-        return 'Tarjeta no válida para compra. (3005)'; // La tarjeta ha sido rechazada por el sistema antifraude
-      case 3006:
-        return 'La operación no esta permitida para este cliente o esta transacción.';
-      case 3009:
-        return 'Tarjeta no válida para compra. (3009)'; // La tarjeta fue reportada como perdida
-      case 3010:
-        return 'Tarjeta no válida para compra. (3010)'; // El banco ha restringido la tarjeta
-      case 3011:
-        return 'Tarjeta no válida para compra. (3011)'; // El banco ha restringido la tarjeta
-      case 3012:
-        return 'El banco ha solicitado que la tarjeta sea retenida. Contacte al banco.';
-      case 3201:
-        return 'Comercio no autorizado para procesar pago a meses sin intereses.';
-      case 3203:
-        return 'Promoción no valida para este tipo de tarjetas.';
-      case 3204:
-        return 'El monto de la transacción es menor al mínimo permitido para la promoción.';
-      case 3205:
-        return 'Promoción no permitida.';
-      case 4001:
-        return 'La cuenta de Openpay no tiene fondos suficientes.';
-      case 4002:
-        return 'La operación no puede ser completada hasta que sean pagadas las comisiones pendientes.';
-      case 6001:
-        return 'El webhook ya ha sido procesado.';
-      case 6002:
-        return 'No se ha podido conectar con el servicio de webhook.';
-      case 6003:
-        return 'El servicio respondió con errores.';
-      default:
-        return error.description;
-    }
   }
 
   async onSubmit(): Promise<any> {
@@ -621,7 +501,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await infoEventAlert('Verificar los datos de la Tarjeta de Credito.', '');
               }
               const tokenCard = await this.tokenCardOpenpay();
-              console.log('tokenCard: ', tokenCard);
               if (!tokenCard) {
                 this.isSubmitting = false;
                 return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
@@ -629,6 +508,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Recuperar siguiente id
               const id = await this.deliverysService.next();
               const deliveryId = this.generarNumeroAleatorioEncriptado();
+              if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
+                this.isSubmitting = false;
+                return await infoEventAlert('Error en servicio interno (Next Id Delivery).', TYPE_ALERT.ERROR);
+              }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
               if (OrderSupplier.error) {
@@ -669,6 +552,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             case PAY_TRANSFER:
               // Recuperar siguiente idT
               const idT = await this.deliverysService.next();
+              if (!Number.isInteger(Number(idT)) || Number(idT) <= 0) {
+                this.isSubmitting = false;
+                return await infoEventAlert('Error en servicio interno (Next Id Delivery).', TYPE_ALERT.ERROR);
+              }
               const deliveryIdT = this.generarNumeroAleatorioEncriptado();
               // Realizar Cargo con la Tarjeta
               const pagoOpenpayT = await this.payOpenpaySpei(deliveryIdT);
@@ -753,18 +640,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         return await infoEventAlert('No se encuentra el parametro: id.', '');
       }
-      // // Realizar Cargo con la Tarjeta
-      // const amout = parseFloat(this.totalPagar);
-      // const pagoOpenpayCapture = await this.payOpenpayCapture(this.idTransaction, amout);
-      // console.log('pagoOpenpayCapture: ', pagoOpenpayCapture);
-      // if (pagoOpenpayCapture.status === false) {
-      //   this.isSubmitting = false;
-      //   return await infoEventAlert('Error al realizar la autorizacion del cargo.', pagoOpenpayCapture.message, TYPE_ALERT.ERROR);
-      // }
-
-      // Update Pedido en DARU.
-      // const deliverySave = await this.deliverysService.update(this.delivery);
-      // console.log('1-deliverySave: ', deliverySave);
 
       const deliverySave = this.delivery;
 
@@ -774,18 +649,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       let typeAlert = TYPE_ALERT.SUCCESS;
       let sendEmail = this.delivery.user.email;
       let messageDelivery = 'El Pedido se ha realizado correctamente';
-      // if (deliverySave.status === false) {
-      //   this.isSubmitting = false;
-      //   internalEmail = true;
-      //   typeAlert = TYPE_ALERT.ERROR;
-      //   sendEmail = 'marketing@daru.mx';
-      //   messageDelivery = deliverySave.message;
-      //   this.delivery[NewProperty] = sendEmail;
-      //   console.log('messageDelivery: ', messageDelivery);
-      //   this.mailService.sendEmail(this.delivery, messageDelivery, '', internalEmail, this.totalEnvios);
-      //   console.log('mailService: ');
-      //   return await infoEventAlert('Error al Guardar el Pedido', deliverySave.message, typeAlert);
-      // }
+
       // Si compra es OK, continua.
       deliverySave[NewProperty] = sendEmail;
       this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);

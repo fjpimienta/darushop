@@ -46,9 +46,9 @@ export class MailService extends ApiService {
     const productRows = productos.map((producto: any) => `
         <tr>
           <td>${producto.name}</td>
-          <td>${producto.cantidad}</td>
-          <td>${producto.precio}</td>
-          <td>${producto.total}</td>
+          <td class="number">${producto.cantidad}</td>
+          <td class="number">${producto.precio}</td>
+          <td class="number">${producto.total}</td>
         </tr>
       `).join('');
     const html = message !== '' ? message : `
@@ -96,6 +96,10 @@ export class MailService extends ApiService {
             text-align: left;
             font-weight: bold;
           }
+          .number th {
+            text-align: right;
+            font-weight: bold;
+          }
           tfoot td {
             text-align: right;
             font-weight: bold;
@@ -125,16 +129,19 @@ export class MailService extends ApiService {
             </tbody>
             <tfoot>
               <tr>
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Subtotal:</strong></td>
-                <td colspan="2">$ ${totalProd.toFixed(2).toString()}</td>
+                <td colspan="4" class="number">$ ${totalProd.toFixed(2).toString()}</td>
               </tr>
               <tr>
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Costo Envio:</strong></td>
-                <td colspan="2">$ ${totalEnvios}</td>
+                <td colspan="4" class="number">$ ${totalEnvios}</td>
               </tr>
               <tr>
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Total:</strong></td>
-                <td colspan="2">$ ${total.toFixed(2).toString()}</td>
+                <td colspan="4" class="number">$ ${total.toFixed(2).toString()}</td>
               </tr>
             </tfoot>
           </table>
@@ -196,9 +203,9 @@ export class MailService extends ApiService {
     const productRows = productos.map((producto: any) => `
         <tr>
           <td>${producto.name}</td>
-          <td>${producto.cantidad}</td>
-          <td>${producto.precio}</td>
-          <td>${producto.total}</td>
+          <td class="number">${producto.cantidad}</td>
+          <td class="number">${producto.precio}</td>
+          <td class="number">${producto.total}</td>
         </tr>
       `).join('');
     const html = message !== '' ? message : `
@@ -275,38 +282,44 @@ export class MailService extends ApiService {
             </tbody>
             <tfoot>
               <tr>
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Subtotal:</strong></td>
-                <td colspan="2">$ ${totalProd.toFixed(2).toString()}</td>
+                <td colspan="4" class="number">$ ${totalProd.toFixed(2).toString()}</td>
               </tr>
               <tr>
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Costo Envio:</strong></td>
-                <td colspan="2">$ ${totalEnvios}</td>
+                <td colspan="4" class="number">$ ${totalEnvios}</td>
               </tr>
               <tr>
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Total:</strong></td>
-                <td colspan="2">$ ${total.toFixed(2).toString()}</td>
+                <td colspan="4" class="number">$ ${total.toFixed(2).toString()}</td>
               </tr>
               <tr>
-                <td colspan="4"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
-              </tr>
-              <tr>
-                <td colspan="1">&nbsp;</td>
-                <td colspan="3">Datos de la Cuenta a Transferir</td>
-              </tr>
-              <tr>
-                <td colspan="1">Banco</td>
-                <td colspan="3">BBVA Mexico (Pesos Mexicanos)</td>
-              </tr>
-              <tr>
-                <td colspan="1">Nombre</td>
-                <td colspan="3">Daru Innovacion S de RL de CV</td>
-              </tr>
-              <tr>
-                <td colspan="1">Clabe</td>
-                <td colspan="3">0121 80001201 4699 46</td>
+                <td colspan="8"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
               </tr>
               <tr>
                 <td colspan="4">&nbsp;</td>
+                <td colspan="4">Datos de la Cuenta a Transferir</td>
+              </tr>
+              <tr>
+                <td colspan="2">&nbsp;</td>
+                <td colspan="2">Banco</td>
+                <td colspan="4">BBVA Mexico (Pesos Mexicanos)</td>
+              </tr>
+              <tr>
+                <td colspan="2">&nbsp;</td>
+                <td colspan="2">Nombre</td>
+                <td colspan="4">Daru Innovacion S de RL de CV</td>
+              </tr>
+              <tr>
+                <td colspan="2">&nbsp;</td>
+                <td colspan="2">Clabe</td>
+                <td colspan="4">0121 80001201 4699 46</td>
+              </tr>
+              <tr>
+                <td colspan="8">&nbsp;</td>
               </tr>
             </tfoot>
           </table>
