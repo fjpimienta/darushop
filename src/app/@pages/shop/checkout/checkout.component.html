@@ -295,7 +295,7 @@
                       <td>Env&iacute;os:</td>
                       <td>{{totalEnvios | currency}}</td>
                     </tr>
-                    <tr *ngIf="cupon" class="summary-subtotal">
+                    <tr *ngIf="discountPorc!=='0'" class="summary-subtotal">
                       <td>Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>

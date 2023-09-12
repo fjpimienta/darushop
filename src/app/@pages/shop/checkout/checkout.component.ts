@@ -1069,21 +1069,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   changeDiscount(discountPorc: number): void {
     let discountI = 0;
     let deliveryI = 0;
-    console.log('this.totalPagar: ', this.totalPagar);
-    console.log('discountPorc: ', discountPorc);
     if (this.totalEnvios) {
       deliveryI = parseFloat(this.totalEnvios);
-      console.log('deliveryI: ', deliveryI);
     }
     if (this.cupon) {
       discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
       this.discount = discountI.toFixed(2).toString();
-      console.log('this.discount: ', this.discount);
       this.cartService.priceTotal.subscribe(total => {
         this.totalPagar = (total - discountI + deliveryI).toFixed(2).toString();
       });
     }
-    console.log('this.totalPagar: ', this.totalPagar);
   }
 
   convertToUppercase(event: any) {
@@ -1108,13 +1103,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return await result.cupon;
       });
     let discountPorc = 0;
-    console.log('cupon: ', cupon);
+    this.discountPorc = "0";
     if (cupon) {
       this.cupon = cupon;
       discountPorc = cupon.order;
-      this.discountPorc = cupon.order;
+      this.discountPorc = cupon.order.toString();
     } else {
-      infoEventAlert('El código introducido no es correcto.', 'Intentar de nuevo');
+      infoEventAlert('Lo siento este código no lo reconozco.', '');
       event.target.value = '';
     }
     this.changeDiscount(discountPorc);
