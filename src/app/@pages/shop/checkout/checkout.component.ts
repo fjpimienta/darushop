@@ -107,6 +107,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   token: string;
   totalPagar: string;
   totalEnvios: string;
+  discountPorc: string;
+  discount: string;
   resultCustomer: IResultStripeCustomer;
 
   myCurrency = CURRENCIES_SYMBOL[CURRENCY_LIST.MEXICAN_PESO];
@@ -256,15 +258,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
                   // Registrar Pedido en DARU.
                   OrderSupplier.cliente = OrderSupplier.user.email;
-                  let totalPagar = parseFloat(this.totalPagar);
-                  let discount = 0;
-                  if (this.cupon) {
-                    discount = this.cupon.order;
-                    const subTotal = parseFloat(this.totalPagar) * discount / 100;
-                    totalPagar = totalPagar + subTotal;
-                  }
-                  OrderSupplier.discount = discount;
-                  OrderSupplier.importe = totalPagar;
+                  OrderSupplier.discount = this.discount;
+                  OrderSupplier.importe = this.totalPagar;
                   console.log('OrderSupplier: ', OrderSupplier);
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
                   console.log('deliverySave: ', deliverySave);
@@ -520,15 +515,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
-              let discount = 0;
-              let totalPagar = parseFloat(this.totalPagar);
-              if (this.cupon) {
-                discount = this.cupon.order;
-                const subTotal = parseFloat(this.totalPagar) * discount / 100;
-                totalPagar = totalPagar + subTotal;
-              }
-              OrderSupplier.discount = discount;
-              OrderSupplier.importe = totalPagar;
+              OrderSupplier.discount = this.discount;
+              OrderSupplier.importe = this.totalPagar;
               console.log('OrderSupplier: ', OrderSupplier);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
@@ -573,15 +561,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Registrar Pedido en DARU.
               OrderSupplierT.cliente = OrderSupplierT.user.email;
-              let discountT = 0;
-              let totalPagarT = parseFloat(this.totalPagar);
-              if (this.cupon) {
-                discountT = this.cupon.order;
-                const subTotalT = parseFloat(this.totalPagar) * discountT / 100;
-                totalPagarT = totalPagarT + subTotalT;
-              }
-              OrderSupplierT.discount = discountT;
-              OrderSupplierT.importe = totalPagarT;
+              OrderSupplierT.discount = this.discount;
+              OrderSupplierT.importe = this.totalPagar;
               console.log('OrderSupplierT: ', OrderSupplierT);
               const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
               console.log('deliverySaveT: ', deliverySaveT);
@@ -1060,10 +1041,49 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   changeShipping(costo: number): void {
+    let discountI = 0;
+    let deliveryI = 0;
     this.existePaqueteria = true;
-    this.cartService.priceTotal.subscribe(total => {
-      this.totalPagar = (total + costo).toFixed(2).toString();
-    });
+    console.log('costo: ', costo);
+    if (this.cupon) {
+      this.cartService.priceTotal.subscribe(total => {
+        this.totalPagar = (total).toFixed(2).toString();
+      });
+      console.log('this.totalPagar: ', this.totalPagar);
+      const discountPorc = this.cupon.order;
+      discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
+      this.discount = discountI.toFixed(2).toString();
+      console.log('this.discount: ', this.discount);
+    }
+    if (costo) {
+      deliveryI = costo;
+      this.totalEnvios = costo.toFixed(2).toString();
+      console.log('this.totalEnvios: ', this.totalEnvios);
+      this.cartService.priceTotal.subscribe(total => {
+        this.totalPagar = (total - discountI + deliveryI).toFixed(2).toString();
+      });
+    }
+    console.log('this.totalPagar: ', this.totalPagar);
+  }
+
+  changeDiscount(discountPorc: number): void {
+    let discountI = 0;
+    let deliveryI = 0;
+    console.log('this.totalPagar: ', this.totalPagar);
+    console.log('discountPorc: ', discountPorc);
+    if (this.totalEnvios) {
+      deliveryI = parseFloat(this.totalEnvios);
+      console.log('deliveryI: ', deliveryI);
+    }
+    if (this.cupon) {
+      discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
+      this.discount = discountI.toFixed(2).toString();
+      console.log('this.discount: ', this.discount);
+      this.cartService.priceTotal.subscribe(total => {
+        this.totalPagar = (total - discountI + deliveryI).toFixed(2).toString();
+      });
+    }
+    console.log('this.totalPagar: ', this.totalPagar);
   }
 
   convertToUppercase(event: any) {
@@ -1087,15 +1107,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       .then(async result => {
         return await result.cupon;
       });
+    let discountPorc = 0;
     console.log('cupon: ', cupon);
     if (cupon) {
-      console.log("Cupón válido");
-      this.cupon = cupon.cupon;
+      this.cupon = cupon;
+      discountPorc = cupon.order;
+      this.discountPorc = cupon.order;
     } else {
-      console.log("Cupón no válido");
       infoEventAlert('El código introducido no es correcto.', 'Intentar de nuevo');
       event.target.value = '';
     }
+    this.changeDiscount(discountPorc);
   }
 
   async onHabilitaPago(payMent: string): Promise<void> {
@@ -1184,18 +1206,26 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   formatearNumeroTarjeta(numeroTarjetaSinFormato: string) {
     // Remover los espacios en blanco y guiones del número sin formato
     const numeroSinEspacios = numeroTarjetaSinFormato.replace(/\s|-/g, '');
-    // Aplicar el formato 4 dígitos - 4 dígitos - 4 dígitos - 4 dígitos
-    const regex = /(\d{1,4})(\d{1,4})(\d{1,4})(\d{1,4})/;
-    const grupos = regex.exec(numeroSinEspacios);
+    // Limitar la longitud a 16 caracteres
+    const numeroLimitado = numeroSinEspacios.slice(0, 16);
+    // Aplicar el formato "4444-4444-4444-4444"
+    const regex = /(\d{4})(\d{4})(\d{4})(\d{4})/;
+    const grupos = regex.exec(numeroLimitado);
     if (grupos) {
-      // this.numeroTarjetaFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
-      this.numeroTarjetaFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+      const numeroFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+      // Actualizar el valor en el campo de entrada (si es necesario)
       const cardNumberInput = document.getElementById('card_number') as HTMLInputElement;
-      cardNumberInput.value = `${grupos[1]}${grupos[2]}${grupos[3]}${grupos[4]}`;
+      if (cardNumberInput) {
+        cardNumberInput.value = numeroFormateado;
+      }
+      // Almacenar el número formateado
+      this.numeroTarjetaFormateado = numeroFormateado;
     } else {
       this.numeroTarjetaFormateado = '';
     }
   }
+
+
 
   // Método para formatear la CLABE bancaria
   formatearCLABE(clabeSinFormato: string) {
