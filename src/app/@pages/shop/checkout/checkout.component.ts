@@ -1207,7 +1207,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const regex = /(\d{4})(\d{4})(\d{4})(\d{4})/;
     const grupos = regex.exec(numeroLimitado);
     if (grupos) {
-      const numeroFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+      // const numeroFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+      const numeroFormateado = `${grupos[1]}${grupos[2]}${grupos[3]}${grupos[4]}`;
       // Actualizar el valor en el campo de entrada (si es necesario)
       const cardNumberInput = document.getElementById('card_number') as HTMLInputElement;
       if (cardNumberInput) {
