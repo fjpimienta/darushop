@@ -107,7 +107,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   token: string;
   totalPagar: string;
   totalEnvios: string;
-  discountPorc: string;
+  discountPorc: string = '0';
   discount: string;
   resultCustomer: IResultStripeCustomer;
 
@@ -1069,21 +1069,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   changeDiscount(discountPorc: number): void {
     let discountI = 0;
     let deliveryI = 0;
-    console.log('this.totalPagar: ', this.totalPagar);
-    console.log('discountPorc: ', discountPorc);
     if (this.totalEnvios) {
       deliveryI = parseFloat(this.totalEnvios);
-      console.log('deliveryI: ', deliveryI);
     }
     if (this.cupon) {
       discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
       this.discount = discountI.toFixed(2).toString();
-      console.log('this.discount: ', this.discount);
       this.cartService.priceTotal.subscribe(total => {
         this.totalPagar = (total - discountI + deliveryI).toFixed(2).toString();
       });
     }
-    console.log('this.totalPagar: ', this.totalPagar);
   }
 
   convertToUppercase(event: any) {
@@ -1108,13 +1103,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return await result.cupon;
       });
     let discountPorc = 0;
-    console.log('cupon: ', cupon);
+    this.discountPorc = "0";
     if (cupon) {
       this.cupon = cupon;
       discountPorc = cupon.order;
-      this.discountPorc = cupon.order;
+      this.discountPorc = cupon.order.toString();
     } else {
-      infoEventAlert('El código introducido no es correcto.', 'Intentar de nuevo');
+      infoEventAlert('Lo siento este código no lo reconozco.', '');
       event.target.value = '';
     }
     this.changeDiscount(discountPorc);
@@ -1212,7 +1207,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const regex = /(\d{4})(\d{4})(\d{4})(\d{4})/;
     const grupos = regex.exec(numeroLimitado);
     if (grupos) {
-      const numeroFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+      // const numeroFormateado = `${grupos[1]}-${grupos[2]}-${grupos[3]}-${grupos[4]}`;
+      const numeroFormateado = `${grupos[1]}${grupos[2]}${grupos[3]}${grupos[4]}`;
       // Actualizar el valor en el campo de entrada (si es necesario)
       const cardNumberInput = document.getElementById('card_number') as HTMLInputElement;
       if (cardNumberInput) {
