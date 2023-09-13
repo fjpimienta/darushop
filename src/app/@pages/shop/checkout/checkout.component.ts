@@ -258,8 +258,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
                   // Registrar Pedido en DARU.
                   OrderSupplier.cliente = OrderSupplier.user.email;
-                  OrderSupplier.discount = this.discount;
-                  OrderSupplier.importe = this.totalPagar;
+                  OrderSupplier.discount = parseFloat(this.discount);
+                  OrderSupplier.importe = parseFloat(this.totalPagar);
                   console.log('OrderSupplier: ', OrderSupplier);
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
                   console.log('deliverySave: ', deliverySave);
@@ -515,8 +515,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
-              OrderSupplier.discount = this.discount;
-              OrderSupplier.importe = this.totalPagar;
+              OrderSupplier.discount = parseFloat(this.discount);
+              OrderSupplier.importe = parseFloat(this.totalPagar);
               console.log('OrderSupplier: ', OrderSupplier);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
@@ -561,8 +561,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Registrar Pedido en DARU.
               OrderSupplierT.cliente = OrderSupplierT.user.email;
-              OrderSupplierT.discount = this.discount;
-              OrderSupplierT.importe = this.totalPagar;
+              OrderSupplierT.discount = parseFloat(this.discount);
+              OrderSupplierT.importe = parseFloat(this.totalPagar);
               console.log('OrderSupplierT: ', OrderSupplierT);
               const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
               console.log('deliverySaveT: ', deliverySaveT);
