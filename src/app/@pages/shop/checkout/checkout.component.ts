@@ -624,6 +624,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
       const deliverySave = this.delivery;
 
+      // Limpiar carrito de compras.
+      this.cartService.clearCart(false);
+
       // Enviar correo
       const NewProperty = 'receipt_email';
       let internalEmail = false;
@@ -635,7 +638,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       deliverySave[NewProperty] = sendEmail;
       this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);
       console.log('this.mailService.sendEmail');
-      this.cartService.clearCart(false);
       this.router.navigate(['/shop/offers/list']);
 
       await infoEventAlert(messageDelivery, '', typeAlert);
@@ -1493,6 +1495,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
       const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
         .then(async (result) => {
+          console.log('sendOrderSupplier/EfectuarPedidos/result: ', result);
           return await result;
         });
       console.log('orderNew: ', orderNew);
@@ -1626,6 +1629,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               ctResponse.errores = resultPedido.orderCt.errores;
               return await ctResponse;
             } catch (error) {
+              console.log('error: ', error);
               throw await error;
             }
           });
