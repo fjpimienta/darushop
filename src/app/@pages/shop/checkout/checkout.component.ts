@@ -43,7 +43,7 @@ import { EnvioCt, GuiaConnect, OrderCt, OrderCtConfirm, ProductoCt } from '@core
 import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
-import { OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
 import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
@@ -260,9 +260,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   OrderSupplier.cliente = OrderSupplier.user.email;
                   OrderSupplier.discount = parseFloat(this.discount);
                   OrderSupplier.importe = parseFloat(this.totalPagar);
-                  console.log('OrderSupplier: ', OrderSupplier);
                   const deliverySave = await this.deliverysService.add(OrderSupplier);
-                  console.log('deliverySave: ', deliverySave);
                   const NewProperty = 'receipt_email';
                   let internalEmail = false;
                   let typeAlert = TYPE_ALERT.SUCCESS;
@@ -301,9 +299,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.clear();
     if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
-      console.log(`this.idDelivery: ${this.idDelivery}; this.idTransaction: ${this.idTransaction}`);
       const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
-        console.log('result: ', result.delivery);
         if (result.delivery.delivery) {
           this.delivery = result.delivery.delivery;
           this.onSetDelivery(this.formData, result.delivery.delivery);
@@ -311,7 +307,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return result.delivery.delivery;
       });
       console.log('delivery: ', delivery);
-      console.log('this.delivery: ', this.delivery);
     }
     this.countrys = [];
     this.selectCountry = new Country();
@@ -509,27 +504,30 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-              if (OrderSupplier.error) {
+              console.log('OrderSupplier: ', OrderSupplier);
+              if (OrderSupplier.statusError) {
                 this.isSubmitting = false;
-                return await infoEventAlert(OrderSupplier.messageError, TYPE_ALERT.ERROR);
+                console.log('OrderSupplier.messageError: ', OrderSupplier.messageError);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
               OrderSupplier.discount = parseFloat(this.discount);
               OrderSupplier.importe = parseFloat(this.totalPagar);
-              console.log('OrderSupplier: ', OrderSupplier);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
               console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
-                return await infoEventAlert(deliverySave.messageError, TYPE_ALERT.ERROR);
+                console.log('deliverySave.messageError: ', deliverySave.messageError);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, OrderSupplier.deliveryId, this.formData);
               console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
-                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpay.message, TYPE_ALERT.ERROR);
+                console.log('pagoOpenpay.message: ', pagoOpenpay.message);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde','', TYPE_ALERT.ERROR);
               }
               console.log('pagoOpenpay.createChargeOpenpay: ', pagoOpenpay.createChargeOpenpay);
               console.log('pagoOpenpay.createChargeOpenpay.payment_method.url: ', pagoOpenpay.createChargeOpenpay.payment_method.url);
@@ -550,14 +548,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('pagoOpenpayT: ', pagoOpenpayT);
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
-                return await infoEventAlert('Error al realizar el cargo.', pagoOpenpayT.message, TYPE_ALERT.ERROR);
+                console.log('pagoOpenpayT.message: ', pagoOpenpayT.message);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde','', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
               console.log('OrderSupplierT: ', OrderSupplierT);
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
-                return await infoEventAlert('Error al realizar el cargo.', OrderSupplierT.messageError, TYPE_ALERT.ERROR);
+                console.log('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplierT.cliente = OrderSupplierT.user.email;
@@ -568,7 +568,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('deliverySaveT: ', deliverySaveT);
               if (deliverySaveT.error) {
                 this.isSubmitting = false;
-                return await infoEventAlert(deliverySaveT.messageError, TYPE_ALERT.ERROR);
+                console.log('deliverySaveT.messageError: ', deliverySaveT.messageError);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
               }
               const NewPropertyT = 'receipt_email';
               let internalEmailT = false;
@@ -1502,6 +1503,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (orderNew) {
         switch (warehouse.suppliersProd.idProveedor) {
           case 'ct':
+            if (orderNew.estatus === 'Mal Pedido') {
+              orderCtResponse = orderNew;
+              delivery.ordersCt = [];
+              delivery.orderCtResponse = orderCtResponse;
+              const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
+              orderCtConfirm.folio = 'NA';
+              break;
+            }
             orderCtResponse = orderNew;
             delivery.ordersCt = ordersCt;
             delivery.orderCtResponse = orderCtResponse;
@@ -1527,12 +1536,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const confirmarPedidoCva = [];
             break;
         }
+        console.log('sendOrderSupplier/orderCtResponse: ', orderCtResponse);
         if (orderCtResponse.errores) {
           if (orderCtResponse.errores.length > 0) {
             delivery.statusError = true;
             delivery.messageError = orderCtResponse.errores[0].errorMessage;
           }
         }
+        console.log('sendOrderSupplier/orderCvaResponse: ', orderCvaResponse);
         if (orderCvaResponse.error !== '') {
           delivery.statusError = true;
           delivery.messageError = orderCvaResponse.error;
@@ -1593,6 +1604,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const pedidosCva = await this.externalAuthService.setOrderCva(order)
           .then(async resultPedido => {
             try {
+              console.log('EfectuarPedidos/resultPedido:', resultPedido);
               const { orderCva } = resultPedido.orderCva;
               const cvaResponse: OrderCvaResponse = {
                 agentemail: orderCva?.agentemail || '',
@@ -1607,7 +1619,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               throw await error;
             }
           });
-        console.log('pedidosCva: ', pedidosCva);
+        console.log('EfectuarPedidos/pedidosCva: ', pedidosCva);
         return await pedidosCva;
       case 'ct':
         const pedidosCt = await this.externalAuthService.setOrderCt(
@@ -1621,12 +1633,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         )
           .then(async resultPedido => {
             try {
+              console.log('EfectuarPedidos/resultPedido: ', resultPedido);
+              if (!resultPedido.orderCt) {                              // Hay error en el pedido.
+                console.log('error');
+                const ctResponse: OrderCtResponse = new OrderCtResponse();
+                ctResponse.estatus = 'Mal Pedido';
+                ctResponse.fecha = new Date(Date.now()).toString();
+                ctResponse.pedidoWeb = '';
+                ctResponse.tipoDeCambio = 0;
+                let errorCT: ErroresCT = new ErroresCT();
+                let erroresCT: ErroresCT[] = [];
+                errorCT.errorCode = '999999';
+                errorCT.errorMessage = resultPedido.message;
+                errorCT.errorReference = '';
+                erroresCT.push(errorCT);
+                ctResponse.errores = erroresCT;
+                return await ctResponse;
+              }
               const ctResponse: OrderCtResponse = new OrderCtResponse();
-              ctResponse.estatus = resultPedido.orderCt.estatus;
-              ctResponse.fecha = resultPedido.orderCt.fecha;
-              ctResponse.pedidoWeb = resultPedido.orderCt.pedidoWeb;
-              ctResponse.tipoDeCambio = resultPedido.orderCt.tipoDeCambio;
-              ctResponse.errores = resultPedido.orderCt.errores;
+              ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
+              ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
+              ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
+              ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
+              ctResponse.errores = resultPedido[0].respuestaCT.errores;
               return await ctResponse;
             } catch (error) {
               console.log('error: ', error);
@@ -1686,10 +1715,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   ctResponse.errores = resultPedido[0].respuestaCT.errores;
                 } else {
                   ctResponse.estatus = resultPedido.estatus;
-                  ctResponse.fecha = resultPedido.fecha;
-                  ctResponse.pedidoWeb = resultPedido.pedidoWeb;
-                  ctResponse.tipoDeCambio = resultPedido.tipoDeCambio;
-                  ctResponse.errores = resultPedido.errores;
+                  ctResponse.fecha = ''; // new Date(Date.now()).toString();
+                  ctResponse.pedidoWeb = '';
+                  ctResponse.tipoDeCambio = 0;
+                  let errorCT: ErroresCT = new ErroresCT();
+                  let erroresCT: ErroresCT[] = [];
+                  errorCT.errorCode = '999999';
+                  errorCT.errorMessage = resultPedido.message;
+                  errorCT.errorReference = '';
+                  erroresCT.push(errorCT);
+                  ctResponse.errores = erroresCT;
                 }
                 return await ctResponse;
               } catch (error) {
