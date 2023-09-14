@@ -1337,13 +1337,11 @@ export class ExternalAuthService extends ApiService {
   }
 
   async confirmOrderCt(folio: string): Promise<any> {
-    console.log('confirmOrderCt/folio: ', folio);
     return new Promise<any>((resolve, reject) => {
       this.get(CONFIRM_ORDER_CT, {
         folio
       }, {}).subscribe(
         (result: any) => {
-          console.log('result: ', result);
           resolve(result.confirmOrderCt);
         },
         (error: any) => {

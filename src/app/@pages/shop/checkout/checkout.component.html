@@ -280,6 +280,10 @@
                       <td>Subtotal:</td>
                       <td>{{ (cartService.priceTotal | async).toFixed(2) | currency }}</td>
                     </tr>
+                    <tr *ngIf="discountPorc!=='0'" class="summary-subtotal">
+                      <td>Descuentos {{discountPorc}}%:</td>
+                      <td>{{discount | currency}}</td>
+                    </tr>
                     <tr *ngFor="let shipment of shipments" class="summary-shipping-row">
                       <td>
                         <!-- <div class="custom-control custom-radio">
@@ -294,10 +298,6 @@
                     <tr class="summary-subtotal">
                       <td>Env&iacute;os:</td>
                       <td>{{totalEnvios | currency}}</td>
-                    </tr>
-                    <tr *ngIf="discountPorc!=='0'" class="summary-subtotal">
-                      <td>Descuentos {{discountPorc}}%:</td>
-                      <td>{{discount | currency}}</td>
                     </tr>
                     <tr class="summary-total">
                       <td>Total:</td>
