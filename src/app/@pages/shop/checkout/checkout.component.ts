@@ -836,23 +836,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   findCommonBranchOffice(products: CartItem[], branchOffices: BranchOffices[]): BranchOffices[] {
-    if (products.length === 0) {
+    if (products.length === 0 || branchOffices.length === 0) {
       return [];
     }
-    if (branchOffices.length === 0) {
-      return [];
-    }
-    console.log('products: ', products);
-    console.log('branchOffices: ', branchOffices);
-    // Crear un mapa para realizar un seguimiento de la cantidad requerida de cada producto
-    const requiredQuantities = new Map();
-    // Inicializar requiredQuantities con las cantidades requeridas de productos
-    for (const product of products) {
-      requiredQuantities.set(product.sku, product.qty);
-    }
-    console.log('requiredQuantities: ', requiredQuantities);
+
     // Crear un mapa para realizar un seguimiento de cuántos productos cada oficina puede satisfacer
     const officeSatisfactions = new Map();
+
     for (const product of products) {
       for (const office of product.suppliersProd.branchOffices) {
         if (!officeSatisfactions.has(office.id)) {
@@ -863,19 +853,40 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     }
-    // Encontrar oficinas que pueden satisfacer al menos dos productos y el tercer producto puede ser la primera oficina
+    console.log('officeSatisfactions: ', officeSatisfactions);
+
+    // Ordenar las oficinas en función de la cantidad de productos que pueden satisfacer de mayor a menor.
+    const sortedOffices = branchOffices.slice().sort((a, b) => {
+      const productsSatisfiedA = officeSatisfactions.get(a.id) || 0;
+      const productsSatisfiedB = officeSatisfactions.get(b.id) || 0;
+      return productsSatisfiedB - productsSatisfiedA;
+    });
+    console.log('sortedOffices: ', sortedOffices);
+
     const commonBranchOffices = [];
-    // Si un almacen tiene todos los producos
-    for (const [officeId, satisfiedProducts] of officeSatisfactions.entries()) {
-      if (satisfiedProducts >= products.length) {
-        const matchingOffice = branchOffices.find((office) => office.id === officeId);
-        console.log('Este almacen puede surtir todos los productos: ', matchingOffice);
-        commonBranchOffices.push(matchingOffice);
-        return commonBranchOffices;
+    let totalSatisfiedProducts = 0;
+
+    for (const office of sortedOffices) {
+      const satisfiedProducts = officeSatisfactions.get(office.id) || 0;
+      totalSatisfiedProducts += satisfiedProducts;
+
+      if (totalSatisfiedProducts >= products.length) {      // Si un almacen tiene todos los producos
+        commonBranchOffices.push(office);
+        break;
+      } else {                                              // Si un almacen no tiene todos los producos
+        // Buscar un almacen que contenga la mayor cantidad de productos.
+        // Agregar dicho almacen en commonBranchOffices
+        // De la diferencia de productos en total con los productos que ya fueron considerados repetir la busqueda de un almacen que contenga la mayor cantidad de los productos que quedan.
+        // Agregar dicho almacen en commonBranchOffices
+        // De la diferencia de productos en total con los productos que ya fueron considerados repetir la busqueda de un almacen que contenga la mayor cantidad de los productos que quedan.
+        // Al finalizar retornar commonBranchOffices
       }
     }
-    return [];
+
+    console.log('commonBranchOffices: ', commonBranchOffices);
+    return commonBranchOffices;
   }
+
 
 
   /**
@@ -924,7 +935,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
             }
             const commonBranchOffices = this.findCommonBranchOffice(carItemsSupplier, branchOfficesTot); // Obtener almacenes comunes
-            console.log('commonBranchOffices: ', commonBranchOffices);
             for (const commonBranch of commonBranchOffices) {
               const productsNacional: ProductShipment[] = [];
               const warehouseNacional = new Warehouse();
