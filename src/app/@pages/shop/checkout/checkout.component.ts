@@ -508,7 +508,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (OrderSupplier.statusError) {
                 this.isSubmitting = false;
                 console.log('OrderSupplier.messageError: ', OrderSupplier.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
@@ -519,7 +519,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (deliverySave.error) {
                 this.isSubmitting = false;
                 console.log('deliverySave.messageError: ', deliverySave.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, OrderSupplier.deliveryId, this.formData);
@@ -527,7 +527,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
                 console.log('pagoOpenpay.message: ', pagoOpenpay.message);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde','', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               console.log('pagoOpenpay.createChargeOpenpay: ', pagoOpenpay.createChargeOpenpay);
               console.log('pagoOpenpay.createChargeOpenpay.payment_method.url: ', pagoOpenpay.createChargeOpenpay.payment_method.url);
@@ -549,7 +549,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
                 console.log('pagoOpenpayT.message: ', pagoOpenpayT.message);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde','', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
@@ -557,7 +557,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
                 console.log('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplierT.cliente = OrderSupplierT.user.email;
@@ -569,7 +569,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (deliverySaveT.error) {
                 this.isSubmitting = false;
                 console.log('deliverySaveT.messageError: ', deliverySaveT.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde','', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               const NewPropertyT = 'receipt_email';
               let internalEmailT = false;
@@ -835,38 +835,48 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await [];
   }
 
-  findCommonBranchOffice(products: CartItem[]): BranchOffices | null {
+  findCommonBranchOffice(products: CartItem[], branchOffices: BranchOffices[]): BranchOffices[] {
     if (products.length === 0) {
-      return null;
+      return [];
     }
-    const filteredProducts = products.filter(
-      (product) => product.suppliersProd.branchOffices.some((office) => office.cantidad > product.qty)
-    );
-    if (filteredProducts.length === 0) {
-      return null;
+    if (branchOffices.length === 0) {
+      return [];
     }
-    const officeMap: { [estado: string]: BranchOffices } = {};
-    for (const product of filteredProducts) {
+    console.log('products: ', products);
+    console.log('branchOffices: ', branchOffices);
+    // Crear un mapa para realizar un seguimiento de la cantidad requerida de cada producto
+    const requiredQuantities = new Map();
+    // Inicializar requiredQuantities con las cantidades requeridas de productos
+    for (const product of products) {
+      requiredQuantities.set(product.sku, product.qty);
+    }
+    console.log('requiredQuantities: ', requiredQuantities);
+    // Crear un mapa para realizar un seguimiento de cuántos productos cada oficina puede satisfacer
+    const officeSatisfactions = new Map();
+    for (const product of products) {
       for (const office of product.suppliersProd.branchOffices) {
-        if (office.cantidad > product.qty) {
-          if (officeMap[office.estado]) {
-            officeMap[office.estado].cantidad += office.cantidad; // Acumulamos la cantidad
-          } else {
-            officeMap[office.estado] = { ...office, cantidad: office.cantidad }; // Inicializamos con la cantidad
-          }
+        if (!officeSatisfactions.has(office.id)) {
+          officeSatisfactions.set(office.id, 0);
+        }
+        if (office.cantidad >= product.qty) {
+          officeSatisfactions.set(office.id, officeSatisfactions.get(office.id) + 1);
         }
       }
     }
-
-    let maxOffice: BranchOffices | null = null;
-    for (const estado in officeMap) {
-      if (!maxOffice || officeMap[estado].cantidad > maxOffice.cantidad) {
-        maxOffice = officeMap[estado];
+    // Encontrar oficinas que pueden satisfacer al menos dos productos y el tercer producto puede ser la primera oficina
+    const commonBranchOffices = [];
+    // Si un almacen tiene todos los producos
+    for (const [officeId, satisfiedProducts] of officeSatisfactions.entries()) {
+      if (satisfiedProducts >= products.length) {
+        const matchingOffice = branchOffices.find((office) => office.id === officeId);
+        console.log('Este almacen puede surtir todos los productos: ', matchingOffice);
+        commonBranchOffices.push(matchingOffice);
+        return commonBranchOffices;
       }
     }
-
-    return maxOffice;
+    return [];
   }
+
 
   /**
    *
@@ -905,46 +915,62 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         if (apiShipment) {                                                          // Si hay Api para el Proveedor.
           const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
           const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
-          if (carItemsSupplier.length > 0) {                                        // Si el proveedor tiene productos en el carrito
-            // START Filtrar almacenes que tengan todos los productos y recuperar el almacen que los tenga todos.
-            const concatenatedBranchOffices: BranchOffices[][] = [];
-            for (const idCI of Object.keys(carItemsSupplier)) {
-              const cartItem: CartItem = carItemsSupplier[idCI];
-              concatenatedBranchOffices.push(cartItem.suppliersProd.branchOffices);
-            }
-            const branchSupplier = this.findCommonBranchOffice(carItemsSupplier);
-            // END
-            for (const idCI of Object.keys(carItemsSupplier)) {                     // Set los productos y el almacen para enviar.
-              const cartItem: CartItem = carItemsSupplier[idCI];
-              const productShipment = new ProductShipment();
-              productShipment.producto = cartItem.sku;
-              productShipment.cantidad = cartItem.qty;
-              productShipment.precio = cartItem.price;
-              if (cartItem.promociones && cartItem.promociones.disponible_en_promocion) {
-                productShipment.priceSupplier = cartItem.promociones.disponible_en_promocion;
-              } else {
-                productShipment.priceSupplier = cartItem.suppliersProd.price;
+          if (carItemsSupplier.length > 0) {
+            //Buscar todos los branchOffice de los productos.
+            let branchOfficesTot: BranchOffices[] = [];
+            for (const cart of this.cartItems) {
+              for (const bran of cart.suppliersProd.branchOffices) {
+                branchOfficesTot.push(bran);
               }
-              productShipment.moneda = cartItem.suppliersProd.moneda;
-              productShipment.almacen = branchSupplier.id;
-              productShipment.cp = branchSupplier.cp;
-              productShipment.name = cartItem.name;
-              productShipment.total = cartItem.qty * cartItem.price;
-              productsNacional.push(productShipment);
-              warehouseNacional.id = branchSupplier.id;
-              warehouseNacional.cp = branchSupplier.cp;
-              warehouseNacional.name = branchSupplier.name;
-              warehouseNacional.estado = branchSupplier.estado;
-              warehouseNacional.latitud = branchSupplier.latitud;
-              warehouseNacional.longitud = branchSupplier.longitud;
-              this.warehouse = warehouseNacional;
-              this.warehouse.productShipments = productsNacional;
             }
-            this.warehouse.cp = cpDestino;
-            this.warehouse.productShipments = productsNacional;
-            const shipmentsCost = await this.externalAuthService.onShippingEstimate(    // Cotizar el envio de productos por proveedor
-              supplier, apiShipment, this.warehouse, true)
-              .then(async (resultShip) => {
+            const commonBranchOffices = this.findCommonBranchOffice(carItemsSupplier, branchOfficesTot); // Obtener almacenes comunes
+            console.log('commonBranchOffices: ', commonBranchOffices);
+            for (const commonBranch of commonBranchOffices) {
+              const productsNacional: ProductShipment[] = [];
+              const warehouseNacional = new Warehouse();
+              const concatenatedBranchOffices: BranchOffices[][] = [];
+
+              for (const idCI of Object.keys(carItemsSupplier)) {
+                const cartItem: CartItem = carItemsSupplier[idCI];
+                concatenatedBranchOffices.push(cartItem.suppliersProd.branchOffices);
+              }
+
+              for (const idCI of Object.keys(carItemsSupplier)) {
+                const cartItem: CartItem = carItemsSupplier[idCI];
+                const productShipment = new ProductShipment();
+                productShipment.producto = cartItem.sku;
+                productShipment.cantidad = cartItem.qty;
+                productShipment.precio = cartItem.price;
+
+                if (cartItem.promociones && cartItem.promociones.disponible_en_promocion) {
+                  productShipment.priceSupplier = cartItem.promociones.disponible_en_promocion;
+                } else {
+                  productShipment.priceSupplier = cartItem.suppliersProd.price;
+                }
+
+                productShipment.moneda = cartItem.suppliersProd.moneda;
+                productShipment.almacen = commonBranch.id; // Utilizar el almacén común
+                productShipment.cp = commonBranch.cp;
+                productShipment.name = cartItem.name;
+                productShipment.total = cartItem.qty * cartItem.price;
+                productsNacional.push(productShipment);
+
+                warehouseNacional.id = commonBranch.id;
+                warehouseNacional.cp = commonBranch.cp;
+                warehouseNacional.name = commonBranch.name;
+                warehouseNacional.estado = commonBranch.estado;
+                warehouseNacional.latitud = commonBranch.latitud;
+                warehouseNacional.longitud = commonBranch.longitud;
+                this.warehouse = warehouseNacional;
+                this.warehouse.productShipments = productsNacional;
+              }
+
+              this.warehouse.cp = cpDestino;
+              this.warehouse.productShipments = productsNacional;
+
+              const shipmentsCost = await this.externalAuthService.onShippingEstimate(
+                supplier, apiShipment, this.warehouse, true
+              ).then(async (resultShip) => {
                 const shipments: Shipment[] = [];
                 for (const key of Object.keys(resultShip)) {
                   const shipment = new Shipment();
@@ -960,32 +986,34 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     shipment.lugarEnvio = resultShip[key].lugarEnvio.toLocaleUpperCase();
                     shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                   }
-                  console.log('push/shipments: ', shipments);
                   shipments.push(shipment);
                 }
-                console.log('shipments: ', shipments);
                 return await shipments;
               });
-            for (const shipId of Object.keys(shipmentsCost)) {
-              shipmentsSupp.push(shipmentsCost[shipId]);
-              shipmentsEnd.push(shipmentsCost[shipId]);
+
+              for (const shipId of Object.keys(shipmentsCost)) {
+                shipmentsSupp.push(shipmentsCost[shipId]);
+                shipmentsEnd.push(shipmentsCost[shipId]);
+              }
+
+              for (const cartId of Object.keys(this.cartItems)) {
+                carItemsWarehouse.push(this.cartItems[cartId]);
+              }
+
+              this.warehouse.shipments = shipmentsSupp;
+              supplierProd.idProveedor = supplier.slug;
+              this.warehouse.suppliersProd = supplierProd;
+              this.warehouse.products = carItemsWarehouse;
+              this.warehouses.push(this.warehouse);
             }
-            // carItemsWarehouse
-            for (const cartId of Object.keys(this.cartItems)) {
-              carItemsWarehouse.push(this.cartItems[cartId]);
-            }
-            this.warehouse.shipments = shipmentsSupp;
-            supplierProd.idProveedor = supplier.slug;
-            this.warehouse.suppliersProd = supplierProd;
-            this.warehouse.products = carItemsWarehouse;
-            this.warehouses.push(this.warehouse);
-            console.log('this.warehouses: ', this.warehouses);
           }
         }
       }
     }
+    console.log('shipmentsEnd: ', shipmentsEnd);
+    console.log('this.warehouses: ', this.warehouses);
     return await shipmentsEnd;
-    // Elaborar Pedido Previo a facturacion.
+    // Elaborar Pedido Previo a facturación.
   }
 
   /**
@@ -1047,26 +1075,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     let discountI = 0;
     let deliveryI = 0;
     this.existePaqueteria = true;
-    console.log('costo: ', costo);
     if (this.cupon) {
       this.cartService.priceTotal.subscribe(total => {
         this.totalPagar = (total).toFixed(2).toString();
       });
-      console.log('this.totalPagar: ', this.totalPagar);
       const discountPorc = this.cupon.order;
       discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
       this.discount = discountI.toFixed(2).toString();
-      console.log('this.discount: ', this.discount);
     }
     if (costo) {
       deliveryI = costo;
       this.totalEnvios = costo.toFixed(2).toString();
-      console.log('this.totalEnvios: ', this.totalEnvios);
       this.cartService.priceTotal.subscribe(total => {
         this.totalPagar = (total - discountI + deliveryI).toFixed(2).toString();
       });
     }
-    console.log('this.totalPagar: ', this.totalPagar);
   }
 
   changeDiscount(discountPorc: number): void {
