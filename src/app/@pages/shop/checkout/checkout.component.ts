@@ -898,8 +898,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.filtrarSucursales(productos, index + 1, sucursalesComunes);
       } else {
         // Cuando se procesen todos los productos, tendrás el conjunto de sucursales comunes
-        // this.sucursalesComunes = [...sucursalesComunes];
-
+        if (productos.length === 1) {
+          console.log('sucursalesComunes.before: ', sucursalesComunes);
+          const sucursalesArray = Array.from(sucursalesComunes);
+          if (sucursalesArray.length > 0) {
+            const primerSucursal = sucursalesArray[0];
+            sucursalesComunes = new Set([primerSucursal]);
+          }
+        }
+        console.log('sucursalesComunes: ', sucursalesComunes);
         this.commonBranchOffices.clear;
         sucursalesComunes.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
 
@@ -1339,6 +1346,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.formData.controls.selectCountry.setValue('');
     this.formData.controls.selectEstado.setValue('');
     this.formData.controls.selectMunicipio.setValue('');
+    this.shipments = [];
   }
 
   clearOpacity(): void {
