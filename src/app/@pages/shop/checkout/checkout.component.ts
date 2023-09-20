@@ -910,6 +910,48 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
+  optimizeBranchOfficeAssignment(products: CartItem[]): Map<string, string[]> {
+    const branchOfficeAvailability: Map<string, number> = new Map(); // Mapa de disponibilidad de sucursales
+
+    // Inicializar el mapa de disponibilidad con las sucursales y sus cantidades disponibles
+    for (const product of products) {
+      for (const branchOffice of product.suppliersProd.branchOffices) {
+        if (!branchOfficeAvailability.has(branchOffice.id)) {
+          branchOfficeAvailability.set(branchOffice.id, branchOffice.cantidad);
+        } else {
+          branchOfficeAvailability.set(
+            branchOffice.id,
+            branchOfficeAvailability.get(branchOffice.id)! + branchOffice.cantidad
+          );
+        }
+      }
+    }
+
+    // Función para verificar si una sucursal puede satisfacer un producto
+    function canSatisfy(branchOffice: string, product: CartItem): boolean {
+      const availableQuantity = branchOfficeAvailability.get(branchOffice) || 0;
+      return availableQuantity >= product.qty;
+    }
+
+    const branchOfficeAssignment: Map<string, string[]> = new Map(); // Mapa de asignación de sucursales a productos
+
+    // Asignar sucursales a productos de manera óptima
+    for (const product of products) {
+      const assignedBranchOffices: string[] = [];
+
+      for (const branchOffice of product.suppliersProd.branchOffices) {
+        if (canSatisfy(branchOffice.id, product)) {
+          assignedBranchOffices.push(branchOffice.id);
+          // Reducir la disponibilidad de la sucursal
+          branchOfficeAvailability.set(branchOffice.id, branchOfficeAvailability.get(branchOffice.id)! - product.qty);
+        }
+      }
+
+      branchOfficeAssignment.set(product.sku, assignedBranchOffices);
+    }
+
+    return branchOfficeAssignment;
+  }
 
   findCommonBranchOffice(products: CartItem[], branchOffices: BranchOffices[]): BranchOffices[] {
     if (products.length === 0 || branchOffices.length === 0) {
@@ -1047,6 +1089,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             console.log('carItemsSupplier:', carItemsSupplier);
             this.filtrarSucursales(carItemsSupplier);
             console.log('this.commonBranchOffices:', this.commonBranchOffices);
+            const optimizadas = this.optimizeBranchOfficeAssignment(carItemsSupplier);
+            console.log('optimizadas:', optimizadas);
+
             let branchOfficesTot: BranchOffices[] = [];
             let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
             for (const cart of this.cartItems) {
