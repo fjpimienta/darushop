@@ -122,6 +122,26 @@ export class BranchOffices {
   longitud: string;
 }
 
+export class SortedOffice extends BranchOffices {
+  // Define la interfaz aquí si es necesario
+  suppliersProd: {
+    idProveedor: string;
+    codigo: string;
+    price: number;
+    moneda: string;
+    branchOffices: Array<{
+      id: string;
+      name: string;
+      estado: string;
+      cantidad: number;
+      cp: string;
+      latitud: string;
+      longitud: string;
+    }>;
+  };
+}
+
+
 export class Descuentos {
   total_descuento: number;
   moneda_descuento: string;
