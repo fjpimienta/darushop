@@ -291,7 +291,10 @@
                             (change)="changeShipping(shipment.costo)">
                           <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.lugarEnvio}}</label>
                         </div> -->
-                        <label for="{{shipment.empresa}}">Env&iacute;o para: {{shipment.lugarRecepcion}}</label>
+                        <label *ngIf="shipments.length>1" for="{{shipment.empresa}}">Env&iacute;o desde:
+                          {{shipment.lugarEnvio}}</label>
+                        <label *ngIf="shipments.length===1" for="{{shipment.empresa}}">Env&iacute;o para:
+                          {{shipment.lugarRecepcion}}</label>
                       </td>
                       <td>{{shipment.costo.toFixed(2) | currency}}</td>
                     </tr>
