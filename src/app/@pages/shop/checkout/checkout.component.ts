@@ -837,6 +837,68 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await [];
   }
 
+  assignProductsToBranchOffices(products: CartItem[]): string[] {
+    const sortedBranchOffices = [...products.reduce((map, product) => {
+      product.suppliersProd.branchOffices.forEach(branchOffice => {
+        const currentCount = map.get(branchOffice.id) || 0;
+        map.set(branchOffice.id, currentCount + branchOffice.cantidad);
+      });
+      return map;
+    }, new Map<string, number>())]
+      .sort((a, b) => b[1] - a[1])
+      .map(item => item[0]);
+    console.log('sortedBranchOffices: ', sortedBranchOffices);
+
+    const assignedBranchOffices: string[] = [];
+
+    const updatedProducts: CartItem[] = [];
+
+    for (const product of products) {
+      let remainingQty = product.qty;
+      const assignedBranches: BranchOffices[] = [];
+
+      for (const branchOfficeId of sortedBranchOffices) {
+        const branchOffice = product.suppliersProd.branchOffices.find(
+          office => office.id === branchOfficeId
+        );
+
+        if (branchOffice && branchOffice.cantidad >= remainingQty && remainingQty > 0) {
+          assignedBranches.push(branchOffice);
+          assignedBranchOffices.push(branchOffice.id);
+          remainingQty -= branchOffice.cantidad;
+
+          if (remainingQty <= 0) {
+            break;
+          }
+        }
+      }
+
+      // Crear un nuevo objeto de producto actualizado
+      const updatedProduct: CartItem = {
+        ...product,
+        suppliersProd: {
+          ...product.suppliersProd,
+          branchOffices: assignedBranches,
+        },
+      };
+
+      updatedProducts.push(updatedProduct);
+    }
+
+    // Eliminar los productos que no tienen branchOffices asignados
+    const filteredProducts = updatedProducts.filter(product => product.suppliersProd.branchOffices.length > 0);
+    console.log('filteredProducts: ', filteredProducts);
+
+    // Reemplazar la lista de productos original con la lista filtrada y actualizada
+    products.length = 0;
+    products.push(...filteredProducts);
+    console.log('assignedBranchOffices: ', assignedBranchOffices);
+    this.commonBranchOffices.clear;
+    assignedBranchOffices.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
+
+    return assignedBranchOffices;
+  }
+
   filtrarSucursales(productos: CartItem[], index: number = 0, sucursalesComunes: Set<string> = new Set<string>()) {
     try {
       const pos = index + 1;
@@ -1093,11 +1155,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
           if (carItemsSupplier.length > 0) {
             //Buscar todos los branchOffice de los productos.
-            console.log('carItemsSupplier:', carItemsSupplier);
-            this.filtrarSucursales(carItemsSupplier);
+            console.log('carItemsSupplier.before:', carItemsSupplier);
+            this.assignProductsToBranchOffices(carItemsSupplier);
+            console.log('carItemsSupplier.after:', carItemsSupplier);
             console.log('this.commonBranchOffices:', this.commonBranchOffices);
-            const optimizadas = this.optimizeBranchOfficeAssignment(carItemsSupplier);
-            console.log('optimizadas:', optimizadas);
+
+
+            // this.filtrarSucursales(carItemsSupplier);
+            // console.log('this.commonBranchOffices:', this.commonBranchOffices);
+            // const optimizadas = this.optimizeBranchOfficeAssignment(carItemsSupplier);
+            // console.log('optimizadas:', optimizadas);
 
             let branchOfficesTot: BranchOffices[] = [];
             let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
@@ -1867,11 +1934,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 return await ctResponse;
               }
               const ctResponse: OrderCtResponse = new OrderCtResponse();
-              ctResponse.estatus = resultPedido[0].respuestaCT.estatus;
-              ctResponse.fecha = resultPedido[0].respuestaCT.fecha;
-              ctResponse.pedidoWeb = resultPedido[0].respuestaCT.pedidoWeb;
-              ctResponse.tipoDeCambio = resultPedido[0].respuestaCT.tipoDeCambio;
-              ctResponse.errores = resultPedido[0].respuestaCT.errores;
+              ctResponse.estatus = resultPedido.orderCt.estatus;
+              ctResponse.fecha = resultPedido.orderCt.fecha;
+              ctResponse.pedidoWeb = resultPedido.orderCt.pedidoWeb;
+              ctResponse.tipoDeCambio = resultPedido.orderCt.tipoDeCambio;
+              ctResponse.errores = resultPedido.orderCt.errores;
               return await ctResponse;
             } catch (error) {
               console.log('error: ', error);
