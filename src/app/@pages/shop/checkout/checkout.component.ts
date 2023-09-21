@@ -899,172 +899,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return assignedBranchOffices;
   }
 
-  filtrarSucursales(productos: CartItem[], index: number = 0, sucursalesComunes: Set<string> = new Set<string>()) {
-    try {
-      const pos = index + 1;
-      console.log('===========================================================')
-      console.log(`sucursalesComunes: ${pos}`, sucursalesComunes);
-      if (index < productos.length) {
-        const producto = productos[index];
-        const cantidadDeseada = producto.qty;
-        // Obtener las branchOffices del producto actual que cumplen con la condición
-        const sucursalesProducto = new Set<string>(
-          producto.suppliersProd.branchOffices
-            .filter((sucursal) => sucursal.cantidad >= cantidadDeseada)
-            .sort((a, b) => b.cantidad - a.cantidad) // Ordenar de mayor a menor por cantidad
-            .map((sucursal) => sucursal.id)
-        );
-        console.log('sucursalesProducto: ', sucursalesProducto);
-        if (sucursalesComunes.size === 0) {
-          // Si el conjunto de sucursales comunes está vacío, inicialízalo con las sucursales del primer producto
-          sucursalesComunes = sucursalesProducto;
-        } else {
-          // Realiza la intersección con las sucursales actuales y las del producto actual
-          const interseccion = [...sucursalesComunes].filter((sucursal) =>
-            sucursalesProducto.has(sucursal)
-          );
-          console.log('interseccion: ', interseccion);
-          // Obtener las sucursales que no se encuentran en la intersección
-          const noEnInterseccion = [...sucursalesProducto].filter((sucursal) =>
-            !interseccion.includes(sucursal)
-          );
-          console.log('No en intersección:', noEnInterseccion);
-          if (interseccion.length === 0) {
-            // No hay sucursales comunes, selecciona la sucursal con la mayor cantidad de productos
-            const sucursalesConCantidad = producto.suppliersProd.branchOffices
-              .filter((sucursal: any) => sucursal.cantidad >= cantidadDeseada)
-              .sort((a: any, b: any) => b.cantidad - a.cantidad);
-            console.log('sucursalesConCantidad: ', sucursalesConCantidad);
-            if (sucursalesConCantidad.length > 0) {
-              sucursalesComunes.add(sucursalesConCantidad[0].id);
-            }
-          } else {
-            // Hay sucursales comunes
-            console.log('sucursalesComunes.size: ', sucursalesComunes.size);
-            // Obtener solo la primer sucursal de las comunes.
-            if (interseccion.length > 0) {
-              const primerRegistro = interseccion.shift();
-              // sucursalesComunes = new Set([primerRegistro]); // Cambia sucursalesComunes por el nuevo valor
-              sucursalesComunes = new Set([primerRegistro, ...noEnInterseccion]); // Crea un nuevo conjunto con los elementos
-              console.log('Primer registro de intersección:', primerRegistro);
-              console.log('sucursalesComunes: ', sucursalesComunes);
-            }
-            // if (sucursalesComunes.size === 1) {
-            //   sucursalesComunes = new Set(interseccion);
-            //   console.log('sucursalesComunes: ', sucursalesComunes);
-            // }
-          }
-        }
-        console.log('...sucursalesComunes:', [...sucursalesComunes]);
-        // Llama recursivamente para el siguiente producto
-        this.filtrarSucursales(productos, index + 1, sucursalesComunes);
-      } else {
-        // Cuando se procesen todos los productos, tendrás el conjunto de sucursales comunes
-        if (productos.length === 1) {
-          console.log('sucursalesComunes.before: ', sucursalesComunes);
-          const sucursalesArray = Array.from(sucursalesComunes);
-          if (sucursalesArray.length > 0) {
-            const primerSucursal = sucursalesArray[0];
-            sucursalesComunes = new Set([primerSucursal]);
-          }
-        }
-        console.log('sucursalesComunes: ', sucursalesComunes);
-        this.commonBranchOffices.clear;
-        sucursalesComunes.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
-
-        console.log('Sucursales comunes que cumplen las condiciones:', [...sucursalesComunes]);
-      }
-    } catch (error) {
-      console.log('Error:', error);
-    }
-  }
-
-  optimizeBranchOfficeAssignment(products: CartItem[]): Map<string, string[]> {
-    const branchOfficeAvailability: Map<string, number> = new Map(); // Mapa de disponibilidad de sucursales
-
-    // Inicializar el mapa de disponibilidad con las sucursales y sus cantidades disponibles
-    for (const product of products) {
-      for (const branchOffice of product.suppliersProd.branchOffices) {
-        if (!branchOfficeAvailability.has(branchOffice.id)) {
-          branchOfficeAvailability.set(branchOffice.id, branchOffice.cantidad);
-        } else {
-          branchOfficeAvailability.set(
-            branchOffice.id,
-            branchOfficeAvailability.get(branchOffice.id)! + branchOffice.cantidad
-          );
-        }
-      }
-    }
-
-    // Función para verificar si una sucursal puede satisfacer un producto
-    function canSatisfy(branchOffice: string, product: CartItem): boolean {
-      const availableQuantity = branchOfficeAvailability.get(branchOffice) || 0;
-      return availableQuantity >= product.qty;
-    }
-
-    const branchOfficeAssignment: Map<string, string[]> = new Map(); // Mapa de asignación de sucursales a productos
-
-    // Asignar sucursales a productos de manera óptima
-    for (const product of products) {
-      const assignedBranchOffices: string[] = [];
-
-      for (const branchOffice of product.suppliersProd.branchOffices) {
-        if (canSatisfy(branchOffice.id, product)) {
-          assignedBranchOffices.push(branchOffice.id);
-          // Reducir la disponibilidad de la sucursal
-          branchOfficeAvailability.set(branchOffice.id, branchOfficeAvailability.get(branchOffice.id)! - product.qty);
-        }
-      }
-
-      branchOfficeAssignment.set(product.sku, assignedBranchOffices);
-    }
-
-    return branchOfficeAssignment;
-  }
-
-  findCommonBranchOffice(products: CartItem[], branchOffices: BranchOffices[]): BranchOffices[] {
-    if (products.length === 0 || branchOffices.length === 0) {
-      return [];
-    }
-    console.log('products: ', products);
-    console.log('branchOffices: ', branchOffices);
-    // Crear un mapa para realizar un seguimiento de cuántos productos cada oficina puede satisfacer
-    const officeSatisfactions = new Map<string, number>();
-    for (const product of products) {
-      for (const office of product.suppliersProd.branchOffices) {
-        if (!officeSatisfactions.has(office.id)) {
-          officeSatisfactions.set(office.id, 0);
-        }
-        if (office.cantidad >= product.qty) {
-          officeSatisfactions.set(office.id, officeSatisfactions.get(office.id)! + 1);
-        }
-      }
-    }
-    console.log('officeSatisfactions: ', officeSatisfactions);
-    // Ordenar las oficinas en función de la cantidad de productos que pueden satisfacer de mayor a menor.
-    const sortedOffices: SortedOffice[] = branchOffices.slice().sort((a, b) => {
-      const productsSatisfiedA = officeSatisfactions.get(a.id) || 0;
-      const productsSatisfiedB = officeSatisfactions.get(b.id) || 0;
-      return productsSatisfiedB - productsSatisfiedA;
-    }) as SortedOffice[];
-    console.log('sortedOffices: ', sortedOffices);
-
-    const commonBranchOffices: BranchOffices[] = [];
-    const _BranchOffice = this.getProductsByBranchOffice(products, officeSatisfactions, sortedOffices);
-    // Hacer el cliclo mientras _BranchOffice sea menor que officeSatisfactions
-    // Elimina las oficinas procesadas del mapa
-    for (const office of _BranchOffice) {
-      const satisfiedProducts = officeSatisfactions.get(office.id);
-      if (satisfiedProducts !== undefined) {
-        officeSatisfactions.set(office.id, satisfiedProducts - 1);
-      }
-    }
-    console.log('_BranchOffice: ', _BranchOffice);
-    //commonBranchOffices = {..._BranchOffice};
-    // Metodo para elegir branchOffices
-    return commonBranchOffices;
-  }
-
   getProductsByBranchOffice(products: CartItem[], officeSatisfactions: Map<string, number>, sortedOffices: SortedOffice[]) {
     const commonBranchOffices: BranchOffices[] = [];
     let totalSatisfiedProducts = 0;
@@ -1160,12 +994,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             console.log('carItemsSupplier.after:', carItemsSupplier);
             console.log('this.commonBranchOffices:', this.commonBranchOffices);
 
-
-            // this.filtrarSucursales(carItemsSupplier);
-            // console.log('this.commonBranchOffices:', this.commonBranchOffices);
-            // const optimizadas = this.optimizeBranchOfficeAssignment(carItemsSupplier);
-            // console.log('optimizadas:', optimizadas);
-
             let branchOfficesTot: BranchOffices[] = [];
             let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
             for (const cart of this.cartItems) {
@@ -1177,12 +1005,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
             }
             console.log('branchOfficesTot:', branchOfficesTot);
-
-
             const commonBranchOffices = branchOfficesTot;
-            // const commonBranchOffices = this.findCommonBranchOffice(carItemsSupplier, branchOfficesTot); // Obtener almacenes comunes
             console.log('commonBranchOffices:', commonBranchOffices);
-
             for (const commonBranch of commonBranchOffices) {
               const productsNacional: ProductShipment[] = [];
               const warehouseNacional = new Warehouse();
