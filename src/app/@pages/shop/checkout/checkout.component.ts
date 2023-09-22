@@ -1003,13 +1003,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           console.log('this.cartItems:', this.cartItems);
           const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
           if (carItemsSupplier.length > 0) {
-            //Buscar todos los branchOffice de los productos.
-            // this.assignProductsToBranchOffices(carItemsSupplier);
+            // Buscar todos los branchOffice de los productos.
             const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
-            console.log('branchOfficesCom: ', branchOfficesCom);
             this.commonBranchOffices.clear;
             branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
-            console.log('this.commonBranchOffices:', this.commonBranchOffices);
+            // Se guardan las sucursales comunes para los envios.
             let branchOfficesTot: BranchOffices[] = [];
             let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
             for (const cart of this.cartItems) {
@@ -1020,7 +1018,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
             }
-            console.log('branchOfficesTot:', branchOfficesTot);
             const commonBranchOffices = branchOfficesTot;
             console.log('commonBranchOffices:', commonBranchOffices);
             for (const commonBranch of commonBranchOffices) {
