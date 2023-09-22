@@ -284,17 +284,20 @@
                       <td>Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
-                    <tr *ngFor="let shipment of shipments" class="summary-shipping-row">
+                    <tr *ngFor="let shipment of shipments; let i=index" class="summary-shipping-row">
                       <td>
+                        <label>
+                          N&uacute;mero de Env&iacute;o {{i + 1}}
+                        </label>
                         <!-- <div class="custom-control custom-radio">
                           <input type="radio" id="{{shipment.empresa}}" name="shipping" class="custom-control-input"
                             (change)="changeShipping(shipment.costo)">
                           <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.lugarEnvio}}</label>
                         </div> -->
-                        <label *ngIf="shipments.length>1" for="{{shipment.empresa}}">Env&iacute;o desde:
+                        <!-- <label *ngIf="shipments.length>1" for="{{shipment.empresa}}">Env&iacute;o desde:
                           {{shipment.lugarEnvio}}</label>
                         <label *ngIf="shipments.length===1" for="{{shipment.empresa}}">Env&iacute;o para:
-                          {{shipment.lugarRecepcion}}</label>
+                          {{shipment.lugarRecepcion}}</label> -->
                       </td>
                       <td>{{shipment.costo.toFixed(2) | currency}}</td>
                     </tr>
