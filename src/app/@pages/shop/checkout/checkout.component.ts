@@ -837,149 +837,131 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return await [];
   }
 
-  assignProductsToBranchOffices(products: CartItem[]): string[] {
-    // Obtener una lista de todas las branchOffices con suficiente cantidad para cada producto
-    const branchOfficesMap = new Map<string, number[]>();
+  // Define una función para encontrar sucursales que puedan surtir productos
+  findBranchOfficesForProducts(products: CartItem[]): any[] {
+    try {
+      // Crear un objeto que mapee branchOffices a las cantidades disponibles
+      const branchOfficeQtyMap = {};
 
-    products.forEach((product) => {
-      product.suppliersProd.branchOffices.forEach((branchOffice) => {
-        if (branchOffice.cantidad >= product.qty) {
-          if (!branchOfficesMap.has(branchOffice.id)) {
-            branchOfficesMap.set(branchOffice.id, []);
+      // Inicializar el mapeo de cantidades por sucursal
+      products.forEach(product => {
+        product.suppliersProd.branchOffices.forEach(branchOffice => {
+          if (!branchOfficeQtyMap[branchOffice.id]) {
+            branchOfficeQtyMap[branchOffice.id] = {};
           }
-          branchOfficesMap.get(branchOffice.id).push(product.id);
-        }
+          branchOfficeQtyMap[branchOffice.id][product.sku] = branchOffice.cantidad;
+        });
       });
-    });
 
-    // Filtrar las branchOffices que pueden surtir todos los productos
-    const branchOfficesForAllProducts = [...branchOfficesMap.entries()]
-      .filter(([_, productIds]) => productIds.length === products.length);
+      // Calcular las cantidades requeridas para cada SKU
+      const requiredQuantities = {};
+      products.forEach(product => {
+        requiredQuantities[product.sku] = requiredQuantities[product.sku] || 0;
+        requiredQuantities[product.sku] += product.qty;
+      });
 
-    // Ordenar las branchOffices por cantidad de productos que pueden surtir
-    branchOfficesForAllProducts.sort((a, b) => {
-      return a[1].length - b[1].length;
-    });
+      // Encontrar sucursales que pueden surtir todos los productos
+      const optimalBranchOffices = [];
 
-    let resultBranchOffices: string[] = [];
-
-    if (branchOfficesForAllProducts.length > 0) {
-      // Devolver la branchOffice que puede surtir todos los productos
-      resultBranchOffices = [branchOfficesForAllProducts[0][0]];
-    } else {
-      // No hay una sola branchOffice que pueda surtir todos los productos
-      // Buscar combinaciones de branchOffices que puedan surtir todos los productos
-      const productIds = products.map((product) => product.sku);
-      const maxCombinationCount = Math.min(3, productIds.length);
-
-      for (let combinationSize = 2; combinationSize <= maxCombinationCount; combinationSize++) {
-        const combinations = this.getCombinations(productIds, combinationSize);
-
-        for (const combination of combinations) {
-          const branchOffices = new Set<string>();
-
-          combination.forEach((productId) => {
-            const branchOfficeIds = branchOfficesMap.get(productId);
-            if (branchOfficeIds) {
-              branchOfficeIds.forEach((branchOfficeId) => {
-                branchOffices.add(branchOfficeId.toString());
-              });
-            }
-          });
-
-          // Verificar si esta combinación de branchOffices puede surtir todos los productos
-          if (branchOffices.size === products.length) {
-            resultBranchOffices = [...branchOffices];
-            break;
+      // Función auxiliar para verificar si una sucursal puede surtir todos los productos
+      function canFulfill(branchId) {
+        const branchQtyMap = branchOfficeQtyMap[branchId];
+        for (const sku in requiredQuantities) {
+          if (!branchQtyMap[sku] || branchQtyMap[sku] < requiredQuantities[sku]) {
+            return false;
           }
         }
+        return true;
+      }
 
-        if (resultBranchOffices.length > 0) {
-          break;
+      // Buscar una sucursal que pueda surtir todos los productos
+      for (const branchId in branchOfficeQtyMap) {
+        if (canFulfill(branchId)) {
+          optimalBranchOffices.push(branchId);
+          return optimalBranchOffices;
         }
       }
+
+      // Si no se encontró una sola sucursal que pueda surtir todo, buscar hasta cinco sucursales
+      const allBranches = Object.keys(branchOfficeQtyMap);
+      for (let i = 1; i <= 5; i++) {
+        for (const branchCombination of this.getCombinations(allBranches, i)) {
+          const canFulfillAll = branchCombination.every(branchId => canFulfill(branchId));
+          if (canFulfillAll) {
+            return branchCombination;
+          }
+        }
+      }
+
+      // Si no se encontraron cinco sucursales, separar el producto que no pueda surtirse
+      return this.separateUnfulfilledProduct(products, branchOfficeQtyMap);
+    } catch (error) {
+      console.error('error: ', error);
+      return [];
     }
-    console.log('resultBranchOffices: ', resultBranchOffices);
-    this.commonBranchOffices.clear;
-    resultBranchOffices.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
-    console.log('this.commonBranchOffices: ', this.commonBranchOffices);
-
-
-    return resultBranchOffices;
   }
 
-  // Función para obtener todas las combinaciones posibles de un conjunto
-  getCombinations(arr: string[], k: number): string[][] {
-    const result: string[][] = [];
-
-    function combine(start: number, comb: string[]) {
-      if (comb.length === k) {
-        result.push([...comb]);
+  // Función para obtener todas las combinaciones de una lista dada
+  getCombinations(arr, k) {
+    const result = [];
+    function backtrack(start, current) {
+      if (current.length === k) {
+        result.push(current.slice());
         return;
       }
-
       for (let i = start; i < arr.length; i++) {
-        comb.push(arr[i]);
-        combine(i + 1, comb);
-        comb.pop();
+        current.push(arr[i]);
+        backtrack(i + 1, current);
+        current.pop();
       }
     }
-
-    combine(0, []);
-
+    backtrack(0, []);
     return result;
   }
 
+  // Función para separar un producto que no pueda surtirse
+  separateUnfulfilledProduct(products, branchOfficeQtyMap) {
+    // Ordenar productos por cantidad requerida en orden descendente
+    products.sort((a, b) => b.qty - a.qty);
 
-  getProductsByBranchOffice(products: CartItem[], officeSatisfactions: Map<string, number>, sortedOffices: SortedOffice[]) {
-    const commonBranchOffices: BranchOffices[] = [];
-    let totalSatisfiedProducts = 0;
-    for (const office of sortedOffices) {
-      const satisfiedProducts = officeSatisfactions.get(office.id) || 0;
-      totalSatisfiedProducts += satisfiedProducts;
-      console.log('totalSatisfiedProducts: ', totalSatisfiedProducts);
-      if (totalSatisfiedProducts >= products.length) {
-        commonBranchOffices.push(office);
-        break;
+    // Inicializar un arreglo para las sucursales que pueden surtir el producto
+    const branchOfficesForUnfulfilledProduct = [];
+
+    // Intentar separar el producto con mayor cantidad requerida
+    for (const product of products) {
+      const branchId = this.findBranchOfficeForProduct(product, branchOfficeQtyMap);
+      if (branchId) {
+        branchOfficesForUnfulfilledProduct.push(branchId);
       } else {
-        commonBranchOffices.push(office);
-        console.log('commonBranchOffices: ', commonBranchOffices);
-        // Almacenar la cantidad de productos que quedan por satisfacer
-        const remainingProducts = products.length - totalSatisfiedProducts;
-        console.log('remainingProducts: ', remainingProducts);
-        // Filtrar las oficinas que aún pueden satisfacer productos
-        const remainingOffices = sortedOffices.filter((o) => {
-          const satisfied = officeSatisfactions.get(o.id) || 0;
-          return satisfied < o.cantidad;
-        });
-        console.log('remainingOffices: ', remainingOffices);
-        // Buscar un almacén que contenga la mayor cantidad de productos faltantes
-        let bestOffice: BranchOffices | undefined;
-        let bestSatisfied = 0;
-        for (const remainingOffice of remainingOffices) {
-          const satisfied = officeSatisfactions.get(remainingOffice.id) || 0;
-          console.log('satisfied: ', satisfied);
-          const remaining = remainingProducts - satisfied;
-          console.log('remaining: ', remaining);
-          if (remaining > bestSatisfied) {
-            bestSatisfied = remaining;
-            bestOffice = remainingOffice;
-            break; // Agrega el break aquí para salir del bucle
-          }
-        }
-        console.log('bestOffice: ', bestOffice);
-        if (bestOffice) {
-          commonBranchOffices.push(bestOffice);
-          totalSatisfiedProducts += bestSatisfied;
-          if (totalSatisfiedProducts >= products.length) {
-            break;
-          }
-        } else {
-          break; // No se pueden satisfacer más productos
-        }
+        // Si no se puede surtir el producto, devolver el SKU del producto
+        return [product.sku];
       }
     }
-    return commonBranchOffices;
+
+    // Devolver las sucursales que pueden surtir el producto
+    return branchOfficesForUnfulfilledProduct;
+  }
+
+  // Función para verificar si se puede separar un producto de las sucursales
+  canSeparateProduct(product, branchOfficeQtyMap) {
+    const requiredQuantity = product.qty;
+    for (const branchId in branchOfficeQtyMap) {
+      if (branchOfficeQtyMap[branchId][product.sku] >= requiredQuantity) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Función para encontrar una sucursal que pueda surtir un producto
+  findBranchOfficeForProduct(product, branchOfficeQtyMap) {
+    const requiredQuantity = product.qty;
+    for (const branchId in branchOfficeQtyMap) {
+      if (branchOfficeQtyMap[branchId][product.sku] >= requiredQuantity) {
+        return branchId;
+      }
+    }
+    return null; // Devolver null si no se puede surtir el producto
   }
 
   /**
@@ -1018,14 +1000,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           });
         if (apiShipment) {                                                          // Si hay Api para el Proveedor.
           const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
+          console.log('this.cartItems:', this.cartItems);
           const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
           if (carItemsSupplier.length > 0) {
             //Buscar todos los branchOffice de los productos.
-            console.log('carItemsSupplier.before:', carItemsSupplier);
-            this.assignProductsToBranchOffices(carItemsSupplier);
-            console.log('carItemsSupplier.after:', carItemsSupplier);
+            // this.assignProductsToBranchOffices(carItemsSupplier);
+            const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
+            console.log('branchOfficesCom: ', branchOfficesCom);
+            this.commonBranchOffices.clear;
+            branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
             console.log('this.commonBranchOffices:', this.commonBranchOffices);
-
             let branchOfficesTot: BranchOffices[] = [];
             let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
             for (const cart of this.cartItems) {
