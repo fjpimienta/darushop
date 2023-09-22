@@ -46,7 +46,7 @@ export class CartService {
       this.store.dispatch(new AddToCartAction({ product, qty }));
       this.toastrService.success('Producto agregado al Carrito.');
     } else {
-      this.toastrService.error('Lo sentimos, no puedes agregar esa cantidad al Carrito.');
+      this.toastrService.warning('Lo sentimos, no puedes agregar esa cantidad al Carrito.');
     }
   }
 

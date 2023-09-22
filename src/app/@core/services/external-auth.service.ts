@@ -17,6 +17,7 @@ import { IOrderCva } from '@core/interfaces/suppliers/ordercva.interface';
 import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from '@core/interfaces/suppliers/orderct.interface';
 import { EnvioCt, GuiaConnect } from '@core/models/suppliers/orderct.models';
 import { IOrderCvaResponse } from '@core/interfaces/suppliers/ordercvaresponse.interface';
+import { Result } from '@core/models/result.models';
 
 declare const require;
 const axios = require('axios');
@@ -642,160 +643,178 @@ export class ExternalAuthService extends ApiService {
     warehouse: Warehouse,
     tokenJson: boolean
   ): Promise<any> {
-    let token: string;
-    const shipments: Shipment[] = [];
-    switch (supplier.slug) {
-      case 'ct':
-        const productosCt: ProductShipmentCT[] = [];
-        for (const id of Object.keys(warehouse.productShipments)) {
-          const pS: ProductShipment = warehouse.productShipments[id];
-          const newPS: ProductShipmentCT = new ProductShipmentCT();
-          newPS.producto = pS.producto;
-          newPS.cantidad = pS.cantidad;
-          newPS.precio = pS.priceSupplier;
-          newPS.moneda = pS.moneda;
-          newPS.almacen = pS.almacen;
-          productosCt.push(newPS);
-        }
-        const destino = warehouse.cp.padStart(5, '0');
-        const shippmentsCt = await this.getShippingCtRates(destino, productosCt);
-
-
-        let envioMasEconomico = null;
-        let costoMasBajo = shippmentsCt.respuesta.cotizaciones[0].total;
-        for (const envio of shippmentsCt.respuesta.cotizaciones) {            // Recuperar el envio mas economico
-          envio.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
-          if (envio.total <= costoMasBajo) {
-            envioMasEconomico = envio;
-            costoMasBajo = envio.total;
+    try {
+      let token: string;
+      const shipments: Shipment[] = [];
+      switch (supplier.slug) {
+        case 'ct':
+          const productosCt: ProductShipmentCT[] = [];
+          for (const id of Object.keys(warehouse.productShipments)) {
+            const pS: ProductShipment = warehouse.productShipments[id];
+            const newPS: ProductShipmentCT = new ProductShipmentCT();
+            newPS.producto = pS.producto;
+            newPS.cantidad = pS.cantidad;
+            newPS.precio = pS.priceSupplier;
+            newPS.moneda = pS.moneda;
+            newPS.almacen = pS.almacen;
+            productosCt.push(newPS);
           }
-        }
-        if (envioMasEconomico) {
-          shipments.push(envioMasEconomico);
-        }
-        return await shipments;
-      case 'cva':
-        const productShipmentCVA: ProductShipmentCVA[] = [];
-        for (const idPS of Object.keys(warehouse.productShipments)) {
-          const pS: ProductShipment = warehouse.productShipments[idPS];
-          const newPS: ProductShipmentCVA = new ProductShipmentCVA();
-          newPS.clave = pS.producto;
-          newPS.cantidad = pS.cantidad;
-          productShipmentCVA.push(newPS);
-        }
-        const paqueteria = 4;
-        const cp = warehouse.cp.padStart(5, '0');
-        const cp_sucursal = warehouse.productShipments[0].cp.padStart(5, '0');
-        const productosCva = productShipmentCVA;
-        const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
-        const shipmentCva = new Shipment();
-        shipmentCva.empresa = 'PAQUETEXPRESS';
-        shipmentCva.costo = shippmentsCva.shippingCvaRates.cotizacion.montoTotal;
-        shipmentCva.metodoShipping = '';
-        shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
-        shipments.push(shipmentCva);
-        return await shipments;
-      case '99minutos':
-        break;
-      default:
-        return await [];
-    }
-    if (!supplier.token) {                                                                // Si la API no requiere token
-      const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
-        .then(async result => {
-          try {
-            switch (supplier.slug) {
-              case 'cva':
-                const shipmentCva = new Shipment();
-                shipmentCva.empresa = 'PAQUETEXPRESS';
-                shipmentCva.costo = result.montoTotal;
-                shipmentCva.metodoShipping = '';
-                shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
-                shipments.push(shipmentCva);
-                return await shipments;
-              default:
-                return await [];
+          const destino = warehouse.cp.padStart(5, '0');
+          const shippmentsCt = await this.getShippingCtRates(destino, productosCt);
+          const result: Result = new Result();
+          if (!shippmentsCt.status) {
+            const startIndex = shippmentsCt.message.indexOf('{');
+            if (startIndex !== -1) {
+              const message = shippmentsCt.message.substring(startIndex);
+              const errorMessage = JSON.parse(message);
+              result.message = `Codigo: ${errorMessage.codigo} - ${errorMessage.mensaje}`
             }
-          } catch (error) {
-            // TODO Enviar Costos Internos.
-            return await [];
+            result.status = shippmentsCt.status
+            result.data = shippmentsCt.shippingCtRates
+            return await result;
           }
-        });
-      return await resultados;
-    } else {
-      tokenJson = true;
-      return await this.getToken(supplier, tokenJson)                                     // Recupera el token
-        .then(
-          async result => {
-            switch (supplier.slug) {
-              case 'ct':
-                token = result.token;
-                break;
-              case 'cva':
-                token = result;
-                break;
-              case 'syscom':
-                token = result.access_token;
-                break;
-              case '99minutos':
-                token = result.access_token;
-                break;
-              default:
-                break;
+
+          let envioMasEconomico = null;
+          let costoMasBajo = shippmentsCt.shippingCtRates.respuesta.cotizaciones[0].total;
+          for (const envio of shippmentsCt.shippingCtRates.respuesta.cotizaciones) {            // Recuperar el envio mas economico
+            envio.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+            if (envio.total <= costoMasBajo) {
+              envioMasEconomico = envio;
+              costoMasBajo = envio.total;
             }
-            if (token) {
-              const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
-                .then(async result => {
-                  try {
-                    switch (supplier.slug) {
-                      case 'ct':
-                        if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
-                          let envioMasEconomico = null;
-                          let costoMasBajo = result.respuesta.cotizaciones[0].total;
-                          for (const envio of result.respuesta.cotizaciones) {            // Recuperar el envio mas economico
-                            envio.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
-                            if (envio.total <= costoMasBajo) {
-                              envioMasEconomico = envio;
-                              costoMasBajo = envio.total;
-                            }
-                          }
-                          if (envioMasEconomico) {
-                            shipments.push(envioMasEconomico);
-                          }
-                          return shipments;
-                        } else {
-                          // TODO Enviar Costos Internos.
-                          return await [];
-                        }
-                      case 'syscom':
-                        return await [];
-                      case '99minutos':
-                        const shipment = new Shipment();
-                        shipment.empresa = supplier.slug;
-                        shipment.costo = result.data.price;
-                        shipment.metodoShipping = '';
-                        shipment.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
-                        shipments.push(shipment);
-                        return await shipments;
-                      default:
-                        return await [];
-                    }
-                  } catch (error) {
-                    // TODO Enviar Costos Internos.
-                    return await [];
-                  }
-                });
-              return await resultados;
-            } else {
-              console.log('No se encontró el Token de Autorización.');
+          }
+          if (envioMasEconomico) {
+            shipments.push(envioMasEconomico);
+          }
+          result.status = shippmentsCt.status
+          result.message = shippmentsCt.message
+          result.data = shipments
+          return await result;
+        case 'cva':
+          const productShipmentCVA: ProductShipmentCVA[] = [];
+          for (const idPS of Object.keys(warehouse.productShipments)) {
+            const pS: ProductShipment = warehouse.productShipments[idPS];
+            const newPS: ProductShipmentCVA = new ProductShipmentCVA();
+            newPS.clave = pS.producto;
+            newPS.cantidad = pS.cantidad;
+            productShipmentCVA.push(newPS);
+          }
+          const paqueteria = 4;
+          const cp = warehouse.cp.padStart(5, '0');
+          const cp_sucursal = warehouse.productShipments[0].cp.padStart(5, '0');
+          const productosCva = productShipmentCVA;
+          const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
+          const shipmentCva = new Shipment();
+          shipmentCva.empresa = 'PAQUETEXPRESS';
+          shipmentCva.costo = shippmentsCva.shippingCvaRates.cotizacion.montoTotal;
+          shipmentCva.metodoShipping = '';
+          shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+          shipments.push(shipmentCva);
+          return await shipments;
+        case '99minutos':
+          break;
+        default:
+          return await [];
+      }
+      if (!supplier.token) {                                                                // Si la API no requiere token
+        const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+          .then(async result => {
+            try {
+              switch (supplier.slug) {
+                case 'cva':
+                  const shipmentCva = new Shipment();
+                  shipmentCva.empresa = 'PAQUETEXPRESS';
+                  shipmentCva.costo = result.montoTotal;
+                  shipmentCva.metodoShipping = '';
+                  shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+                  shipments.push(shipmentCva);
+                  return await shipments;
+                default:
+                  return await [];
+              }
+            } catch (error) {
               // TODO Enviar Costos Internos.
               return await [];
             }
-          },
-          error => {
-            console.log('error.message: ', error.message);
-          }
-        );
+          });
+        return await resultados;
+      } else {
+        tokenJson = true;
+        return await this.getToken(supplier, tokenJson)                                     // Recupera el token
+          .then(
+            async result => {
+              switch (supplier.slug) {
+                case 'ct':
+                  token = result.token;
+                  break;
+                case 'cva':
+                  token = result;
+                  break;
+                case 'syscom':
+                  token = result.access_token;
+                  break;
+                case '99minutos':
+                  token = result.access_token;
+                  break;
+                default:
+                  break;
+              }
+              if (token) {
+                const resultados = await this.getShipments(supplier, apiSelect, token, warehouse)
+                  .then(async result => {
+                    try {
+                      switch (supplier.slug) {
+                        case 'ct':
+                          if (result.codigo === '2000' && result.respuesta.cotizaciones.length > 0) {
+                            let envioMasEconomico = null;
+                            let costoMasBajo = result.respuesta.cotizaciones[0].total;
+                            for (const envio of result.respuesta.cotizaciones) {            // Recuperar el envio mas economico
+                              envio.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+                              if (envio.total <= costoMasBajo) {
+                                envioMasEconomico = envio;
+                                costoMasBajo = envio.total;
+                              }
+                            }
+                            if (envioMasEconomico) {
+                              shipments.push(envioMasEconomico);
+                            }
+                            return shipments;
+                          } else {
+                            // TODO Enviar Costos Internos.
+                            return await [];
+                          }
+                        case 'syscom':
+                          return await [];
+                        case '99minutos':
+                          const shipment = new Shipment();
+                          shipment.empresa = supplier.slug;
+                          shipment.costo = result.data.price;
+                          shipment.metodoShipping = '';
+                          shipment.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+                          shipments.push(shipment);
+                          return await shipments;
+                        default:
+                          return await [];
+                      }
+                    } catch (error) {
+                      // TODO Enviar Costos Internos.
+                      return await [];
+                    }
+                  });
+                return await resultados;
+              } else {
+                console.log('No se encontró el Token de Autorización.');
+                // TODO Enviar Costos Internos.
+                return await [];
+              }
+            },
+            error => {
+              console.log('error.message: ', error.message);
+            }
+          );
+      }
+    } catch (error) {
+      console.error('error: ', error);
     }
   }
 
@@ -1269,7 +1288,7 @@ export class ExternalAuthService extends ApiService {
               agentemail: '',
               almacenmail: ''
             };
-            resolve (orderCva);
+            resolve(orderCva);
           }
           resolve(result);
         },
@@ -1288,7 +1307,7 @@ export class ExternalAuthService extends ApiService {
         productosCt
       }, {}).subscribe(
         (result: any) => {
-          resolve(result.shippingCtRates.shippingCtRates);
+          resolve(result.shippingCtRates);
         },
         (error: any) => {
           reject(error);
