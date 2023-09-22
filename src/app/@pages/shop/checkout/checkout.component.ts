@@ -838,66 +838,98 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   assignProductsToBranchOffices(products: CartItem[]): string[] {
-    const sortedBranchOffices = [...products.reduce((map, product) => {
-      product.suppliersProd.branchOffices.forEach(branchOffice => {
-        const currentCount = map.get(branchOffice.id) || 0;
-        map.set(branchOffice.id, currentCount + branchOffice.cantidad);
+    // Obtener una lista de todas las branchOffices con suficiente cantidad para cada producto
+    const branchOfficesMap = new Map<string, number[]>();
+
+    products.forEach((product) => {
+      product.suppliersProd.branchOffices.forEach((branchOffice) => {
+        if (branchOffice.cantidad >= product.qty) {
+          if (!branchOfficesMap.has(branchOffice.id)) {
+            branchOfficesMap.set(branchOffice.id, []);
+          }
+          branchOfficesMap.get(branchOffice.id).push(product.id);
+        }
       });
-      return map;
-    }, new Map<string, number>())]
-      .sort((a, b) => b[1] - a[1])
-      .map(item => item[0]);
-    console.log('sortedBranchOffices: ', sortedBranchOffices);
+    });
 
-    const assignedBranchOffices: string[] = [];
+    // Filtrar las branchOffices que pueden surtir todos los productos
+    const branchOfficesForAllProducts = [...branchOfficesMap.entries()]
+      .filter(([_, productIds]) => productIds.length === products.length);
 
-    const updatedProducts: CartItem[] = [];
+    // Ordenar las branchOffices por cantidad de productos que pueden surtir
+    branchOfficesForAllProducts.sort((a, b) => {
+      return a[1].length - b[1].length;
+    });
 
-    for (const product of products) {
-      let remainingQty = product.qty;
-      const assignedBranches: BranchOffices[] = [];
+    let resultBranchOffices: string[] = [];
 
-      for (const branchOfficeId of sortedBranchOffices) {
-        const branchOffice = product.suppliersProd.branchOffices.find(
-          office => office.id === branchOfficeId
-        );
+    if (branchOfficesForAllProducts.length > 0) {
+      // Devolver la branchOffice que puede surtir todos los productos
+      resultBranchOffices = [branchOfficesForAllProducts[0][0]];
+    } else {
+      // No hay una sola branchOffice que pueda surtir todos los productos
+      // Buscar combinaciones de branchOffices que puedan surtir todos los productos
+      const productIds = products.map((product) => product.sku);
+      const maxCombinationCount = Math.min(3, productIds.length);
 
-        if (branchOffice && branchOffice.cantidad >= remainingQty && remainingQty > 0) {
-          assignedBranches.push(branchOffice);
-          assignedBranchOffices.push(branchOffice.id);
-          remainingQty -= branchOffice.cantidad;
+      for (let combinationSize = 2; combinationSize <= maxCombinationCount; combinationSize++) {
+        const combinations = this.getCombinations(productIds, combinationSize);
 
-          if (remainingQty <= 0) {
+        for (const combination of combinations) {
+          const branchOffices = new Set<string>();
+
+          combination.forEach((productId) => {
+            const branchOfficeIds = branchOfficesMap.get(productId);
+            if (branchOfficeIds) {
+              branchOfficeIds.forEach((branchOfficeId) => {
+                branchOffices.add(branchOfficeId.toString());
+              });
+            }
+          });
+
+          // Verificar si esta combinación de branchOffices puede surtir todos los productos
+          if (branchOffices.size === products.length) {
+            resultBranchOffices = [...branchOffices];
             break;
           }
         }
+
+        if (resultBranchOffices.length > 0) {
+          break;
+        }
+      }
+    }
+    console.log('resultBranchOffices: ', resultBranchOffices);
+    this.commonBranchOffices.clear;
+    resultBranchOffices.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
+    console.log('this.commonBranchOffices: ', this.commonBranchOffices);
+
+
+    return resultBranchOffices;
+  }
+
+  // Función para obtener todas las combinaciones posibles de un conjunto
+  getCombinations(arr: string[], k: number): string[][] {
+    const result: string[][] = [];
+
+    function combine(start: number, comb: string[]) {
+      if (comb.length === k) {
+        result.push([...comb]);
+        return;
       }
 
-      // Crear un nuevo objeto de producto actualizado
-      const updatedProduct: CartItem = {
-        ...product,
-        suppliersProd: {
-          ...product.suppliersProd,
-          branchOffices: assignedBranches,
-        },
-      };
-
-      updatedProducts.push(updatedProduct);
+      for (let i = start; i < arr.length; i++) {
+        comb.push(arr[i]);
+        combine(i + 1, comb);
+        comb.pop();
+      }
     }
 
-    // Eliminar los productos que no tienen branchOffices asignados
-    const filteredProducts = updatedProducts.filter(product => product.suppliersProd.branchOffices.length > 0);
-    console.log('filteredProducts: ', filteredProducts);
+    combine(0, []);
 
-    // Reemplazar la lista de productos original con la lista filtrada y actualizada
-    products.length = 0;
-    products.push(...filteredProducts);
-    console.log('assignedBranchOffices: ', assignedBranchOffices);
-    this.commonBranchOffices.clear;
-    assignedBranchOffices.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
-
-    return assignedBranchOffices;
+    return result;
   }
+
 
   getProductsByBranchOffice(products: CartItem[], officeSatisfactions: Map<string, number>, sortedOffices: SortedOffice[]) {
     const commonBranchOffices: BranchOffices[] = [];
@@ -1053,19 +1085,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const shipmentsCost = await this.externalAuthService.onShippingEstimate(
                 supplier, apiShipment, this.warehouse, true
               ).then(async (resultShip) => {
+                if (!resultShip.status) {
+                  console.log(`Error: ${resultShip.message}`);
+                  infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                }
                 const shipments: Shipment[] = [];
-                for (const key of Object.keys(resultShip)) {
+                for (const key of Object.keys(resultShip.data)) {
                   const shipment = new Shipment();
-                  shipment.empresa = resultShip[key].empresa.toString();
+                  shipment.empresa = resultShip.data[key].empresa.toString();
                   if (supplier.slug === 'ct') {
-                    shipment.costo = resultShip[key].total;
-                    shipment.metodoShipping = resultShip[key].metodo;
-                    shipment.lugarEnvio = resultShip[key].lugarEnvio.toLocaleUpperCase();
+                    shipment.costo = resultShip.data[key].total;
+                    shipment.metodoShipping = resultShip.data[key].metodo;
+                    shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
                     shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                   } else if (supplier.slug === 'cva') {
-                    shipment.costo = resultShip[key].costo;
-                    shipment.metodoShipping = resultShip[key].metodoShipping;
-                    shipment.lugarEnvio = resultShip[key].lugarEnvio.toLocaleUpperCase();
+                    shipment.costo = resultShip.data[key].costo;
+                    shipment.metodoShipping = resultShip.data[key].metodoShipping;
+                    shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
                     shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                   }
                   shipments.push(shipment);
