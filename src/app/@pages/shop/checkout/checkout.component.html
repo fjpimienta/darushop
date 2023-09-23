@@ -265,7 +265,7 @@
                 <table class="table table-summary">
                   <thead>
                     <tr>
-                      <th>Producto</th>
+                      <th>Producto(s)</th>
                       <th>Total</th>
                     </tr>
                   </thead>
@@ -284,25 +284,8 @@
                       <td>Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
-                    <tr *ngFor="let shipment of shipments; let i=index" class="summary-shipping-row">
-                      <td>
-                        <label>
-                          N&uacute;mero de Env&iacute;o {{i + 1}}
-                        </label>
-                        <!-- <div class="custom-control custom-radio">
-                          <input type="radio" id="{{shipment.empresa}}" name="shipping" class="custom-control-input"
-                            (change)="changeShipping(shipment.costo)">
-                          <label class="custom-control-label" for="{{shipment.empresa}}">{{shipment.lugarEnvio}}</label>
-                        </div> -->
-                        <!-- <label *ngIf="shipments.length>1" for="{{shipment.empresa}}">Env&iacute;o desde:
-                          {{shipment.lugarEnvio}}</label>
-                        <label *ngIf="shipments.length===1" for="{{shipment.empresa}}">Env&iacute;o para:
-                          {{shipment.lugarRecepcion}}</label> -->
-                      </td>
-                      <td>{{shipment.costo.toFixed(2) | currency}}</td>
-                    </tr>
                     <tr class="summary-subtotal">
-                      <td>Env&iacute;os:</td>
+                      <td>Costo del Env&iacute;o:</td>
                       <td>{{totalEnvios | currency}}</td>
                     </tr>
                     <tr class="summary-total">
@@ -335,13 +318,6 @@
                                   <div class="logo">Transacciones realizadas vía:</div>
                                 </div>
                                 <div class="pymnt-cntnt">
-                                  <!-- <div class="sctn-row">
-                                    <div class="sctn-col l">
-                                      <label>Nombre del titular</label><input type="text"
-                                        placeholder="Como aparece en la tarjeta" autocomplete="off"
-                                        data-openpay-card="holder_name">
-                                    </div>
-                                  </div> -->
                                   <div class="sctn-row">
                                     <div class="sctn-col l">
                                       <label>Número de tarjeta</label>
@@ -389,9 +365,6 @@
                                       </div>
                                     </div>
                                   </div>
-                                  <!-- <div class="sctn-row">
-                                    <a class="button rght" id="pay-button">Pagar</a>
-                                  </div> -->
                                 </div>
                               </div>
                               <hr>

@@ -709,8 +709,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.cartItems.push(cartItem);
       }
     }
-    this.totalEnvios = this.shipments[0].costo.toFixed(2).toString();
-    this.changeShipping(this.shipments[0].costo);
+    let totalShips = 0.0;
+    for (const idS of Object.keys(this.shipments)) {
+      const ships: Shipment = this.shipments[idS];
+      totalShips += ships.costo;
+    }
+    this.totalEnvios = totalShips.toFixed(2).toString();
+    this.changeShipping(totalShips);
   }
 
   onSetUser(formData: FormGroup, stripeCustomer: string): UserBasicInput {
