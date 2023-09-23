@@ -101,17 +101,38 @@ export class BrandComponent implements OnInit {
           this.products = utilsService.catFilter(this.products, category);
         }
         if (this.orderBy) {
-          this.products.sort((a, b) => {
-            const nameA = a.name.toUpperCase(); // Convertir a mayúsculas para asegurar un ordenamiento sin distinción entre mayúsculas y minúsculas
-            const nameB = b.name.toUpperCase();
-            if (nameA < nameB) {
-              return -1; // a debe aparecer antes que b
-            } else if (nameA > nameB) {
-              return 1; // b debe aparecer antes que a
-            } else {
-              return 0; // a y b son iguales en términos de orden
-            }
-          });
+          switch (this.orderBy) {
+            case 'name':
+              this.products.sort((a, b) => {
+                const nameA = a.name.toUpperCase();
+                const nameB = b.name.toUpperCase();
+                if (nameA < nameB) {
+                  return -1;
+                } else if (nameA > nameB) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
+              break;
+            case 'price':
+              this.products.sort((a, b) => {
+                return a.price - b.price;
+              });
+              break;
+            default:
+              this.products.sort((a, b) => {
+                const nameA = a.name.toUpperCase();
+                const nameB = b.name.toUpperCase();
+                if (nameA < nameB) {
+                  return -1;
+                } else if (nameA > nameB) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
+          }
         }
         this.loaded = true;
         this.totalCount = result.info.total;
