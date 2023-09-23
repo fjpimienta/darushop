@@ -55,8 +55,8 @@ export class MailService extends ApiService {
         <tr>
           <td>${producto.name}</td>
           <td class="number">${producto.cantidad}</td>
-          <td class="number">${producto.precio}</td>
-          <td class="number">${producto.total}</td>
+          <td class="number">${producto.precio.toFixed(2).toString()}</td>
+          <td class="number">${producto.total.toFixed(2).toString()}</td>
         </tr>
       `).join('');
     const html = message !== '' ? message : `
@@ -221,8 +221,8 @@ export class MailService extends ApiService {
         <tr>
           <td>${producto.name}</td>
           <td class="number">${producto.cantidad}</td>
-          <td class="number">${producto.precio}</td>
-          <td class="number">${producto.total}</td>
+          <td class="number">${producto.precio.toFixed(2).toString()}</td>
+          <td class="number">${producto.total.toFixed(2).toString()}</td>
         </tr>
       `).join('');
     const html = message !== '' ? message : `
