@@ -215,7 +215,9 @@
                 <i class="icon-truck"></i>
               </span>
               <div classs="icon-box-content">
-                <h3 class="icon-box-title">Envíos Gratis *Aplican Restricciones</h3>
+                <a [routerLink]="['/terms']" fragment="envios">
+                  <h3 class="icon-box-title">Envíos Gratis *Aplican Restricciones</h3>
+                </a>
                 <p>en compras mayores de $1,000</p>
               </div>
             </div>
@@ -226,7 +228,9 @@
                 <i class="icon-rotate-left"></i>
               </span>
               <div classs="icon-box-content">
-                <h3 class="icon-box-title">Devolución gratuita</h3>
+                <a [routerLink]="['/terms']" fragment="devolucion">
+                  <h3 class="icon-box-title">Devolución gratuita</h3>
+                </a>
                 <p>en 30 días</p>
               </div>
             </div>
@@ -249,7 +253,9 @@
                 <i class="icon-cc-mastercard"></i>
               </span>
               <div classs="icon-box-content">
-                <h3 class="icon-box-title">Pago</h3>
+                <a [routerLink]="['/terms']" fragment="pagos">
+                  <h3 class="icon-box-title">Pago</h3>
+                </a>
                 <p>Aceptamos todas las tarjetas bancarias</p>
               </div>
             </div>
