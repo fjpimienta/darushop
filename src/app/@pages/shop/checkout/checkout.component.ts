@@ -21,7 +21,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ICustomer, IResultStripeCustomer } from '@core/interfaces/stripe/customer.interface';
 import { ChargeService } from '@core/services/stripe/charge.service';
 import { IPayment } from '@core/interfaces/stripe/payment.interface';
-import { IMail } from '@core/interfaces/mail.interface';
 import { MailService } from '@core/services/mail.service';
 import { ICharge } from '@core/interfaces/stripe/charge.interface';
 import { UsersService } from '@core/services/users.service';
@@ -30,7 +29,7 @@ import { OrderInput } from '@core/models/order.models';
 import { CartItem } from '@shared/classes/cart-item';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Delivery } from '@core/models/delivery.models';
-import { BranchOffices, SortedOffice, SupplierProd } from '@core/models/product.models';
+import { BranchOffices, SupplierProd } from '@core/models/product.models';
 import { ExternalAuthService } from '@core/services/external-auth.service';
 import { SuppliersService } from '@core/services/suppliers/supplier.service';
 import { ISupplier } from '@core/interfaces/supplier.interface';
@@ -710,8 +709,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.cartItems.push(cartItem);
       }
     }
-    this.totalEnvios = this.shipments[0].costo.toFixed(2).toString();
-    this.changeShipping(this.shipments[0].costo);
+    let totalShips = 0.0;
+    for (const idS of Object.keys(this.shipments)) {
+      const ships: Shipment = this.shipments[idS];
+      totalShips += ships.costo;
+    }
+    this.totalEnvios = totalShips.toFixed(2).toString();
+    this.changeShipping(totalShips);
   }
 
   onSetUser(formData: FormGroup, stripeCustomer: string): UserBasicInput {
@@ -1914,15 +1918,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
     return await [];
   }
-
-  // onSetBancos(event): void {
-  //   this.bankName = '';
-  //   if (event) {
-  //     const banco = event.value.split(':', 2);
-  //     this.bankName = banco[1];
-  //   }
-  //   console.log('this.bankName: ', this.bankName);
-  // }
   //#endregion
 
   //#region Catalogos Externos por json
