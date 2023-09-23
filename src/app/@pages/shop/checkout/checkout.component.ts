@@ -68,6 +68,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   formData: FormGroup;
   formDataCard: FormGroup;
   cartItems: CartItem[] = [];
+  cartItemsChanges: CartItem[] = [];
   countrys: Country[];
   selectCountry: Country;
   estados: Estado[];
@@ -149,6 +150,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   commonBranchOffices: Set<string> = new Set<string>();
 
+  isChecked: boolean = false; // Inicialmente desactivado
+
   constructor(
     private router: Router,
     private el: ElementRef,
@@ -170,269 +173,284 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public chargeOpenpayService: ChargeOpenpayService,
     public cuponsService: CuponsService
   ) {
+    try {
+      this.activeRoute.queryParams.subscribe(params => {
+        if (params.id) {
+          this.idTransaction = params.id;
+        }
+        if (params.idOrder) {
+          this.idDelivery = params.idOrder;
+        }
+        this.loaded = true;
+      });
 
-    this.activeRoute.queryParams.subscribe(params => {
-      if (params.id) {
-        this.idTransaction = params.id;
-      }
-      if (params.idOrder) {
-        this.idDelivery = params.idOrder;
-      }
-      this.loaded = true;
-    });
-
-    this.stripeCustomer = '';
-    this.errorSaveUser = false;
-    this.countrysService.getCountrys().subscribe(result => {
-      this.countrys = result.countrys;
-    });
-    this.cartService.priceTotal.subscribe(total => {
-      this.totalPagar = total.toFixed(2).toString();
-    });
-    // Observable para obtener el token
-    this.stripePaymentService.cardTokenVar$.pipe(first()).subscribe((token: string) => {
-      if (token.indexOf('tok_') > -1) {
-        loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
-        // Enviar los datos.
-        this.token = token;
-        // Buscar el usuario por el correo en el stripe
-        const newCustomer = this.customersService.getCustomerByEmail(this.formData.controls.email.value).subscribe(result => {
-          if (result.customerByEmail.status === false) {           // Si el gmail ya se encuentra en stripe.
-            this.stripeCustomer = result.customerByEmail.customer.id;
-          } else {
-            let stripeName = '';
-            let email = '';
-            if (this.session.user) {
-              email = this.session.user.email;
-              stripeName = `${this.session.user.name} ${this.session.user.lastname}`;
+      this.stripeCustomer = '';
+      this.errorSaveUser = false;
+      this.countrysService.getCountrys().subscribe(result => {
+        this.countrys = result.countrys;
+      });
+      this.cartService.priceTotal.subscribe(total => {
+        this.totalPagar = total.toFixed(2).toString();
+      });
+      // Observable para obtener el token
+      this.stripePaymentService.cardTokenVar$.pipe(first()).subscribe((token: string) => {
+        if (token.indexOf('tok_') > -1) {
+          loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
+          // Enviar los datos.
+          this.token = token;
+          // Buscar el usuario por el correo en el stripe
+          const newCustomer = this.customersService.getCustomerByEmail(this.formData.controls.email.value).subscribe(result => {
+            if (result.customerByEmail.status === false) {           // Si el gmail ya se encuentra en stripe.
+              this.stripeCustomer = result.customerByEmail.customer.id;
             } else {
-              email = this.formData.controls.email.value;
-              stripeName = `${this.formData.controls.name.value} ${this.formData.controls.lastname.value}`;
-            }
-            this.customersService.add(
-              stripeName,
-              email
-            ).pipe(first())
-              // tslint:disable-next-line: no-shadowed-variable
-              .subscribe((result: { status: boolean, message: string, customer: ICustomer }) => {
-                if (result.status) {
-                  this.stripeCustomer = result.customer.id;
-                  if (this.session.user) {
-                    this.session.user.stripeCustomer = result.customer.id;
-                  }
-                } else {
-                  infoEventAlert(result.message, '', TYPE_ALERT.WARNING);
-                  this.router.navigate(['/shop/cart']);
-                  this.errorSaveUser = true;
-                }
-              });
-          }
-        });
-
-        setTimeout(() => {
-          // Descripción del pedido (función en el carrito)
-          if (!this.errorSaveUser) {
-            // Almacenar información para guardar.
-            const payment: IPayment = {
-              token,
-              amount: this.totalPagar,
-              description: this.cartService.orderDescription(),
-              customer: this.stripeCustomer,
-              currency: CURRENCY_CODE
-            };
-            const order: OrderInput = {
-              id: '',
-              user: this.onSetUser(this.formData, this.stripeCustomer),
-              cartitems: this.cartItems
-            };
-            // Enviar la información y procesar el pago.
-            this.chargeService.pay(payment, order).pipe(first())
-              .subscribe(async (result: {
-                status: boolean,
-                message: string,
-                charge: ICharge
-              }) => {
-                if (result.status) {
-                  // Recuperar siguiente id
-                  const id = await this.deliverysService.next();
-                  const deliveryId = this.generarNumeroAleatorioEncriptado();
-                  // Generar Orden de Compra con Proveedores
-                  const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-                  // Registrar Pedido en DARU.
-                  OrderSupplier.cliente = OrderSupplier.user.email;
-                  OrderSupplier.discount = parseFloat(this.discount);
-                  OrderSupplier.importe = parseFloat(this.totalPagar);
-                  const deliverySave = await this.deliverysService.add(OrderSupplier);
-                  const NewProperty = 'receipt_email';
-                  let internalEmail = false;
-                  let typeAlert = TYPE_ALERT.SUCCESS;
-                  let sendEmail = OrderSupplier.user.email;
-                  let messageDelivery = 'El Pedido se ha realizado correctamente';
-                  if (OrderSupplier.statusError) {
-                    internalEmail = true;
-                    this.isSubmitting = false;
-                    typeAlert = TYPE_ALERT.WARNING;
-                    sendEmail = 'marketing@daru.mx';
-                    messageDelivery = OrderSupplier.messageError;
+              let stripeName = '';
+              let email = '';
+              if (this.session.user) {
+                email = this.session.user.email;
+                stripeName = `${this.session.user.name} ${this.session.user.lastname}`;
+              } else {
+                email = this.formData.controls.email.value;
+                stripeName = `${this.formData.controls.name.value} ${this.formData.controls.lastname.value}`;
+              }
+              this.customersService.add(
+                stripeName,
+                email
+              ).pipe(first())
+                // tslint:disable-next-line: no-shadowed-variable
+                .subscribe((result: { status: boolean, message: string, customer: ICustomer }) => {
+                  if (result.status) {
+                    this.stripeCustomer = result.customer.id;
+                    if (this.session.user) {
+                      this.session.user.stripeCustomer = result.customer.id;
+                    }
                   } else {
-                    this.cartService.clearCart(false);
-                    this.router.navigate(['/shop/offers/list']);
+                    infoEventAlert(result.message, '', TYPE_ALERT.WARNING);
+                    this.router.navigate(['/shop/cart']);
+                    this.errorSaveUser = true;
                   }
-                  // Si compra es OK, continua.
-                  OrderSupplier[NewProperty] = sendEmail;
-                  this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios);
-                  await infoEventAlert(messageDelivery, '', typeAlert);
-                } else {
-                  await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
-                  this.router.navigate(['/shop/cart']);
-                }
-              });
-          } else {
-            this.router.navigate(['/shop/cart']);
-          }
-        }, 3000);
-      } else {
-        basicAlert(TYPE_ALERT.ERROR, 'No hay datos de la tarjeta');
-      }
-    });
+                });
+            }
+          });
+
+          setTimeout(() => {
+            // Descripción del pedido (función en el carrito)
+            if (!this.errorSaveUser) {
+              // Almacenar información para guardar.
+              const payment: IPayment = {
+                token,
+                amount: this.totalPagar,
+                description: this.cartService.orderDescription(),
+                customer: this.stripeCustomer,
+                currency: CURRENCY_CODE
+              };
+              const order: OrderInput = {
+                id: '',
+                user: this.onSetUser(this.formData, this.stripeCustomer),
+                cartitems: this.cartItems
+              };
+              // Enviar la información y procesar el pago.
+              this.chargeService.pay(payment, order).pipe(first())
+                .subscribe(async (result: {
+                  status: boolean,
+                  message: string,
+                  charge: ICharge
+                }) => {
+                  if (result.status) {
+                    // Recuperar siguiente id
+                    const id = await this.deliverysService.next();
+                    const deliveryId = this.generarNumeroAleatorioEncriptado();
+                    // Generar Orden de Compra con Proveedores
+                    const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
+                    // Registrar Pedido en DARU.
+                    OrderSupplier.cliente = OrderSupplier.user.email;
+                    OrderSupplier.discount = parseFloat(this.discount);
+                    OrderSupplier.importe = parseFloat(this.totalPagar);
+                    const deliverySave = await this.deliverysService.add(OrderSupplier);
+                    const NewProperty = 'receipt_email';
+                    let internalEmail = false;
+                    let typeAlert = TYPE_ALERT.SUCCESS;
+                    let sendEmail = OrderSupplier.user.email;
+                    let messageDelivery = 'El Pedido se ha realizado correctamente';
+                    if (OrderSupplier.statusError) {
+                      internalEmail = true;
+                      this.isSubmitting = false;
+                      typeAlert = TYPE_ALERT.WARNING;
+                      sendEmail = 'marketing@daru.mx';
+                      messageDelivery = OrderSupplier.messageError;
+                    } else {
+                      this.cartService.clearCart(false);
+                      this.router.navigate(['/shop/offers/list']);
+                    }
+                    // Si compra es OK, continua.
+                    OrderSupplier[NewProperty] = sendEmail;
+                    this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios);
+                    await infoEventAlert(messageDelivery, '', typeAlert);
+                  } else {
+                    await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
+                    this.router.navigate(['/shop/cart']);
+                  }
+                });
+            } else {
+              this.router.navigate(['/shop/cart']);
+            }
+          }, 3000);
+        } else {
+          basicAlert(TYPE_ALERT.ERROR, 'No hay datos de la tarjeta');
+        }
+      });
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   //#region Metodos Componente
   ngOnInit(): void {
-    console.clear();
-    if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
-      const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
-        if (result.delivery.delivery) {
-          this.delivery = result.delivery.delivery;
-          this.onSetDelivery(this.formData, result.delivery.delivery);
-        }
-        return result.delivery.delivery;
-      });
-      console.log('delivery: ', delivery);
-    }
-    this.countrys = [];
-    this.selectCountry = new Country();
-    this.estados = [];
-    this.selectEstado = new Estado();
-    this.municipios = [];
-    this.selectMunicipio = new Municipio();
-    this.colonias = [];
-    this.selectColonia = '';
-    this.cps = [];
-    this.selectCp = new Codigopostal();
-    this.byCodigopostal = false;
-    this.codigoPostal = '';
-    this.crearcuenta = false;
-    this.habilitacrearcuenta = true;
-    this.referencias = '';
-    this.codigosPostales = [];
-    this.existeMetodoPago = false;
-    this.existePaqueteria = false;
-
-    this.authService.start();
-
-    this.subscr = this.cartService.cartStream.subscribe(items => {
-      this.cartItems = items;
-    });
-
-    document.querySelector('body').addEventListener('click', () => this.clearOpacity());
-
-    this.formData = this.formBuilder.group({
-      name: ['', Validators.required],
-      lastname: ['', Validators.required],
-      byCodigopostal: [false],
-      codigoPostal: ['', [Validators.required, Validators.pattern(/^\d{4,5}$/)]],
-      selectCountry: ['', [Validators.required]],
-      selectEstado: ['', [Validators.required]],
-      selectMunicipio: ['', [Validators.required]],
-      selectColonia: ['', Validators.required],
-      directions: ['', Validators.required],
-      outdoorNumber: ['', Validators.required],
-      interiorNumber: [''],
-      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      email: ['', [Validators.required, Validators.email]],
-      crearcuenta: [false],
-      references: [''],
-      existeMetodoPago: [false],
-      existePaqueteria: [false],
-      token_id: ['']
-    });
-
-    // Obtiene los datos de la sesión
-    this.authService.accessVar$.subscribe((result) => {
-      this.session = result;
-      this.access = this.session.status;
-      this.role = this.session.user?.role;
-      this.userName = `${this.session.user?.name} ${this.session.user?.lastname}`;
-      // Si es usario DARU (administrador o vendedor) para acceso al sistema
-      this.sistema = (this.role === 'ADMIN' || 'SELLER') ? true : false;
+    try {
+      console.clear();
+      if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
+        const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
+          if (result.delivery.delivery) {
+            this.delivery = result.delivery.delivery;
+            this.onSetDelivery(this.formData, result.delivery.delivery);
+          }
+          return result.delivery.delivery;
+        });
+        console.log('delivery: ', delivery);
+      }
+      this.countrys = [];
+      this.selectCountry = new Country();
+      this.estados = [];
+      this.selectEstado = new Estado();
+      this.municipios = [];
+      this.selectMunicipio = new Municipio();
+      this.colonias = [];
+      this.selectColonia = '';
+      this.cps = [];
+      this.selectCp = new Codigopostal();
+      this.byCodigopostal = false;
+      this.codigoPostal = '';
+      this.crearcuenta = false;
       this.habilitacrearcuenta = true;
-      if (this.session) {
-        this.habilitacrearcuenta = false;
-        this.formData.controls.name.setValue(this.session.user?.name);
-        this.formData.controls.lastname.setValue(this.session.user?.lastname);
-        this.formData.controls.phone.setValue(this.session.user?.phone);
-        this.formData.controls.email.setValue(this.session.user?.email);
-        if (this.session.user?.addresses.length > 0) {
-          this.countrysService.countrys$
-            // tslint:disable-next-line: no-shadowed-variable
-            .subscribe((result) => {
-              this.countrys = result;
-              for (const idU of Object.keys(this.session.user?.addresses)) {
-                const direction: IAddress = this.session.user?.addresses[idU];
-                if (direction.dir_delivery_main === true) {
-                  this.formData.controls.codigoPostal.setValue(direction.d_codigo);
-                  this.formData.controls.selectColonia.setValue(direction.d_asenta);
-                  this.formData.controls.directions.setValue(direction.directions);
-                  this.formData.controls.outdoorNumber.setValue(direction.outdoorNumber);
-                  this.formData.controls.interiorNumber.setValue(direction.interiorNumber);
-                  this.formData.controls.references.setValue(direction.references);
-                  if (this.countrys.length > 0) {
-                    for (const idC of Object.keys(this.countrys)) {
-                      const country: Country = this.countrys[idC];
-                      if (country.c_pais === direction.c_pais) {
-                        this.estados = country.estados;
-                        this.formData.controls.selectCountry.setValue(direction.c_pais);
-                        this.selectCountry.c_pais = direction.c_pais;
-                        this.selectCountry.d_pais = direction.d_pais;
-                        for (const idE of Object.keys(country.estados)) {
-                          const estado: Estado = country.estados[idE];
-                          if (estado.c_estado === direction.c_estado) {
-                            this.municipios = estado.municipios;
-                            this.formData.controls.selectEstado.setValue(direction.c_estado);
-                            this.selectEstado.c_estado = direction.c_estado;
-                            this.selectEstado.d_estado = direction.d_estado;
-                            for (const idM of Object.keys(estado.municipios)) {
-                              const municipio: Municipio = estado.municipios[idM];
-                              if (municipio.c_mnpio === direction.c_mnpio) {
-                                this.formData.controls.selectMunicipio.setValue(direction.c_mnpio);
-                                this.selectMunicipio.c_mnpio = direction.c_mnpio;
-                                this.selectMunicipio.D_mnpio = direction.d_mnpio;
+      this.referencias = '';
+      this.codigosPostales = [];
+      this.existeMetodoPago = false;
+      this.existePaqueteria = false;
+
+      this.authService.start();
+
+      this.subscr = this.cartService.cartStream.subscribe(items => {
+        this.cartItems = items;
+      });
+
+      document.querySelector('body').addEventListener('click', () => this.clearOpacity());
+
+      this.formData = this.formBuilder.group({
+        name: ['', Validators.required],
+        lastname: ['', Validators.required],
+        byCodigopostal: [false],
+        codigoPostal: ['', [Validators.required, Validators.pattern(/^\d{4,5}$/)]],
+        selectCountry: ['', [Validators.required]],
+        selectEstado: ['', [Validators.required]],
+        selectMunicipio: ['', [Validators.required]],
+        selectColonia: ['', Validators.required],
+        directions: ['', Validators.required],
+        outdoorNumber: ['', Validators.required],
+        interiorNumber: [''],
+        phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+        email: ['', [Validators.required, Validators.email]],
+        crearcuenta: [false],
+        references: [''],
+        existeMetodoPago: [false],
+        existePaqueteria: [false],
+        token_id: ['']
+      });
+
+      // Obtiene los datos de la sesión
+      this.authService.accessVar$.subscribe((result) => {
+        this.session = result;
+        this.access = this.session.status;
+        this.role = this.session.user?.role;
+        this.userName = `${this.session.user?.name} ${this.session.user?.lastname}`;
+        // Si es usario DARU (administrador o vendedor) para acceso al sistema
+        this.sistema = (this.role === 'ADMIN' || 'SELLER') ? true : false;
+        this.habilitacrearcuenta = true;
+        if (this.session) {
+          this.habilitacrearcuenta = false;
+          this.formData.controls.name.setValue(this.session.user?.name);
+          this.formData.controls.lastname.setValue(this.session.user?.lastname);
+          this.formData.controls.phone.setValue(this.session.user?.phone);
+          this.formData.controls.email.setValue(this.session.user?.email);
+          if (this.session.user?.addresses.length > 0) {
+            this.countrysService.countrys$
+              // tslint:disable-next-line: no-shadowed-variable
+              .subscribe((result) => {
+                this.countrys = result;
+                for (const idU of Object.keys(this.session.user?.addresses)) {
+                  const direction: IAddress = this.session.user?.addresses[idU];
+                  if (direction.dir_delivery_main === true) {
+                    this.formData.controls.codigoPostal.setValue(direction.d_codigo);
+                    this.formData.controls.selectColonia.setValue(direction.d_asenta);
+                    this.formData.controls.directions.setValue(direction.directions);
+                    this.formData.controls.outdoorNumber.setValue(direction.outdoorNumber);
+                    this.formData.controls.interiorNumber.setValue(direction.interiorNumber);
+                    this.formData.controls.references.setValue(direction.references);
+                    if (this.countrys.length > 0) {
+                      for (const idC of Object.keys(this.countrys)) {
+                        const country: Country = this.countrys[idC];
+                        if (country.c_pais === direction.c_pais) {
+                          this.estados = country.estados;
+                          this.formData.controls.selectCountry.setValue(direction.c_pais);
+                          this.selectCountry.c_pais = direction.c_pais;
+                          this.selectCountry.d_pais = direction.d_pais;
+                          for (const idE of Object.keys(country.estados)) {
+                            const estado: Estado = country.estados[idE];
+                            if (estado.c_estado === direction.c_estado) {
+                              this.municipios = estado.municipios;
+                              this.formData.controls.selectEstado.setValue(direction.c_estado);
+                              this.selectEstado.c_estado = direction.c_estado;
+                              this.selectEstado.d_estado = direction.d_estado;
+                              for (const idM of Object.keys(estado.municipios)) {
+                                const municipio: Municipio = estado.municipios[idM];
+                                if (municipio.c_mnpio === direction.c_mnpio) {
+                                  this.formData.controls.selectMunicipio.setValue(direction.c_mnpio);
+                                  this.selectMunicipio.c_mnpio = direction.c_mnpio;
+                                  this.selectMunicipio.D_mnpio = direction.d_mnpio;
+                                }
                               }
                             }
                           }
                         }
                       }
-                    }
-                    // Agregar las colonias del CP
-                    this.colonias = [];
-                    for (const idCp of Object.keys(this.cps)) {
-                      const codigo: Codigopostal = this.cps[idCp];
-                      if (codigo.d_asenta) {
-                        this.colonias.push(codigo.d_asenta);
+                      // Agregar las colonias del CP
+                      this.colonias = [];
+                      for (const idCp of Object.keys(this.cps)) {
+                        const codigo: Codigopostal = this.cps[idCp];
+                        if (codigo.d_asenta) {
+                          this.colonias.push(codigo.d_asenta);
+                        }
                       }
                     }
                   }
                 }
-              }
-            });
+              });
+          }
         }
-      }
-    });
-    this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
-    OpenPay.setId('mbhvpztgt3rqse7zvxrc');
-    OpenPay.setApiKey('pk_411efcdb08c148ceb97b36f146e42beb');
-    OpenPay.setSandboxMode(true);
+      });
+      this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
+      OpenPay.setId('mbhvpztgt3rqse7zvxrc');
+      OpenPay.setApiKey('pk_411efcdb08c148ceb97b36f146e42beb');
+      OpenPay.setSandboxMode(true);
+
+      // Observable para el cartItems
+      this.cartService.cartItemsChanges$.subscribe((newValue) => {
+        // Se ha producido un cambio en myVariable
+        this.cartItems = newValue;
+        this.onActiveCP(true);
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   // Función de validación personalizada para la CLABE
@@ -1232,8 +1250,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.existeMetodoPago = true;
   }
 
-  onActiveCP(): void {
-    this.byCodigopostal = !this.byCodigopostal;
+  onActiveCP(byCodigopostal: boolean = false): void {
+    if (byCodigopostal) {
+      this.byCodigopostal = false;
+    } else {
+      this.byCodigopostal = !this.byCodigopostal;
+    }
+    this.isChecked = this.byCodigopostal;
+    console.log('this.isChecked: ', this.isChecked);
+    console.log('this.byCodigopostal: ', this.byCodigopostal);
     this.selectCountry = new Country();
     this.selectEstado = new Estado();
     this.selectMunicipio = new Municipio();

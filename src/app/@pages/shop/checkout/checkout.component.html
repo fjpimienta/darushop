@@ -80,7 +80,7 @@
                     <div class="col-sm-2 col-4 d-flex align-items-center">
                       <!-- Utilizamos d-flex y align-items-center para alinear verticalmente el checkbox -->
                       <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
-                        (change)="onActiveCP()" formControlName="byCodigopostal">
+                        (change)="onActiveCP()" formControlName="byCodigopostal" [checked]="isChecked">
                     </div>
                   </div>
                 </div>
@@ -88,7 +88,7 @@
                   <label>Código Postal *</label>
                   <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
                     (blur)="onSetCps($event)" autocomplete="off" (input)="bloquearLetras($event)" maxlength="5"
-                    [attr.disabled]="!byCodigopostal ? 'true' : null">
+                    [attr.disabled]="!isChecked ? 'true' : null">
                   <div
                     *ngIf="formData.get('codigoPostal').invalid && (formData.get('codigoPostal').dirty || formData.get('codigoPostal').touched)">
                     <div *ngIf="formData.get('codigoPostal').hasError('required')">El código postal es requerido.</div>
