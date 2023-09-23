@@ -109,7 +109,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   totalPagar: string;
   totalEnvios: string;
   discountPorc: string = '0';
-  discount: string;
+  discount: string = '0';
   resultCustomer: IResultStripeCustomer;
 
   myCurrency = CURRENCIES_SYMBOL[CURRENCY_LIST.MEXICAN_PESO];
