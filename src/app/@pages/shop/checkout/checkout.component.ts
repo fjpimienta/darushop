@@ -971,151 +971,135 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * @returns Datos de la(s) paqueteria(s) del proveedor
    */
   async onCotizarEnvios(cpDestino: string, estadoCp: string): Promise<any> {
-    this.shipments = [];
-    this.warehouses = [];
-    this.warehouse = new Warehouse();
-    this.warehouse.shipments = [];
-    let shipmentsEnd = [];
-    // Verificar productos por proveedor.
-    const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
-      .then(async result => {
-        return await result.suppliers;
-      });
-    this.suppliers = suppliers;
-    if (suppliers.length > 0) {
-      for (const supId of Object.keys(suppliers)) {
-        let supplier = new Supplier();
-        supplier = suppliers[supId];
-        const shipmentsSupp = [];
-        const carItemsWarehouse = [];
-        const supplierProd = new SupplierProd();
-        const warehouseNacional = new Warehouse();
-        const productsNacional: ProductShipment[] = [];
-        const apiShipment = await this.suppliersService                             // Set Api para Envios
-          .getApiSupplier(supplier.slug, 'envios', 'paqueterias')
-          .then(async result => {
-            if (result.status) {
-              return await result.apiSupplier;
-            }
-          });
-        if (apiShipment) {                                                          // Si hay Api para el Proveedor.
-          const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
-          console.log('this.cartItems:', this.cartItems);
-          const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
-          if (carItemsSupplier.length > 0) {
-            //Buscar todos los branchOffice de los productos.
-            // this.assignProductsToBranchOffices(carItemsSupplier);
-            const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
-            console.log('branchOfficesCom: ', branchOfficesCom);
-            this.commonBranchOffices.clear;
-            branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
-            console.log('this.commonBranchOffices:', this.commonBranchOffices);
-            let branchOfficesTot: BranchOffices[] = [];
-            let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
-            for (const cart of this.cartItems) {
-              for (const bran of cart.suppliersProd.branchOffices) {
-                if (this.commonBranchOffices.has(bran.id) && !addedBranchOffices.has(bran.id)) {
-                  branchOfficesTot.push(bran);
-                  addedBranchOffices.add(bran.id); // Agregar el branchOffice al conjunto de seguimiento
-                }
+    try {
+      this.shipments = [];
+      this.warehouses = [];
+      this.warehouse = new Warehouse();
+      this.warehouse.shipments = [];
+      let shipmentsEnd = [];
+      // Verificar productos por proveedor.
+      const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
+        .then(async result => {
+          return await result.suppliers;
+        });
+      this.suppliers = suppliers;
+      if (suppliers.length > 0) {
+        for (const supId of Object.keys(suppliers)) {
+          let supplier = new Supplier();
+          supplier = suppliers[supId];
+          const supplierProd = new SupplierProd();
+          const warehouseNacional = new Warehouse();
+          const productsNacional: ProductShipment[] = [];
+          const apiShipment = await this.suppliersService                             // Set Api para Envios
+            .getApiSupplier(supplier.slug, 'envios', 'paqueterias')
+            .then(async result => {
+              if (result.status) {
+                return await result.apiSupplier;
               }
-            }
-            console.log('branchOfficesTot:', branchOfficesTot);
-            const commonBranchOffices = branchOfficesTot;
-            console.log('commonBranchOffices:', commonBranchOffices);
-            for (const commonBranch of commonBranchOffices) {
-              const productsNacional: ProductShipment[] = [];
-              const warehouseNacional = new Warehouse();
-              const concatenatedBranchOffices: BranchOffices[][] = [];
-
-              for (const idCI of Object.keys(carItemsSupplier)) {
-                const cartItem: CartItem = carItemsSupplier[idCI];
-                concatenatedBranchOffices.push(cartItem.suppliersProd.branchOffices);
-              }
-
-              for (const idCI of Object.keys(carItemsSupplier)) {
-                const cartItem: CartItem = carItemsSupplier[idCI];
-                const productShipment = new ProductShipment();
-                productShipment.producto = cartItem.sku;
-                productShipment.cantidad = cartItem.qty;
-                productShipment.precio = cartItem.price;
-
-                if (cartItem.promociones && cartItem.promociones.disponible_en_promocion) {
-                  productShipment.priceSupplier = cartItem.promociones.disponible_en_promocion;
-                } else {
-                  productShipment.priceSupplier = cartItem.suppliersProd.price;
-                }
-
-                productShipment.moneda = cartItem.suppliersProd.moneda;
-                productShipment.almacen = commonBranch.id; // Utilizar el almacén común
-                productShipment.cp = commonBranch.cp;
-                productShipment.name = cartItem.name;
-                productShipment.total = cartItem.qty * cartItem.price;
-                productsNacional.push(productShipment);
-
-                warehouseNacional.id = commonBranch.id;
-                warehouseNacional.cp = commonBranch.cp;
-                warehouseNacional.name = commonBranch.name;
-                warehouseNacional.estado = commonBranch.estado;
-                warehouseNacional.latitud = commonBranch.latitud;
-                warehouseNacional.longitud = commonBranch.longitud;
-                this.warehouse = warehouseNacional;
-                this.warehouse.productShipments = productsNacional;
-              }
-
-              this.warehouse.cp = cpDestino;
-              this.warehouse.productShipments = productsNacional;
-
-              const shipmentsCost = await this.externalAuthService.onShippingEstimate(
-                supplier, apiShipment, this.warehouse, true
-              ).then(async (resultShip) => {
-                if (!resultShip.status) {
-                  console.log(`Error: ${resultShip.message}`);
-                  infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
-                }
-                const shipments: Shipment[] = [];
-                for (const key of Object.keys(resultShip.data)) {
-                  const shipment = new Shipment();
-                  shipment.empresa = resultShip.data[key].empresa.toString();
-                  if (supplier.slug === 'ct') {
-                    shipment.costo = resultShip.data[key].total;
-                    shipment.metodoShipping = resultShip.data[key].metodo;
-                    shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
-                    shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
-                  } else if (supplier.slug === 'cva') {
-                    shipment.costo = resultShip.data[key].costo;
-                    shipment.metodoShipping = resultShip.data[key].metodoShipping;
-                    shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
-                    shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+            });
+          if (apiShipment) {                                                          // Si hay Api para el Proveedor.
+            const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
+            console.log('this.cartItems:', this.cartItems);
+            const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+            if (carItemsSupplier.length > 0) {
+              // Buscar todos los branchOffice de los productos.
+              const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
+              this.commonBranchOffices.clear;
+              branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
+              // Se guardan las sucursales comunes para los envios.
+              let branchOfficesTot: BranchOffices[] = [];
+              let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
+              for (const cart of this.cartItems) {
+                for (const bran of cart.suppliersProd.branchOffices) {
+                  if (this.commonBranchOffices.has(bran.id) && !addedBranchOffices.has(bran.id)) {
+                    branchOfficesTot.push(bran);
+                    addedBranchOffices.add(bran.id); // Agregar el branchOffice al conjunto de seguimiento
                   }
-                  shipments.push(shipment);
                 }
-                return await shipments;
-              });
-
-              for (const shipId of Object.keys(shipmentsCost)) {
-                shipmentsSupp.push(shipmentsCost[shipId]);
-                shipmentsEnd.push(shipmentsCost[shipId]);
               }
-
-              for (const cartId of Object.keys(this.cartItems)) {
-                carItemsWarehouse.push(this.cartItems[cartId]);
+              const commonBranchOffices = branchOfficesTot;
+              console.log('commonBranchOffices:', commonBranchOffices);
+              for (const commonBranch of commonBranchOffices) {
+                const carItemsWarehouse = [];
+                const shipmentsSupp = [];
+                const carItemsSupplierByBranchOffice = arreglo.filter((item) =>
+                  item.suppliersProd.branchOffices.some((branchOffice) => branchOffice.id === commonBranch.id)
+                );
+                console.log('commonBranch.id: ', commonBranch.id);
+                console.log('carItemsSupplierByBranchOffice: ', carItemsSupplierByBranchOffice);
+                const productsNacional: ProductShipment[] = [];
+                const warehouseNacional = new Warehouse();
+                for (const idCI of Object.keys(carItemsSupplierByBranchOffice)) {
+                  const cartItem: CartItem = carItemsSupplierByBranchOffice[idCI];
+                  const productShipment = new ProductShipment();
+                  productShipment.producto = cartItem.sku;
+                  productShipment.cantidad = cartItem.qty;
+                  productShipment.precio = cartItem.price;
+                  if (cartItem.promociones && cartItem.promociones.disponible_en_promocion) {
+                    productShipment.priceSupplier = cartItem.promociones.disponible_en_promocion;
+                  } else {
+                    productShipment.priceSupplier = cartItem.suppliersProd.price;
+                  }
+                  productShipment.moneda = cartItem.suppliersProd.moneda;
+                  productShipment.almacen = commonBranch.id; // Utilizar el almacén común
+                  productShipment.cp = commonBranch.cp;
+                  productShipment.name = cartItem.name;
+                  productShipment.total = cartItem.qty * cartItem.price;
+                  productsNacional.push(productShipment);
+                  warehouseNacional.id = commonBranch.id;
+                  warehouseNacional.cp = commonBranch.cp;
+                  warehouseNacional.name = commonBranch.name;
+                  warehouseNacional.estado = commonBranch.estado;
+                  warehouseNacional.latitud = commonBranch.latitud;
+                  warehouseNacional.longitud = commonBranch.longitud;
+                  this.warehouse = warehouseNacional;
+                  this.warehouse.productShipments = productsNacional;
+                  carItemsWarehouse.push(cartItem);
+                }
+                this.warehouse.cp = cpDestino;
+                this.warehouse.productShipments = productsNacional;
+                const shipmentsCost = await this.externalAuthService.onShippingEstimate(
+                  supplier, apiShipment, this.warehouse, true
+                ).then(async (resultShip) => {
+                  if (!resultShip.status) {
+                    console.log(`Error: ${resultShip.message}`);
+                    infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                  }
+                  let shipment = new Shipment();
+                  for (const key of Object.keys(resultShip.data)) {
+                    shipment.empresa = resultShip.data[key].empresa.toString();
+                    if (supplier.slug === 'ct') {
+                      shipment.costo = resultShip.data[key].total;
+                      shipment.metodoShipping = resultShip.data[key].metodo;
+                      shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
+                      shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                    } else if (supplier.slug === 'cva') {
+                      shipment.costo = resultShip.data[key].costo;
+                      shipment.metodoShipping = resultShip.data[key].metodoShipping;
+                      shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
+                      shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                    }
+                  }
+                  return await shipment;
+                });
+                shipmentsEnd.push(shipmentsCost);
+                this.warehouse.shipments = shipmentsEnd;
+                supplierProd.idProveedor = supplier.slug;
+                this.warehouse.suppliersProd = supplierProd;
+                this.warehouse.products = carItemsWarehouse;
+                this.warehouses.push(this.warehouse);
               }
-
-              this.warehouse.shipments = shipmentsSupp;
-              supplierProd.idProveedor = supplier.slug;
-              this.warehouse.suppliersProd = supplierProd;
-              this.warehouse.products = carItemsWarehouse;
-              this.warehouses.push(this.warehouse);
             }
           }
         }
       }
+      console.log('shipmentsEnd: ', shipmentsEnd);
+      console.log('this.warehouses: ', this.warehouses);
+      return await shipmentsEnd;
+    } catch (error) {
+      console.error('error: ', error);
+      return [];
     }
-    console.log('shipmentsEnd: ', shipmentsEnd);
-    console.log('this.warehouses: ', this.warehouses);
-    return await shipmentsEnd;
-    // Elaborar Pedido Previo a facturación.
   }
 
   /**
