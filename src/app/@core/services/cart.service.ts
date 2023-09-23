@@ -20,24 +20,34 @@ export class CartService {
   public cartStream: Subject<any> = new BehaviorSubject([]);
   public qtyTotal: Subject<number> = new BehaviorSubject(0);
   public priceTotal: Subject<number> = new BehaviorSubject(0);
+  // Start Detectar cambio del carrito
+  private myVariableSubject = new BehaviorSubject<CartItem[]>([]);
+  cartItemsChanges$ = this.myVariableSubject.asObservable();
+  // Fin Detectar cambio del carrito
 
   constructor(private store: Store<any>, private toastrService: ToastrService) {
-    store.pipe(select(cartItemsSelector)).subscribe(items => {
-      this.cartItems = items;
+    try {
+      store.pipe(select(cartItemsSelector)).subscribe(items => {
+        this.cartItems = items;
 
-      this.cartStream.next(items);
+        this.cartStream.next(items);
 
-      this.qtyTotal.next(
-        this.cartItems.reduce((acc, cur) => {
-          return acc + cur.qty;
-        }, 0));
+        this.qtyTotal.next(
+          this.cartItems.reduce((acc, cur) => {
+            return acc + cur.qty;
+          }, 0));
 
-      this.priceTotal.next(
-        this.cartItems.reduce((acc, cur) => {
-          return acc + cur.sum;
-        }, 0)
-      );
-    });
+        this.priceTotal.next(
+          this.cartItems.reduce((acc, cur) => {
+            return acc + cur.sum;
+          }, 0)
+        );
+
+        this.myVariableSubject.next([...this.cartItems]);
+      });
+    } catch (error) {
+      console.error('error: ', error);
+    }
   }
 
   // Product Add to Cart
