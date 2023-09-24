@@ -1,13 +1,13 @@
 <nav class="main-nav">
   <ul class="menu sf-arrows">
     <li class="megamenu-container" [class.active]="current=='/'">
-      <a routerLink="/" class="sf-with-ul">Inicio</a>
+      <a routerLink="/">Inicio</a>
     </li>
     <li class="megamenu-container" [class.active]="current.includes('/offers')">
-      <a routerLink="/shop/offers" class="sf-with-ul">Ofertas</a>
+      <a routerLink="/shop/offers">Ofertas</a>
     </li>
     <li [class.active]="current.includes('/categorys')">
-      <a routerLink="/shop/categorys" class="sf-with-ul">Categorias</a>
+      <a routerLink="/shop/categorys" class="sf-with-ul">Categor&iacute;as</a>
       <div *ngIf="categories" class="megamenu megamenu-sm">
         <div class="row no-gutters">
           <div class="col-md-12">
@@ -82,10 +82,10 @@
       </ul>
     </li>
     <li [class.active]="current.includes('/company')">
-      <a href="javascript:;" class="sf-with-ul">La Empresa</a>
+      <a href="javascript:;" class="sf-with-ul">Sobre DARU</a>
       <ul>
         <li [class.active]="current.includes('about')">
-          <a routerLink="/about">Acerca de</a>
+          <a routerLink="/about">Con&oacute;ceme</a>
         </li>
         <!-- <li [class.active]="current.includes('services')">
           <a routerLink="/services">Servicios</a>

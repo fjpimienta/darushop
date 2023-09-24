@@ -45,8 +45,13 @@ export class ShopSidebarComponent implements OnInit {
             products[product.brands[0].slug].push({ brands: product.brands[0].name, slug: product.brands[0].slug });
             return products;
           }, {});
+          // Ahora, ordenamos las marcas alfabéticamente
+          const sortedBrandsProd = {};
+          Object.keys(brandsProd).sort().forEach((key) => {
+            sortedBrandsProd[key] = brandsProd[key];
+          });
           let i = 0;
-          Object.keys(brandsProd).forEach((brand) => {
+          Object.keys(sortedBrandsProd).forEach((brand) => {
             i += 1;
             const br = new Catalog();
             br.id = i.toString();
@@ -62,8 +67,13 @@ export class ShopSidebarComponent implements OnInit {
             products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
             return products;
           }, {});
+          // Ahora, ordenamos las categorías alfabéticamente
+          const sortedCategoriesProd = {};
+          Object.keys(categoriesProd).sort().forEach((key) => {
+            sortedCategoriesProd[key] = categoriesProd[key];
+          });
           let j = 0;
-          Object.keys(categoriesProd).forEach((categorie) => {
+          Object.keys(sortedCategoriesProd).forEach((categorie) => {
             j += 1;
             const br = new Catalog();
             br.id = j.toString();
