@@ -930,7 +930,9 @@ p {
 }
 
 .old-price {
-  font-size: 1.2rem;
+  font-weight: bold !important;
+  color: black !important;
+  font-size: 1.4rem;
 }
 
 .product-details .product-content p:last-child {

@@ -1,27 +1,29 @@
 <main class="main home-page skeleton-body">
   <!-- Seccion 1 Banner Principal -->
   <section class="intro-section">
-    <div class="banner">
-      <figure>
-        <img src="assets/images/home/banners/01.jpg" width="1903" height="780" alt="Image Desc" />
-      </figure>
-      <div class="banner-content">
-        <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">Descubre todo <br> lo que DARU</h2>
-        <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">tiene para ti.</h3>
-        <p>&nbsp;<br></p>
-        <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-          <a routerLink="/register" class="btn btn-primary btn-round btn-cart-home">Registrate en DARU TEAM</a>
-        </div>
-        <!-- <div class="banner-action" contentAnim aniName="fadeInUpShorter">
+    <div class="container">
+      <div class="banner">
+        <figure>
+          <img src="assets/images/home/banners/01.jpg" width="1903" height="780" alt="Image Desc" />
+        </figure>
+        <div class="banner-content">
+          <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">Descubre todo <br> lo que DARU</h2>
+          <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">tiene para ti</h3>
+          <p>&nbsp;<br></p>
+          <div class="banner-action" contentAnim aniName="fadeInUpShorter">
+            <a routerLink="/register" class="btn btn-primary btn-round btn-cart-home">Reg&iacute;strate en DARU TEAM</a>
+          </div>
+          <!-- <div class="banner-action" contentAnim aniName="fadeInUpShorter">
           <a routerLink="/shop/products" class="btn btn-success btn-round">Ver m&aacute;s</a>
         </div> -->
+        </div>
       </div>
     </div>
   </section>
   <!-- End Seccion 1 -->
 
   <!-- Seccion 2 Categorías Populares -->
-  <section class="intro-section">
+  <section class="popular-section">
     <div class="container">
       <div class="heading mb-0 text-center">
         <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
@@ -69,16 +71,16 @@
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
               <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
-                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'telefonia' }" class="cat-block">
+                <a routerLink="/shop/category/4cols" [queryParams]="{ category: 'telefono' }" class="cat-block">
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/celulares.jpg" width="131" height="76"
-                        alt="Telefon&iacute;a" style="display: block; margin: 0 auto;" />
+                        alt="Tel&eacute;fonos" style="display: block; margin: 0 auto;" />
                     </span>
                   </figure>
                   <div class="action text-center">
                     <span>
-                      <h6 class="icon-box-title">Telefon&iacute;a</h6>
+                      <h6 class="icon-box-title">Tel&eacute;fonos</h6>
                     </span>
                   </div>
                 </a>
@@ -164,9 +166,9 @@
         </div>
         <div class="col-lg-8" contentAnim aniName="fadeInRightShorter">
           <div class="banner-content">
-            <h2 class="banner-title" contentAnim aniName="fadeInUpShorter">Se parte de DARU</h2>
-            <h3 class="banner-info" contentAnim aniName="fadeInUpShorter">Integrate a la comunidad DARU
-              <br> para disfrutar de grandes beneficios.
+            <h2 class="banner-title" contentAnim aniName="fadeInUpShorter">S&eacute; parte de DARU</h2>
+            <h3 class="banner-info" contentAnim aniName="fadeInUpShorter">Int&eacute;grate a la comunidad DARU
+              <br> para disfrutar de grandes beneficios
             </h3>
             <span class="banner-info">&nbsp;</span>
             <div class="banner-info mb-2">
@@ -186,13 +188,13 @@
               </ul>
             </div>
             <div class="action">
-              <!--
               <span class="price text-white">
-                <sup>$</sup><strong>259</strong><sup>.99</sup>
+                <strong>
+                  <a href="mailto:contacto@daru.mx?subject=Contacto online&body=Sitio Web" class="btn btn-primary">
+                    <strong><i class="icon-envelope"></i> contacto@daru.mx</strong>
+                  </a>
+                </strong>
               </span>
-              <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home"
-                (click)="addCart($event)">Compralo</a>
-              -->
             </div>
           </div>
         </div>
@@ -213,8 +215,10 @@
                 <i class="icon-truck"></i>
               </span>
               <div classs="icon-box-content">
-                <h3 class="icon-box-title">Envíos Gratis *Aplican Restricciones</h3>
-                <p>en compras mayores de $1,000</p>
+                <a [routerLink]="['/terms']" fragment="envios">
+                  <h3 class="icon-box-title">Envíos Gratis en compras mayores de $1,000.00</h3>
+                </a>
+                <p>*Aplican restricciones</p>
               </div>
             </div>
           </div>
@@ -224,7 +228,9 @@
                 <i class="icon-rotate-left"></i>
               </span>
               <div classs="icon-box-content">
-                <h3 class="icon-box-title">Devolución gratuita</h3>
+                <a [routerLink]="['/terms']" fragment="devolucion">
+                  <h3 class="icon-box-title">Devolución gratuita</h3>
+                </a>
                 <p>en 30 días</p>
               </div>
             </div>
@@ -247,7 +253,9 @@
                 <i class="icon-cc-mastercard"></i>
               </span>
               <div classs="icon-box-content">
-                <h3 class="icon-box-title">Pago</h3>
+                <a [routerLink]="['/terms']" fragment="pagos">
+                  <h3 class="icon-box-title">Pago</h3>
+                </a>
                 <p>Aceptamos todas las tarjetas bancarias</p>
               </div>
             </div>
@@ -373,4 +381,91 @@
 
   <!-- End Seccion 7 Marcas -->
 
+
+
+  <!-- Seccion 5 -->
+  <!-- <section class="video-banner bg-parallax mb-20" style="background-image: url(assets/images/home/banners/06.jpg)"
+    bgParallax>
+    <a href="https://www.youtube.com/watch?v=75-Mau54H4E&ab_channel=aTechES" (click)="showModal($event)"
+      class="btn-iframe d-flex justify-content-center">
+       <i class="icon-play-outline"></i>
+    </a>
+  </section> -->
+
+  <!-- Seccion 9 -->
+  <!-- <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
+    <div class="container">
+      <div class="heading mb-6 text-center">
+        <h4 class="subtitle">Material &amp; Design</h4>
+        <h2 class="title mb-2" contentAnim aniName="blurIn">Find Your Color</h2>
+        <p class="content">
+          Featuring Active Noise Cancelling that gives you the space to create with <br>
+          fully immersive sound.
+        </p>
+      </div>
+      <div class="color-content" *ngIf="loaded">
+        <owl-carousel carouselClasses="owl-simple owl-nav-outside" [options]="brandSlider" #singleSlider>
+          <app-image class="d-block position-relative" *ngFor="let item of products[0].pictures;"
+            [src]="SERVER_URL + item.url" [width]="item.width" [height]="item.height">
+          </app-image>
+        </owl-carousel>
+        <div class="custom-dots" #customDots>
+          <button class="custom-dot active" (click)="changeImage( $event, 0 )">
+            <span style="background-color: rgb(51, 51, 51);"></span>
+          </button>
+          <button class="custom-dot" (click)="changeImage( $event, 1 )">
+            <span style="background-color: rgb(235, 235, 235);"></span>
+          </button>
+          <button class="custom-dot" (click)="changeImage( $event, 2 )">
+            <span style="background-color: rgb(203, 80, 80);"></span>
+          </button>
+        </div>
+      </div>
+      <div class="desc text-center mt-2">
+        <p>
+          Lorem ipsum dolor sit amet, consectetue elit.
+          Donec odio. Quisque volutpat mattis eros.
+        </p>
+      </div>
+      <div class="action text-center mt-2">
+        <span class="price text-primary">
+          <sup>$</sup><strong>{{ loaded ? products[0].variants[index].price.toFixed(0) : '252' }}</strong><sup>.99</sup>
+        </span>
+
+        <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home" (click)="addCart($event)">Add to
+          Cart</a>
+      </div>
+    </div>
+  </section> -->
+
+  <div class="cta bg-image bg-dark pt-4 pb-5 mb-0"
+    style="background-image: url('assets/images/banners/banner-newsletter.jpg')">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-sm-10 col-md-8 col-lg-6">
+          <div class="cta-heading text-center">
+            <h3 class="cta-title text-primary">Ent&eacute;rate de nuestras ofertas</h3>
+            <p class="cta-title text-primary">
+              Primero que Todos
+              <!-- and receive <span class="font-weight-normal">$20 coupon</span> for
+              first shopping -->
+            </p>
+          </div>
+
+          <form (ngSubmit)="onSubmit()" [formGroup]="formData">
+            <div class="input-group input-group-round">
+              <input type="email" name="email" class="form-control" formControlName="email"
+                class="form-control form-control-white border-0" placeholder="Reg&iacute;strate con tu correo electr&oacute;nico - Subscribirme"
+                aria-label="Correo Electrónico" required />
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="submit" [disabled]="!formData.valid">
+                  <span>Subscribe</span><i class="icon-long-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
