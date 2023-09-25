@@ -44,7 +44,6 @@ export class WishlistComponent implements OnInit, OnDestroy {
         } else {
           this.previousPageTitle = '';
         }
-        console.log('this.pageTitle: ', this.pageTitle);
       });
     this.activeRoute.params.subscribe(params => {
       this.type = params.type || '4cols';

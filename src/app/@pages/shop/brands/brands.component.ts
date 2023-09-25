@@ -32,7 +32,6 @@ export class BrandsComponent implements OnInit {
         } else {
           this.previousPageTitle = '';
         }
-        console.log('this.pageTitle: ', this.pageTitle);
       });
   }
 
