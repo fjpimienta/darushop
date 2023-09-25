@@ -5,7 +5,7 @@
 
     <form action="#" method="get" (click)="showSearchForm($event)" (submit)="submitSearchForm($event)">
         <div class="header-search-wrapper">
-            <label for="q" class="sr-only">Search</label>
+            <label for="searchTerm" class="sr-only">Search</label>
             <input type="text" class="form-control" name="searchTerm" id="searchTerm" placeholder="Buscar producto ..."
                 required (input)="searchProducts($event)" />
         </div>

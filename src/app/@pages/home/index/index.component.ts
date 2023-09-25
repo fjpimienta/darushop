@@ -70,7 +70,6 @@ export class IndexComponent implements OnInit {
         } else {
           this.previousPageTitle = '';
         }
-        console.log('this.pageTitle: ', this.pageTitle);
       });
   }
 

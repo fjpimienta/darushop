@@ -48,7 +48,6 @@ export class ContactOnePageComponent implements OnInit {
         } else {
           this.previousPageTitle = '';
         }
-        console.log('this.pageTitle: ', this.pageTitle);
       });
     this.formData = this.formBuilder.group({
       cname: ['', Validators.required],
