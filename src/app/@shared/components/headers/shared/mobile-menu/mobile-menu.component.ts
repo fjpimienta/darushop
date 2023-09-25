@@ -26,7 +26,7 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
   categoriesTmp: Catalog[];
   categorysGroup: CatalogGroup[] = [];
   searchQuery: string = '';
-  searchQueryCat: string = '';
+  searchQueryCatMob: string = '';
 
   private subscr: Subscription;
 
@@ -131,9 +131,9 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
   }
 
   searchCategories(event: any): void {
-    this.searchQueryCat = event.target.value;
-    if (this.searchQueryCat !== '') {
-      const category = typeof this.searchQueryCat === 'string' ? this.searchQueryCat.trim().toLowerCase() : '';
+    this.searchQueryCatMob = event.target.value;
+    if (this.searchQueryCatMob !== '') {
+      const category = typeof this.searchQueryCatMob === 'string' ? this.searchQueryCatMob.trim().toLowerCase() : '';
       const existCategorie = this.categories.find(item => item.slug === category) ? true : false;
       // Solo filtra las categorias que existen en el catalogo.
       if (existCategorie) {
