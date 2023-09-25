@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Catalog } from '@core/models/catalog.models';
 
 import { BrandsService } from '@core/services/brand.service';
@@ -7,6 +7,8 @@ import { CategoriesService } from '@core/services/categorie.service';
 import { ConfigsService } from '@core/services/config.service';
 import { ProductsService } from '@core/services/products.service';
 import { UtilsService } from '@core/services/utils.service';
+import { Subject, combineLatest } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-offers',
@@ -18,10 +20,11 @@ export class OffersComponent implements OnInit {
   products = [];
   page = 1;
   perPage = 48;
-  type: 'list';
+  type: '4cols';
   totalCount = 0;
   orderBy = 'default';
-  pageTitle = 'List';
+  pageTitle: string = '';
+  previousPageTitle: string = '';
   toggle = false;
   searchTerm = '';
   loaded = false;
@@ -33,18 +36,36 @@ export class OffersComponent implements OnInit {
   categoriesProd: Catalog[] = [];
   minPrice = 0;
   maxPrice = 0;
+  private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
-    public activeRoute: ActivatedRoute,
     public router: Router,
+    public activeRoute: ActivatedRoute,
     public utilsService: UtilsService,
     public brandsService: BrandsService,
     public categoriesService: CategoriesService,
     public productService: ProductsService,
     public configsService: ConfigsService
   ) {
+    combineLatest([
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
+      this.activeRoute.data
+    ])
+      .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
+      .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
+        // Obtener el título de la página actual a través de activeRoute.data
+        this.pageTitle = data.title || '';
+        // Obtener el título de la página anterior del historial de navegación
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.previousNavigation) {
+          this.previousPageTitle = navigation.previousNavigation.finalUrl.toString();
+        } else {
+          this.previousPageTitle = '';
+        }
+        console.log('this.pageTitle: ', this.pageTitle);
+      });
     this.activeRoute.params.subscribe(params => {
-      this.type = params.type;
+      this.type = params.type || '4cols';
     });
 
     this.activeRoute.queryParams.subscribe(params => {
@@ -53,11 +74,7 @@ export class OffersComponent implements OnInit {
 
       this.pageTitle = params.description;
 
-      if (params.searchTerm) {
-        this.searchTerm = params.searchTerm;
-      } else {
-        this.searchTerm = '';
-      }
+      this.searchTerm = params.searchTerm || '';
 
       this.orderBy = params.orderBy || '';
 
@@ -157,6 +174,14 @@ export class OffersComponent implements OnInit {
   ngOnInit(): void {
     if (window.innerWidth > 991) { this.toggle = false; }
     else { this.toggle = true; }
+    this.activeRoute.data.subscribe((data: { title: string }) => {
+      this.pageTitle = data.title || this.pageTitle;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   @HostListener('window: resize', ['$event'])

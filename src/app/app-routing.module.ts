@@ -10,6 +10,16 @@ import { ServicesComponent } from '@pages/others/services/services.component';
 import { HowtobuyComponent } from '@pages/others/howtobuy/howtobuy.component';
 import { FaqsPageComponent } from '@pages/others/faqs/faqs.component';
 import { ContactOnePageComponent } from '@pages/others/contact-one/contact-one.component';
+import { BrandsComponent } from '@pages/shop/brands/brands.component';
+import { CategorysComponent } from '@pages/shop/categorys/categorys.component';
+import { OffersComponent } from '@pages/shop/offers/offers.component';
+import { CategoryComponent } from '@pages/shop/category/category.component';
+import { BrandComponent } from '@pages/shop/brand/brand.component';
+import { CartComponent } from '@pages/shop/cart/cart.component';
+import { WishlistComponent } from '@pages/shop/wishlist/wishlist.component';
+import { CheckoutComponent } from '@pages/shop/checkout/checkout.component';
+import { DashboardComponent } from '@pages/shop/dashboard/dashboard.component';
+import { AuthGuard } from '@core/guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -29,7 +39,8 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        component: IndexComponent
+        component: IndexComponent,
+        data: { title: 'Inicio' }
       },
       {
         path: 'login',
@@ -52,28 +63,39 @@ const routes: Routes = [
         loadChildren: () => import('@pages/auth/change-password/change-password.module').then(m => m.ChangePasswordModule)
       },
       {
-        path: 'elements',
-        loadChildren: () => import('@pages/elements/elements.module').then(m => m.ElementsModule)
+        path: 'ofertas',
+        component: OffersComponent,
+        data: { title: 'Ofertas' }
       },
       {
-        path: 'blog',
-        loadChildren: () => import('@pages/blog/blog.module').then(m => m.BlogModule)
+        path: 'marcas',
+        component: BrandsComponent,
+        data: { title: 'Marcas' }
       },
       {
-        path: 'shop',
-        loadChildren: () => import('@pages/shop/shop.module').then(m => m.ShopModule)
+        path: 'marca',
+        component: BrandComponent,
+        data: { title: 'Marca' }
       },
       {
-        path: 'category',
-        loadChildren: () => import('@pages/shop/shop.module').then(m => m.ShopModule)
+        path: 'marca/:type',
+        component: BrandComponent,
+        data: { title: 'Marca' }
       },
       {
-        path: 'offers',
-        loadChildren: () => import('@pages/shop/shop.module').then(m => m.ShopModule)
+        path: 'categorias',
+        component: CategorysComponent,
+        data: { title: 'Categorias' }
       },
       {
-        path: 'brands',
-        loadChildren: () => import('@pages/shop/shop.module').then(m => m.ShopModule)
+        path: 'categoria',
+        component: CategoryComponent,
+        data: { title: 'Categoria' }
+      },
+      {
+        path: 'categoria/:type',
+        component: CategoryComponent,
+        data: { title: 'Categoria' }
       },
       {
         path: 'product',
@@ -84,28 +106,54 @@ const routes: Routes = [
         loadChildren: () => import('@pages/shop/shop.module').then(m => m.ShopModule)
       },
       {
-        path: 'about',
-        component: AboutOneComponent
+        path: 'cart',
+        component: CartComponent
+      },
+      {
+        path: 'wishlist',
+        component: WishlistComponent
+      },
+      {
+        path: 'checkout',
+        component: CheckoutComponent
+      },
+      {
+        path: 'checkout/:idOrder/:id',
+        component: CheckoutComponent
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'conocenos',
+        component: AboutOneComponent,
+        data: { title: 'Conócenonos' }
       },
       {
         path: 'services',
         component: ServicesComponent
       },
       {
-        path: 'howtobuy',
-        component: HowtobuyComponent
+        path: 'comocomprar',
+        component: HowtobuyComponent,
+        data: { title: 'Cómo comprar' }
       },
       {
-        path: 'contact',
-        component: ContactOnePageComponent
+        path: 'contacto',
+        component: ContactOnePageComponent,
+        data: { title: 'Contacto' }
       },
       {
         path: 'faq',
-        component: FaqsPageComponent
+        component: FaqsPageComponent,
+        data: { title: 'FAQ' }
       },
       {
-        path: 'terms',
-        component: TermsComponent
+        path: 'terminos',
+        component: TermsComponent,
+        data: { title: 'Terminos' }
       }
     ]
   },

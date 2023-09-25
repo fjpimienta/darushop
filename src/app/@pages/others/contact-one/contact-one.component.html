@@ -6,9 +6,9 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/about">Empresa</a>
+          <a [attr.href]="previousPageTitle" [innerHTML]="previousPageTitle"></a>
         </li>
-        <li class="breadcrumb-item active">Contactanos</li>
+        <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
     </div>
   </nav>
