@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 import { UtilsService } from '@core/services/utils.service';
 import { ApiService } from '@graphql/services/api.service';
+import { Subject, combineLatest } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'shop-nosidebar-page',
@@ -17,20 +19,39 @@ export class NosidebarPageComponent implements OnInit {
   type = 'boxed';
   totalCount = 0;
   orderBy = 'default';
-  pageTitle = 'Boxed No Sidebar';
   searchTerm = '';
   containerClass = 'container';
   cols = "col-6 col-md-4 col-lg-4 col-xl-3";
   loaded = false;
   moreLoading = false;
   params = {};
+  pageTitle: string = '';
+  previousPageTitle: string = '';
+  private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
-    public activeRoute: ActivatedRoute,
     public router: Router,
+    public activeRoute: ActivatedRoute,
     public utilsService: UtilsService,
     public apiService: ApiService
   ) {
+    combineLatest([
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
+      this.activeRoute.data
+    ])
+      .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
+      .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
+        // Obtener el título de la página actual a través de activeRoute.data
+        this.pageTitle = data.title || '';
+        // Obtener el título de la página anterior del historial de navegación
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.previousNavigation) {
+          this.previousPageTitle = navigation.previousNavigation.finalUrl.toString();
+        } else {
+          this.previousPageTitle = '';
+        }
+        console.log('this.pageTitle: ', this.pageTitle);
+      });
     this.activeRoute.params.subscribe(params => {
       this.type = params['type'];
       if (this.type == 'boxed') {
@@ -52,6 +73,14 @@ export class NosidebarPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.activeRoute.data.subscribe((data: { title: string }) => {
+      this.pageTitle = data.title || this.pageTitle;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   loadProducts() {
