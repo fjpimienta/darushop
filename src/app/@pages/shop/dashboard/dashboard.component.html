@@ -11,9 +11,9 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/shop/products">Productos</a>
+          <a [attr.href]="previousPageTitle" [innerHTML]="previousPageTitle"></a>
         </li>
-        <li class="breadcrumb-item active">Mi Cuenta</li>
+        <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
     </div>
   </nav>

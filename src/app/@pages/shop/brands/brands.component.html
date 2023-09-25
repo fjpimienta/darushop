@@ -7,18 +7,14 @@
       <button class="sidebar-toggler" (click)="toggleSidebar()">
         <i class="icon-bars"></i>Filtros
       </button>
-
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/shop/products">Productos</a>
+          <a [attr.href]="previousPageTitle" [innerHTML]="previousPageTitle"></a>
         </li>
-        <li class="breadcrumb-item">
-          <a routerLink="/shop/brands">Marcas</a>
-        </li>
-        <li class="breadcrumb-item active">Principales</li>
+        <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
     </div>
   </nav>
@@ -31,12 +27,12 @@
             <div class="row">
               <div class="col-sm-8">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'hp'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'hp'}">
                     <app-image src="assets/images/home/products/1.jpg" width="580" height="280" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'hp'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'hp'}">
                     <h3 class="banner-title">HP</h3>
                     <h4 class="banner-subtitle"># Productos</h4>
                     <span class="banner-link-text">Comprar Ahora</span>
@@ -46,12 +42,12 @@
 
               <div class="col-sm-4">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'canon'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'canon'}">
                     <app-image src="assets/images/home/products/2.jpg" width="280" height="280" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'canon'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'canon'}">
                     <h3 class="banner-title">Canon</h3>
                     <h4 class="banner-subtitle"># Product</h4>
                     <span class="banner-link-text">Comprar Ahora</span>
@@ -61,12 +57,12 @@
 
               <div class="col-sm-4">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'intel'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'intel'}">
                     <app-image src="assets/images/home/products/3.jpg" width="280" height="580" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'intel'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'intel'}">
                     <h3 class="banner-title">Intel</h3>
                     <h4 class="banner-subtitle"># Product</h4>
                     <span class="banner-link-text">Comprar Ahora</span>
@@ -76,12 +72,12 @@
 
               <div class="col-sm-8">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'epson'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'epson'}">
                     <app-image src="assets/images/home/products/4.jpg" width="580" height="580" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'epson'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'epson'}">
                     <h3 class="banner-title">Epson</h3>
                     <h4 class="banner-subtitle">#3 Productos</h4>
                     <span class="banner-link-text">Comprar Ahora</span>
@@ -95,12 +91,12 @@
             <div class="row">
               <div class="col-sm-8">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'dell'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'dell'}">
                     <app-image src="assets/images/home/products/5.jpg" width="580" height="580" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'dell'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'dell'}">
                     <h3 class="banner-title">Dell</h3>
                     <h4 class="banner-subtitle"># Productos</h4>
                     <span class="banner-link-text">Comprar Ahora</span>
@@ -108,12 +104,12 @@
                 </div>
 
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'lenovo'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'lenovo'}">
                     <app-image src="assets/images/home/products/6.jpg" width="580" height="280" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'lenovo'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'lenovo'}">
                     <h3 class="banner-title">Lenovo</h3>
                     <h4 class="banner-subtitle"># Productos</h4>
                     <span class="banner-link-text">Comprar Ahora</span>
@@ -123,12 +119,12 @@
 
               <div class="col-sm-4">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'logitech'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'logitech'}">
                     <app-image src="assets/images/home/products/7.jpg" width="280" height="280" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'logitech'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'logitech'}">
                     <h3 class="banner-title">Logitech</h3>
                     <h4 class="banner-subtitle"># Productos</h4>
                     <span class="banner-link-text">Comprar Ahora</span>
@@ -136,12 +132,12 @@
                 </div>
 
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/brand/list" [queryParams]="{brand: 'samsung'}">
+                  <a routerLink="/marca/list" [queryParams]="{brand: 'samsung'}">
                     <app-image src="assets/images/home/products/8.jpg" width="280" height="580" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/brand/list" [queryParams]="{brand: 'samsung'}">
+                  <a class="banner-link" routerLink="/marca/list" [queryParams]="{brand: 'samsung'}">
                     <h3 class="banner-title">Samsung</h3>
                     <h4 class="banner-subtitle"># Product</h4>
                     <span class="banner-link-text">Comprar Ahora</span>

@@ -3,11 +3,11 @@
     <li class="megamenu-container" [class.active]="current=='/'">
       <a routerLink="/">Inicio</a>
     </li>
-    <li class="megamenu-container" [class.active]="current.includes('/offers')">
-      <a routerLink="/shop/offers">Ofertas</a>
+    <li class="megamenu-container" [class.active]="current.includes('/ofertas')">
+      <a routerLink="ofertas">Ofertas</a>
     </li>
-    <li [class.active]="current.includes('/categorys')">
-      <a routerLink="/shop/categorys" class="sf-with-ul">Categor&iacute;as</a>
+    <li [class.active]="current.includes('/categorias')">
+      <a routerLink="categorias" class="sf-with-ul">Categor&iacute;as</a>
       <div *ngIf="categories" class="megamenu megamenu-sm">
         <div class="row no-gutters">
           <div class="col-md-12">
@@ -23,9 +23,9 @@
                           (input)="searchCategories($event)" />
                       </div>
                     </li>
-                    <li [class.active]="current.includes('shop/category')"
+                    <li [class.active]="current.includes('categoria')"
                       *ngFor="let item of categoriesTmp; let id = index;">
-                      <a [routerLink]="['/shop/category']" [queryParams]="{category: item.slug}">{{
+                      <a [routerLink]="['categoria']" [queryParams]="{category: item.slug}">{{
                         item.description }}</a>
                     </li>
                   </ul>
@@ -36,8 +36,8 @@
         </div>
       </div>
     </li>
-    <li [class.active]="current.includes('/brands')">
-      <a routerLink="/shop/brands" class="sf-with-ul">Marcas</a>
+    <li [class.active]="current.includes('/marcas')">
+      <a routerLink="marcas" class="sf-with-ul">Marcas</a>
       <div *ngIf="brands.length>0" class="megamenu megamenu-sm">
         <div class="row no-gutters">
           <div class="col-md-12">
@@ -52,8 +52,8 @@
                           placeholder="Buscar marca ..." required (input)="searchBrands($event)" />
                       </div>
                     </li>
-                    <li [class.active]="current.includes('shop/brand')" *ngFor="let item of brandsTmp; let id = index;">
-                      <a [routerLink]="['/shop/brand']" [queryParams]="{brand: item.slug}">{{
+                    <li [class.active]="current.includes('marca')" *ngFor="let item of brandsTmp; let id = index;">
+                      <a [routerLink]="['marca']" [queryParams]="{brand: item.slug}">{{
                         item.description }}</a>
                     </li>
                   </ul>
@@ -64,40 +64,40 @@
         </div>
       </div>
     </li>
-    <li [class.active]="current.includes('/shop/dashboard')">
-      <a routerLink="/shop/dashboard" class="sf-with-ul">Tu cuenta</a>
+    <li [class.active]="current.includes('/dashboard')">
+      <a routerLink="/dashboard" class="sf-with-ul">Tu cuenta</a>
       <ul>
-        <li [class.active]="current.includes('shop/dashboard')">
-          <a routerLink="/shop/dashboard">Mi cuenta</a>
+        <li [class.active]="current.includes('dashboard')">
+          <a routerLink="/dashboard">Mi cuenta</a>
         </li>
-        <li [class.active]="current.includes('shop/cart')">
-          <a routerLink="/shop/cart">Carrito</a>
+        <li [class.active]="current.includes('cart')">
+          <a routerLink="/cart">Carrito</a>
         </li>
-        <li [class.active]="current.includes('shop/checkout')">
-          <a routerLink="/shop/checkout">Verificar</a>
+        <li [class.active]="current.includes('checkout')">
+          <a routerLink="/checkout">Verificar</a>
         </li>
-        <li [class.active]="current.includes('shop/wishlist')">
-          <a routerLink="/shop/wishlist">Lista de Deseos</a>
+        <li [class.active]="current.includes('wishlist')">
+          <a routerLink="/wishlist">Lista de Deseos</a>
         </li>
       </ul>
     </li>
     <li [class.active]="current.includes('/company')">
       <a href="javascript:;" class="sf-with-ul">Sobre DARU</a>
       <ul>
-        <li [class.active]="current.includes('about')">
-          <a routerLink="/about">Con&oacute;ceme</a>
+        <li [class.active]="current.includes('conocenos')">
+          <a routerLink="/conocenos">Con&oacute;cenos</a>
         </li>
         <!-- <li [class.active]="current.includes('services')">
           <a routerLink="/services">Servicios</a>
         </li> -->
-        <li [class.active]="current.includes('contact')">
-          <a routerLink="/contact">Contacto</a>
+        <li [class.active]="current.includes('contacto')">
+          <a routerLink="/contacto">Contacto</a>
         </li>
-        <li [class.active]="current.includes('terms')">
-          <a routerLink="/terms">T&eacute;rmninos y Condiciones</a>
+        <li [class.active]="current.includes('terminos')">
+          <a routerLink="/terminos">T&eacute;rmninos y Condiciones</a>
         </li>
-        <li [class.active]="current.includes('howtobuy')">
-          <a routerLink="/howtobuy">Cómo comprar</a>
+        <li [class.active]="current.includes('comocomprar')">
+          <a routerLink="/comocomprar">Cómo comprar</a>
         </li>
         <li [class.active]="current.includes('faq')">
           <a routerLink="/faq">Preguntas y Respuestas</a>

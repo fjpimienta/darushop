@@ -19,10 +19,10 @@
                 <a routerLink="/" class="sf-with-ul">Inicio</a>
               </li>
               <li>
-                <a routerLink="/shop/offers">Ofertas</a>
+                <a routerLink="/ofertas">Ofertas</a>
               </li>
               <li>
-                <a routerLink="/shop/categorys">Categor&iacute;as
+                <a routerLink="/categorias">Categor&iacute;as
                   <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
                 </a>
                 <div class="megamenu megamenu-sm">
@@ -41,7 +41,7 @@
                                 </div>
                               </li>
                               <li *ngFor="let categorie of categoriesTmp" routerLinkActive="active">
-                                <a [routerLink]="['/shop/category']" [queryParams]="{category: categorie.slug}">{{
+                                <a [routerLink]="['/categoria']" [queryParams]="{category: categorie.slug}">{{
                                   categorie.description }}</a>
                               </li>
                             </ul>
@@ -53,7 +53,7 @@
                 </div>
               </li>
               <li>
-                <a routerLink="/shop/brands">Marcas
+                <a routerLink="/marcas">Marcas
                   <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
                 </a>
                 <div class="megamenu megamenu-sm">
@@ -73,7 +73,7 @@
                               </li>
                               <li [class.active]="current.includes('shop/brand')"
                                 *ngFor="let item of brandsTmp; let id = index;">
-                                <a [routerLink]="['/shop/brand']" [queryParams]="{brand: item.slug}">{{
+                                <a [routerLink]="['/marca']" [queryParams]="{brand: item.slug}">{{
                                   item.description }}</a>
                               </li>
                             </ul>
@@ -85,21 +85,21 @@
                 </div>
               </li>
               <li>
-                <a routerLink="/shop/products">Tu cuenta
+                <a routerLink="/productos">Tu cuenta
                   <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
                 </a>
                 <ul>
                   <li>
-                    <a routerLink="/shop/dashboard">Mi cuenta</a>
+                    <a routerLink="/dashboard">Mi cuenta</a>
                   </li>
                   <li>
-                    <a routerLink="/shop/cart">Carrito</a>
+                    <a routerLink="/cart">Carrito</a>
                   </li>
                   <li>
-                    <a routerLink="/shop/checkout">Verificar</a>
+                    <a routerLink="/checkout">Verificar</a>
                   </li>
                   <li>
-                    <a routerLink="/shop/wishlist">Lista de Deseos</a>
+                    <a routerLink="/wishlist">Lista de Deseos</a>
                   </li>
                 </ul>
               </li>
@@ -108,20 +108,20 @@
                   <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
                 </a>
                 <ul>
-                  <li [class.active]="current.includes('about')">
-                    <a routerLink="/about">Con&oacute;ceme</a>
+                  <li [class.active]="current.includes('conocenos')">
+                    <a routerLink="/conocenos">Con&oacute;ceme</a>
                   </li>
                   <!-- <li [class.active]="current.includes('services')">
                     <a routerLink="/services">Servicios</a>
                   </li> -->
-                  <li [class.active]="current.includes('contact')">
-                    <a routerLink="/contact">Contacto</a>
+                  <li [class.active]="current.includes('contacto')">
+                    <a routerLink="/contacto">Contacto</a>
                   </li>
-                  <li [class.active]="current.includes('terms')">
-                    <a routerLink="/terms">T&eacute;rmninos y Condiciones</a>
+                  <li [class.active]="current.includes('terminos')">
+                    <a routerLink="/terminos">T&eacute;rmninos y Condiciones</a>
                   </li>
-                  <li [class.active]="current.includes('howtobuy')">
-                    <a routerLink="/howtobuy">Cómo comprar</a>
+                  <li [class.active]="current.includes('comocomprar')">
+                    <a routerLink="/comocomprar">Cómo comprar</a>
                   </li>
                   <li [class.active]="current.includes('faq')">
                     <a routerLink="/faq">Preguntas y Respuestas</a>

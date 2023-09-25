@@ -1,14 +1,14 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError, first } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, catchError, first, filter, takeUntil } from 'rxjs/operators';
+import { Observable, Subject, combineLatest } from 'rxjs';
 import { of } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MailService } from '@core/services/mail.service';
 import { IMail } from '@core/interfaces/mail.interface';
 import { infoEventAlert, loadData } from '@shared/alert/alerts';
 import { TYPE_ALERT } from '@shared/alert/values.config';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'pages-contact-one',
@@ -22,12 +22,34 @@ export class ContactOnePageComponent implements OnInit {
   apiLoaded: Observable<boolean>;
   isSubmitting = false;
 
+  pageTitle: string = '';
+  previousPageTitle: string = '';
+  private unsubscribe$: Subject<void> = new Subject<void>();
+
   constructor(
     httpClient: HttpClient,
     private router: Router,
+    public activeRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private mailService: MailService
   ) {
+    combineLatest([
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
+      this.activeRoute.data
+    ])
+      .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
+      .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
+        // Obtener el título de la página actual a través de activeRoute.data
+        this.pageTitle = data.title || '';
+        // Obtener el título de la página anterior del historial de navegación
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.previousNavigation) {
+          this.previousPageTitle = navigation.previousNavigation.finalUrl.toString();
+        } else {
+          this.previousPageTitle = '';
+        }
+        console.log('this.pageTitle: ', this.pageTitle);
+      });
     this.formData = this.formBuilder.group({
       cname: ['', Validators.required],
       cmail: ['', Validators.required],
@@ -43,6 +65,14 @@ export class ContactOnePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.activeRoute.data.subscribe((data: { title: string }) => {
+      this.pageTitle = data.title || this.pageTitle;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   async onSubmit(): Promise<any> {
@@ -57,7 +87,7 @@ export class ContactOnePageComponent implements OnInit {
       }
       this.sendEmail(contact);
       this.isSubmitting = true;
-      this.router.navigate(['/shop/offers']);
+      this.router.navigate(['/ofertas']);
     } else {
       this.isSubmitting = false;
       return await infoEventAlert('Los datos enviados no son correctos! Verificar.', '');

@@ -7,7 +7,7 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/shop/products">Shop</a>
+          <a [attr.href]="previousPageTitle" [innerHTML]="previousPageTitle"></a>
         </li>
         <li class="breadcrumb-item active">{{ pageTitle }}</li>
         <li class="breadcrumb-item" *ngIf="searchTerm != ''">

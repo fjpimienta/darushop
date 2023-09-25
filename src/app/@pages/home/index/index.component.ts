@@ -12,6 +12,9 @@ import { MailService } from '@core/services/mail.service';
 import { IMail } from '@core/interfaces/mail.interface';
 import { infoEventAlert } from '@shared/alert/alerts';
 import { TYPE_ALERT } from '@shared/alert/values.config';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Subject, combineLatest } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-index',
@@ -35,6 +38,9 @@ export class IndexComponent implements OnInit {
   existSaleToday = false;
   index = 0;
   SERVER_URL = environment.SERVER_URL;
+  pageTitle: string = '';
+  previousPageTitle: string = '';
+  private unsubscribe$: Subject<void> = new Subject<void>();
 
   @ViewChild('singleSlider') singleSlider: any;
   @ViewChild('customDots') customDots: any;
@@ -44,15 +50,43 @@ export class IndexComponent implements OnInit {
     private formBuilder: FormBuilder,
     private cartService: CartService,
     private mailService: MailService,
+    public router: Router,
+    public activeRoute: ActivatedRoute,
     public utilsService: UtilsService,
     public productService: ProductsService
-  ) { }
+  ) {
+    combineLatest([
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
+      this.activeRoute.data
+    ])
+      .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
+      .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
+        // Obtener el título de la página actual a través de activeRoute.data
+        this.pageTitle = data.title || '';
+        // Obtener el título de la página anterior del historial de navegación
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.previousNavigation) {
+          this.previousPageTitle = navigation.previousNavigation.finalUrl.toString();
+        } else {
+          this.previousPageTitle = '';
+        }
+        console.log('this.pageTitle: ', this.pageTitle);
+      });
+  }
 
   ngOnInit(): void {
     this.formData = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email, this.customEmailValidator]]
     });
     this.initializeProducts();
+    this.activeRoute.data.subscribe((data: { title: string }) => {
+      this.pageTitle = data.title || this.pageTitle;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   initializeProducts(): void {
