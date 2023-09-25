@@ -12,13 +12,8 @@
         <li class="breadcrumb-item">
           <a routerLink="/">Inicio</a>
         </li>
-        <li class="breadcrumb-item">
-          <a routerLink="/shop/market">MarketPlace</a>
-        </li>
-        <li class="breadcrumb-item">
-          <a routerLink="/shop/category">Categor&iacute;as</a>
-        </li>
-        <li class="breadcrumb-item active">Principales</li>
+        <li class="breadcrumb-item">{{previousPageTitle}}</li>
+        <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
     </div>
   </nav>
@@ -29,12 +24,12 @@
         <div class="row">
           <div class="col-md-6">
             <div class="banner banner-cat banner-badge">
-              <a routerLink="/shop/category/list" [queryParams]="{category: 'accesorios-gaming'}">
+              <a routerLink="/categoria/list" [queryParams]="{category: 'accesorios-gaming'}">
                 <app-image src="assets/images/home/products/1.jpg" width="580" height="580" alt="Banner">
                 </app-image>
               </a>
 
-              <a class="banner-link" routerLink="/shop/category/list" [queryParams]="{category: 'accesorios-gaming'}">
+              <a class="banner-link" routerLink="/categoria/list" [queryParams]="{category: 'accesorios-gaming'}">
                 <h3 class="banner-title">Accesorios Gaming</h3>
                 <h4 class="banner-subtitle"># Productos</h4>
                 <span class="banner-link-text">Comprar Ahora</span>
@@ -42,12 +37,12 @@
             </div>
 
             <div class="banner banner-cat banner-badge">
-              <a routerLink="/shop/category/list" [queryParams]="{category: 'computadoras'}">
+              <a routerLink="/categoria/list" [queryParams]="{category: 'computadoras'}">
                 <app-image src="assets/images/home/products/2.jpg" width="580" height="280" alt="Banner">
                 </app-image>
               </a>
 
-              <a class="banner-link" routerLink="/shop/category/list" [queryParams]="{category: 'computadoras'}">
+              <a class="banner-link" routerLink="/categoria/list" [queryParams]="{category: 'computadoras'}">
                 <h3 class="banner-title">Computadoras</h3>
                 <h4 class="banner-subtitle"># Productos</h4>
                 <span class="banner-link-text">Comprar Ahora</span>
@@ -59,12 +54,12 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/category/list" [queryParams]="{category: 'computadoras-gaming'}">
+                  <a routerLink="/categoria/list" [queryParams]="{category: 'computadoras-gaming'}">
                     <app-image src="assets/images/home/products/3.jpg" width="280" height="280" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/category/list"
+                  <a class="banner-link" routerLink="/categoria/list"
                     [queryParams]="{category: 'computadoras-gaming'}">
                     <h3 class="banner-title">Computadoras Gaming</h3>
                     <h4 class="banner-subtitle"># Productos</h4>
@@ -75,12 +70,12 @@
 
               <div class="col-sm-6">
                 <div class="banner banner-cat banner-badge">
-                  <a routerLink="/shop/category/list" [queryParams]="{category: 'almacenamiento-portatil'}">
+                  <a routerLink="/categoria/list" [queryParams]="{category: 'almacenamiento-portatil'}">
                     <app-image src="assets/images/home/products/4.jpg" width="280" height="280" alt="Banner">
                     </app-image>
                   </a>
 
-                  <a class="banner-link" routerLink="/shop/category/list"
+                  <a class="banner-link" routerLink="/categoria/list"
                     [queryParams]="{category: 'almacenamiento-portatil'}">
                     <h3 class="banner-title">Almacenamiento Portatil</h3>
                     <h4 class="banner-subtitle"># Productos</h4>
@@ -91,12 +86,12 @@
             </div>
 
             <div class="banner banner-cat banner-badge">
-              <a routerLink="/shop/category/list" [queryParams]="{category: 'perifericos-para-pos'}">
+              <a routerLink="/categoria/list" [queryParams]="{category: 'perifericos-para-pos'}">
                 <app-image src="assets/images/home/products/5.jpg" width="580" height="580" alt="Banner">
                 </app-image>
               </a>
 
-              <a class="banner-link" routerLink="/shop/category/list"
+              <a class="banner-link" routerLink="/categoria/list"
                 [queryParams]="{category: 'perifericos-para-pos'}">
                 <h3 class="banner-title">Perifericos para POS</h3>
                 <h4 class="banner-subtitle"># Productos</h4>
@@ -107,12 +102,12 @@
 
           <div class="col-sm-6 col-md-3">
             <div class="banner banner-cat banner-badge">
-              <a routerLink="/shop/category/list" [queryParams]="{category: 'redes'}">
+              <a routerLink="/categoria/list" [queryParams]="{category: 'redes'}">
                 <app-image src="assets/images/home/products/6.jpg" width="280" height="280" alt="Banner">
                 </app-image>
               </a>
 
-              <a class="banner-link" routerLink="/shop/category/list" [queryParams]="{category: 'redes'}">
+              <a class="banner-link" routerLink="/categoria/list" [queryParams]="{category: 'redes'}">
                 <h3 class="banner-title">Redes</h3>
                 <h4 class="banner-subtitle"># Productos</h4>
                 <span class="banner-link-text">Comprar Ahora</span>
@@ -122,12 +117,12 @@
 
           <div class="col-sm-6 col-md-3 order-md-last">
             <div class="banner banner-cat banner-badge">
-              <a routerLink="/shop/category/list" [queryParams]="{category: 'seguridad'}">
+              <a routerLink="/categoria/list" [queryParams]="{category: 'seguridad'}">
                 <app-image src="assets/images/home/products/8.jpg" width="280" height="280" alt="Banner">
                 </app-image>
               </a>
 
-              <a class="banner-link" routerLink="/shop/category/list" [queryParams]="{category: 'seguridad'}">
+              <a class="banner-link" routerLink="/categoria/list" [queryParams]="{category: 'seguridad'}">
                 <h3 class="banner-title">Seguridad</h3>
                 <h4 class="banner-subtitle"># Productos</h4>
                 <span class="banner-link-text">Comprar Ahora</span>
@@ -137,12 +132,12 @@
 
           <div class="col-md-6">
             <div class="banner banner-cat banner-badge">
-              <a routerLink="/shop/category/list" [queryParams]="{category: 'almacenamiento'}">
+              <a routerLink="/categoria/list" [queryParams]="{category: 'almacenamiento'}">
                 <app-image src="assets/images/home/products/7.jpg" width="580" height="280" alt="Banner">
                 </app-image>
               </a>
 
-              <a class="banner-link" routerLink="/shop/category/list" [queryParams]="{category: 'almacenamiento'}">
+              <a class="banner-link" routerLink="/categoria/list" [queryParams]="{category: 'almacenamiento'}">
                 <h3 class="banner-title">Almacenamiento</h3>
                 <h4 class="banner-subtitle"># Productos</h4>
                 <span class="banner-link-text">Comprar Ahora</span>

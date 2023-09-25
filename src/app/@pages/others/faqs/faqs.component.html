@@ -8,9 +8,9 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/about">Empresa</a>
+          <a [attr.href]="previousPageTitle" [innerHTML]="previousPageTitle"></a>
         </li>
-        <li class="breadcrumb-item active">Preguntas y Respuestas</li>
+        <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
     </div>
   </nav>

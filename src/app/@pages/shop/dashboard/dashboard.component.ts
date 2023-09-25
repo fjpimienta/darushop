@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { IMeData } from '@core/interfaces/session.interface';
 import { ChargeInput } from '@core/models/charge.models';
 import { Codigopostal } from '@core/models/codigopostal.models';
@@ -14,6 +14,8 @@ import { OrdersService } from '@core/services/orders.service';
 import { ChargeService } from '@core/services/stripe/charge.service';
 import { infoEventAlert } from '@shared/alert/alerts';
 import jwtDecode from 'jwt-decode';
+import { Subject, combineLatest } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 declare var $: any;
 
@@ -28,6 +30,7 @@ export class DashboardComponent implements OnInit {
   session: IMeData = {
     status: false
   };
+  type: '';
   access = false;
   sistema = false;
   role: string;
@@ -53,18 +56,42 @@ export class DashboardComponent implements OnInit {
 
   formDataMain: FormGroup;
   formDataAddress: FormGroup;
+  pageTitle: string = '';
+  previousPageTitle: string = '';
+  private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
+    public router: Router,
+    public activeRoute: ActivatedRoute,
     private el: ElementRef,
     private formBuilder: FormBuilder,
     private renderer: Renderer2,
-    private router: Router,
     public authService: AuthenticationService,
     public ordersService: OrdersService,
     public chargeService: ChargeService,
     public codigopostalsService: CodigopostalsService,
     public countrysService: CountrysService,
   ) {
+    combineLatest([
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
+      this.activeRoute.data
+    ])
+      .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
+      .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
+        // Obtener el título de la página actual a través de activeRoute.data
+        this.pageTitle = data.title || '';
+        // Obtener el título de la página anterior del historial de navegación
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.previousNavigation) {
+          this.previousPageTitle = navigation.previousNavigation.finalUrl.toString();
+        } else {
+          this.previousPageTitle = '';
+        }
+        console.log('this.pageTitle: ', this.pageTitle);
+      });
+    this.activeRoute.params.subscribe(params => {
+      this.type = params.type || '4cols';
+    });
     this.countrysService.getCountrys().subscribe(result => {
       this.countrys = result.countrys;
     });
@@ -72,7 +99,9 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.start();
-
+    this.activeRoute.data.subscribe((data: { title: string }) => {
+      this.pageTitle = data.title || this.pageTitle;
+    });
     console.clear();
     this.countrys = [];
     this.selectCountry = new Country();
@@ -191,6 +220,11 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   viewTab($event: Event, prevId: number, nextId: number) {
