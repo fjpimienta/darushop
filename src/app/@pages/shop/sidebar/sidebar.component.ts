@@ -1,8 +1,10 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 import { ProductsService } from '@core/services/products.service';
 import { UtilsService } from '@core/services/utils.service';
+import { Subject, combineLatest } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-shop-sidebar-page',
@@ -17,20 +19,39 @@ export class SidebarPageComponent implements OnInit {
   type = 'list';
   totalCount = 0;
   orderBy = 'default';
-  pageTitle = 'Lista';
   toggle = false;
   searchTerm = '';
   loaded = false;
   firstLoad = false;
   brands = [];
   categories = [];
+  pageTitle: string = '';
+  previousPageTitle: string = '';
+  private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
-    public activeRoute: ActivatedRoute,
     public router: Router,
+    public activeRoute: ActivatedRoute,
     public utilsService: UtilsService,
     public productService: ProductsService
   ) {
+    combineLatest([
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
+      this.activeRoute.data
+    ])
+      .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
+      .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
+        // Obtener el título de la página actual a través de activeRoute.data
+        this.pageTitle = data.title || '';
+        // Obtener el título de la página anterior del historial de navegación
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.previousNavigation) {
+          this.previousPageTitle = navigation.previousNavigation.finalUrl.toString();
+        } else {
+          this.previousPageTitle = '';
+        }
+        console.log('this.pageTitle: ', this.pageTitle);
+      });
     this.activeRoute.params.subscribe(params => {
       this.type = params.type;
     });
@@ -102,6 +123,11 @@ export class SidebarPageComponent implements OnInit {
   ngOnInit(): void {
     if (window.innerWidth > 991) { this.toggle = false; }
     else { this.toggle = true; }
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   @HostListener('window: resize', ['$event'])
