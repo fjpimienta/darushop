@@ -71,7 +71,7 @@
                                     (input)="searchBrands($event)" />
                                 </div>
                               </li>
-                              <li [class.active]="current.includes('shop/brand')"
+                              <li [class.active]="current.includes('marca')"
                                 *ngFor="let item of brandsTmp; let id = index;">
                                 <a [routerLink]="['/marca']" [queryParams]="{brand: item.slug}">{{
                                   item.description }}</a>

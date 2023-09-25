@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Catalog } from '@core/models/catalog.models';
-import { CatalogGroup } from '@core/models/cataloggroup.models';
-import { BrandsService } from '@core/services/brand.service';
-import { CategoriesService } from '@core/services/categorie.service';
+import { BrandsGroupsService } from '@core/services/brandgroup.service';
 import { CategorysGroupsService } from '@core/services/categorygroup.service';
 import { Subscription } from 'rxjs';
 
@@ -20,11 +18,10 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
 
   searchTerm = '';
   current = '/';
-  brands: Catalog[];
-  brandsTmp: Catalog[];
-  categories: Catalog[];
-  categoriesTmp: Catalog[];
-  categorysGroup: CatalogGroup[] = [];
+  brands: Catalog[] = [];
+  categories: Catalog[] = [];
+  brandsTmp: Catalog[] = [];
+  categoriesTmp: Catalog[] = [];
   searchQuery: string = '';
   searchQueryCatMob: string = '';
 
@@ -32,55 +29,51 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    public brandsService: BrandsService,
-    public categoriesService: CategoriesService,
+    public brandsGroupsService: BrandsGroupsService,
     public categorysgroupService: CategorysGroupsService
   ) {
     this.subscr = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this.hideMobileMenu();
         this.current = event.url;
       } else if (event instanceof NavigationEnd) {
         this.current = event.url;
       }
     });
-    this.brands = [];
-    this.brandsTmp = [];
-    this.brandsService.getBrands(1, -1).subscribe(result => {
-      this.brands = result.brands;
-      this.brandsTmp = this.brands;
-    });
-    let j = 0;
-    this.categories = [];
-    this.categoriesTmp = [];
-    this.categorysgroupService.getCategorysGroup().subscribe(result => {
-      result.categorysgroups.forEach(category => {
-        const categoryGroup = new CatalogGroup();
-        categoryGroup.total = category.total;
-        categoryGroup.name = category._id[0].name;
-        categoryGroup.slug = category._id[0].slug;
-        this.categorysGroup.push(categoryGroup);
-        j += 1;
-        const br = new Catalog();
-        br.id = j.toString();
-        br.slug = category._id[0].slug;
-        br.description = category._id[0].name.toUpperCase().toString().slice(0, 32);
-        br.total = category.total;
-        br.param = {
-          category: br.slug,
-          description: br.description
-        };
-        this.categories.push(br);
-        this.categoriesTmp.push(br);
-      });
-    });
   }
 
   ngOnInit(): void {
+    this.loadCategoriesAndBrands();
   }
 
   ngOnDestroy(): void {
     this.subscr.unsubscribe();
+  }
+
+  private loadCategoriesAndBrands(): void {
+    this.categorysgroupService.getCategorysGroup().subscribe(result => {
+      this.categories = result.categorysgroups.map(category => this.mapCatalog(category));
+      this.sortCatalogs(this.categories);
+      this.categoriesTmp = [...this.categories]; // Copiar datos originales
+    });
+
+    this.brandsGroupsService.getBrandsGroup().subscribe(result => {
+      this.brands = result.brandsgroups.map(group => this.mapCatalog(group));
+      this.sortCatalogs(this.brands);
+      this.brandsTmp = [...this.brands]; // Copiar datos originales
+    });
+  }
+
+  private mapCatalog(data: any): Catalog {
+    const catalog = new Catalog();
+    catalog.id = data._id[0].slug;
+    catalog.slug = data._id[0].slug;
+    catalog.description = data._id[0].name.toUpperCase().slice(0, 32);
+    catalog.total = data.total;
+    return catalog;
+  }
+
+  private sortCatalogs(catalogs: Catalog[]): void {
+    catalogs.sort((a, b) => a.description.localeCompare(b.description));
   }
 
   submenuToggle(e): void {
@@ -118,32 +111,41 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
     if (this.searchQuery !== '') {
       const brand = typeof this.searchQuery === 'string' ? this.searchQuery.trim().toLowerCase() : '';
       const existBrand = this.brands.find(item => item.slug === brand) ? true : false;
-      // Solo filtra las marcas que existen en el catalogo.
+      // Solo filtra las marcas que existen en el catálogo.
       if (existBrand) {
-        this.router.navigate(['/shop/brand'], { queryParams: { brand } });
+        this.router.navigate(['/marca'], { queryParams: { brand } });
       } else {
         const filtro = new RegExp(`.*${brand}.*`, 'i');
         this.brandsTmp = this.brands.filter(item => filtro.test(item.slug));
       }
     } else {
-      this.brandsTmp = this.brands;
+      // Restaura los datos originales
+      this.brandsTmp = [...this.brands];
     }
   }
 
   searchCategories(event: any): void {
     this.searchQueryCatMob = event.target.value;
+
     if (this.searchQueryCatMob !== '') {
-      const category = typeof this.searchQueryCatMob === 'string' ? this.searchQueryCatMob.trim().toLowerCase() : '';
-      const existCategorie = this.categories.find(item => item.slug === category) ? true : false;
-      // Solo filtra las categorias que existen en el catalogo.
-      if (existCategorie) {
-        this.router.navigate(['/shop/category'], { queryParams: { category } });
+      const category = this.searchQueryCatMob.trim().toLowerCase();
+      const existCategory = this.categoriesTmp.find(item => item.slug === category);
+
+      if (existCategory) {
+        this.router.navigate(['/categoria'], { queryParams: { category } });
       } else {
         const filtro = new RegExp(`.*${category}.*`, 'i');
         this.categoriesTmp = this.categories.filter(item => filtro.test(item.slug));
+
+        // Si no hay resultados de búsqueda, redirige a una página de búsqueda vacía
+        if (this.categoriesTmp.length === 0) {
+          this.router.navigate(['/categoria'], { queryParams: { category: '' } });
+        }
       }
     } else {
-      this.categoriesTmp = this.categories;
+      // Restaura los datos originales y redirige a una página de búsqueda vacía
+      this.categoriesTmp = [...this.categories];
+      this.router.navigate(['/categoria'], { queryParams: { category: '' } });
     }
   }
 }
