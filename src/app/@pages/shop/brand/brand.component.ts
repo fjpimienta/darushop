@@ -53,7 +53,6 @@ export class BrandComponent implements OnInit {
         } else {
           this.previousPageTitle = '';
         }
-        console.log('this.pageTitle: ', this.pageTitle);
       });
     this.toggle = false;
     this.activeRoute.params.subscribe(params => {

@@ -51,7 +51,6 @@ export class CategoryComponent implements OnInit {
         } else {
           this.previousPageTitle = '';
         }
-        console.log('this.pageTitle: ', this.pageTitle);
       });
     this.activeRoute.params.subscribe(params => {
       this.type = params.type || '4cols';
@@ -61,7 +60,6 @@ export class CategoryComponent implements OnInit {
       this.offer = false;
 
       this.pageTitle = params.category.toUpperCase() || '';
-      console.log('this.pageTitle: ', this.pageTitle);
       this.searchTerm = params.searchTerm || '';
       this.orderBy = params.orderBy || '';
 
@@ -75,7 +73,6 @@ export class CategoryComponent implements OnInit {
         this.categories = [];
         this.categories.push(params.category);
       }
-      console.log('this.pageTitle: ', this.pageTitle);
       this.page = params.page ? parseInt(params.page, 10) : 1;
       this.perPage = 48;
       this.productService.getProducts(
