@@ -6,10 +6,11 @@
         <li class="breadcrumb-item">
           <a routerLink="/">Inicio</a>
         </li>
-        <li class="breadcrumb-item">
-          <a routerLink="/shop/products">Productos</a>
-        </li>
+        <li class="breadcrumb-item">{{previousPageTitle}}</li>
         <li class="breadcrumb-item active">{{ pageTitle }}</li>
+        <li class="breadcrumb-item" *ngIf="searchTerm != ''">
+          <span>Search - {{ searchTerm }}</span>
+        </li>
       </ol>
     </div>
   </nav>
@@ -44,7 +45,7 @@
             </div>
           </div>
           <div class="toolbox-layout">
-            <a routerLink="/shop/brand/list" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+            <a routerLink="/marca/list" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
               <svg width="16" height="10">
                 <rect x="0" y="0" width="4" height="4" />
                 <rect x="6" y="0" width="10" height="4" />
@@ -53,7 +54,7 @@
               </svg>
             </a>
 
-            <a routerLink="/shop/brand/2cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+            <a routerLink="/marca/2cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
               <svg width="10" height="10">
                 <rect x="0" y="0" width="4" height="4" />
                 <rect x="6" y="0" width="4" height="4" />
@@ -62,7 +63,7 @@
               </svg>
             </a>
 
-            <a routerLink="/shop/brand/3cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+            <a routerLink="/marca/3cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
               <svg width="16" height="10">
                 <rect x="0" y="0" width="4" height="4" />
                 <rect x="6" y="0" width="4" height="4" />
@@ -73,7 +74,7 @@
               </svg>
             </a>
 
-            <a routerLink="/shop/brand/4cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
+            <a routerLink="/marca/4cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
               <svg width="22" height="10">
                 <rect x="0" y="0" width="4" height="4" />
                 <rect x="6" y="0" width="4" height="4" />
