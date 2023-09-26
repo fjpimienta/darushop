@@ -4,7 +4,7 @@
     <nav class="side-nav">
       <ul class="menu-vertical sf-arrows">
         <li *ngFor="let categorie of categories" routerLinkActive="active">
-          <a routerLink="/shop/sidebar/3cols" [queryParams]="categorie.param">{{categorie.description}}</a>
+          <a routerLink="/sidebar/3cols" [queryParams]="categorie.param">{{categorie.description}}</a>
         </li>
       </ul>
     </nav>

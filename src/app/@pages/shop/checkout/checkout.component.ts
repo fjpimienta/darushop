@@ -224,7 +224,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     }
                   } else {
                     infoEventAlert(result.message, '', TYPE_ALERT.WARNING);
-                    this.router.navigate(['/shop/cart']);
+                    this.router.navigate(['/cart']);
                     this.errorSaveUser = true;
                   }
                 });
@@ -278,7 +278,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       messageDelivery = OrderSupplier.messageError;
                     } else {
                       this.cartService.clearCart(false);
-                      this.router.navigate(['/shop/offers/list']);
+                      this.router.navigate(['/offers/list']);
                     }
                     // Si compra es OK, continua.
                     OrderSupplier[NewProperty] = sendEmail;
@@ -286,11 +286,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     await infoEventAlert(messageDelivery, '', typeAlert);
                   } else {
                     await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
-                    this.router.navigate(['/shop/cart']);
+                    this.router.navigate(['/cart']);
                   }
                 });
             } else {
-              this.router.navigate(['/shop/cart']);
+              this.router.navigate(['/cart']);
             }
           }, 3000);
         } else {
@@ -603,7 +603,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 messageDeliveryT = OrderSupplierT.messageError;
               } else {
                 this.cartService.clearCart(false);
-                this.router.navigate(['/shop/offers/list']);
+                this.router.navigate(['/offers/list']);
               }
               // Si compra es OK, continua.
               OrderSupplierT[NewPropertyT] = sendEmailT;
@@ -658,7 +658,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       deliverySave[NewProperty] = sendEmail;
       this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);
       console.log('this.mailService.sendEmail');
-      this.router.navigate(['/shop/offers/list']);
+      this.router.navigate(['/offers/list']);
 
       await infoEventAlert(messageDelivery, '', typeAlert);
     } else {

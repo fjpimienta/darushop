@@ -143,7 +143,7 @@ export class QuickViewTwoComponent implements OnInit {
     event.preventDefault();
 
     if (this.isInWishlist()) {
-      this.router.navigate(['/shop/wishlist']);
+      this.router.navigate(['/wishlist']);
     } else {
       this.wishlistService.addToWishList(this.product);
     }
