@@ -30,75 +30,75 @@ const routes: Routes = [
   //   path: 'market',
   //   component: MarketPageComponent
   // },
-  {
-    path: 'cart',
-    component: CartComponent
-  },
-  {
-    path: 'wishlist',
-    component: WishlistComponent
-  },
-  {
-    path: 'checkout',
-    component: CheckoutComponent
-  },
-  {
-    path: 'checkout/:idOrder/:id',
-    component: CheckoutComponent
-  },
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [AuthGuard]
-  },
+  // {
+  //   path: 'cart',
+  //   component: CartComponent
+  // },
+  // {
+  //   path: 'wishlist',
+  //   component: WishlistComponent
+  // },
+  // {
+  //   path: 'checkout',
+  //   component: CheckoutComponent
+  // },
+  // {
+  //   path: 'checkout/:idOrder/:id',
+  //   component: CheckoutComponent
+  // },
+  // {
+  //   path: 'dashboard',
+  //   component: DashboardComponent,
+  //   canActivate: [AuthGuard]
+  // },
   // {
   //   path: 'category/:slug',
   //   component: CategoryComponent
   // },
-  {
-    path: 'category/:type',
-    component: CategoryComponent
-  },
-  {
-    path: 'category',
-    pathMatch: 'full',
-    redirectTo: 'category/4cols'
-  },
-  {
-    path: 'categorys',
-    component: CategorysComponent
-  },
-  {
-    path: 'offers/:type',
-    component: OffersComponent
-  },
-  {
-    path: 'offers',
-    pathMatch: 'full',
-    redirectTo: 'offers/4cols'
-  },
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'offers/4cols'
-  },
+  // {
+  //   path: 'category/:type',
+  //   component: CategoryComponent
+  // },
+  // {
+  //   path: 'category',
+  //   pathMatch: 'full',
+  //   redirectTo: 'category/4cols'
+  // },
+  // {
+  //   path: 'categorys',
+  //   component: CategorysComponent
+  // },
+  // {
+  //   path: 'ofertas/:type',
+  //   component: OffersComponent
+  // },
+  // {
+  //   path: 'ofertas',
+  //   pathMatch: 'full',
+  //   redirectTo: 'ofertas/4cols'
+  // },
+  // {
+  //   path: '',
+  //   pathMatch: 'full',
+  //   redirectTo: 'ofertas/4cols'
+  // },
   // {
   //   path: 'brand/:slug',
   //   component: BrandComponent
   // },
-  {
-    path: 'brand/:type',
-    component: BrandComponent
-  },
-  {
-    path: 'brand',
-    pathMatch: 'full',
-    redirectTo: 'brand/4cols'
-  },
-  {
-    path: 'brands',
-    component: BrandsComponent
-  },
+  // {
+  //   path: 'brand/:type',
+  //   component: BrandComponent
+  // },
+  // {
+  //   path: 'brand',
+  //   pathMatch: 'full',
+  //   redirectTo: 'brand/4cols'
+  // },
+  // {
+  //   path: 'brands',
+  //   component: BrandsComponent
+  // },
   {
     path: 'products/:type',
     component: ProductsComponent

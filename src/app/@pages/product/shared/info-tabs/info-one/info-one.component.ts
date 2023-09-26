@@ -14,7 +14,6 @@ export class InfoOneComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log('product: ', this.product);
   }
 
   setRating = (event: any) => {
