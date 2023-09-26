@@ -38,8 +38,10 @@
                 <div class="select-custom">
                   <select name="sortby" id="sortby" class="form-control" (change)="changeOrderBy($event)"
                     [value]="orderBy">
-                    <option value="default">Alfabético</option>
-                    <option value="price">Precio</option>
+                    <option value="nameAsc">Nombre Ascendente</option>
+                    <option value="nameDesc">Nombre Descendente</option>
+                    <option value="priceAsc">Precio Ascendente</option>
+                    <option value="priceDesc">Precio Descendente</option>
                     <!-- <option value="featured">Más Popular</option>
                     <option value="rating">Más Valorado</option>
                     <option value="new">Fecha</option> -->
@@ -47,8 +49,7 @@
                 </div>
               </div>
               <div class="toolbox-layout">
-                <a routerLink="/ofertas/list" queryParamsHandling="merge" class="btn-layout"
-                  routerLinkActive="active">
+                <a routerLink="/ofertas/list" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
                   <svg width="16" height="10">
                     <rect x="0" y="0" width="4" height="4" />
                     <rect x="6" y="0" width="10" height="4" />
@@ -57,8 +58,7 @@
                   </svg>
                 </a>
 
-                <a routerLink="/ofertas/2cols" queryParamsHandling="merge" class="btn-layout"
-                  routerLinkActive="active">
+                <a routerLink="/ofertas/2cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
                   <svg width="10" height="10">
                     <rect x="0" y="0" width="4" height="4" />
                     <rect x="6" y="0" width="4" height="4" />
@@ -67,8 +67,7 @@
                   </svg>
                 </a>
 
-                <a routerLink="/ofertas/3cols" queryParamsHandling="merge" class="btn-layout"
-                  routerLinkActive="active">
+                <a routerLink="/ofertas/3cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
                   <svg width="16" height="10">
                     <rect x="0" y="0" width="4" height="4" />
                     <rect x="6" y="0" width="4" height="4" />
@@ -79,8 +78,7 @@
                   </svg>
                 </a>
 
-                <a routerLink="/ofertas/4cols" queryParamsHandling="merge" class="btn-layout"
-                  routerLinkActive="active">
+                <a routerLink="/ofertas/4cols" queryParamsHandling="merge" class="btn-layout" routerLinkActive="active">
                   <svg width="22" height="10">
                     <rect x="0" y="0" width="4" height="4" />
                     <rect x="6" y="0" width="4" height="4" />
