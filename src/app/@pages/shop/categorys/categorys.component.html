@@ -12,7 +12,9 @@
         <li class="breadcrumb-item">
           <a routerLink="/">Inicio</a>
         </li>
-        <li class="breadcrumb-item">{{previousPageTitle}}</li>
+        <li class="breadcrumb-item">
+          <a [attr.href]="previousPageTitle" [innerHTML]="previousPageTitle"></a>
+        </li>
         <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
     </div>
