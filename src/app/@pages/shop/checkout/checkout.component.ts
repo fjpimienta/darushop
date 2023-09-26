@@ -278,7 +278,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       messageDelivery = OrderSupplier.messageError;
                     } else {
                       this.cartService.clearCart(false);
-                      this.router.navigate(['/offers/list']);
+                      this.router.navigate(['/ofertas/list']);
                     }
                     // Si compra es OK, continua.
                     OrderSupplier[NewProperty] = sendEmail;
@@ -603,7 +603,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 messageDeliveryT = OrderSupplierT.messageError;
               } else {
                 this.cartService.clearCart(false);
-                this.router.navigate(['/offers/list']);
+                this.router.navigate(['/ofertas/list']);
               }
               // Si compra es OK, continua.
               OrderSupplierT[NewPropertyT] = sendEmailT;
@@ -658,7 +658,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       deliverySave[NewProperty] = sendEmail;
       this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);
       console.log('this.mailService.sendEmail');
-      this.router.navigate(['/offers/list']);
+      this.router.navigate(['/ofertas/list']);
 
       await infoEventAlert(messageDelivery, '', typeAlert);
     } else {
