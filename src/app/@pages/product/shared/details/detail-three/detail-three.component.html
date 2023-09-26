@@ -92,7 +92,7 @@
                     <div class="product-cat">
                         <span>Categoría(s)</span>
                         <span *ngFor="let cat of product.category; let i =index">
-                            <a [routerLink]="['/shop/products']"
+                            <a [routerLink]="['/products']"
                                 [queryParams]="{category: cat.slug}">{{ cat.name }}</a>{{ i < product.category.length - 1 ? ',' : '' }}</span>
                     </div>
 

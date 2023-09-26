@@ -126,7 +126,7 @@
                         <div class="product-cat w-100 text-truncate">
                             <span>Categoría(s)</span>
                             <span *ngFor="let cat of product.category; let i =index">
-                                <a [routerLink]="['/shop/products']" (click)="closeQuickView()"
+                                <a [routerLink]="['/products']" (click)="closeQuickView()"
                                     [queryParams]="{category: cat.slug}">{{ cat.name }}</a>{{ i < product.category.length - 1 ? ',' : '' }}</span>
                         </div>
 

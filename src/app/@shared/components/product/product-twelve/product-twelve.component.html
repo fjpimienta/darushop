@@ -38,7 +38,7 @@
   <div class="product-body">
     <div class="product-cat">
       <span *ngFor="let cat of product.category; let i =index">
-        <a [routerLink]="['/shop/products']" [queryParams]="{category: cat.slug}">{{ cat.name }}</a>{{ i <
+        <a [routerLink]="['/products']" [queryParams]="{category: cat.slug}">{{ cat.name }}</a>{{ i <
           product.category.length - 1 ? ',' : '' }}</span>
     </div>
     <h3 class="product-title">
@@ -63,7 +63,7 @@
     </ng-template>
     <div class="product-bra">
       <span *ngFor="let bra of product.brands; let i =index">
-        <a [routerLink]="['/shop/products']" [queryParams]="{brand: bra.slug}">{{ bra.name }}</a>{{ i <
+        <a [routerLink]="['/products']" [queryParams]="{brand: bra.slug}">{{ bra.name }}</a>{{ i <
           product.brands.length - 1 ? ',' : '' }}</span>
     </div>
     <div class="ratings-container">
