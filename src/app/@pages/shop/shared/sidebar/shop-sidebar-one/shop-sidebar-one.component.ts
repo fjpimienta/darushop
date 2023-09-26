@@ -6,6 +6,8 @@ import { CategoriesService } from '@core/services/categorie.service';
 import { BrandsService } from '@core/services/brand.service';
 import { Catalog } from '@core/models/catalog.models';
 import { ProductsService } from '@core/services/products.service';
+import { BrandsGroupsService } from '@core/services/brandgroup.service';
+import { CategorysGroupsService } from '@core/services/categorygroup.service';
 
 @Component({
   selector: 'app-shop-sidebar-one',
@@ -22,79 +24,55 @@ export class ShopSidebarOneComponent implements OnInit {
   @Input() offer: boolean;
   brands: Catalog[] = [];
   categories: Catalog[] = [];
-  brandsProd: Catalog[] = [];
-  categoriesProd: Catalog[] = [];
+  brandsTmp: Catalog[] = [];
+  categoriesTmp: Catalog[] = [];
+  searchQuery: string = '';
+  searchQueryCat: string = '';
 
   constructor(
     public activeRoute: ActivatedRoute,
     public router: Router,
-    public brandsService: BrandsService,
-    public categoriesService: CategoriesService,
-    public productService: ProductsService
+    public brandsGroupsService: BrandsGroupsService,
+    public categorysgroupService: CategorysGroupsService
   ) {
     activeRoute.queryParams.subscribe(params => {
       this.params = params;
-      this.brands = [];
-      this.categories = [];
-      this.productService.getProducts(1, -1, '', this.offer)
-        .subscribe(result => {
-          const resultBrand = result;
-          const resultCategorie = result;
-          const brandsProd = resultBrand.products.reduce((products, product) => {
-            if (!products[product.brands[0].slug]) {
-              products[product.brands[0].slug] = [];
-            }
-            products[product.brands[0].slug].push({ brands: product.brands[0].name, slug: product.brands[0].slug });
-            return products;
-          }, {});
-          // Ahora, ordenamos las marcas alfabéticamente
-          const sortedBrandsProd = {};
-          Object.keys(brandsProd).sort().forEach((key) => {
-            sortedBrandsProd[key] = brandsProd[key];
-          });
-          let i = 0;
-          Object.keys(sortedBrandsProd).forEach((brand) => {
-            i += 1;
-            const br = new Catalog();
-            br.id = i.toString();
-            br.slug = brand;
-            br.description = brand.toUpperCase();
-            this.brands.push(br);
-          });
-
-          const categoriesProd = resultCategorie.products.reduce((products, product) => {
-            if (!products[product.category[0].slug]) {
-              products[product.category[0].slug] = [];
-            }
-            products[product.category[0].slug].push({ categories: product.category[0].name, slug: product.category[0].slug });
-            return products;
-          }, {});
-          // Ahora, ordenamos las categorías alfabéticamente
-          const sortedCategoriesProd = {};
-          Object.keys(categoriesProd).sort().forEach((key) => {
-            sortedCategoriesProd[key] = categoriesProd[key];
-          });
-          let j = 0;
-          Object.keys(sortedCategoriesProd).forEach((categorie) => {
-            j += 1;
-            const br = new Catalog();
-            br.id = j.toString();
-            br.slug = categorie;
-            br.description = categorie.toUpperCase().toString().slice(0, 32).replace(/-/g, ' ');
-            this.categories.push(br);
-          });
-
-          if (this.brands.length !== this.brandsProd.length) {
-            this.brandsProd = this.brands;
-          }
-          if (this.categories.length !== this.categoriesProd.length) {
-            this.categoriesProd = this.categories;
-          }
-        });
     });
   }
 
   ngOnInit(): void {
+    this.loadCategoriesAndBrands();
+  }
+
+  private loadCategoriesAndBrands(): void {
+    this.brands = [];
+    this.categories = [];
+    this.brandsTmp = [];
+    this.categoriesTmp = [];
+    this.categorysgroupService.getCategorysGroup().subscribe(result => {
+      this.categories = result.categorysgroups.map(category => this.mapCatalog(category));
+      this.sortCatalogs(this.categories);
+      this.categoriesTmp = [...this.categories]; // Copiar datos originales
+    });
+
+    this.brandsGroupsService.getBrandsGroup().subscribe(result => {
+      this.brands = result.brandsgroups.map(group => this.mapCatalog(group));
+      this.sortCatalogs(this.brands);
+      this.brandsTmp = [...this.brands]; // Copiar datos originales
+    });
+  }
+
+  private mapCatalog(data: any): Catalog {
+    const catalog = new Catalog();
+    catalog.id = data._id[0].slug;
+    catalog.slug = data._id[0].slug;
+    catalog.description = data._id[0].name.toUpperCase().slice(0, 32);
+    catalog.total = data.total;
+    return catalog;
+  }
+
+  private sortCatalogs(catalogs: Catalog[]): void {
+    catalogs.sort((a, b) => a.description.localeCompare(b.description));
   }
 
   containsAttrInUrl(type: string, value: string): any {
