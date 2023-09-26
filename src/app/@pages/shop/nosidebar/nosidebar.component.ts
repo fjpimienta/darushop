@@ -18,7 +18,8 @@ export class NosidebarPageComponent implements OnInit {
   perPage = 0;
   type = 'boxed';
   totalCount = 0;
-  orderBy = 'default';
+  orderBy: string = 'nameAsc';
+  sortDirection: number = 1;
   searchTerm = '';
   containerClass = 'container';
   cols = "col-6 col-md-4 col-lg-4 col-xl-3";
@@ -106,8 +107,57 @@ export class NosidebarPageComponent implements OnInit {
     // })
   }
 
-  changeOrderBy(event: any) {
-    this.router.navigate([], { queryParams: { orderBy: event.currentTarget.value, page: 1 }, queryParamsHandling: 'merge' });
+  sortProducts(): void {
+    switch (this.orderBy) {
+      case 'nameAsc':
+        this.products.sort((a, b) => {
+          const nameA = a.name.toUpperCase();
+          const nameB = b.name.toUpperCase();
+          return this.sortDirection * nameA.localeCompare(nameB);
+        });
+        break;
+      case 'nameDesc':
+        this.products.sort((a, b) => {
+          const nameA = a.name.toUpperCase();
+          const nameB = b.name.toUpperCase();
+          return this.sortDirection * nameB.localeCompare(nameA);
+        });
+        break;
+      case 'priceAsc':
+        this.products.sort((a, b) => {
+          return this.sortDirection * (a.price - b.price);
+        });
+        break;
+      case 'priceDesc':
+        this.products.sort((a, b) => {
+          return this.sortDirection * (b.price - a.price);
+        });
+        break;
+      default:
+        // Orden predeterminado por nombre ascendente
+        this.products.sort((a, b) => {
+          const nameA = a.name.toUpperCase();
+          const nameB = b.name.toUpperCase();
+          return this.sortDirection * nameA.localeCompare(nameB);
+        });
+    }
+  }
+
+  changeOrderBy(event: any): void {
+    const selectedValue = event.target.value;
+
+    // Actualizar la dirección de ordenamiento
+    if (this.orderBy === selectedValue) {
+      this.sortDirection = -this.sortDirection; // Cambiar entre ascendente y descendente si la misma opción se selecciona de nuevo
+    } else {
+      this.sortDirection = 1; // Restablecer la dirección a ascendente si se selecciona una opción diferente
+    }
+
+    // Actualizar el valor de orderBy
+    this.orderBy = selectedValue;
+
+    // Llamar a la función de ordenamiento
+    this.sortProducts();
   }
 
   toggleSidebar() {
