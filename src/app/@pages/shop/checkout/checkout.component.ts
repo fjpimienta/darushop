@@ -658,7 +658,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       deliverySave[NewProperty] = sendEmail;
       this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);
       console.log('this.mailService.sendEmail');
-      this.router.navigate(['/ofertas/list']);
+      this.router.navigate(['/dashboard']);
 
       await infoEventAlert(messageDelivery, '', typeAlert);
     } else {
