@@ -252,6 +252,13 @@ p {
   top: 80%;
 }
 
+.popular-section {
+  .banner img {
+    min-height: 150px;
+    object-fit: cover;
+  }
+}
+
 .home-page .intro-section {
   .banner img {
     min-height: 500px;
