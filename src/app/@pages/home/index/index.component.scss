@@ -96,9 +96,9 @@
   }
 }
 
-figure {
+.container .banner figure {
   position: relative; /* Debe ser 'relative' para que actúe como un contenedor */
-  height: 500px; /* Ajusta la altura según tus necesidades */
+  height: 520px; /* Ajusta la altura según tus necesidades */
 }
 
 .banner {
