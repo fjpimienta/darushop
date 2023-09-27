@@ -15,6 +15,7 @@ import { TYPE_ALERT } from '@shared/alert/values.config';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { OwlCarousel } from 'angular-owl-carousel';
 
 @Component({
   selector: 'app-index',
@@ -44,6 +45,45 @@ export class IndexComponent implements OnInit {
 
   @ViewChild('singleSlider') singleSlider: any;
   @ViewChild('customDots') customDots: any;
+  @ViewChild(OwlCarousel) owlCarousel: OwlCarousel;
+
+  customOptions: any = {
+    loop: true,
+    margin: 10,
+    nav: true, // Habilita los botones de navegación
+    dots: false, // Deshabilita los puntos indicadores
+    items: 1,
+    autoplay: true, // Habilita el desplazamiento automático
+    autoplayTimeout: 6000, // Establece el tiempo entre diapositivas (en milisegundos)
+    autoplaySpeed: 1500,  // Velocidad de desplazamiento (en milisegundos)
+  };
+  bannerSlider = [
+    {
+      imageUrl: 'assets/images/home/banners/01.jpg',
+      title1: 'Descubre todo',
+      title2: 'lo que DARU',
+      subtitle: 'tiene para ti',
+    },
+    {
+      imageUrl: 'assets/images/home/banners/01.jpg',
+      title1: 'Descubre todo',
+      title2: 'lo que DARU',
+      subtitle: 'tiene para ti',
+    },
+    {
+      imageUrl: 'assets/images/home/banners/01.jpg',
+      title1: 'Descubre todo',
+      title2: 'lo que DARU',
+      subtitle: 'tiene para ti',
+    },
+    {
+      imageUrl: 'assets/images/home/banners/01.jpg',
+      title1: 'Descubre todo',
+      title2: 'lo que DARU',
+      subtitle: 'tiene para ti',
+    },
+    // Agrega más objetos de banner según sea necesario
+  ];
 
   constructor(
     private modalService: ModalService,
@@ -204,5 +244,13 @@ export class IndexComponent implements OnInit {
         infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
       }
     );
+  }
+
+  prevSlide() {
+    this.owlCarousel.previous();
+  }
+
+  nextSlide() {
+    this.owlCarousel.next();
   }
 }
