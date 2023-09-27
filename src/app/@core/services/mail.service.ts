@@ -126,10 +126,10 @@ export class MailService extends ApiService {
           <table>
             <thead>
               <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Total</th>
+                <th colspan="2">Producto</th>
+                <th colspan="2">Cantidad</th>
+                <th colspan="2">Precio Unitario</th>
+                <th colspan="2">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -288,10 +288,10 @@ export class MailService extends ApiService {
           <table>
             <thead>
               <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Total</th>
+                <th colspan="2">Producto</th>
+                <th colspan="2">Cantidad</th>
+                <th colspan="2">Precio Unitario</th>
+                <th colspan="2">Total</th>
               </tr>
             </thead>
             <tbody>
