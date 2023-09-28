@@ -526,7 +526,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('OrderSupplier: ', OrderSupplier);
               if (OrderSupplier.statusError) {
                 this.isSubmitting = false;
-                console.log('OrderSupplier.messageError: ', OrderSupplier.messageError);
+                console.error('OrderSupplier.messageError: ', OrderSupplier.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
@@ -537,7 +537,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
-                console.log('deliverySave.messageError: ', deliverySave.messageError);
+                console.error('deliverySave.messageError: ', deliverySave.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
@@ -545,11 +545,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
-                console.log('pagoOpenpay.message: ', pagoOpenpay.message);
+                console.error('pagoOpenpay.message: ', pagoOpenpay.message);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
-              console.log('pagoOpenpay.createChargeOpenpay: ', pagoOpenpay.createChargeOpenpay);
-              console.log('pagoOpenpay.createChargeOpenpay.payment_method.url: ', pagoOpenpay.createChargeOpenpay.payment_method.url);
               if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
                 window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
               }
@@ -567,15 +565,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('pagoOpenpayT: ', pagoOpenpayT);
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
-                console.log('pagoOpenpayT.message: ', pagoOpenpayT.message);
+                console.error('pagoOpenpayT.message: ', pagoOpenpayT.message);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
-              console.log('OrderSupplierT: ', OrderSupplierT);
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
-                console.log('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
+                console.error('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
@@ -587,7 +584,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('deliverySaveT: ', deliverySaveT);
               if (deliverySaveT.error) {
                 this.isSubmitting = false;
-                console.log('deliverySaveT.messageError: ', deliverySaveT.messageError);
+                console.error('deliverySaveT.messageError: ', deliverySaveT.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               const NewPropertyT = 'receipt_email';
@@ -1636,7 +1633,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
       const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
         .then(async (result) => {
-          console.log('sendOrderSupplier/EfectuarPedidos/result: ', result);
           return await result;
         });
       console.log('orderNew: ', orderNew);
@@ -1676,14 +1672,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const confirmarPedidoCva = [];
             break;
         }
-        console.log('sendOrderSupplier/orderCtResponse: ', orderCtResponse);
         if (orderCtResponse.errores) {
           if (orderCtResponse.errores.length > 0) {
             delivery.statusError = true;
             delivery.messageError = orderCtResponse.errores[0].errorMessage;
           }
         }
-        console.log('sendOrderSupplier/orderCvaResponse: ', orderCvaResponse);
         if (orderCvaResponse.error !== '') {
           delivery.statusError = true;
           delivery.messageError = orderCvaResponse.error;
