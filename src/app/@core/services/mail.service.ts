@@ -53,10 +53,10 @@ export class MailService extends ApiService {
     const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
     const productRows = productos.map((producto: any) => `
         <tr>
-          <td>${producto.name}</td>
-          <td class="number">${producto.cantidad}</td>
-          <td class="number">${producto.precio.toFixed(2).toString()}</td>
-          <td class="number">${producto.total.toFixed(2).toString()}</td>
+          <td colspan="2">${producto.name}</td>
+          <td colspan="2" class="number">${producto.cantidad}</td>
+          <td colspan="2" class="number">${producto.precio.toFixed(2).toString()}</td>
+          <td colspan="2" class="number">${producto.total.toFixed(2).toString()}</td>
         </tr>
       `).join('');
     const html = message !== '' ? message : `
