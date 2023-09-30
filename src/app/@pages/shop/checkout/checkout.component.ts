@@ -897,6 +897,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const branchId in branchOfficeQtyMap) {
         if (canFulfill(branchId)) {
           optimalBranchOffices.push(branchId);
+          console.log('optimalBranchOffices: ', optimalBranchOffices);
           return optimalBranchOffices;
         }
       }
@@ -907,6 +908,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         for (const branchCombination of this.getCombinations(allBranches, i)) {
           const canFulfillAll = branchCombination.every(branchId => canFulfill(branchId));
           if (canFulfillAll) {
+            console.log('branchCombination: ', branchCombination);
             return branchCombination;
           }
         }
@@ -1018,12 +1020,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             });
           if (apiShipment) {                                                          // Si hay Api para el Proveedor.
             const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
-            console.log('this.cartItems:', this.cartItems);
-            const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+            const cartItemsWithNull = arreglo.map(item => ({
+              ...item,
+              assignedBranchId: null
+            }));
+            console.log('cartItemsWithNull:', cartItemsWithNull);
+            const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
-              this.commonBranchOffices.clear;
+              this.commonBranchOffices.clear();
               branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
               // Se guardan las sucursales comunes para los envios.
               let branchOfficesTot: BranchOffices[] = [];
@@ -1037,19 +1043,37 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
               const commonBranchOffices = branchOfficesTot;
+              // Crear una función para verificar si un elemento ya ha sido asignado
+              function isAssigned(item) {
+                return item.assignedBranchId !== false;
+              }
               console.log('commonBranchOffices:', commonBranchOffices);
               for (const commonBranch of commonBranchOffices) {
                 const carItemsWarehouse = [];
                 const shipmentsSupp = [];
-                const carItemsSupplierByBranchOffice = arreglo.filter((item) =>
+                // Filtrar los elementos que no han sido asignados
+                const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
+                console.log('carItemsWithoutAssignedBranch: ', carItemsWithoutAssignedBranch);
+                const carItemsSupplierByBranchOffice = carItemsWithoutAssignedBranch.filter((item) =>
                   item.suppliersProd.branchOffices.some((branchOffice) => branchOffice.id === commonBranch.id)
                 );
-                console.log('commonBranch.id: ', commonBranch.id);
-                console.log('carItemsSupplierByBranchOffice: ', carItemsSupplierByBranchOffice);
+                console.log(`commonBranch.id: ${commonBranch.id}, carItemsSupplierByBranchOffice: `, carItemsSupplierByBranchOffice);
                 const productsNacional: ProductShipment[] = [];
                 const warehouseNacional = new Warehouse();
+
                 for (const idCI of Object.keys(carItemsSupplierByBranchOffice)) {
                   const cartItem: CartItem = carItemsSupplierByBranchOffice[idCI];
+                  console.log('carItemsSupplierByBranchOffice.cartItem:', cartItem);
+
+
+                  // Marcar cartItem como asignado
+                  const elementoEncontrado = cartItemsWithNull.find((item) => item.sku === cartItem.sku);
+                  if (elementoEncontrado) {
+                    // Cambia el valor de 'assignedBranchId' para el elemento encontrado
+                    elementoEncontrado.assignedBranchId = true;
+                    console.log('elementoEncontrado: ', elementoEncontrado);
+                  }
+
                   const productShipment = new ProductShipment();
                   productShipment.producto = cartItem.sku;
                   productShipment.cantidad = cartItem.qty;
