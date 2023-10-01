@@ -526,7 +526,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('OrderSupplier: ', OrderSupplier);
               if (OrderSupplier.statusError) {
                 this.isSubmitting = false;
-                console.log('OrderSupplier.messageError: ', OrderSupplier.messageError);
+                console.error('OrderSupplier.messageError: ', OrderSupplier.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
@@ -537,7 +537,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
-                console.log('deliverySave.messageError: ', deliverySave.messageError);
+                console.error('deliverySave.messageError: ', deliverySave.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
@@ -545,11 +545,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
-                console.log('pagoOpenpay.message: ', pagoOpenpay.message);
+                console.error('pagoOpenpay.message: ', pagoOpenpay.message);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
-              console.log('pagoOpenpay.createChargeOpenpay: ', pagoOpenpay.createChargeOpenpay);
-              console.log('pagoOpenpay.createChargeOpenpay.payment_method.url: ', pagoOpenpay.createChargeOpenpay.payment_method.url);
               if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
                 window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
               }
@@ -567,15 +565,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('pagoOpenpayT: ', pagoOpenpayT);
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
-                console.log('pagoOpenpayT.message: ', pagoOpenpayT.message);
+                console.error('pagoOpenpayT.message: ', pagoOpenpayT.message);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
-              console.log('OrderSupplierT: ', OrderSupplierT);
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
-                console.log('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
+                console.error('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
@@ -587,7 +584,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('deliverySaveT: ', deliverySaveT);
               if (deliverySaveT.error) {
                 this.isSubmitting = false;
-                console.log('deliverySaveT.messageError: ', deliverySaveT.messageError);
+                console.error('deliverySaveT.messageError: ', deliverySaveT.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               const NewPropertyT = 'receipt_email';
@@ -900,6 +897,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const branchId in branchOfficeQtyMap) {
         if (canFulfill(branchId)) {
           optimalBranchOffices.push(branchId);
+          console.log('optimalBranchOffices: ', optimalBranchOffices);
           return optimalBranchOffices;
         }
       }
@@ -910,6 +908,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         for (const branchCombination of this.getCombinations(allBranches, i)) {
           const canFulfillAll = branchCombination.every(branchId => canFulfill(branchId));
           if (canFulfillAll) {
+            console.log('branchCombination: ', branchCombination);
             return branchCombination;
           }
         }
@@ -1021,12 +1020,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             });
           if (apiShipment) {                                                          // Si hay Api para el Proveedor.
             const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
-            console.log('this.cartItems:', this.cartItems);
-            const carItemsSupplier = arreglo.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+            const cartItemsWithNull = arreglo.map(item => ({
+              ...item,
+              assignedBranchId: null
+            }));
+            console.log('cartItemsWithNull:', cartItemsWithNull);
+            const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
-              this.commonBranchOffices.clear;
+              this.commonBranchOffices.clear();
               branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
               // Se guardan las sucursales comunes para los envios.
               let branchOfficesTot: BranchOffices[] = [];
@@ -1040,19 +1043,37 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
               const commonBranchOffices = branchOfficesTot;
+              // Crear una función para verificar si un elemento ya ha sido asignado
+              function isAssigned(item) {
+                return item.assignedBranchId !== false;
+              }
               console.log('commonBranchOffices:', commonBranchOffices);
               for (const commonBranch of commonBranchOffices) {
                 const carItemsWarehouse = [];
                 const shipmentsSupp = [];
-                const carItemsSupplierByBranchOffice = arreglo.filter((item) =>
+                // Filtrar los elementos que no han sido asignados
+                const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
+                console.log('carItemsWithoutAssignedBranch: ', carItemsWithoutAssignedBranch);
+                const carItemsSupplierByBranchOffice = carItemsWithoutAssignedBranch.filter((item) =>
                   item.suppliersProd.branchOffices.some((branchOffice) => branchOffice.id === commonBranch.id)
                 );
-                console.log('commonBranch.id: ', commonBranch.id);
-                console.log('carItemsSupplierByBranchOffice: ', carItemsSupplierByBranchOffice);
+                console.log(`commonBranch.id: ${commonBranch.id}, carItemsSupplierByBranchOffice: `, carItemsSupplierByBranchOffice);
                 const productsNacional: ProductShipment[] = [];
                 const warehouseNacional = new Warehouse();
+
                 for (const idCI of Object.keys(carItemsSupplierByBranchOffice)) {
                   const cartItem: CartItem = carItemsSupplierByBranchOffice[idCI];
+                  console.log('carItemsSupplierByBranchOffice.cartItem:', cartItem);
+
+
+                  // Marcar cartItem como asignado
+                  const elementoEncontrado = cartItemsWithNull.find((item) => item.sku === cartItem.sku);
+                  if (elementoEncontrado) {
+                    // Cambia el valor de 'assignedBranchId' para el elemento encontrado
+                    elementoEncontrado.assignedBranchId = true;
+                    console.log('elementoEncontrado: ', elementoEncontrado);
+                  }
+
                   const productShipment = new ProductShipment();
                   productShipment.producto = cartItem.sku;
                   productShipment.cantidad = cartItem.qty;
@@ -1636,7 +1657,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
       const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
         .then(async (result) => {
-          console.log('sendOrderSupplier/EfectuarPedidos/result: ', result);
           return await result;
         });
       console.log('orderNew: ', orderNew);
@@ -1676,14 +1696,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const confirmarPedidoCva = [];
             break;
         }
-        console.log('sendOrderSupplier/orderCtResponse: ', orderCtResponse);
         if (orderCtResponse.errores) {
           if (orderCtResponse.errores.length > 0) {
             delivery.statusError = true;
             delivery.messageError = orderCtResponse.errores[0].errorMessage;
           }
         }
-        console.log('sendOrderSupplier/orderCvaResponse: ', orderCvaResponse);
         if (orderCvaResponse.error !== '') {
           delivery.statusError = true;
           delivery.messageError = orderCvaResponse.error;
