@@ -1043,16 +1043,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
               const commonBranchOffices = branchOfficesTot;
-              // Crear una función para verificar si un elemento ya ha sido asignado
-              function isAssigned(item) {
-                return item.assignedBranchId !== false;
-              }
               console.log('commonBranchOffices:', commonBranchOffices);
               for (const commonBranch of commonBranchOffices) {
                 const carItemsWarehouse = [];
                 const shipmentsSupp = [];
                 // Filtrar los elementos que no han sido asignados
-                const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
+                // const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
+                const carItemsWithoutAssignedBranch = arreglo.filter((item) => item.assignedBranchId !== true);
                 console.log('carItemsWithoutAssignedBranch: ', carItemsWithoutAssignedBranch);
                 const carItemsSupplierByBranchOffice = carItemsWithoutAssignedBranch.filter((item) =>
                   item.suppliersProd.branchOffices.some((branchOffice) => branchOffice.id === commonBranch.id)
