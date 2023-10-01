@@ -1,5 +1,6 @@
 <main class="main">
-  <app-page-header [title]="title" [subtitle]="userToken.user.email"></app-page-header>
+  <app-page-header [title]="title" [subtitle]="userToken.user.email"
+    image="assets/images/banners/banner-category.jpg"></app-page-header>
   <div class="page-content">
     <div class="container">
       <div class="form-box">
@@ -44,7 +45,7 @@
                 <div class="col-sm-12">
                   <div class="form-group">
                     <button type="button" [disabled]="forma.valid" class="btn btn-outline-primary-2"
-                    (click)="onActivar()">
+                      (click)="onActivar()">
                       <span>Volver a enviar la solicitud</span>
                       <i class="icon-long-arrow-right"></i>
                     </button>
