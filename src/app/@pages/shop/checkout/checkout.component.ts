@@ -1048,8 +1048,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 const carItemsWarehouse = [];
                 const shipmentsSupp = [];
                 // Filtrar los elementos que no han sido asignados
-                // const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
-                const carItemsWithoutAssignedBranch = arreglo.filter((item) => item.assignedBranchId !== true);
+                const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
+                // const carItemsWithoutAssignedBranch = arreglo.filter((item) => item.assignedBranchId !== true);
                 console.log('carItemsWithoutAssignedBranch: ', carItemsWithoutAssignedBranch);
                 const carItemsSupplierByBranchOffice = carItemsWithoutAssignedBranch.filter((item) =>
                   item.suppliersProd.branchOffices.some((branchOffice) => branchOffice.id === commonBranch.id)
@@ -1060,15 +1060,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
                 for (const idCI of Object.keys(carItemsSupplierByBranchOffice)) {
                   const cartItem: CartItem = carItemsSupplierByBranchOffice[idCI];
-                  console.log('carItemsSupplierByBranchOffice.cartItem:', cartItem);
-
+                  // console.log('carItemsSupplierByBranchOffice.cartItem:', cartItem);
 
                   // Marcar cartItem como asignado
                   const elementoEncontrado = cartItemsWithNull.find((item) => item.sku === cartItem.sku);
                   if (elementoEncontrado) {
                     // Cambia el valor de 'assignedBranchId' para el elemento encontrado
                     elementoEncontrado.assignedBranchId = true;
-                    console.log('elementoEncontrado: ', elementoEncontrado);
+                    // console.log('elementoEncontrado: ', elementoEncontrado);
                   }
 
                   const productShipment = new ProductShipment();
@@ -1281,8 +1280,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.byCodigopostal = !this.byCodigopostal;
     }
     this.isChecked = this.byCodigopostal;
-    console.log('this.isChecked: ', this.isChecked);
-    console.log('this.byCodigopostal: ', this.byCodigopostal);
     this.selectCountry = new Country();
     this.selectEstado = new Estado();
     this.selectMunicipio = new Municipio();
