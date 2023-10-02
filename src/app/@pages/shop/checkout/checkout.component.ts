@@ -1261,8 +1261,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       discountPorc = cupon.order;
       this.discountPorc = cupon.order.toString();
     } else {
-      infoEventAlert('Lo siento este código no lo reconozco.', '');
-      event.target.value = '';
+      if (inputValue !== '') {
+        infoEventAlert('Lo siento este código no lo reconozco.', '');
+        event.target.value = '';
+      }
     }
     this.changeDiscount(discountPorc);
   }
