@@ -1440,7 +1440,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     address.line1 = formData.controls.directions.value + ' ' + formData.controls.outdoorNumber.value;
     address.line2 = formData.controls.selectColonia.value;
     address.line3 = formData.controls.references.value;
-    address.postal_code = formData.controls.codigoPostal.value;
+    address.postal_code = formData.controls.codigoPostal.value.padStart(5, '0');
     address.city = this.selectMunicipio.D_mnpio;
     address.state = this.selectEstado.d_estado;
     address.country_code = "MX";
@@ -1485,7 +1485,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
     address.line2 = this.formData.controls.selectColonia.value;
     address.line3 = this.formData.controls.references.value;
-    address.postal_code = this.formData.controls.codigoPostal.value;
+    address.postal_code = this.formData.controls.codigoPostal.value.padStart(5, '0');
     address.city = this.selectMunicipio.D_mnpio;
     address.state = this.selectEstado.d_estado;
     address.country_code = "MX";
@@ -1521,7 +1521,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCt.ciudad = dir.d_mnpio;
         envioCt.noExterior = dir.outdoorNumber;
         envioCt.noInterior = dir.interiorNumber;
-        envioCt.codigoPostal = parseInt(dir.d_codigo, 10);
+        envioCt.codigoPostal =dir.d_codigo.padStart(5, '0');
         envioCt.telefono = parseInt(dir.phone, 10);
         enviosCt.push(envioCt);
         const ProductosCt: ProductoCt[] = [];
@@ -1555,7 +1555,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.ciudad = dir.d_mnpio;
         envioCva.noExterior = dir.outdoorNumber;
         envioCva.noInterior = dir.interiorNumber !== '' ? dir.interiorNumber : '0';
-        envioCva.codigoPostal = parseInt(dir.d_codigo, 10);
+        envioCva.codigoPostal = dir.d_codigo.padStart(5, '0'),
         envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
         console.log('setOrder/enviosCva: ', enviosCva);
