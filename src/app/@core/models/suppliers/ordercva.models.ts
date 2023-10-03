@@ -31,7 +31,7 @@ export class EnvioCVA {
   colonia: string;
   estado: string;
   ciudad: string;
-  codigoPostal: number;
+  codigoPostal: string;
   telefono: string;
 }
 
