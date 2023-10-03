@@ -99,6 +99,8 @@
 .container .banner figure {
   position: relative; /* Debe ser 'relative' para que actúe como un contenedor */
   height: 520px; /* Ajusta la altura según tus necesidades */
+  margin-top: 5em;
+  margin-bottom: -2em;
 }
 
 .banner {
