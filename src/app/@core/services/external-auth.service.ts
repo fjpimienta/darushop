@@ -704,13 +704,21 @@ export class ExternalAuthService extends ApiService {
           const cp_sucursal = warehouse.productShipments[0].cp.padStart(5, '0');
           const productosCva = productShipmentCVA;
           const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
-          const shipmentCva = new Shipment();
-          shipmentCva.empresa = 'PAQUETEXPRESS';
-          shipmentCva.costo = shippmentsCva.shippingCvaRates.cotizacion.montoTotal;
-          shipmentCva.metodoShipping = '';
-          shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
-          shipments.push(shipmentCva);
-          return await shipments;
+          const resultCva: Result = new Result();
+          if (shippmentsCva) {
+            const shipmentCva = new Shipment();
+            shipmentCva.empresa = 'PAQUETEXPRESS';
+            shipmentCva.costo = shippmentsCva.shippingCvaRates.cotizacion.montoTotal;
+            shipmentCva.metodoShipping = '';
+            shipmentCva.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+            resultCva.status = shippmentsCva.status;
+            resultCva.message = shippmentsCva.message;
+            resultCva.data = shipmentCva;
+            return await resultCva;
+          }
+          resultCva.status = false;
+          resultCva.message = 'Error en el servicio de envio.';
+          return await resultCva;
         case '99minutos':
           break;
         default:
