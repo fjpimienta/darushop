@@ -527,7 +527,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (OrderSupplier.statusError) {
                 this.isSubmitting = false;
                 console.error('OrderSupplier.messageError: ', OrderSupplier.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con la orden. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
@@ -538,7 +538,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (deliverySave.error) {
                 this.isSubmitting = false;
                 console.error('deliverySave.messageError: ', deliverySave.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas el registro del pedido. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, OrderSupplier.deliveryId, this.formData);
@@ -573,7 +573,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
                 console.error('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con la creacion de la orden. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplierT.cliente = OrderSupplierT.user.email;
@@ -585,7 +585,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (deliverySaveT.error) {
                 this.isSubmitting = false;
                 console.error('deliverySaveT.messageError: ', deliverySaveT.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas con la creacion del pedido. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               const NewPropertyT = 'receipt_email';
               let internalEmailT = false;
@@ -1106,16 +1106,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   }
                   let shipment = new Shipment();
                   for (const key of Object.keys(resultShip.data)) {
-                    shipment.empresa = resultShip.data[key].empresa.toString();
                     if (supplier.slug === 'ct') {
+                      shipment.empresa = resultShip.data[key].empresa.toString();
                       shipment.costo = resultShip.data[key].total;
                       shipment.metodoShipping = resultShip.data[key].metodo;
                       shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
                       shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                     } else if (supplier.slug === 'cva') {
-                      shipment.costo = resultShip.data[key].costo;
-                      shipment.metodoShipping = resultShip.data[key].metodoShipping;
-                      shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
+                      shipment.empresa = resultShip.data.empresa.toString();
+                      shipment.costo = resultShip.data.costo;
+                      shipment.metodoShipping = resultShip.data.metodoShipping;
+                      shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
                       shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                     }
                   }
@@ -1521,7 +1522,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCt.ciudad = dir.d_mnpio;
         envioCt.noExterior = dir.outdoorNumber;
         envioCt.noInterior = dir.interiorNumber;
-        envioCt.codigoPostal =dir.d_codigo.padStart(5, '0');
+        envioCt.codigoPostal = dir.d_codigo.padStart(5, '0');
         envioCt.telefono = parseInt(dir.phone, 10);
         enviosCt.push(envioCt);
         const ProductosCt: ProductoCt[] = [];
@@ -1556,7 +1557,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.noExterior = dir.outdoorNumber;
         envioCva.noInterior = dir.interiorNumber !== '' ? dir.interiorNumber : '0';
         envioCva.codigoPostal = dir.d_codigo.padStart(5, '0'),
-        envioCva.telefono = dir.phone;
+          envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
         console.log('setOrder/enviosCva: ', enviosCva);
         const ProductosCva: ProductoCva[] = [];
