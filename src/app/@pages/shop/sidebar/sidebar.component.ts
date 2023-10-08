@@ -15,7 +15,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 export class SidebarPageComponent implements OnInit {
   products = [];
   page = 1;
-  perPage = 12;
+  perPage = 48;
   type = 'list';
   totalCount = 0;
   orderBy = 'default';
@@ -107,7 +107,7 @@ export class SidebarPageComponent implements OnInit {
         }
         this.loaded = true;
         this.totalCount = result.info.total;
-        this.perPage = 12;
+        this.perPage = 48;
         if (this.perPage >= this.totalCount) {
           this.perPage = this.totalCount;
         }

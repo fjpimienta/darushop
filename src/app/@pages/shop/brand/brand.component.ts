@@ -13,7 +13,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 export class BrandComponent implements OnInit {
 
   products = [];
-  perPage = 0;
+  perPage = 48;
   type = 'boxed';
   totalCount = 0;
   orderBy: string = 'nameAsc';
@@ -100,7 +100,7 @@ export class BrandComponent implements OnInit {
       } else {
         this.page = 1;
       }
-      this.perPage = 8;
+      this.perPage = 48;
       this.productService.getProducts(
         this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
       ).subscribe(result => {

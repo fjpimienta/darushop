@@ -15,7 +15,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 export class NosidebarPageComponent implements OnInit {
 
   products = [];
-  perPage = 0;
+  perPage = 48;
   type = 'boxed';
   totalCount = 0;
   orderBy: string = 'nameAsc';
@@ -67,7 +67,7 @@ export class NosidebarPageComponent implements OnInit {
 
     this.activeRoute.queryParams.subscribe(params => {
       this.params = params;
-      this.perPage = 12;
+      this.perPage = 48;
       this.loadProducts();
     })
   }

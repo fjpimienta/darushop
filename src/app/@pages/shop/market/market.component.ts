@@ -19,7 +19,7 @@ export class MarketPageComponent implements OnInit {
   introSlider = bannerSlider;
   brandSlider = brandSlider;
   products = [];
-  perPage = 0;
+  perPage = 48;
   type: 'list';
   totalCount = 0;
   orderBy: string = 'nameAsc';
