@@ -15,7 +15,7 @@ export class CategoryComponent implements OnInit {
 
   products = [];
   page = 1;
-  perPage = 48;
+  perPage = 0;
   type: 'list';
   totalCount = 0;
   orderBy: string = 'nameAsc';
@@ -28,6 +28,7 @@ export class CategoryComponent implements OnInit {
   firstLoad = false;
   brands = [];
   categories = [];
+  subCategories = [];
   offer: boolean = false;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
@@ -74,10 +75,21 @@ export class CategoryComponent implements OnInit {
         this.categories = [];
         this.categories.push(params.category);
       }
+      this.subCategories = null;
+      if (params.subCategory) {
+        this.subCategories = [];
+        this.subCategories.push(params.subCategory);
+      }
       this.page = params.page ? parseInt(params.page, 10) : 1;
       this.perPage = 48;
       this.productService.getProducts(
-        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+        this.page,
+        this.perPage,
+        this.searchTerm.toLowerCase(),
+        this.offer,
+        this.brands,
+        this.categories,
+        this.subCategories
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];

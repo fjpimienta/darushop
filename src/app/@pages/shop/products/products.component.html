@@ -95,12 +95,8 @@
 
       <app-shop-list-one [type]="type" [products]="products" [loaded]="loaded"></app-shop-list-one>
 
-      <div class="load-more-container text-center" [class.d-none]="totalCount <= products.length && !moreLoading">
-        <a href="javascript:;" class="btn btn-outline-darker btn-load-more" (click)="loadMore($event)">
-          Más Productos
-          <i class="icon-refresh" [class.load-more-rotating]="moreLoading"></i>
-        </a>
-      </div>
+      <app-pagination [perPage]="perPage" [total]="totalCount" *ngIf="totalCount > perPage">
+      </app-pagination>
 
       <app-shop-sidebar-three [toggle]="true">
       </app-shop-sidebar-three>

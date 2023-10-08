@@ -19,10 +19,11 @@ export class ProductsService extends ApiService {
     filterName: string = '',
     offer: boolean = false,
     brands: string[] = null,
-    categories: string[] = null
+    categories: string[] = null,
+    subCategories: string[] = null
   ) {
     return this.get(PRODUCTS_LIST_QUERY, {
-      itemsPage, page, filterName, offer, brands, categories
+      itemsPage, page, filterName, offer, brands, categories, subCategories
     }).pipe(map((result: any) => {
       return result.products;
     }));
