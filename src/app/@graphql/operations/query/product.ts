@@ -10,7 +10,8 @@ export const PRODUCTS_LIST_QUERY = gql`
     $filterName: String = "",
     $offer: Boolean = false,
     $brands: [String] = null,
-    $categories: [String] = null
+    $categories: [String] = null,
+    $subCategories: [String] = null
   ) {
     products(
       page: $page,
@@ -19,7 +20,8 @@ export const PRODUCTS_LIST_QUERY = gql`
       filterName: $filterName,
       offer: $offer,
       brands: $brands,
-      categories: $categories
+      categories: $categories,
+      subCategories: $subCategories
     ) {
       info {
         ...ResultInfoObject
