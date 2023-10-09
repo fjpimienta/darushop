@@ -43,9 +43,13 @@ export class WishlistComponent implements OnInit, OnDestroy {
         if (navigation?.previousNavigation) {
           const url = navigation.previousNavigation.finalUrl.toString();
           const firstSlashIndex = url.indexOf('/');
+          const questionMarkIndex = url.indexOf('?');
           const secondSlashIndex = url.indexOf('/', firstSlashIndex + 1);
           if (firstSlashIndex !== -1 && secondSlashIndex !== -1) {
             const previousPageTitle = url.substring(firstSlashIndex + 1, secondSlashIndex);
+            this.previousPageTitle = previousPageTitle;
+          } else if (firstSlashIndex !== -1 && questionMarkIndex !== -1) {
+            const previousPageTitle = url.substring(firstSlashIndex + 1, questionMarkIndex);
             this.previousPageTitle = previousPageTitle;
           } else if (firstSlashIndex !== -1) {
             this.previousPageTitle = url.substring(firstSlashIndex + 1);
