@@ -31,6 +31,7 @@ export class ProductsComponent implements OnInit {
   page = 1;
   brands = [];
   categories = [];
+  subCategories = [];
   offer: boolean;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
@@ -111,10 +112,17 @@ export class ProductsComponent implements OnInit {
       }
       this.perPage = 48;
       this.productService.getProducts(
-        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+        this.page,
+        this.perPage,
+        this.searchTerm.toLowerCase(),
+        this.offer,
+        this.brands,
+        this.categories,
+        this.subCategories
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
+        const subCategory = [[]];
         let brands: string[] = [];
         if (params.brand) {
           brands = params.brand.split(',');
@@ -127,6 +135,10 @@ export class ProductsComponent implements OnInit {
         if (params.category) {
           category.push(params.category);
           this.products = utilsService.catFilter(this.products, category);
+        }
+        if (params.subCategory) {
+          category.push(params.subCategory);
+          this.products = utilsService.catFilter(this.products, subCategory);
         }
         if (this.orderBy) {
           switch (this.orderBy) {
