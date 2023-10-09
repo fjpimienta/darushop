@@ -20,6 +20,7 @@ export class ProductsComponent implements OnInit {
   orderBy: string = 'nameAsc';
   sortDirection: number = 1;
   pageTitle: string = '';
+  previousPageUrl: string = '';
   previousPageTitle: string = '';
   searchTerm = '';
   containerClass = 'container';
@@ -53,9 +54,18 @@ export class ProductsComponent implements OnInit {
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
-          this.previousPageTitle = navigation.previousNavigation.finalUrl.toString();
-        } else {
-          this.previousPageTitle = '';
+          const url = navigation.previousNavigation.finalUrl.toString();
+          const firstSlashIndex = url.indexOf('/');
+          const secondSlashIndex = url.indexOf('/', firstSlashIndex + 1);
+          if (firstSlashIndex !== -1 && secondSlashIndex !== -1) {
+            const previousPageTitle = url.substring(firstSlashIndex + 1, secondSlashIndex);
+            this.previousPageTitle = previousPageTitle;
+          } else if (firstSlashIndex !== -1) {
+            this.previousPageTitle = url.substring(firstSlashIndex + 1);
+          } else {
+            this.previousPageTitle = url;
+          }
+          this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
         }
       });
     this.activeRoute.params.subscribe(params => {
