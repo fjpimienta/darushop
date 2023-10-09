@@ -8,355 +8,347 @@
         required>
       <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
     </form>
-
-    <ul ngbNav #nav="ngbNav" class="nav nav-pills-mobile nav-border-anim">
-      <li ngbNavItem>
-        <a ngbNavLink>Menu</a>
-        <ng-template ngbNavContent>
-          <nav class="mobile-nav">
-            <ul class="mobile-menu">
-              <li>
-                <a routerLink="/" class="sf-with-ul">Inicio</a>
-              </li>
-              <li>
-                <a routerLink="/ofertas">Ofertas</a>
-              </li>
-              <li>
-                <a routerLink="/categorias">Categor&iacute;as
-                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
-                </a>
-                <div class="megamenu megamenu-sm">
-                  <div class="row no-gutters">
-                    <div class="col-md-12">
-                      <div class="menu-col">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <ul>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']"
-                                  [queryParams]="{category: 'computadoras'}">Computadoras</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'computadoras', subCategory: 'laptops'}">Laptops</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'computadoras', subCategory: 'desktops'}">Desktops</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}">Work
-                                      Stations</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'computadoras', subCategory: 'tablets'}">Tablets</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']" [queryParams]="{category: 'software'}">Software</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'software', subCategory: 'antivirus'}">Antivirus</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'software', subCategory: 'ofimatica'}">Ofimatica</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}">Sistema
-                                      Operativo</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']" [queryParams]="{category: 'impresion'}">Impresión</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'impresion', subCategory: 'impresoras'}">Impresoras</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'impresion', subCategory: 'escaners'}">Escaners</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'impresion', subCategory: 'consumibles'}">Consumibles</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'impresion', subCategory: 'refacciones'}">Refacciones</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']" [queryParams]="{category: 'energia'}">Energia</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'energia', subCategory: 'no-nreak-y-ups'}">No Break y
-                                      UPS</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'energia', subCategory: 'reguladores'}">Reguladores</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'energia', subCategory: 'multicontacto'}">Multicontacto</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}">Baterias
-                                      para UPS</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']"
-                                  [queryParams]="{category: 'monitores-y-video'}">Monitores y
-                                  Video</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'monitores-y-video', subCategory: 'pantallas-de-tv'}">Pantallas
-                                      de
-                                      TV</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}">Monitores</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}">Proyectores</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']" [queryParams]="{category: 'redes'}">Redes</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'redes', subCategory: 'access-point'}">Access Point</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'redes', subCategory: 'switches'}">Switches</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}">Adaptadores
-                                      de
-                                      Red</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}">Tarjetas de
-                                      Red</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']"
-                                  [queryParams]="{category: 'componentes'}">Componentes</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}">Memorias
-                                      RAM</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}">Discos
-                                      Duros</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'componentes', subCategory: 'procesadores'}">Procesadores</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}">Fuentes
-                                      de
-                                      Poder</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}">Placas
-                                      Madres</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}">Gabinetes</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']"
-                                  [queryParams]="{category: 'almacenamiento'}">Almacenamiento</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-mecanicos'}">Discos
-                                      Duros Mecanicos</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-solidos'}">Discos
-                                      Duros Sólidos</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}">Memorias
-                                      USB</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-externos'}">Discos
-                                      Duros Externos</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'almacenamiento', subCategory: 'lectores-de-memorias'}">Lectores
-                                      de Memorias</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'almacenamiento', subCategory: 'gabinete-para-disco-duro'}">Gabinete
-                                      para Disco Duro</a>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li class="parent">
-                                <a [routerLink]="['categoria']" [queryParams]="{category: 'accesorios'}">Accesorios</a>
-                                <ul>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'accesorios', subCategory: 'teclados'}">Teclados</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'accesorios', subCategory: 'mouses'}">Mouses</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'accesorios', subCategory: 'audifonos'}">Audífonos</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'accesorios', subCategory: 'bocinas'}">Bocinas</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'accesorios', subCategory: 'mochilas'}">Mochilas</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'accesorios', subCategory: 'hubs'}">Hubs</a>
-                                  </li>
-                                  <li>
-                                    <a [routerLink]="['categoria']"
-                                      [queryParams]="{category: 'accesorios', subCategory: 'Mousepads'}">Mousepads</a>
-                                  </li>
-                                </ul>
-                              </li>
-                            </ul>
+    <nav class="mobile-nav">
+      <ul class="mobile-menu">
+        <li>
+          <a routerLink="/" class="sf-with-ul">Inicio</a>
+        </li>
+        <li>
+          <a routerLink="/ofertas">Ofertas</a>
+        </li>
+        <li>
+          <a routerLink="/category">Categorias
+            <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+          </a>
+          <div class="row no-gutters">
+            <div class="col-md-12">
+              <div class="menu-col">
+                <div class="row">
+                  <div class="col-md-12">
+                    <ul>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'computadoras'}">Computadoras</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'computadoras', subCategory: 'laptops'}">Laptops</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'computadoras', subCategory: 'desktops'}">Desktops</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}">Work
+                              Stations</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'computadoras', subCategory: 'tablets'}">Tablets</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'software'}">Software</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'software', subCategory: 'antivirus'}">Antivirus</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'software', subCategory: 'ofimatica'}">Ofimatica</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}">Sistema
+                              Operativo</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'impresion'}">Impresión</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'impresion', subCategory: 'impresoras'}">Impresoras</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'impresion', subCategory: 'escaners'}">Escaners</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'impresion', subCategory: 'consumibles'}">Consumibles</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'impresion', subCategory: 'refacciones'}">Refacciones</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'energia'}">Energia</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'energia', subCategory: 'no-nreak-y-ups'}">No
+                              Break y UPS</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'energia', subCategory: 'reguladores'}">Reguladores</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'energia', subCategory: 'multicontacto'}">Multicontacto</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}">Baterias
+                              para UPS</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'monitores-y-video'}">Monitores y
+                          Video</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'monitores-y-video', subCategory: 'pantallas-de-tv'}">Pantallas
+                              de
+                              TV</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}">Monitores</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}">Proyectores</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'redes'}">Redes</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'redes', subCategory: 'access-point'}">Access
+                              Point</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'redes', subCategory: 'switches'}">Switches</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}">Adaptadores
+                              de
+                              Red</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}">Tarjetas de
+                              Red</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'componentes'}">Componentes</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}">Memorias
+                              RAM</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}">Discos
+                              Duros</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'componentes', subCategory: 'procesadores'}">Procesadores</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}">Fuentes
+                              de
+                              Poder</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}">Placas
+                              Madres</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}">Gabinetes</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'almacenamiento'}">Almacenamiento</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-mecanicos'}">Discos
+                              Duros Mecanicos</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-solidos'}">Discos
+                              Duros Sólidos</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}">Memorias
+                              USB</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-externos'}">Discos
+                              Duros Externos</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'almacenamiento', subCategory: 'lectores-de-memorias'}">Lectores
+                              de Memorias</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'almacenamiento', subCategory: 'gabinete-para-disco-duro'}">Gabinete
+                              para Disco Duro</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li [class.active]="current.includes('categorias')">
+                        <a [routerLink]="['categoria']" class="sf-with-ul"
+                          [queryParams]="{category: 'accesorios'}">Accesorios</a>
+                        <ul>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'accesorios', subCategory: 'teclados'}">Teclados</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'accesorios', subCategory: 'mouses'}">Mouses</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'accesorios', subCategory: 'audifonos'}">Audífonos</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'accesorios', subCategory: 'bocinas'}">Bocinas</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'accesorios', subCategory: 'mochilas'}">Mochilas</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'accesorios', subCategory: 'hubs'}">Hubs</a>
+                          </li>
+                          <li>
+                            <a [routerLink]="['categoria']"
+                              [queryParams]="{category: 'accesorios', subCategory: 'Mousepads'}">Mousepads</a>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a routerLink="/marcas">Marcas
+            <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+          </a>
+          <div class="megamenu megamenu-sm">
+            <div class="row no-gutters">
+              <div class="col-md-12">
+                <div class="menu-col">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <ul>
+                        <li>
+                          <div class="header-search-wrapper">
+                            <label for="searchQueryMob" class="sr-only">Buscar</label>
+                            <input type="text" class="form-control" name="searchQueryMob" id="searchQueryMob"
+                              autocomplete="off" placeholder="Buscar marca ..." required
+                              (input)="searchBrands($event)" />
                           </div>
-                        </div>
-                      </div>
+                        </li>
+                        <li [class.active]="current.includes('marca')" *ngFor="let item of brandsTmp; let id = index;">
+                          <a [routerLink]="['/marca']" [queryParams]="{brand: item.slug}">{{
+                            item.description }}</a>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>
-              </li>
-              <li>
-                <a routerLink="/marcas">Marcas
-                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
-                </a>
-                <div class="megamenu megamenu-sm">
-                  <div class="row no-gutters">
-                    <div class="col-md-12">
-                      <div class="menu-col">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <ul>
-                              <li>
-                                <div class="header-search-wrapper">
-                                  <label for="searchQueryMob" class="sr-only">Buscar</label>
-                                  <input type="text" class="form-control" name="searchQueryMob" id="searchQueryMob"
-                                    autocomplete="off" placeholder="Buscar marca ..." required
-                                    (input)="searchBrands($event)" />
-                                </div>
-                              </li>
-                              <li [class.active]="current.includes('marca')"
-                                *ngFor="let item of brandsTmp; let id = index;">
-                                <a [routerLink]="['/marca']" [queryParams]="{brand: item.slug}">{{
-                                  item.description }}</a>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a routerLink="/productos">Tu cuenta
-                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
-                </a>
-                <ul>
-                  <li>
-                    <a routerLink="/dashboard">Mi cuenta</a>
-                  </li>
-                  <li>
-                    <a routerLink="/cart">Carrito</a>
-                  </li>
-                  <li>
-                    <a routerLink="/checkout">Verificar</a>
-                  </li>
-                  <li>
-                    <a routerLink="/wishlist">Lista de Deseos</a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <a href="javascript:;" class="sf-with-ul">Sobre DARU
-                  <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
-                </a>
-                <ul>
-                  <li [class.active]="current.includes('conocenos')">
-                    <a routerLink="/conocenos">Con&oacute;ceme</a>
-                  </li>
-                  <!-- <li [class.active]="current.includes('services')">
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a routerLink="/productos">Tu cuenta
+            <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+          </a>
+          <ul>
+            <li>
+              <a routerLink="/dashboard">Mi cuenta</a>
+            </li>
+            <li>
+              <a routerLink="/cart">Carrito</a>
+            </li>
+            <li>
+              <a routerLink="/checkout">Verificar</a>
+            </li>
+            <li>
+              <a routerLink="/wishlist">Lista de Deseos</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="javascript:;" class="sf-with-ul">Sobre DARU
+            <span class="mmenu-btn" (click)="submenuToggle($event)"></span>
+          </a>
+          <ul>
+            <li [class.active]="current.includes('conocenos')">
+              <a routerLink="/conocenos">Con&oacute;ceme</a>
+            </li>
+            <!-- <li [class.active]="current.includes('services')">
                     <a routerLink="/services">Servicios</a>
                   </li> -->
-                  <li [class.active]="current.includes('contacto')">
-                    <a routerLink="/contacto">Contacto</a>
-                  </li>
-                  <li [class.active]="current.includes('terminos')">
-                    <a routerLink="/terminos">T&eacute;rmninos y Condiciones</a>
-                  </li>
-                  <li [class.active]="current.includes('comocomprar')">
-                    <a routerLink="/comocomprar">Cómo comprar</a>
-                  </li>
-                  <li [class.active]="current.includes('faq')">
-                    <a routerLink="/faq">Preguntas y Respuestas</a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </nav>
-        </ng-template>
-      </li>
-    </ul>
-    <div [ngbNavOutlet]="nav"></div>
-
+            <li [class.active]="current.includes('contacto')">
+              <a routerLink="/contacto">Contacto</a>
+            </li>
+            <li [class.active]="current.includes('terminos')">
+              <a routerLink="/terminos">T&eacute;rmninos y Condiciones</a>
+            </li>
+            <li [class.active]="current.includes('comocomprar')">
+              <a routerLink="/comocomprar">Cómo comprar</a>
+            </li>
+            <li [class.active]="current.includes('faq')">
+              <a routerLink="/faq">Preguntas y Respuestas</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
     <div class="social-icons">
       <a href="javascript:;" class="social-icon" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
       <a href="javascript:;" class="social-icon" title="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
