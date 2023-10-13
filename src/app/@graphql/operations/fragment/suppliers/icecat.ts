@@ -80,7 +80,21 @@ export const ICECATPRODUCT_FRAGMENT = gql`
       ThumbPic
       ThumbPicSize
     }
-    Multimedia
+    Multimedia {
+      ID
+      URL
+      Type
+      ContentType
+      KeepAsUrl
+      Description
+      Size
+      IsPrivate
+      Updated
+      Language
+      IsVideo
+      ThumbUrl
+      PreviewUrl
+    }
     Gallery {
       ID
       LowPic
