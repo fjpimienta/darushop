@@ -9,7 +9,7 @@
       <div class="collapse show" id="widget-1">
         <div class="widget-body">
           <div class="filter-items filter-items-count">
-            <div class="filter-item" *ngFor="let categorie of categories">
+            <div class="filter-item">
               <ul>
                 <li>
                   <a [routerLink]="[]" [queryParams]="{category: 'computadoras'}"
@@ -86,7 +86,7 @@
                   <ul>
                     <li>
                       <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'no-nreak-y-ups'}"
+                        [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}"
                         routerLinkActive="active">No Break y
                         UPS</a>
                     </li>
