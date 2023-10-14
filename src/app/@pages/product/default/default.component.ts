@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Product } from '@shared/classes/product';
 import { ProductsService } from '@core/services/products.service';
+import { IcecatProductsService } from '@core/services/suppliers/icecat.service';
 
 @Component({
   selector: 'app-product-default-page',
@@ -22,19 +23,16 @@ export class DefaultPageComponent implements OnInit {
   constructor(
     private activeRoute: ActivatedRoute,
     public router: Router,
-    public productService: ProductsService
+    public productService: ProductsService,
+    public icecatProductsService: IcecatProductsService
   ) {
     activeRoute.params.subscribe(params => {
       this.loaded = false;
       this.productService.getProduct(params.slug).subscribe(result => {
-        if (result === null) {
-          this.router.navigate(['/pages/404']);
-        }
         this.product = result.product.product;
         this.productName = result.product.product.sku;
         // this.prev = this.product;
         // this.next = this.product;
-
         // this.product = result.product;
         // this.prev = result.prevProduct;
         // this.next = result.nextProduct;
