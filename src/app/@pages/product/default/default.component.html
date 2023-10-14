@@ -8,7 +8,9 @@
         <div class="row skel-pro-single" [class.loaded]="loaded">
           <div class="col-md-6">
             <div class="skel-product-gallery"></div>
-            <product-gallery-default [product]="product" *ngIf="loaded"></product-gallery-default>
+            <!-- <product-gallery-default [product]="product" *ngIf="loaded"></product-gallery-default> -->
+            <product-gallery-extend [product]="product" *ngIf="loaded">
+            </product-gallery-extend>
           </div>
 
           <div class="col-md-6">

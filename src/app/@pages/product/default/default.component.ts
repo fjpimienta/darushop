@@ -29,9 +29,6 @@ export class DefaultPageComponent implements OnInit {
     activeRoute.params.subscribe(params => {
       this.loaded = false;
       this.productService.getProduct(params.slug).subscribe(result => {
-        if (result.product.product.pictures.length >= 3) {
-          this.router.navigate(['/product/gallery/' + result.product.product.id]);
-        }
         this.product = result.product.product;
         this.productName = result.product.product.sku;
         // this.prev = this.product;
