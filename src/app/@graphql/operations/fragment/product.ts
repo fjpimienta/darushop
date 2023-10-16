@@ -28,6 +28,14 @@ export const PRODUCT_FRAGMENT = gql`
         product_category_id
       }
     }
+    subCategory {
+      name
+      slug
+      pivot {
+        product_id
+        product_category_id
+      }
+    }
     brand
     brands {
       name
@@ -107,6 +115,70 @@ export const PRODUCT_FRAGMENT = gql`
       descripcion_promocion
       vencimiento_promocion
       disponible_en_promocion
+    }
+    generalInfo {
+      IcecatId
+      ReleaseDate
+      EndOfLifeDate
+      Title
+      TitleInfo {
+        GeneratedIntTitle
+        GeneratedLocalTitle {
+          Value
+          Language
+        }
+        BrandLocalTitle {
+          Value
+          Language
+        }
+      }
+      Brand
+      BrandID
+      BrandLogo
+      BrandInfo {
+        BrandName
+        BrandLocalName
+        BrandLogo
+      }
+      ProductName
+      ProductNameInfo {
+        ProductIntName
+        ProductLocalName {
+          Value
+          Language
+        }
+      }
+      BrandPartCode
+      GTIN
+      Category {
+        CategoryID
+        Name {
+          Value
+          Language
+        }
+      }
+      ProductFamily {
+        empty
+      }
+      ProductSeries {
+        SeriesID
+      }
+      Description {
+        empty
+      }
+      SummaryDescription {
+        ShortSummaryDescription
+        LongSummaryDescription
+      }
+      BulletPoints {
+        BulletPointsId
+        Language
+        Values
+      }
+      GeneratedBulletPoints {
+        Language
+        Values
+      }
     }
   }
 `;
