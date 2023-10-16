@@ -29,7 +29,7 @@
                 </li>
               </ul>
             </div>
-            <div class="col-3">
+            <div *ngIf="product.subCategory.length > 1" class="col-3">
               <h3>SubCategoría</h3>
               <ul>
                 <li *ngFor="let subCategory of product.subCategory">
