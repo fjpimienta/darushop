@@ -29,7 +29,7 @@
                 </li>
               </ul>
             </div>
-            <div class="col-3">
+            <div *ngIf="product.subCategory.length > 1" class="col-3">
               <h3>SubCategoría</h3>
               <ul>
                 <li *ngFor="let subCategory of product.subCategory">
@@ -56,6 +56,28 @@
       </a>
       <ng-template ngbNavContent>
         <div class="product-desc-content">
+          <div class="row">
+            <h3 *ngIf="product.generalInfo.GeneratedBulletPoints.Values">Características</h3>
+          </div>
+          <div class="row">
+            <ul>
+              <li *ngFor="let value of product.generalInfo.GeneratedBulletPoints.Values">
+                {{ value }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="product-desc-content">
+          <div class="row">
+            <h3 *ngIf="product.generalInfo.BulletPoints.Values">Adicionales</h3>
+          </div>
+          <div class="row">
+            <ul>
+              <li *ngFor="let value of product.generalInfo.BulletPoints.Values">
+                {{ value }}
+              </li>
+            </ul>
+          </div>
         </div>
       </ng-template>
     </li>
