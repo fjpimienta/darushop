@@ -23,6 +23,15 @@ export interface Product {
       product_category_id: string;
     };
   }>;
+  subCategory: Array<{
+    name: string;
+    slug: string;
+    pivot: {
+      product_id: string;
+      product_category_id: string;
+    };
+  }>;
+  brand?: string;
   brands?: Array<{
     name?: string;
     slug?: string;
@@ -79,5 +88,69 @@ export interface Product {
     inicio_promocion: string;
     vencimiento_promocion: string;
     disponible_en_promocion: number;
+  }
+  generalInfo: {
+    IcecatId: number
+    ReleaseDate: string;
+    EndOfLifeDate: string;
+    Title: string;
+    TitleInfo: {
+      GeneratedIntTitle: string;
+      GeneratedLocalTitle: {
+        Value: string;
+        Language: string;
+      }
+      BrandLocalTitle: {
+        Value: string;
+        Language: string;
+      }
+    }
+    Brand: string;
+    BrandID: string;
+    BrandLogo: string;
+    BrandInfo: {
+      BrandName: string;
+      BrandLocalName: string;
+      BrandLogo: string;
+    }
+    ProductName: string;
+    ProductNameInfo: {
+      ProductIntName: string;
+      ProductLocalName: {
+        Value: string;
+        Language: string;
+      }
+    }
+    BrandPartCode: string;
+    GTIN: [string];
+    Category: {
+      CategoryID: string;
+      Name: {
+        Value: string;
+        Language: string;
+      }
+    }
+    ProductFamily: {
+      empty: string;
+    }
+    ProductSeries: {
+      SeriesID: string;
+    }
+    Description: {
+      empty: string;
+    }
+    SummaryDescription: {
+      ShortSummaryDescription: string;
+      LongSummaryDescription: string;
+    }
+    BulletPoints: {
+      BulletPointsId: string;
+      Language: string;
+      Values: [string];
+    }
+    GeneratedBulletPoints: {
+      Language: string;
+      Values: [string];
+    }
   }
 }
