@@ -6,11 +6,12 @@
     <div class="container skeleton-body">
       <div class="product-details-top">
         <div class="row skel-pro-single" [class.loaded]="loaded">
-          <div class="col-md-6">
+          <div *ngIf="gallery_images" class="col-md-6">
             <div class="skel-product-gallery"></div>
-            <!-- <product-gallery-default [product]="product" *ngIf="loaded"></product-gallery-default> -->
-            <product-gallery-extend [product]="product" *ngIf="loaded">
-            </product-gallery-extend>
+            <product-gallery-extend [product]="product" *ngIf="loaded"></product-gallery-extend>
+          </div>
+          <div *ngIf="!gallery_images" class="col-md-6">
+            <product-gallery-default [product]="product" *ngIf="loaded"></product-gallery-default>
           </div>
 
           <div class="col-md-6">

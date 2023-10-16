@@ -19,6 +19,7 @@ export class DefaultPageComponent implements OnInit {
   related = [];
   loaded = false;
   productName = '';
+  gallery_images = false;
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -38,6 +39,9 @@ export class DefaultPageComponent implements OnInit {
         // this.next = result.nextProduct;
         // this.related = result.relatedProducts;
         this.loaded = true;
+        if (this.product.pictures.length >= 2) {
+          this.gallery_images = true;
+        }
       });
     });
   }

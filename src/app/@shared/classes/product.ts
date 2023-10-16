@@ -23,6 +23,7 @@ export interface Product {
       product_category_id: string;
     };
   }>;
+  brand?: string;
   brands?: Array<{
     name?: string;
     slug?: string;
