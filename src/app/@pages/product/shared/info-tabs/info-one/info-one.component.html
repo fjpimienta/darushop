@@ -6,8 +6,47 @@
       </a>
       <ng-template ngbNavContent>
         <div class="product-desc-content">
-          <h3>Información del Producto</h3>
-          <p>{{product.short_desc}}</p>
+          <div class="row">
+            <h3>Información del Producto</h3>
+          </div>
+          <div class="row">
+            <h5>{{product.generalInfo.TitleInfo.GeneratedLocalTitle.Value}}</h5>
+          </div>
+          <div class="row">
+            <div class="col-3">
+              <h3>Marca</h3>
+              <ul>
+                <li *ngFor="let brand of product.brands">
+                  <h6>{{brand.name}}</h6>
+                </li>
+              </ul>
+            </div>
+            <div class="col-3">
+              <h3>Categoría</h3>
+              <ul>
+                <li *ngFor="let category of product.category">
+                  <h6>{{category.name}}</h6>
+                </li>
+              </ul>
+            </div>
+            <div class="col-3">
+              <h3>SubCategoría</h3>
+              <ul>
+                <li *ngFor="let subCategory of product.subCategory">
+                  <h6>{{subCategory.name}}</h6>
+                </li>
+              </ul>
+            </div>
+            <div class="col-3">
+              <h3>N&uacute;mero de Parte / SKU</h3>
+              <ul>
+                <li *ngFor="let subCategory of product.subCategory">
+                  <h6>{{product.partnumber}}/{{product.sku}}</h6>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p>{{product.generalInfo.SummaryDescription.LongSummaryDescription}}</p>
         </div>
       </ng-template>
     </li>
@@ -17,28 +56,6 @@
       </a>
       <ng-template ngbNavContent>
         <div class="product-desc-content">
-          <div class="row">
-            <div class="col-4">
-              <h3>Marca</h3>
-              <ul>
-                <li *ngFor="let brand of product.brands">
-                  <h6>{{brand.name}}</h6>
-                </li>
-              </ul>
-            </div>
-            <div class="col-4">
-              <h3>Categoría(s)</h3>
-              <ul>
-                <li *ngFor="let category of product.category">
-                  <h6>{{category.name}}</h6>
-                </li>
-              </ul>
-            </div>
-            <div class="col-4">
-              <h3>N&uacute;mero de Parte / SKU</h3>
-              <h6>{{product.partnumber}}/{{product.sku}}</h6>
-            </div>
-          </div>
         </div>
       </ng-template>
     </li>
