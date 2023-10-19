@@ -124,6 +124,31 @@ export class UtilsService {
     });
   }
 
+  subCatFilter(products = [], subCategory: any, flag = false) {
+    if (subCategory[0] === 'All') { return products; }
+
+    return products.filter(item => {
+      for (let i = 0; i < subCategory.length; i++) {
+        if (item.subCategory.find(cat => cat.slug == subCategory[i])) {
+          if (!flag) {
+            return true;
+          }
+        } else {
+          if (flag) {
+            return false;
+          }
+        }
+      }
+
+      if (flag) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    });
+  }
+
   braFilter(products = [], brands: string[], flag = false) {
     if (brands[0] === 'All') { return products; }
 
