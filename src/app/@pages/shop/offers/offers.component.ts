@@ -152,8 +152,8 @@ export class OffersComponent implements OnInit {
           this.products = utilsService.catFilter(this.products, category);
         }
         if (params.subCategory) {
-          category.push(params.subCategory);
-          this.products = utilsService.catFilter(this.products, subCategory);
+          subCategory.push(params.subCategory);
+          this.products = utilsService.subCatFilter(this.products, subCategory);
         }
         if (this.orderBy) {
           switch (this.orderBy) {
