@@ -31,6 +31,7 @@ export class BrandComponent implements OnInit {
   page = 1;
   brands = [];
   categories = [];
+  subCategories = [];
   offer: boolean;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
@@ -109,6 +110,11 @@ export class BrandComponent implements OnInit {
         this.categories = [];
         this.categories.push(params.category);
       }
+      this.subCategories = null;
+      if (params.subCategory) {
+        this.subCategories = [];
+        this.subCategories.push(params.subCategory);
+      }
       if (params.page) {
         this.page = parseInt(params.page, 10);
       } else {
@@ -120,6 +126,7 @@ export class BrandComponent implements OnInit {
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
+        const subCategory = [[]];
         let brands: string[] = [];
         if (params.brand) {
           brands = params.brand.split(',');
@@ -132,6 +139,10 @@ export class BrandComponent implements OnInit {
         if (params.category) {
           category.push(params.category);
           this.products = utilsService.catFilter(this.products, category);
+        }
+        if (params.subCategory) {
+          subCategory.push(params.subCategory);
+          this.products = utilsService.catFilter(this.products, subCategory);
         }
         if (this.orderBy) {
           switch (this.orderBy) {

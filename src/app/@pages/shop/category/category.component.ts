@@ -106,7 +106,6 @@ export class CategoryComponent implements OnInit {
         this.subCategories
       ).subscribe(result => {
         this.products = result.products;
-        const category = [[]];
         let brands: string[] = [];
         if (params.brand) {
           brands = params.brand.split(',');
