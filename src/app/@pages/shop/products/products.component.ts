@@ -119,6 +119,11 @@ export class ProductsComponent implements OnInit {
         this.categories = [];
         this.categories.push(params.category);
       }
+      this.subCategories = null;
+      if (params.subCategory) {
+        this.subCategories = [];
+        this.subCategories.push(params.subCategory);
+      }
       if (params.page) {
         this.page = parseInt(params.page, 10);
       } else {
