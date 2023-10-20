@@ -21,20 +21,7 @@ export class ImageComponent implements OnInit {
   constructor(private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    this.loadImage(this.src);
-  }
-
-  loadImage(imageSrc: string): void {
-    const image = new Image();
-    image.src = imageSrc;
-
-    image.onload = () => {
-      this.renderer.setAttribute(this.el.nativeElement, 'src', imageSrc);
-    };
-
-    image.onerror = () => {
-      this.renderer.setAttribute(this.el.nativeElement, 'src', this.defaultImage);
-    };
+    this.defaultImage = this.src;
   }
 
   handler(event: any) {

@@ -134,7 +134,7 @@ export class SidebarPageComponent implements OnInit {
         }
         if (params.subCategory) {
           subCategory.push(params.subCategory);
-          this.products = utilsService.catFilter(this.products, subCategory);
+          this.products = utilsService.subCatFilter(this.products, subCategory);
         }
         this.loaded = true;
         this.totalCount = result.info.total;

@@ -142,7 +142,7 @@ export class BrandComponent implements OnInit {
         }
         if (params.subCategory) {
           subCategory.push(params.subCategory);
-          this.products = utilsService.catFilter(this.products, subCategory);
+          this.products = utilsService.subCatFilter(this.products, subCategory);
         }
         if (this.orderBy) {
           switch (this.orderBy) {
