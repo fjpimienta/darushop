@@ -30,260 +30,241 @@
             <div class="filter-item">
               <ul>
                 <li>
-                  <a [routerLink]="[]" [queryParams]="{category: 'computadoras'}"
+                  <a [routerLink]="[]" [queryParams]="{category: 'computadoras'}" queryParamsHandling="merge"
                     routerLinkActive="active">Computadoras</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'laptops'}"
-                        routerLinkActive="active">Laptops</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Laptops</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'computadoras', subCategory: 'desktops'}"
-                        routerLinkActive="active">Desktops</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'desktops'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Desktops</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}"
-                        routerLinkActive="active">Work
+                      <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Work
                         Stations</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'tablets'}"
-                        routerLinkActive="active">Tablets</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Tablets</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'software'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'software'}" queryParamsHandling="merge"
                     routerLinkActive="active">Software</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'antivirus'}"
-                        routerLinkActive="active">Antivirus</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Antivirus</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'ofimatica'}"
-                        routerLinkActive="active">Ofimatica</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Ofimatica</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}"
-                        routerLinkActive="active">Sistema
+                      <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Sistema
                         Operativo</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'impresion'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'impresion'}" queryParamsHandling="merge"
                     routerLinkActive="active">Impresión</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'impresoras'}"
-                        routerLinkActive="active">Impresoras</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Impresoras</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'escaners'}"
-                        routerLinkActive="active">Escaners</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Escaners</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'impresion', subCategory: 'consumibles'}"
-                        routerLinkActive="active">Consumibles</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'consumibles'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Consumibles</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'impresion', subCategory: 'refacciones'}"
-                        routerLinkActive="active">Refacciones</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'refacciones'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Refacciones</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'energia'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'energia'}" queryParamsHandling="merge"
                     routerLinkActive="active">Energia</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}"
-                        routerLinkActive="active">No Break y
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}"
+                        queryParamsHandling="merge" routerLinkActive="active">No Break y
                         UPS</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'reguladores'}"
-                        routerLinkActive="active">Reguladores</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Reguladores</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'multicontacto'}"
-                        routerLinkActive="active">Multicontacto</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'multicontacto'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Multicontacto</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}"
-                        routerLinkActive="active">Baterias
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Baterias
                         para UPS</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video'}" queryParamsHandling="merge"
                     routerLinkActive="active">Monitores y
                     Video</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'monitores-y-video', subCategory: 'pantallas-de-tv'}"
-                        routerLinkActive="active">Pantallas de
+                        queryParamsHandling="merge" routerLinkActive="active">Pantallas de
                         TV</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}"
-                        routerLinkActive="active">Monitores</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Monitores</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
-                        routerLinkActive="active">Proyectores</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Proyectores</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'redes'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'redes'}" queryParamsHandling="merge"
                     routerLinkActive="active">Redes</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'access-point'}"
-                        routerLinkActive="active">Access Point</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Access Point</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'switches'}"
-                        routerLinkActive="active">Switches</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Switches</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}"
-                        routerLinkActive="active">Adaptadores de
+                      <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Adaptadores de
                         Red</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}"
-                        routerLinkActive="active">Tarjetas de
+                      <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Tarjetas de
                         Red</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'componentes'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'componentes'}" queryParamsHandling="merge"
                     routerLinkActive="active">Componentes</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}"
-                        routerLinkActive="active">Memorias RAM</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Memorias RAM</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}"
-                        routerLinkActive="active">Discos Duros</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Discos Duros</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'procesadores'}"
-                        routerLinkActive="active">Procesadores</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'procesadores'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Procesadores</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}"
-                        routerLinkActive="active">Fuentes de
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Fuentes de
                         Poder</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}"
-                        routerLinkActive="active">Placas
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Placas
                         Madres</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}"
-                        routerLinkActive="active">Gabinetes</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Gabinetes</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento'}" queryParamsHandling="merge"
                     routerLinkActive="active">Almacenamiento</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-mecanicos'}"
-                        routerLinkActive="active">Discos
+                        queryParamsHandling="merge" routerLinkActive="active">Discos
                         Duros Mecanicos</a>
                     </li>
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-solidos'}"
-                        routerLinkActive="active">Discos
+                        queryParamsHandling="merge" routerLinkActive="active">Discos
                         Duros Sólidos</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}"
-                        routerLinkActive="active">Memorias USB</a>
+                      <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Memorias USB</a>
                     </li>
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-externos'}"
-                        routerLinkActive="active">Discos
+                        queryParamsHandling="merge" routerLinkActive="active">Discos
                         Duros Externos</a>
                     </li>
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'lectores-de-memorias'}"
-                        routerLinkActive="active">Lectores
+                        queryParamsHandling="merge" routerLinkActive="active">Lectores
                         de Memorias</a>
                     </li>
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'gabinete-para-disco-duro'}"
-                        routerLinkActive="active">Gabinete
+                        queryParamsHandling="merge" routerLinkActive="active">Gabinete
                         para Disco Duro</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}"
+                <li>
+                  <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}" queryParamsHandling="merge"
                     routerLinkActive="active">Accesorios</a>
-                    <ul class="detail-ul">
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'teclados'}"
-                        routerLinkActive="active">Teclados</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Teclados</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'mouses'}"
-                        routerLinkActive="active">Mouses</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Mouses</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'audifonos'}"
-                        routerLinkActive="active">Audífonos</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Audífonos</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'bocinas'}"
-                        routerLinkActive="active">Bocinas</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Bocinas</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'mochilas'}"
-                        routerLinkActive="active">Mochilas</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Mochilas</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'hubs'}"
-                        routerLinkActive="active">Hubs</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Hubs</a>
                     </li>
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'Mousepads'}"
-                        routerLinkActive="active">Mousepads</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Mousepads</a>
                     </li>
                   </ul>
                 </li>
