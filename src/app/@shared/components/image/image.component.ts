@@ -21,7 +21,6 @@ export class ImageComponent implements OnInit {
   constructor(private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    this.defaultImage = this.src;
   }
 
   handler(event: any) {
@@ -51,7 +50,8 @@ export class ImageComponent implements OnInit {
         break;
       case 'loading-succeeded':
         if (this.minHeight) {
-          this.renderer.setStyle(this.el.nativeElement.querySelector('img'), 'min-height', this.minHeight + 'rem');
+          // this.renderer.setStyle(this.el.nativeElement.querySelector('img'), 'min-height', this.minHeight + 'rem');
+          this.renderer.setAttribute(this.el.nativeElement, 'src', this.defaultImage);
         }
         break;
       default:
