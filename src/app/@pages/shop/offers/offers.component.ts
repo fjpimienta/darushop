@@ -136,6 +136,8 @@ export class OffersComponent implements OnInit {
         this.subCategories
       ).subscribe(result => {
         this.products = result.products;
+        console.log('params: ', params);
+        console.log('result.products: ', result.products);
         const category = [[]];
         const subCategory = [[]];
         let brands: string[] = [];
@@ -149,12 +151,18 @@ export class OffersComponent implements OnInit {
         }
         if (params.category) {
           category.push(params.category);
+          console.log('category: ', category);
+
+          console.log('this.products.before: ', this.products);
           this.products = utilsService.catFilter(this.products, category);
+          console.log('this.products.after: ', this.products);
+
         }
         if (params.subCategory) {
           subCategory.push(params.subCategory);
           this.products = utilsService.subCatFilter(this.products, subCategory);
         }
+        console.log('this.products.subCategory: ', this.products);
         if (this.orderBy) {
           switch (this.orderBy) {
             case 'name':

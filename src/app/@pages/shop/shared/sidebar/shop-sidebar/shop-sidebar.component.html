@@ -11,22 +11,20 @@
           <div class="filter-items filter-items-count">
             <div class="filter-item">
               <ul>
-                <li>
+                <li class="parent">
                   <a [routerLink]="[]" [queryParams]="{category: 'computadoras'}"
                     routerLinkActive="active">Computadoras</a>
-                  <ul>
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'laptops'}"
                         routerLinkActive="active">Laptops</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'computadoras', subCategory: 'desktops'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'desktops'}"
                         routerLinkActive="active">Desktops</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}"
                         routerLinkActive="active">Work
                         Stations</a>
                     </li>
@@ -37,9 +35,8 @@
                   </ul>
                 </li>
                 <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'software'}"
-                    routerLinkActive="active">Software</a>
-                  <ul>
+                  <a [routerLink]="[]" [queryParams]="{category: 'software'}" routerLinkActive="active">Software</a>
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'antivirus'}"
                         routerLinkActive="active">Antivirus</a>
@@ -49,17 +46,15 @@
                         routerLinkActive="active">Ofimatica</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}"
                         routerLinkActive="active">Sistema
                         Operativo</a>
                     </li>
                   </ul>
                 </li>
                 <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'impresion'}"
-                    routerLinkActive="active">Impresión</a>
-                  <ul>
+                  <a [routerLink]="[]" [queryParams]="{category: 'impresion'}" routerLinkActive="active">Impresión</a>
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'impresoras'}"
                         routerLinkActive="active">Impresoras</a>
@@ -69,24 +64,20 @@
                         routerLinkActive="active">Escaners</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'impresion', subCategory: 'consumibles'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'consumibles'}"
                         routerLinkActive="active">Consumibles</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'impresion', subCategory: 'refacciones'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'refacciones'}"
                         routerLinkActive="active">Refacciones</a>
                     </li>
                   </ul>
                 </li>
                 <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'energia'}"
-                    routerLinkActive="active">Energia</a>
-                  <ul>
+                  <a [routerLink]="[]" [queryParams]="{category: 'energia'}" routerLinkActive="active">Energia</a>
+                  <ul class="detail-ul">
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}"
                         routerLinkActive="active">No Break y
                         UPS</a>
                     </li>
@@ -95,13 +86,11 @@
                         routerLinkActive="active">Reguladores</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'multicontacto'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'multicontacto'}"
                         routerLinkActive="active">Multicontacto</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}"
                         routerLinkActive="active">Baterias
                         para UPS</a>
                     </li>
@@ -111,7 +100,7 @@
                   <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video'}"
                     routerLinkActive="active">Monitores y
                     Video</a>
-                  <ul>
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'monitores-y-video', subCategory: 'pantallas-de-tv'}"
@@ -119,21 +108,18 @@
                         TV</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}"
                         routerLinkActive="active">Monitores</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
                         routerLinkActive="active">Proyectores</a>
                     </li>
                   </ul>
                 </li>
                 <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'redes'}"
-                    routerLinkActive="active">Redes</a>
-                  <ul>
+                  <a [routerLink]="[]" [queryParams]="{category: 'redes'}" routerLinkActive="active">Redes</a>
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'access-point'}"
                         routerLinkActive="active">Access Point</a>
@@ -143,14 +129,12 @@
                         routerLinkActive="active">Switches</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}"
                         routerLinkActive="active">Adaptadores de
                         Red</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}"
                         routerLinkActive="active">Tarjetas de
                         Red</a>
                     </li>
@@ -159,37 +143,31 @@
                 <li class="parent">
                   <a [routerLink]="[]" [queryParams]="{category: 'componentes'}"
                     routerLinkActive="active">Componentes</a>
-                  <ul>
+                  <ul class="detail-ul">
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}"
                         routerLinkActive="active">Memorias RAM</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}"
                         routerLinkActive="active">Discos Duros</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'procesadores'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'procesadores'}"
                         routerLinkActive="active">Procesadores</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}"
                         routerLinkActive="active">Fuentes de
                         Poder</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}"
                         routerLinkActive="active">Placas
                         Madres</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}"
                         routerLinkActive="active">Gabinetes</a>
                     </li>
                   </ul>
@@ -197,7 +175,7 @@
                 <li class="parent">
                   <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento'}"
                     routerLinkActive="active">Almacenamiento</a>
-                  <ul>
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-mecanicos'}"
@@ -211,8 +189,7 @@
                         Duros Sólidos</a>
                     </li>
                     <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}"
+                      <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}"
                         routerLinkActive="active">Memorias USB</a>
                     </li>
                     <li>
@@ -236,9 +213,8 @@
                   </ul>
                 </li>
                 <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}"
-                    routerLinkActive="active">Accesorios</a>
-                  <ul>
+                  <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}" routerLinkActive="active">Accesorios</a>
+                  <ul class="detail-ul">
                     <li>
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'teclados'}"
                         routerLinkActive="active">Teclados</a>
