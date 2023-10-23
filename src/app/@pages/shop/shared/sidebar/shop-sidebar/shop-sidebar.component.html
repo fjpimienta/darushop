@@ -263,7 +263,7 @@
         <div class="widget-body">
           <div class="filter-items">
             <div class="filter-item" *ngFor="let item of brands; let index = index;">
-              <div class="custom-control custom-checkbox">
+              <div *ngIf="item.slug!=''" class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" [id]="item.slug"
                   [checked]="containsAttrInUrl('brand', item.slug)" (change)="onAttrClick('brand', item.slug)">
                 <label class="custom-control-label" [for]="item.slug">{{ item.description }}</label>
