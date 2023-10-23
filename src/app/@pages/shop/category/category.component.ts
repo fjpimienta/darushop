@@ -75,7 +75,6 @@ export class CategoryComponent implements OnInit {
       this.loaded = false;
       this.offer = false;
 
-      this.pageTitle = params.category.toUpperCase() || '';
       this.searchTerm = params.searchTerm || '';
       this.orderBy = params.orderBy || '';
 
@@ -85,14 +84,20 @@ export class CategoryComponent implements OnInit {
         this.brands = params.brand.split(',');
       }
       this.categories = null;
-      if (params.category) {
-        this.categories = [];
-        this.categories.push(params.category);
-      }
-      this.subCategories = null;
-      if (params.subCategory) {
-        this.subCategories = [];
-        this.subCategories.push(params.subCategory);
+      if (Array.isArray(params.category)) {
+        this.pageTitle = 'Categorias';
+        this.categories = params.category;
+      } else {
+        this.pageTitle = params.category.toUpperCase() || '';
+        if (params.category) {
+          this.categories = [];
+          this.categories.push(params.category);
+        }
+        this.subCategories = null;
+        if (params.subCategory) {
+          this.subCategories = [];
+          this.subCategories.push(params.subCategory);
+        }
       }
       this.page = params.page ? parseInt(params.page, 10) : 1;
       this.perPage = 48;
