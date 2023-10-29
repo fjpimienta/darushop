@@ -36,11 +36,20 @@
                 <div class="col-sm-6 form-group">
                   <label>Nombre(s) *</label>
                   <input type="text" class="form-control" name="nombres" formControlName="name" required>
+                  <div class="alert alert-danger"
+                    *ngIf="formData.get('name').invalid && (formData.get('name').dirty || formData.get('name').touched)">
+                    <div *ngIf="formData.get('name').hasError('required')">El nombre es requerido.</div>
+                    <div *ngIf="formData.get('name').hasError('name')">Teclear un nombre correcto.</div>
+                  </div>
                 </div>
-
                 <div class="col-sm-6 form-group">
                   <label>Apellido(s) *</label>
                   <input type="text" class="form-control" name="lastname" formControlName="lastname" required>
+                  <div class="alert alert-danger"
+                    *ngIf="formData.get('lastname').invalid && (formData.get('lastname').dirty || formData.get('lastname').touched)">
+                    <div *ngIf="formData.get('lastname').hasError('required')">El apellido es requerido.</div>
+                    <div *ngIf="formData.get('lastname').hasError('lastname')">Teclear un apellido correcto.</div>
+                  </div>
                 </div>
               </div>
 
@@ -49,7 +58,7 @@
                   <label>Teléfono *</label>
                   <input type="phone" class="form-control" name="phone" formControlName="phone"
                     (input)="bloquearLetras($event)" maxlength='10' required>
-                  <div
+                  <div class="alert alert-danger"
                     *ngIf="formData.get('phone').invalid && (formData.get('phone').dirty || formData.get('phone').touched)">
                     <div *ngIf="formData.get('phone').hasError('required')">El teléfono es requerido.</div>
                     <div *ngIf="formData.get('phone').hasError('pattern')">El teléfono debe contener 10 números.
@@ -59,7 +68,7 @@
                 <div class="col-sm-6">
                   <label>Correo Electrónico *</label>
                   <input type="email" name="email" class="form-control" formControlName="email" required>
-                  <div
+                  <div class="alert alert-danger"
                     *ngIf="formData.get('email').invalid && (formData.get('email').dirty || formData.get('email').touched)">
                     <div *ngIf="formData.get('email').hasError('required')">El correo electrónico es requerido.</div>
                     <div *ngIf="formData.get('email').hasError('email')">Ingrese una dirección de correo electrónico
@@ -89,7 +98,7 @@
                   <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
                     (blur)="onSetCps($event)" autocomplete="off" (input)="bloquearLetras($event)" maxlength="5"
                     [attr.disabled]="!isChecked ? 'true' : null">
-                  <div
+                  <div class="alert alert-danger"
                     *ngIf="formData.get('codigoPostal').invalid && (formData.get('codigoPostal').dirty || formData.get('codigoPostal').touched)">
                     <div *ngIf="formData.get('codigoPostal').hasError('required')">El código postal es requerido.</div>
                     <div *ngIf="formData.get('codigoPostal').hasError('pattern')">Ingrese un código postal válido de 4 o
@@ -167,6 +176,12 @@
                   <label>Dirección *</label>
                   <input type="text" class="form-control" name="directions" formControlName="directions"
                     placeholder="Calle" [attr.disabled]="idDelivery ? 'true' : null" required>
+                  <div class="alert alert-danger"
+                    *ngIf="formData.get('directions').invalid && (formData.get('directions').dirty || formData.get('directions').touched)">
+                    <div *ngIf="formData.get('directions').hasError('required')">La direcci&oacute;n es requerida.</div>
+                    <div *ngIf="formData.get('directions').hasError('directions')">Teclear una direcci&oacute;n
+                      correcta.</div>
+                  </div>
                 </div>
               </div>
 
@@ -176,6 +191,13 @@
                   <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
                     placeholder="N&uacute;mero Exterior" [attr.disabled]="idDelivery ? 'true' : null" maxlength="10"
                     required>
+                  <div class="alert alert-danger"
+                    *ngIf="formData.get('outdoorNumber').invalid && (formData.get('outdoorNumber').dirty || formData.get('outdoorNumber').touched)">
+                    <div *ngIf="formData.get('outdoorNumber').hasError('required')">El N&uacute;mero Exterior
+                      requerida.</div>
+                    <div *ngIf="formData.get('outdoorNumber').hasError('outdoorNumber')">Teclear el N&uacute;mero
+                      Exterior.</div>
+                  </div>
                 </div>
                 <div class="col-sm-6">
                   <label>N&uacute;mero Interior</label>
@@ -256,6 +278,11 @@
               <label>Referencias de Entrega *</label>
               <textarea class="form-control" cols="30" rows="4" name="references" formControlName="references"
                 [attr.disabled]="idDelivery ? 'true' : null" required></textarea>
+              <div class="alert alert-danger"
+                *ngIf="formData.get('references').invalid && (formData.get('references').dirty || formData.get('references').touched)">
+                <div *ngIf="formData.get('references').hasError('required')">La Referencia es requerida.</div>
+                <div *ngIf="formData.get('references').hasError('references')">Teclear la referencia.</div>
+              </div>
             </div>
             <aside class="col-lg-5">
               <div class="row">&nbsp;</div>
@@ -528,8 +555,9 @@
                 <div class="row">
                   <div class="col-2"></div>
                   <div class="col-8 text-center">
+                    <!-- [disabled]="!formData.valid" -->
                     <button *ngIf="!this.idDelivery" type="submit" class="btn btn-primary btn-round btn-shadow"
-                      [disabled]="!formData.valid" (click)="onSubmit()">
+                      (click)="onSubmit()">
                       <span class="btn-text btn-primary">Realizar Pedido</span>
                       <span class="btn-hover-text">Realizando Pedido</span>
                     </button>
