@@ -45,8 +45,6 @@ export class CategoryComponent implements OnInit {
     ])
       .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
       .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
-        // Obtener el título de la página actual a través de activeRoute.data
-        this.pageTitle = data.title || '';
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
@@ -84,19 +82,20 @@ export class CategoryComponent implements OnInit {
         this.brands = params.brand.split(',');
       }
       this.categories = null;
+      this.pageTitle = 'Categor&iacute;a';
       if (Array.isArray(params.category)) {
-        this.pageTitle = 'Categorias';
         this.categories = params.category;
       } else {
-        this.pageTitle = params.category.toUpperCase() || '';
         if (params.category) {
           this.categories = [];
           this.categories.push(params.category);
+          this.pageTitle += ' (' + params.category.toUpperCase() + ')';
         }
         this.subCategories = null;
         if (params.subCategory) {
           this.subCategories = [];
           this.subCategories.push(params.subCategory);
+          this.pageTitle += ' SubCategor&iacute;a (' + params.subCategory.toUpperCase() + ')';
         }
       }
       this.page = params.page ? parseInt(params.page, 10) : 1;
@@ -169,9 +168,6 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.toggle = window.innerWidth <= 991;
-    this.activeRoute.data.subscribe((data: { title: string }) => {
-      this.pageTitle = data.title || this.pageTitle;
-    });
   }
 
   ngOnDestroy(): void {
