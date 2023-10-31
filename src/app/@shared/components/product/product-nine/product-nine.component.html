@@ -58,17 +58,18 @@
               <span class="old-price">{{ maxPrice.toFixed(2) | currency }}</span>
             </div>
             <ng-template #elseBlock>
-              <div class="product-price">{{minPrice.toFixed(2) | currency}}&ndash;{{maxPrice.toFixed(2) | currency}}</div>
+              <div class="product-price">{{minPrice.toFixed(2) | currency}}&ndash;{{maxPrice.toFixed(2) | currency}}
+              </div>
             </ng-template>
           </ng-template>
         </ng-template>
 
         <div class="ratings-container">
-          <!-- <div class="ratings">
+          <div *ngIf="product.ratings > 0" class="ratings">
             <div class="ratings-val" [style.width]="product.ratings * 20 + '%'"></div>
             <span class="tooltip-text">{{ product.ratings.toFixed(2) }}</span>
           </div>
-          <span class="ratings-text">( {{ product.review }} Reviews )</span> -->
+          <span *ngIf="product.review > 0" class="ratings-text">( {{ product.review }} Reviews )</span>
         </div>
 
         <div class="product-action">
