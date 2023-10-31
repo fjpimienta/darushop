@@ -47,8 +47,6 @@ export class BrandComponent implements OnInit {
     ])
       .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
       .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
-        // Obtener el título de la página actual a través de activeRoute.data
-        this.pageTitle = data.title || '';
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
@@ -86,7 +84,7 @@ export class BrandComponent implements OnInit {
       this.loaded = false;
       this.offer = false;
 
-      this.pageTitle = 'MARCA';
+      this.pageTitle = 'Marca';
       if (params.description) {
         this.pageTitle = params.description.toUpperCase();
       }
@@ -188,11 +186,7 @@ export class BrandComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.activeRoute.data.subscribe((data: { title: string }) => {
-      this.pageTitle = data.title || this.pageTitle;
-    });
-  }
+  ngOnInit(): void { }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
