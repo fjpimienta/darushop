@@ -63,15 +63,15 @@
     </ng-template>
     <div class="product-bra">
       <span *ngFor="let bra of product.brands; let i =index">
-        <a [routerLink]="['/products']" [queryParams]="{brand: bra.slug}">{{ bra.name }}</a>{{ i <
-          product.brands.length - 1 ? ',' : '' }}</span>
+        <a [routerLink]="['/products']" [queryParams]="{brand: bra.slug}">{{ bra.name }}</a>{{ i < product.brands.length
+          - 1 ? ',' : '' }}</span>
     </div>
     <div class="ratings-container">
-      <!-- <div class="ratings">
+      <div *ngIf="product.ratings > 0" class="ratings">
         <div class="ratings-val" [style.width]="product.ratings * 20 + '%'"></div>
         <span class="tooltip-text">{{ product.ratings.toFixed(2) }}</span>
       </div>
-      <span class="ratings-text">( {{ product.review }} Reviews )</span> -->
+      <span *ngIf="product.review > 0" class="ratings-text">( {{ product.review }} Reviews )</span>
     </div>
   </div>
 
