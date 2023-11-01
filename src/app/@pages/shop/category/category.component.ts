@@ -82,7 +82,7 @@ export class CategoryComponent implements OnInit {
         this.brands = params.brand.split(',');
       }
       this.categories = null;
-      this.pageTitle = 'Categor&iacute;a';
+      this.pageTitle = 'Categoría';
       if (Array.isArray(params.category)) {
         this.categories = params.category;
       } else {
@@ -95,7 +95,7 @@ export class CategoryComponent implements OnInit {
         if (params.subCategory) {
           this.subCategories = [];
           this.subCategories.push(params.subCategory);
-          this.pageTitle += ' SubCategor&iacute;a (' + params.subCategory.toUpperCase() + ')';
+          this.pageTitle += ' SubCategoría (' + params.subCategory.toUpperCase() + ')';
         }
       }
       this.page = params.page ? parseInt(params.page, 10) : 1;
