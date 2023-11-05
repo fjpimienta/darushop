@@ -49,8 +49,6 @@ export class ProductsComponent implements OnInit {
     ])
       .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
       .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
-        // Obtener el título de la página actual a través de activeRoute.data
-        this.pageTitle = data.title || '';
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
@@ -78,12 +76,11 @@ export class ProductsComponent implements OnInit {
     this.toggle = false;
     this.activeRoute.params.subscribe(params => {
       this.type = params.type;
+      this.pageTitle = 'Productos';
       if (this.type === 'boxed') {
-        this.pageTitle = 'Productos';
         this.containerClass = 'container';
         this.cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
       } else {
-        this.pageTitle = 'Productos';
         this.containerClass = 'container-fluid';
         this.cols = 'col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2';
       }
@@ -92,6 +89,9 @@ export class ProductsComponent implements OnInit {
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
       this.offer = false;
+
+      this.searchTerm = params.searchTerm || '';
+      this.orderBy = params.orderBy || '';
 
       if (params.description) {
         this.pageTitle = params.description;
@@ -156,7 +156,7 @@ export class ProductsComponent implements OnInit {
           this.products = utilsService.catFilter(this.products, category);
         }
         if (params.subCategory) {
-          category.push(params.subCategory);
+          subCategory.push(params.subCategory);
           this.products = utilsService.subCatFilter(this.products, subCategory);
         }
         if (this.orderBy) {
@@ -204,9 +204,6 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.activeRoute.data.subscribe((data: { title: string }) => {
-      this.pageTitle = data.title || this.pageTitle;
-    });
   }
 
   ngOnDestroy(): void {

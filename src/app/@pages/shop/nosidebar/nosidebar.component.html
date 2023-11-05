@@ -57,7 +57,7 @@
       <app-pagination [perPage]="perPage" [total]="totalCount" *ngIf="totalCount > perPage">
       </app-pagination>
 
-      <app-shop-sidebar-one [toggle]="true">
+      <app-shop-sidebar-one [toggle]="true" [products]="products">
       </app-shop-sidebar-one>
 
       <button class="sidebar-fixed-toggler d-lg-none" (click)="toggleSidebar()">
