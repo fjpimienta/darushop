@@ -2,10 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 
 import { shopData } from '../../data';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CategoriesService } from '@core/services/categorie.service';
-import { BrandsService } from '@core/services/brand.service';
 import { Catalog } from '@core/models/catalog.models';
-import { ProductsService } from '@core/services/products.service';
 import { BrandsGroupsService } from '@core/services/brandgroup.service';
 import { CategorysGroupsService } from '@core/services/categorygroup.service';
 
@@ -20,13 +17,12 @@ export class ShopSidebarOneComponent implements OnInit, OnChanges {
   @Input() toggle = false;
   @Input() products = [];
 
+  productsTmp = [];
   shopData = shopData;
   params = {};
   @Input() offer: boolean;
   brands: any[] = [];
   categories: Catalog[] = [];
-  brandsTmp: Catalog[] = [];
-  categoriesTmp: Catalog[] = [];
   searchQuery: string = '';
   searchQueryCat: string = '';
 
@@ -42,6 +38,7 @@ export class ShopSidebarOneComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.productsTmp = this.products;
     this.brands = [];
     this.brands = this.extractUniqueBrands();
     this.brands = this.formatBrandsForHTML(this.brands);
@@ -58,7 +55,7 @@ export class ShopSidebarOneComponent implements OnInit, OnChanges {
   extractUniqueBrands(): string[] {
     const uniqueBrands: string[] = [];
     // Recorre la lista de productos y agrega las marcas únicas a uniqueBrands
-    for (const product of this.products) {
+    for (const product of this.productsTmp) {
       for (const brand of product.brands) {
         if (!uniqueBrands.includes(brand.name.toUpperCase())) {
           uniqueBrands.push(brand.name.toUpperCase());
