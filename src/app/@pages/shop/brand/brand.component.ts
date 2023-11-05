@@ -120,7 +120,13 @@ export class BrandComponent implements OnInit {
       }
       this.perPage = 48;
       this.productService.getProducts(
-        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+        this.page,
+        this.perPage,
+        this.searchTerm.toLowerCase(),
+        this.offer,
+        this.brands,
+        this.categories,
+        this.subCategories
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
