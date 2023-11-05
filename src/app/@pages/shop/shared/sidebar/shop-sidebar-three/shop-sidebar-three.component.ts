@@ -17,12 +17,11 @@ export class ShopSidebarThreeComponent implements OnInit, OnChanges {
   @Input() toggle = false;
   @Input() products = [];
 
+  productsTmp = [];
   shopData = shopData;
   params = {};
   brands: any[] = [];
   categories: Catalog[] = [];
-  brandsTmp: Catalog[] = [];
-  categoriesTmp: Catalog[] = [];
   searchQuery: string = '';
   searchQueryCat: string = '';
   offer: boolean;
@@ -40,6 +39,7 @@ export class ShopSidebarThreeComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.productsTmp = this.products;
     this.brands = [];
     this.brands = this.extractUniqueBrands();
     this.brands = this.formatBrandsForHTML(this.brands);
@@ -56,7 +56,7 @@ export class ShopSidebarThreeComponent implements OnInit, OnChanges {
   extractUniqueBrands(): string[] {
     const uniqueBrands: string[] = [];
     // Recorre la lista de productos y agrega las marcas únicas a uniqueBrands
-    for (const product of this.products) {
+    for (const product of this.productsTmp) {
       for (const brand of product.brands) {
         if (!uniqueBrands.includes(brand.name.toUpperCase())) {
           uniqueBrands.push(brand.name.toUpperCase());
