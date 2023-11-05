@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { shopData } from '../../data';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,13 +12,14 @@ import { CategorysGroupsService } from '@core/services/categorygroup.service';
   styleUrls: ['./shop-sidebar-three.component.scss']
 })
 
-export class ShopSidebarThreeComponent implements OnInit {
+export class ShopSidebarThreeComponent implements OnInit, OnChanges {
 
   @Input() toggle = false;
+  @Input() products = [];
 
   shopData = shopData;
   params = {};
-  brands: Catalog[] = [];
+  brands: any[] = [];
   categories: Catalog[] = [];
   brandsTmp: Catalog[] = [];
   categoriesTmp: Catalog[] = [];
@@ -39,34 +40,43 @@ export class ShopSidebarThreeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadCategoriesAndBrands();
-  }
-
-  private loadCategoriesAndBrands(): void {
     this.brands = [];
-    this.categories = [];
-    this.brandsTmp = [];
-    this.categoriesTmp = [];
-    this.categorysgroupService.getCategorysGroup().subscribe(result => {
-      this.categories = result.categorysgroups.map(category => this.mapCatalog(category));
-      this.sortCatalogs(this.categories);
-      this.categoriesTmp = [...this.categories]; // Copiar datos originales
-    });
-
-    this.brandsGroupsService.getBrandsGroup().subscribe(result => {
-      this.brands = result.brandsgroups.map(group => this.mapCatalog(group));
-      this.sortCatalogs(this.brands);
-      this.brandsTmp = [...this.brands]; // Copiar datos originales
-    });
+    this.brands = this.extractUniqueBrands();
+    this.brands = this.formatBrandsForHTML(this.brands);
   }
 
-  private mapCatalog(data: any): Catalog {
-    const catalog = new Catalog();
-    catalog.id = data._id[0].slug;
-    catalog.slug = data._id[0].slug;
-    catalog.description = data._id[0].name.toUpperCase().slice(0, 32);
-    catalog.total = data.total;
-    return catalog;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.products) {
+      // La propiedad 'products' ha cambiado, realiza lo que necesites aquí
+      this.brands = this.extractUniqueBrands();
+      this.brands = this.formatBrandsForHTML(this.brands);
+    }
+  }
+
+  extractUniqueBrands(): string[] {
+    const uniqueBrands: string[] = [];
+    // Recorre la lista de productos y agrega las marcas únicas a uniqueBrands
+    for (const product of this.products) {
+      for (const brand of product.brands) {
+        if (!uniqueBrands.includes(brand.name.toUpperCase())) {
+          uniqueBrands.push(brand.name.toUpperCase());
+        }
+      }
+    }
+    return uniqueBrands;
+  }
+
+  formatBrandsForHTML(brands: string[]): any[] {
+    const formattedBrands: any[] = [];
+    // Formatea las marcas en el formato deseado para tu HTML
+    for (const brand of brands) {
+      formattedBrands.push({
+        name: brand,
+        slug: brand.toLowerCase().replace(' ', '-'),
+        description: brand // Puedes ajustar esta parte si la descripción es diferente
+      });
+    }
+    return formattedBrands;
   }
 
   private sortCatalogs(catalogs: Catalog[]): void {
