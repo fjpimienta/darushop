@@ -6,7 +6,7 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a [attr.href]="previousPageUrl" [innerHTML]="previousPageTitle"></a>
+          <a [routerLink]="[]" [queryParams]="queryParams" [innerHTML]="previousPageTitle"></a>
         </li>
         <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
