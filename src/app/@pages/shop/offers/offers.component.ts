@@ -27,6 +27,7 @@ export class OffersComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   toggle = false;
   searchTerm = '';
   loaded = false;
@@ -77,6 +78,7 @@ export class OffersComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.activeRoute.params.subscribe(params => {

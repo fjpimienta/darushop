@@ -12,6 +12,7 @@ export class TermsComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -45,6 +46,7 @@ export class TermsComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
   }

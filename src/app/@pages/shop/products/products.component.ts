@@ -22,6 +22,7 @@ export class ProductsComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   searchTerm = '';
   containerClass = 'container';
   cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
@@ -68,6 +69,7 @@ export class ProductsComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.activeRoute.params.subscribe(params => {
