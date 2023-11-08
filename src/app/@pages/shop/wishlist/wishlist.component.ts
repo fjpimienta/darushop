@@ -23,6 +23,7 @@ export class WishlistComponent implements OnInit, OnDestroy {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -57,6 +58,7 @@ export class WishlistComponent implements OnInit, OnDestroy {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.activeRoute.params.subscribe(params => {

@@ -21,6 +21,7 @@ export class BrandComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   searchTerm = '';
   containerClass = 'container';
   cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
@@ -50,6 +51,7 @@ export class BrandComponent implements OnInit {
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
+          console.log('navigation?.previousNavigation: ', navigation?.previousNavigation);
           const url = navigation.previousNavigation.finalUrl.toString();
           const firstSlashIndex = url.indexOf('/');
           const questionMarkIndex = url.indexOf('?');
@@ -66,6 +68,7 @@ export class BrandComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.toggle = false;
