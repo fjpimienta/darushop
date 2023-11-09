@@ -53,9 +53,13 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
     this.brandsGroupsService.getBrandsGroup().subscribe(result => {
       this.brands = result.brandsgroups.map(group => this.mapCatalog(group));
-      this.sortCatalogs(this.brands);
+      this.sortCatalogsByTotal(this.brands);
       this.brandsTmp = [...this.brands]; // Copiar datos originales
     });
+  }
+
+  sortCatalogsByTotal(catalogs) {
+    catalogs.sort((a, b) => b.total - a.total); // Ordenar de mayor a menor por el campo "total"
   }
 
   private mapCatalog(data: any): Catalog {
