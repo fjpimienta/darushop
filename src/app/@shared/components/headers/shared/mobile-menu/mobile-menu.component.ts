@@ -104,6 +104,12 @@ export class MobileMenuComponent implements OnInit, OnDestroy {
     e.preventDefault();
     this.searchTerm = e.currentTarget.querySelector('.form-control').value;
     this.router.navigate(['/products'], { queryParams: { searchTerm: this.searchTerm } });
+    this.searchTerm = '';
+    // Restablece el valor del campo de entrada a una cadena vacía
+    const inputElement: any = document.getElementById('searchTerm');
+    if (inputElement) {
+      inputElement.value = '';
+    }
   }
 
   searchBrands(event: any): void {
