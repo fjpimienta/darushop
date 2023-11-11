@@ -22,6 +22,9 @@ export class ProductsService extends ApiService {
     categories: string[] = null,
     subCategories: string[] = null
   ) {
+    if (filterName.toLowerCase().endsWith('s')) {
+      filterName = filterName.slice(0, -1);
+    }
     return this.get(PRODUCTS_LIST_QUERY, {
       itemsPage, page, filterName, offer, brands, categories, subCategories
     }).pipe(map((result: any) => {
