@@ -50,6 +50,8 @@ import { AddressOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@
 import * as crypto from 'crypto-js';
 import { CuponsService } from '@core/services/cupon.service';
 import { ICatalog } from '@core/interfaces/catalog.interface';
+import { InvoiceConfigsService } from '@core/services/invoiceconfig.service';
+import { FormaPago, InvoiceConfig, InvoiceConfigInput, MetodoPago, RegimenFiscal, UsoCFDI } from '@core/models/invoiceConfig.models';
 
 declare var $: any;
 declare var OpenPay: any
@@ -66,6 +68,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   formData: FormGroup;
   formDataCard: FormGroup;
+  formDataInvoice: FormGroup;
   cartItems: CartItem[] = [];
   cartItemsChanges: CartItem[] = [];
   countrys: Country[];
@@ -139,8 +142,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   deviceDataId: string = '';
   orderUniqueId: string = '';
+  nombreTarjeta: string = '';
   numeroTarjetaFormateado: string = '';
   numeroClabeFormateada: string = '';
+  nameCard: string = '';
+  lastNameCard: string = '';
   bankName: string;
 
   loaded = false;
@@ -150,6 +156,24 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   commonBranchOffices: Set<string> = new Set<string>();
 
   isChecked: boolean = false; // Inicialmente desactivado
+
+  showFacturacion: boolean = false;
+  invoiceConfigs: InvoiceConfig[] = [];
+  invoceConfigInput: InvoiceConfigInput = new InvoiceConfigInput();
+  rfc: string = '';
+  codigoPostalInvoice: string = '';
+  nombres: string = '';
+  apellidos: string = '';
+  formaPago: FormaPago;
+  formaPagos: FormaPago[];
+  metodoPago: MetodoPago;
+  metodoPagos: MetodoPago[];
+  regimenFiscal: RegimenFiscal;
+  regimenFiscales: RegimenFiscal[];
+  usoCFDI: UsoCFDI;
+  usoCFDIs: UsoCFDI[];
+  esPersonaMoral: Boolean = false;
+  rfcLength: number = 13;
 
   constructor(
     private router: Router,
@@ -170,7 +194,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public shippingsService: ShippingsService,
     public deliverysService: DeliverysService,
     public chargeOpenpayService: ChargeOpenpayService,
-    public cuponsService: CuponsService
+    public cuponsService: CuponsService,
+    public invoiceConfigsService: InvoiceConfigsService
   ) {
     try {
       this.activeRoute.queryParams.subscribe(params => {
@@ -260,6 +285,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     const deliveryId = this.generarNumeroAleatorioEncriptado();
                     // Generar Orden de Compra con Proveedores
                     const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
+                    return await null;
                     // Registrar Pedido en DARU.
                     OrderSupplier.cliente = OrderSupplier.user.email;
                     OrderSupplier.discount = parseFloat(this.discount);
@@ -335,6 +361,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.existeMetodoPago = false;
       this.existePaqueteria = false;
 
+      this.formaPago = new FormaPago();
+      this.metodoPago = new MetodoPago();
+      this.regimenFiscal = new RegimenFiscal();
+      this.usoCFDI = new UsoCFDI();
+
       this.authService.start();
 
       this.subscr = this.cartService.cartStream.subscribe(items => {
@@ -362,6 +393,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         existeMetodoPago: [false],
         existePaqueteria: [false],
         token_id: ['']
+      });
+
+      this.formDataInvoice = this.formBuilder.group({
+        rfc: ['', [Validators.required, this.validarLongitudRFC]],
+        codigoPostalInvoice: ['', [Validators.required, Validators.pattern(/^\d{4,5}$/)]],
+        nombres: ['', Validators.required],
+        apellidos: ['', Validators.required],
+        formaPago: ['04', Validators.required],
+        metodoPago: ['PUE', Validators.required],
+        regimenFiscal: ['612', Validators.required],
+        usoCFDI: ['G03', Validators.required],
       });
 
       // Obtiene los datos de la sesión
@@ -435,6 +477,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+      // Para las facturas.
+      this.invoiceConfigsService.getInvoiceConfig().then(async result => {
+        this.formaPagos = result.formaPago;
+        this.metodoPagos = result.metodoPago;
+        this.regimenFiscales = result.regimenFiscal;
+        this.usoCFDIs = result.usoCFDI;
+        console.log('result: ', result);
+      });
+
       this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
       OpenPay.setId('mbhvpztgt3rqse7zvxrc');
       OpenPay.setApiKey('pk_411efcdb08c148ceb97b36f146e42beb');
@@ -450,6 +502,60 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.log('error: ', error);
     }
+  }
+
+  onAsignarNombres(event) {
+    const nombres = $(event.target).val();
+    const apellidos = this.formData.controls.lastname.value;
+    const holderName = document.getElementById('holder_name') as HTMLInputElement;
+    if (holderName) {
+      holderName.value = nombres + ' ' + apellidos;
+      this.nameCard = nombres;
+      this.lastNameCard = apellidos;
+      this.formDataInvoice.controls.nombres.setValue(nombres);
+      this.formDataInvoice.controls.apellidos.setValue(apellidos);
+    }
+  }
+
+  onAsignarApellidos(event) {
+    const nombres = this.formData.controls.name.value;
+    const apellidos = $(event.target).val();
+    const holderName = document.getElementById('holder_name') as HTMLInputElement;
+    if (holderName) {
+      holderName.value = nombres + ' ' + apellidos;
+      this.nameCard = nombres;
+      this.lastNameCard = apellidos;
+      this.formDataInvoice.controls.nombres.setValue(nombres);
+      this.formDataInvoice.controls.apellidos.setValue(apellidos);
+    }
+  }
+
+  onAsignarNombresCard(event) {
+    const nombres = $(event.target).val();
+    const holderName = document.getElementById('holder_name') as HTMLInputElement;
+    if (holderName) {
+      holderName.value = nombres + ' ' + this.lastNameCard;
+      this.formDataInvoice.controls.nombres.setValue(nombres);
+      this.formDataInvoice.controls.apellidos.setValue(this.lastNameCard);
+    }
+  }
+
+  onAsignarApellidosCard(event) {
+    const apellidos = $(event.target).val();
+    const holderName = document.getElementById('holder_name') as HTMLInputElement;
+    if (holderName) {
+      holderName.value = this.nameCard + ' ' + apellidos;
+      this.formDataInvoice.controls.nombres.setValue(this.nameCard);
+      this.formDataInvoice.controls.apellidos.setValue(apellidos);
+    }
+  }
+
+  validarLongitudRFC(control) {
+    const rfc = control.value?.trim();
+    if (rfc && (rfc.length === 12 || rfc.length === 13)) {
+      return null;
+    }
+    return { longitudInvalida: true };
   }
 
   // Función de validación personalizada para la CLABE
@@ -746,6 +852,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     register.addresses = [];
     register.addresses.push(address);
     return register;
+  }
+
+  onSetInvoiceConfig(formData: FormGroup): InvoiceConfigInput {
+    console.log('formData: ', formData);
+    const invoice = new InvoiceConfigInput();
+    invoice.nombres = formData.controls.nombres.value;
+    invoice.apellidos = formData.controls.apellidos.value;
+    invoice.rfc = formData.controls.rfc.value;
+    invoice.codigoPostalConfig = formData.controls.codigoPostalConfig.value;;
+    invoice.formaPago = this.formaPago;
+    invoice.metodoPago = this.metodoPago;
+    invoice.regimenFiscal = this.regimenFiscal;
+    invoice.usoCFDI = this.usoCFDI;
+    console.log('invoice: ', invoice);
+    return invoice;
   }
 
   async onSetCps(event): Promise<void> {
@@ -1234,6 +1355,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   convertToUppercase(event: any) {
+    let inputValue = event.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+    event.target.value = inputValue;
+  }
+
+  convertToUppercaseRFC(event: any) {
+    let inputValue = event.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    event.target.value = inputValue;
+  }
+
+  convertToUppercaseCupon(event: any) {
     let inputValue = event.target.value.toUpperCase();
     // Eliminar caracteres no válidos
     inputValue = inputValue.replace(/[^A-Z0-9]/g, '');
@@ -1272,6 +1403,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onHabilitaPago(payMent: string): Promise<void> {
     this.typePay = payMent;
     this.existeMetodoPago = true;
+  }
+
+  onHabilitarFactura() {
+
   }
 
   onActiveCP(byCodigopostal: boolean = false): void {
@@ -1463,8 +1598,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async payOpenpaySpei(orderUniqueId: string): Promise<any> {
-    const holder_name = this.formData.controls.name.value + ' ' + this.formData.controls.lastname.value;
-
     const totalCharge = parseFloat(this.totalPagar);
 
     const charge: ChargeOpenpayInput = new ChargeOpenpayInput();
@@ -1477,8 +1610,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
     customer.external_id = orderUniqueId;
     customer.name = this.formData.controls.name.value;
-    customer.last_name = this.formData.controls.lastname.value;
-    customer.email = this.formData.controls.email.value;
+    // customer.last_name = this.formData.controls.lastname.value;
+    // customer.email = this.formData.controls.email.value;
     customer.phone_number = this.formData.controls.phone.value;
     customer.clabe = "";
 
@@ -1615,6 +1748,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.statusError = false;
     delivery.messageError = '';
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+    delivery.invoiceConfig = this.onSetInvoiceConfig(this.formDataInvoice);
+    console.log('delivery: ', delivery);
+
     delivery.warehouses = this.warehouses;
     const ordersCt: OrderCt[] = [];
     let orderCtResponse: OrderCtResponse = new OrderCtResponse();
@@ -1693,6 +1829,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const confirmarPedidoCva = [];
             break;
         }
+        // Agregar datos de facturas
         if (orderCtResponse.errores) {
           if (orderCtResponse.errores.length > 0) {
             delivery.statusError = true;
@@ -1932,6 +2069,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // TODO Realizar la confirmacion manual.
     }
     return await [];
+  }
+  //#endregion
+
+  //#region Facturas
+  onChangeRegimenFiscal(event: any) {
+    const idRf = event.target.value.split(':', 2)[1].trim();
+    const regFis = this.regimenFiscales.find(item => item.id.trim() === idRf);
+    this.esPersonaMoral = regFis?.moral === 'Sí' ?? false;
+    this.rfcLength = this.esPersonaMoral ? 12 : 13;
+    this.formDataInvoice.controls.apellidos.setValue('');
+    this.formDataInvoice.controls.nombres.setValue('');
+    this.formDataInvoice.controls.codigoPostalInvoice.setValue('');
+    this.formDataInvoice.controls.rfc.setValue('');
   }
   //#endregion
 
