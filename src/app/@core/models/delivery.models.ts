@@ -1,4 +1,5 @@
 import { Catalog } from './catalog.models';
+import { InvoiceConfig, InvoiceConfigInput } from './invoiceConfig.models';
 import { OrderCt } from './suppliers/orderct.models';
 import { OrderCtConfirmResponse, OrderCtResponse } from './suppliers/orderctresponse.models';
 import { OrderCva } from './suppliers/ordercva.models';
@@ -24,6 +25,7 @@ export class Delivery {
   orderCtResponse?: OrderCtResponse;
   orderCtConfirmResponse?: OrderCtConfirmResponse;
   orderCvaResponse?: OrderCvaResponse;
+  invoiceConfig: InvoiceConfigInput;
   statusError: boolean;
   messageError: string;
 }

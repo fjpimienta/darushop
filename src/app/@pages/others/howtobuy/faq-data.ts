@@ -22,7 +22,7 @@ const card4: Card = {
 
 const card5: Card = {
   title: '¿Puedo agregar más productos a mi carrito de compras?',
-  body: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.'
+  body: 'Si aún no has terminado, puedes grega más productos a tu carrito para aprovechar al máximo tu compra. Puedes agregar tantos productos como necesites. Solo busca, encuentra y compra.'
 };
 
 const card6: Card = {
