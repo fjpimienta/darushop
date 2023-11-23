@@ -229,22 +229,26 @@ a.button.disabled {
 
 .pymnt-cntnt div.sctn-row {
   margin: 5px 30px 0;
-  width: 370px;
+  width: 400px;
 }
 
 .pymnt-cntnt div.sctn-row div.sctn-col {
-  width: 345px;
+  width: 370px;
 }
 
 .pymnt-cntnt div.sctn-row div.sctn-col.l {
-  width: 395px;
+  width: 400px;
 }
 
 .pymnt-cntnt div.sctn-row div.sctn-col input {
-  width: 303px;
+  width: 369px;
 }
 
 .pymnt-cntnt div.sctn-row div.sctn-col.half {
+  width: 180px;
+}
+
+.pymnt-cntnt div.sctn-row div.sctn-col.quart {
   width: 155px;
 }
 
@@ -254,6 +258,10 @@ a.button.disabled {
 }
 
 .pymnt-cntnt div.sctn-row div.sctn-col.half input {
+  width: 180px;
+}
+
+.pymnt-cntnt div.sctn-row div.sctn-col.quart input{
   width: 113px;
 }
 
