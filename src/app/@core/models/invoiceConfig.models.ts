@@ -2,7 +2,7 @@ export class InvoiceConfigInput {
   nombres: String
   apellidos: String
   rfc: String
-  codigoPostalConfig: String
+  codigoPostal: String
   formaPago: FormaPago
   metodoPago: MetodoPago
   regimenFiscal: RegimenFiscal

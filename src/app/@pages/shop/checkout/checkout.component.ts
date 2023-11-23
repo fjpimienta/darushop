@@ -860,7 +860,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     invoice.nombres = formData.controls.nombresInvoice.value;
     invoice.apellidos = formData.controls.apellidos.value;
     invoice.rfc = formData.controls.rfc.value;
-    invoice.codigoPostalConfig = formData.controls.codigoPostalConfig.value;;
+    invoice.codigoPostal = formData.controls.codigoPostalInvoice.value;;
     invoice.formaPago = this.formaPago;
     invoice.metodoPago = this.metodoPago;
     invoice.regimenFiscal = this.regimenFiscal;
@@ -1702,15 +1702,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
         console.log('ciudadesCVA: ', ciudadesCVA);
         console.log('dir: ', dir);
+        let estado;
+        let ciudad;
         console.log('this.quitarAcentos(dir.d_estado.toUpperCase()): ', this.quitarAcentos(dir.d_estado.toUpperCase()));
-        const estado = ciudadesCVA.find(
-          city => this.quitarAcentos(city.estado.toUpperCase()) === this.quitarAcentos(dir.d_estado.toUpperCase())
-        ).id;
-        console.log('estado: ', estado);
-        const ciudad = ciudadesCVA.find(
-          city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()
-        ).clave;
-        console.log('estado: ', estado);
+        if (ciudadesCVA.length > 0) {
+          estado = ciudadesCVA.find(
+            result => this.quitarAcentos(result.estado.toUpperCase()) === this.quitarAcentos(dir.d_estado.toUpperCase())
+          ).id;
+          console.log('estado: ', estado);
+          ciudad = ciudadesCVA.find(
+            city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()
+          ).clave;
+          console.log('estado: ', estado);
+        }
         const orderCvaSupplier: OrderCva = {
           NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
           Paqueteria: '4',
