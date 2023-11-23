@@ -36,7 +36,7 @@
                 <div class="col-sm-6 form-group">
                   <label>Nombre(s) *</label>
                   <input type="text" class="form-control" name="nombres" formControlName="name"
-                    (blur)="onAsignarNombres($event)" required>
+                    (input)="convertToUppercase($event)" (blur)="onAsignarNombres($event)" required>
                   <div class="alert alert-danger"
                     *ngIf="formData.get('name').invalid && (formData.get('name').dirty || formData.get('name').touched)">
                     <div *ngIf="formData.get('name').hasError('required')">El nombre es requerido.</div>
@@ -46,7 +46,7 @@
                 <div class="col-sm-6 form-group">
                   <label>Apellido(s) *</label>
                   <input type="text" class="form-control" name="lastname" formControlName="lastname"
-                    (blur)="onAsignarApellidos($event)" required>
+                    (input)="convertToUppercase($event)" (blur)="onAsignarApellidos($event)" required>
                   <div class="alert alert-danger"
                     *ngIf="formData.get('lastname').invalid && (formData.get('lastname').dirty || formData.get('lastname').touched)">
                     <div *ngIf="formData.get('lastname').hasError('required')">El apellido es requerido.</div>
@@ -306,10 +306,10 @@
                                   <div class="sctn-row">
                                     <div class="sctn-col l">
                                       <label>Fecha de expiración</label>
-                                      <div class="sctn-col half l"><input type="text" placeholder="Mes"
+                                      <div class="sctn-col quart"><input type="text" placeholder="Mes"
                                           data-openpay-card="expiration_month" maxlength="2"
                                           (input)="bloquearLetras($event)"></div>
-                                      <div class="sctn-col half l"><input type="text" placeholder="Año"
+                                      <div class="sctn-col quart"><input type="text" placeholder="Año"
                                           data-openpay-card="expiration_year" maxlength="2"
                                           (input)="bloquearLetras($event)"></div>
                                     </div>
@@ -454,13 +454,13 @@
                       <div *ngIf="!esPersonaMoral" class="row">
                         <div class="col-6">
                           <label>Nombre(s)</label>
-                          <input type="text" class="form-control" name="nombres" formControlName="nombres"
+                          <input type="text" class="form-control" name="nombresInvoice" formControlName="nombresInvoice"
                             (input)="convertToUppercase($event)" required>
                           <div class="alert alert-danger"
-                            *ngIf="formDataInvoice.get('nombres').invalid && (formDataInvoice.get('nombres').dirty || formDataInvoice.get('nombres').touched)">
-                            <div *ngIf="formDataInvoice.get('nombres').hasError('required')">El nombre es
+                            *ngIf="formDataInvoice.get('nombresInvoice').invalid && (formDataInvoice.get('nombresInvoice').dirty || formDataInvoice.get('nombresInvoice').touched)">
+                            <div *ngIf="formDataInvoice.get('nombresInvoice').hasError('required')">El nombre es
                               requerido.</div>
-                            <div *ngIf="formDataInvoice.get('nombres').hasError('nombres')">Teclear un
+                            <div *ngIf="formDataInvoice.get('nombresInvoice').hasError('nombresInvoice')">Teclear un
                               nombre correcto.
                             </div>
                           </div>
@@ -481,12 +481,13 @@
                       <div *ngIf="esPersonaMoral" class="row">
                         <div class="col-12">
                           <label>Nombre de la Empresa</label>
-                          <input type="text" class="form-control" name="nombres" formControlName="nombres" required>
+                          <input type="text" class="form-control" name="nombreEmpresa" formControlName="nombreEmpresa"
+                            required>
                           <div class="alert alert-danger"
-                            *ngIf="formDataInvoice.get('nombres').invalid && (formDataInvoice.get('nombres').dirty || formDataInvoice.get('nombres').touched)">
-                            <div *ngIf="formDataInvoice.get('nombres').hasError('required')">El nombre es
+                            *ngIf="formDataInvoice.get('nombreEmpresa').invalid && (formDataInvoice.get('nombreEmpresa').dirty || formDataInvoice.get('nombreEmpresa').touched)">
+                            <div *ngIf="formDataInvoice.get('nombreEmpresa').hasError('required')">El nombre es
                               requerido.</div>
-                            <div *ngIf="formDataInvoice.get('nombres').hasError('nombres')">Teclear un
+                            <div *ngIf="formDataInvoice.get('nombreEmpresa').hasError('nombreEmpresa')">Teclear un
                               nombre correcto.
                             </div>
                           </div>

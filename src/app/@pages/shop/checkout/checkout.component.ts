@@ -398,7 +398,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.formDataInvoice = this.formBuilder.group({
         rfc: ['', [Validators.required, this.validarLongitudRFC]],
         codigoPostalInvoice: ['', [Validators.required, Validators.pattern(/^\d{4,5}$/)]],
-        nombres: ['', Validators.required],
+        nombresInvoice: ['', Validators.required],
         apellidos: ['', Validators.required],
         formaPago: ['04', Validators.required],
         metodoPago: ['PUE', Validators.required],
@@ -506,26 +506,26 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   onAsignarNombres(event) {
     const nombres = $(event.target).val();
-    const apellidos = this.formData.controls.lastname.value;
+    const apellidos = this.formData.controls.lastname.value.toUpperCase();
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
       holderName.value = nombres + ' ' + apellidos;
       this.nameCard = nombres;
       this.lastNameCard = apellidos;
-      this.formDataInvoice.controls.nombres.setValue(nombres);
+      this.formDataInvoice.controls.nombresInvoice.setValue(nombres);
       this.formDataInvoice.controls.apellidos.setValue(apellidos);
     }
   }
 
   onAsignarApellidos(event) {
-    const nombres = this.formData.controls.name.value;
+    const nombres = this.formData.controls.name.value.toUpperCase();
     const apellidos = $(event.target).val();
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
       holderName.value = nombres + ' ' + apellidos;
       this.nameCard = nombres;
       this.lastNameCard = apellidos;
-      this.formDataInvoice.controls.nombres.setValue(nombres);
+      this.formDataInvoice.controls.nombresInvoice.setValue(nombres);
       this.formDataInvoice.controls.apellidos.setValue(apellidos);
     }
   }
@@ -535,7 +535,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
       holderName.value = nombres + ' ' + this.lastNameCard;
-      this.formDataInvoice.controls.nombres.setValue(nombres);
+      this.formDataInvoice.controls.nombresInvoice.setValue(nombres);
       this.formDataInvoice.controls.apellidos.setValue(this.lastNameCard);
     }
   }
@@ -545,7 +545,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
       holderName.value = this.nameCard + ' ' + apellidos;
-      this.formDataInvoice.controls.nombres.setValue(this.nameCard);
+      this.formDataInvoice.controls.nombresInvoice.setValue(this.nameCard);
       this.formDataInvoice.controls.apellidos.setValue(apellidos);
     }
   }
@@ -857,7 +857,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   onSetInvoiceConfig(formData: FormGroup): InvoiceConfigInput {
     console.log('formData: ', formData);
     const invoice = new InvoiceConfigInput();
-    invoice.nombres = formData.controls.nombres.value;
+    invoice.nombres = formData.controls.nombresInvoice.value;
     invoice.apellidos = formData.controls.apellidos.value;
     invoice.rfc = formData.controls.rfc.value;
     invoice.codigoPostalConfig = formData.controls.codigoPostalConfig.value;;
@@ -1516,8 +1516,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   // Método para formatear la CLABE bancaria
   formatearCLABE(clabeSinFormato: string) {
     // Remover los espacios en blanco y guiones de la CLABE sin formato
@@ -2079,7 +2077,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.esPersonaMoral = regFis?.moral === 'Sí' ?? false;
     this.rfcLength = this.esPersonaMoral ? 12 : 13;
     this.formDataInvoice.controls.apellidos.setValue('');
-    this.formDataInvoice.controls.nombres.setValue('');
+    this.formDataInvoice.controls.nombresInvoice.setValue('');
     this.formDataInvoice.controls.codigoPostalInvoice.setValue('');
     this.formDataInvoice.controls.rfc.setValue('');
   }
