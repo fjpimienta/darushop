@@ -276,8 +276,7 @@ export const DELIVERY_FRAGMENT = gql`
         agentemail
         almacenmail
       }
-      invoiceconfig {
-        id
+      invoiceConfig {
         nombres
         apellidos
         rfc
