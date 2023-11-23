@@ -399,157 +399,164 @@
                       </div>
                     </div>
                   </div>
-
                 </app-accordion>
 
                 <!-- Para Facturacion -->
-                <app-accordion adClass="accordion-rounded accordion-plus" accordionID="accordion-1">
-                  <app-card adClass="card-box card-sm bg-light" title="Facturación" parent="accordion-1" [show]="false">
-                    <form [formGroup]="formDataInvoice">
-                      <div class="row">
-                        <div class="col-12">
-                          <label>Regimen Fiscal</label>
-                          <select *ngIf="!this.idDelivery" class="form-control" name="regimenFiscal" required
-                            formControlName="regimenFiscal" (change)="onChangeRegimenFiscal($event)">
-                            <option [ngValue]="''" [selected]="'' == regimenFiscal.id">Elije el Regimen Fiscal</option>
-                            <option *ngFor="let regimenFiscal of regimenFiscales" [ngValue]="regimenFiscal.id">
-                              ({{regimenFiscal.id}})-{{regimenFiscal.descripcion}}
-                            </option>
-                          </select>
-                          <select *ngIf="this.idDelivery" class="form-control" name="regimenFiscal" required
-                            formControlName="regimenFiscal" [attr.disabled]="true">
-                            <option [ngValue]="regimenFiscal.id" [selected]="'' == regimenFiscal.id">
-                              ({{regimenFiscal.id}})-{{regimenFiscal.descripcion}}
-                            </option>
-                          </select>
-                        </div>
+                <div class="row">
+                  <div class="col-12">
+                    <!-- Nuevo título con checkbox -->
+                    <label>
+                      <input type="checkbox" (change)="showFacturacion = !showFacturacion"
+                        [checked]="showFacturacion" />
+                      Facturación
+                    </label>
+                  </div>
+                </div>
+                <app-card adClass="card-box card-sm bg-light" title="Datos Fiscales" [show]="showFacturacion">
+                  <form [formGroup]="formDataInvoice">
+                    <div class="row">
+                      <div class="col-12">
+                        <label>Regimen Fiscal</label>
+                        <select *ngIf="!this.idDelivery" class="form-control" name="regimenFiscal" required
+                          formControlName="regimenFiscal" (change)="onChangeRegimenFiscal($event)">
+                          <option [ngValue]="''" [selected]="'' == regimenFiscal.id">Elije el Regimen Fiscal</option>
+                          <option *ngFor="let regimenFiscal of regimenFiscales" [ngValue]="regimenFiscal.id">
+                            ({{regimenFiscal.id}})-{{regimenFiscal.descripcion}}
+                          </option>
+                        </select>
+                        <select *ngIf="this.idDelivery" class="form-control" name="regimenFiscal" required
+                          formControlName="regimenFiscal">
+                          <option [ngValue]="regimenFiscal.id" [selected]="'' == regimenFiscal.id">
+                            ({{regimenFiscal.id}})-{{regimenFiscal.descripcion}}
+                          </option>
+                        </select>
                       </div>
-                      <div class="row">
-                        <div class="col-7">
-                          <label>RFC</label>
-                          <input type="text" class="form-control" name="rfc" formControlName="rfc" required
-                            [maxlength]="rfcLength" (input)="convertToUppercaseRFC($event)">
-                          <div class="alert alert-danger"
-                            *ngIf="formDataInvoice.get('rfc').invalid && (formDataInvoice.get('rfc').dirty || formDataInvoice.get('rfc').touched)">
-                            <div *ngIf="formDataInvoice.get('rfc').hasError('required')">El RFC es requerido.</div>
-                            <div *ngIf="formDataInvoice.get('rfc').hasError('rfc')">Teclear un RFC correcto.
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-5">
-                          <label>CP</label>
-                          <input type="text" class="form-control" name="codigoPostalInvoice"
-                            formControlName="codigoPostalInvoice" autocomplete="off" (input)="bloquearLetras($event)"
-                            maxlength="5" required>
-                          <div class="alert alert-danger"
-                            *ngIf="formDataInvoice.get('codigoPostalInvoice').invalid && (formDataInvoice.get('codigoPostalInvoice').dirty || formDataInvoice.get('codigoPostalInvoice').touched)">
-                            <div *ngIf="formDataInvoice.get('codigoPostalInvoice').hasError('required')">CP requerido.
-                            </div>
-                            <div *ngIf="formDataInvoice.get('codigoPostalInvoice').hasError('codigoPostalInvoice')">
-                              Corregir CP.
-                            </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-7">
+                        <label>RFC</label>
+                        <input type="text" class="form-control" name="rfc" formControlName="rfc" required
+                          [maxlength]="rfcLength" (input)="convertToUppercaseRFC($event)">
+                        <div class="alert alert-danger"
+                          *ngIf="formDataInvoice.get('rfc').invalid && (formDataInvoice.get('rfc').dirty || formDataInvoice.get('rfc').touched)">
+                          <div *ngIf="formDataInvoice.get('rfc').hasError('required')">El RFC es requerido.</div>
+                          <div *ngIf="formDataInvoice.get('rfc').hasError('rfc')">Teclear un RFC correcto.
                           </div>
                         </div>
                       </div>
-                      <div *ngIf="!esPersonaMoral" class="row">
-                        <div class="col-6">
-                          <label>Nombre(s)</label>
-                          <input type="text" class="form-control" name="nombresInvoice" formControlName="nombresInvoice"
-                            (input)="convertToUppercase($event)" required>
-                          <div class="alert alert-danger"
-                            *ngIf="formDataInvoice.get('nombresInvoice').invalid && (formDataInvoice.get('nombresInvoice').dirty || formDataInvoice.get('nombresInvoice').touched)">
-                            <div *ngIf="formDataInvoice.get('nombresInvoice').hasError('required')">El nombre es
-                              requerido.</div>
-                            <div *ngIf="formDataInvoice.get('nombresInvoice').hasError('nombresInvoice')">Teclear un
-                              nombre correcto.
-                            </div>
+                      <div class="col-5">
+                        <label>CP</label>
+                        <input type="text" class="form-control" name="codigoPostalInvoice"
+                          formControlName="codigoPostalInvoice" autocomplete="off" (input)="bloquearLetras($event)"
+                          maxlength="5" required>
+                        <div class="alert alert-danger"
+                          *ngIf="formDataInvoice.get('codigoPostalInvoice').invalid && (formDataInvoice.get('codigoPostalInvoice').dirty || formDataInvoice.get('codigoPostalInvoice').touched)">
+                          <div *ngIf="formDataInvoice.get('codigoPostalInvoice').hasError('required')">CP requerido.
                           </div>
-                        </div>
-                        <div class="col-6">
-                          <label>Apellidos</label>
-                          <input type="text" class="form-control" (input)="convertToUppercase($event)" name="apellidos"
-                            formControlName="apellidos" required>
-                          <div class="alert alert-danger"
-                            *ngIf="formDataInvoice.get('apellidos').invalid && (formDataInvoice.get('apellidos').dirty || formDataInvoice.get('apellidos').touched)">
-                            <div *ngIf="formDataInvoice.get('apellidos').hasError('required')">Los apellidos son
-                              requeridos</div>
-                            <div *ngIf="formDataInvoice.get('apellidos').hasError('apellidos')">Teclear apellidos
-                              correctos</div>
+                          <div *ngIf="formDataInvoice.get('codigoPostalInvoice').hasError('codigoPostalInvoice')">
+                            Corregir CP.
                           </div>
                         </div>
                       </div>
-                      <div *ngIf="esPersonaMoral" class="row">
-                        <div class="col-12">
-                          <label>Nombre de la Empresa</label>
-                          <input type="text" class="form-control" name="nombreEmpresa" formControlName="nombreEmpresa"
-                            required>
-                          <div class="alert alert-danger"
-                            *ngIf="formDataInvoice.get('nombreEmpresa').invalid && (formDataInvoice.get('nombreEmpresa').dirty || formDataInvoice.get('nombreEmpresa').touched)">
-                            <div *ngIf="formDataInvoice.get('nombreEmpresa').hasError('required')">El nombre es
-                              requerido.</div>
-                            <div *ngIf="formDataInvoice.get('nombreEmpresa').hasError('nombreEmpresa')">Teclear un
-                              nombre correcto.
-                            </div>
+                    </div>
+                    <div *ngIf="!esPersonaMoral" class="row">
+                      <div class="col-6">
+                        <label>Nombre(s)</label>
+                        <input type="text" class="form-control" name="nombresInvoice" formControlName="nombresInvoice"
+                          (input)="convertToUppercase($event)" required>
+                        <div class="alert alert-danger"
+                          *ngIf="formDataInvoice.get('nombresInvoice').invalid && (formDataInvoice.get('nombresInvoice').dirty || formDataInvoice.get('nombresInvoice').touched)">
+                          <div *ngIf="formDataInvoice.get('nombresInvoice').hasError('required')">El nombre es
+                            requerido.</div>
+                          <div *ngIf="formDataInvoice.get('nombresInvoice').hasError('nombresInvoice')">Teclear un
+                            nombre correcto.
                           </div>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-12">
-                          <label>Forma de Pago</label>
-                          <select *ngIf="!this.idDelivery" class="form-control" name="formaPago" required
-                            formControlName="formaPago">
-                            <option [ngValue]="''" [selected]="'' == formaPago.id">Elije la forma de Pago</option>
-                            <option *ngFor="let formaPago of formaPagos" [ngValue]="formaPago.id">
-                              {{formaPago.descripcion}}
-                            </option>
-                          </select>
-                          <select *ngIf="this.idDelivery" class="form-control" name="formaPago" required
-                            formControlName="formaPago" [attr.disabled]="true">
-                            <option [ngValue]="formaPago.id" [selected]="'' == formaPago.id">
-                              {{formaPago.descripcion}}
-                            </option>
-                          </select>
+                      <div class="col-6">
+                        <label>Apellidos</label>
+                        <input type="text" class="form-control" (input)="convertToUppercase($event)" name="apellidos"
+                          formControlName="apellidos" required>
+                        <div class="alert alert-danger"
+                          *ngIf="formDataInvoice.get('apellidos').invalid && (formDataInvoice.get('apellidos').dirty || formDataInvoice.get('apellidos').touched)">
+                          <div *ngIf="formDataInvoice.get('apellidos').hasError('required')">Los apellidos son
+                            requeridos</div>
+                          <div *ngIf="formDataInvoice.get('apellidos').hasError('apellidos')">Teclear apellidos
+                            correctos</div>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-12">
-                          <label>Metodo de Pago</label>
-                          <select *ngIf="!this.idDelivery" class="form-control" name="metodoPago" required
-                            formControlName="metodoPago">
-                            <option [ngValue]="''" [selected]="'' == metodoPago.id">Elije el metodo de Pago</option>
-                            <option *ngFor="let metodoPago of metodoPagos" [ngValue]="metodoPago.id">
-                              {{metodoPago.descripcion}}
-                            </option>
-                          </select>
-                          <select *ngIf="this.idDelivery" class="form-control" name="metodoPago" required
-                            formControlName="metodoPago" [attr.disabled]="true">
-                            <option [ngValue]="metodoPago.id" [selected]="'' == metodoPago.id">
-                              {{metodoPago.descripcion}}
-                            </option>
-                          </select>
+                    </div>
+                    <div *ngIf="esPersonaMoral" class="row">
+                      <div class="col-12">
+                        <label>Nombre de la Empresa</label>
+                        <input type="text" class="form-control" name="nombreEmpresa" formControlName="nombreEmpresa"
+                          required>
+                        <div class="alert alert-danger"
+                          *ngIf="formDataInvoice.get('nombreEmpresa').invalid && (formDataInvoice.get('nombreEmpresa').dirty || formDataInvoice.get('nombreEmpresa').touched)">
+                          <div *ngIf="formDataInvoice.get('nombreEmpresa').hasError('required')">El nombre es
+                            requerido.</div>
+                          <div *ngIf="formDataInvoice.get('nombreEmpresa').hasError('nombreEmpresa')">Teclear un
+                            nombre correcto.
+                          </div>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-12">
-                          <label>Uso de Factura *</label>
-                          <select *ngIf="!this.idDelivery" class="form-control" name="usoCFDI" required
-                            formControlName="usoCFDI">
-                            <option [ngValue]="''" [selected]="'' == usoCFDI.id">Elije el uso del CFDI</option>
-                            <option *ngFor="let usoCFDI of usoCFDIs" [ngValue]="usoCFDI.id">
-                              {{usoCFDI.descripcion}}
-                            </option>
-                          </select>
-                          <select *ngIf="this.idDelivery" class="form-control" name="usoCFDI" required
-                            formControlName="usoCFDI" [attr.disabled]="true">
-                            <option [ngValue]="usoCFDI.id" [selected]="'' == usoCFDI.id">
-                              {{usoCFDI.descripcion}}
-                            </option>
-                          </select>
-                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label>Forma de Pago</label>
+                        <select *ngIf="!this.idDelivery" class="form-control" name="formaPago" required
+                          formControlName="formaPago">
+                          <option [ngValue]="''" [selected]="'' == formaPago.id">Elije la forma de Pago</option>
+                          <option *ngFor="let formaPago of formaPagos" [ngValue]="formaPago.id">
+                            {{formaPago.descripcion}}
+                          </option>
+                        </select>
+                        <select *ngIf="this.idDelivery" class="form-control" name="formaPago" required
+                          formControlName="formaPago" [attr.disabled]="true">
+                          <option [ngValue]="formaPago.id" [selected]="'' == formaPago.id">
+                            {{formaPago.descripcion}}
+                          </option>
+                        </select>
                       </div>
-                    </form>
-                  </app-card>
-                </app-accordion>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label>Metodo de Pago</label>
+                        <select *ngIf="!this.idDelivery" class="form-control" name="metodoPago" required
+                          formControlName="metodoPago">
+                          <option [ngValue]="''" [selected]="'' == metodoPago.id">Elije el metodo de Pago</option>
+                          <option *ngFor="let metodoPago of metodoPagos" [ngValue]="metodoPago.id">
+                            {{metodoPago.descripcion}}
+                          </option>
+                        </select>
+                        <select *ngIf="this.idDelivery" class="form-control" name="metodoPago" required
+                          formControlName="metodoPago" [attr.disabled]="true">
+                          <option [ngValue]="metodoPago.id" [selected]="'' == metodoPago.id">
+                            {{metodoPago.descripcion}}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label>Uso de Factura *</label>
+                        <select *ngIf="!this.idDelivery" class="form-control" name="usoCFDI" required
+                          formControlName="usoCFDI">
+                          <option [ngValue]="''" [selected]="'' == usoCFDI.id">Elije el uso del CFDI</option>
+                          <option *ngFor="let usoCFDI of usoCFDIs" [ngValue]="usoCFDI.id">
+                            {{usoCFDI.descripcion}}
+                          </option>
+                        </select>
+                        <select *ngIf="this.idDelivery" class="form-control" name="usoCFDI" required
+                          formControlName="usoCFDI" [attr.disabled]="true">
+                          <option [ngValue]="usoCFDI.id" [selected]="'' == usoCFDI.id">
+                            {{usoCFDI.descripcion}}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </form>
+                </app-card>
 
                 <div class="row">&nbsp;</div>
                 <div class="row">
