@@ -486,6 +486,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.metodoPagos = result.metodoPago;
         this.regimenFiscales = result.regimenFiscal;
         this.usoCFDIs = result.usoCFDI;
+        this.onChangeRegimenFiscal(null, '04');
         this.onChangeFormaPago(null, '04');
         this.onChangeMetodoPago(null, 'PUE');
         this.onChangeUsoCFDI(null, 'G03');
@@ -864,15 +865,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     console.log('formData: ', formData);
     const invoice = new InvoiceConfigInput();
     invoice.factura = this.showFacturacion;
-    invoice.nombres = formData.controls.nombreEmpresa.value;
-    invoice.apellidos = formData.controls.apellidos.value;
-    invoice.nombreEmpresa = formData.controls.nombresInvoice.value;
-    invoice.rfc = formData.controls.rfc.value;
-    invoice.codigoPostal = formData.controls.codigoPostalInvoice.value;
-    invoice.formaPago = this.formaPago;
-    invoice.metodoPago = this.metodoPago;
-    invoice.regimenFiscal = this.regimenFiscal;
-    invoice.usoCFDI = this.usoCFDI;
+    invoice.nombres = this.showFacturacion ? formData.controls.nombresInvoice.value : "";
+    invoice.apellidos = this.showFacturacion ? formData.controls.apellidos.value : "";
+    invoice.nombreEmpresa = this.showFacturacion ? formData.controls.nombreEmpresa.value : "";
+    invoice.rfc = this.showFacturacion ? formData.controls.rfc.value : "";
+    invoice.codigoPostal = this.showFacturacion ? formData.controls.codigoPostalInvoice.value : "";
+    invoice.formaPago = this.showFacturacion ? this.formaPago : { id: '', descripcion: '' };
+    invoice.metodoPago = this.showFacturacion ? this.metodoPago : { id: '', descripcion: '', fechaInicioDeVigencia: '', fechaFinDeVigencia: '' };
+    invoice.regimenFiscal = this.showFacturacion ? this.regimenFiscal : { id: '', descripcion: '', fisica: "", moral: "" };
+    invoice.usoCFDI = this.showFacturacion ? this.usoCFDI : { id: '', descripcion: '', aplicaParaTipoPersonaFisica: "", aplicaParaTipoPersonaMoral: "" };
     return invoice;
   }
 
@@ -2081,8 +2082,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion
 
   //#region Facturas
-  onChangeRegimenFiscal(event: any) {
-    const selectedValue = event.target.value.split(':', 2)[1].trim() ?? '';
+  onChangeRegimenFiscal(event: any = null, val: string = null) {
+    const selectedValue = val || (event.target.value.split(':', 2)[1].trim() ?? '');
     const regimenFiscal = this.regimenFiscales.find(item => item.id === selectedValue);
     if (regimenFiscal) {
       this.regimenFiscal.id = regimenFiscal.id;
