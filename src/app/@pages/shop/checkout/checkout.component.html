@@ -505,16 +505,16 @@
                       <div class="col-12">
                         <label>Forma de Pago</label>
                         <select *ngIf="!this.idDelivery" class="form-control" name="formaPago" required
-                          formControlName="formaPago">
-                          <option [ngValue]="''" [selected]="'' == formaPago.id">Elije la forma de Pago</option>
+                          formControlName="formaPago" (change)="onChangeFormaPago($event, null)">
+                          <option [ngValue]="''" [selected]="'' == regimenFiscal.id">Elije la forma de Pago</option>
                           <option *ngFor="let formaPago of formaPagos" [ngValue]="formaPago.id">
-                            {{formaPago.descripcion}}
+                            ({{formaPago.id}})-{{formaPago.descripcion}}
                           </option>
                         </select>
                         <select *ngIf="this.idDelivery" class="form-control" name="formaPago" required
                           formControlName="formaPago" [attr.disabled]="true">
                           <option [ngValue]="formaPago.id" [selected]="'' == formaPago.id">
-                            {{formaPago.descripcion}}
+                            ({{regimenFiscal.id}})-{{formaPago.descripcion}}
                           </option>
                         </select>
                       </div>
@@ -523,16 +523,16 @@
                       <div class="col-12">
                         <label>Metodo de Pago</label>
                         <select *ngIf="!this.idDelivery" class="form-control" name="metodoPago" required
-                          formControlName="metodoPago">
+                          formControlName="metodoPago" (change)="onChangeMetodoPago($event, null)">
                           <option [ngValue]="''" [selected]="'' == metodoPago.id">Elije el metodo de Pago</option>
                           <option *ngFor="let metodoPago of metodoPagos" [ngValue]="metodoPago.id">
-                            {{metodoPago.descripcion}}
+                            ({{metodoPago.id}})-{{metodoPago.descripcion}}
                           </option>
                         </select>
                         <select *ngIf="this.idDelivery" class="form-control" name="metodoPago" required
                           formControlName="metodoPago" [attr.disabled]="true">
                           <option [ngValue]="metodoPago.id" [selected]="'' == metodoPago.id">
-                            {{metodoPago.descripcion}}
+                            ({{metodoPago.id}})-{{metodoPago.descripcion}}
                           </option>
                         </select>
                       </div>
@@ -541,16 +541,16 @@
                       <div class="col-12">
                         <label>Uso de Factura *</label>
                         <select *ngIf="!this.idDelivery" class="form-control" name="usoCFDI" required
-                          formControlName="usoCFDI">
+                          formControlName="usoCFDI" (change)="onChangeUsoCFDI($event, null)">
                           <option [ngValue]="''" [selected]="'' == usoCFDI.id">Elije el uso del CFDI</option>
                           <option *ngFor="let usoCFDI of usoCFDIs" [ngValue]="usoCFDI.id">
-                            {{usoCFDI.descripcion}}
+                            ({{usoCFDI.id}})-{{usoCFDI.descripcion}}
                           </option>
                         </select>
                         <select *ngIf="this.idDelivery" class="form-control" name="usoCFDI" required
                           formControlName="usoCFDI" [attr.disabled]="true">
                           <option [ngValue]="usoCFDI.id" [selected]="'' == usoCFDI.id">
-                            {{usoCFDI.descripcion}}
+                            ({{usoCFDI.id}})-{{usoCFDI.descripcion}}
                           </option>
                         </select>
                       </div>

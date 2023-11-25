@@ -1,5 +1,5 @@
 import { Catalog } from './catalog.models';
-import { InvoiceConfig, InvoiceConfigInput } from './invoiceConfig.models';
+import { InvoiceConfigInput } from './invoiceConfig.models';
 import { OrderCt } from './suppliers/orderct.models';
 import { OrderCtConfirmResponse, OrderCtResponse } from './suppliers/orderctresponse.models';
 import { OrderCva } from './suppliers/ordercva.models';
