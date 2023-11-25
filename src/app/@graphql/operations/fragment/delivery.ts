@@ -277,8 +277,10 @@ export const DELIVERY_FRAGMENT = gql`
         almacenmail
       }
       invoiceConfig {
+        factura
         nombres
         apellidos
+        nombreEmpresa
         rfc
         codigoPostal
         formaPago {

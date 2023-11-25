@@ -1,6 +1,8 @@
 export class InvoiceConfigInput {
+  factura: Boolean
   nombres: String
   apellidos: String
+  nombreEmpresa: String
   rfc: String
   codigoPostal: String
   formaPago: FormaPago
