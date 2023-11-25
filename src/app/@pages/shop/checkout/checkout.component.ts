@@ -163,6 +163,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   rfc: string = '';
   codigoPostalInvoice: string = '';
   nombres: string = '';
+  nombreEmpresa: string = '';
   apellidos: string = '';
   formaPago: FormaPago;
   formaPagos: FormaPago[];
@@ -285,7 +286,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     const deliveryId = this.generarNumeroAleatorioEncriptado();
                     // Generar Orden de Compra con Proveedores
                     const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-                    return await null;
                     // Registrar Pedido en DARU.
                     OrderSupplier.cliente = OrderSupplier.user.email;
                     OrderSupplier.discount = parseFloat(this.discount);
@@ -396,10 +396,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       });
 
       this.formDataInvoice = this.formBuilder.group({
+        factura: [false],
         rfc: ['', [Validators.required, this.validarLongitudRFC]],
         codigoPostalInvoice: ['', [Validators.required, Validators.pattern(/^\d{4,5}$/)]],
         nombresInvoice: ['', Validators.required],
         apellidos: ['', Validators.required],
+        nombreEmpresa: ['', Validators.required],
         formaPago: ['04', Validators.required],
         metodoPago: ['PUE', Validators.required],
         regimenFiscal: ['612', Validators.required],
@@ -484,8 +486,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.metodoPagos = result.metodoPago;
         this.regimenFiscales = result.regimenFiscal;
         this.usoCFDIs = result.usoCFDI;
-        console.log('result: ', result);
+        this.onChangeFormaPago(null, '04');
+        this.onChangeMetodoPago(null, 'PUE');
+        this.onChangeUsoCFDI(null, 'G03');
       });
+
+
 
       this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
       OpenPay.setId('mbhvpztgt3rqse7zvxrc');
@@ -857,15 +863,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   onSetInvoiceConfig(formData: FormGroup): InvoiceConfigInput {
     console.log('formData: ', formData);
     const invoice = new InvoiceConfigInput();
-    invoice.nombres = formData.controls.nombresInvoice.value;
+    invoice.factura = this.showFacturacion;
+    invoice.nombres = formData.controls.nombreEmpresa.value;
     invoice.apellidos = formData.controls.apellidos.value;
+    invoice.nombreEmpresa = formData.controls.nombresInvoice.value;
     invoice.rfc = formData.controls.rfc.value;
-    invoice.codigoPostal = formData.controls.codigoPostalInvoice.value;;
+    invoice.codigoPostal = formData.controls.codigoPostalInvoice.value;
     invoice.formaPago = this.formaPago;
     invoice.metodoPago = this.metodoPago;
     invoice.regimenFiscal = this.regimenFiscal;
     invoice.usoCFDI = this.usoCFDI;
-    console.log('invoice: ', invoice);
     return invoice;
   }
 
@@ -1959,7 +1966,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         console.log('pedidosCt: ', pedidosCt);
         return await pedidosCt;
     }
-    return await [];
 
     // get supplier
     const supplier = await this.suppliersService.getSupplierByName(supplierName)
@@ -2076,14 +2082,52 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Facturas
   onChangeRegimenFiscal(event: any) {
-    const idRf = event.target.value.split(':', 2)[1].trim();
-    const regFis = this.regimenFiscales.find(item => item.id.trim() === idRf);
-    this.esPersonaMoral = regFis?.moral === 'Sí' ?? false;
+    const selectedValue = event.target.value.split(':', 2)[1].trim() ?? '';
+    const regimenFiscal = this.regimenFiscales.find(item => item.id === selectedValue);
+    if (regimenFiscal) {
+      this.regimenFiscal.id = regimenFiscal.id;
+      this.regimenFiscal.descripcion = regimenFiscal.descripcion;
+    }
+    this.esPersonaMoral = regimenFiscal?.moral === 'Sí' ?? false;
     this.rfcLength = this.esPersonaMoral ? 12 : 13;
     this.formDataInvoice.controls.apellidos.setValue('');
     this.formDataInvoice.controls.nombresInvoice.setValue('');
+    this.formDataInvoice.controls.nombreEmpresa.setValue('');
     this.formDataInvoice.controls.codigoPostalInvoice.setValue('');
     this.formDataInvoice.controls.rfc.setValue('');
+  }
+
+  onChangeFormaPago(event: any = null, val: string = null) {
+    const selectedValue = val || (event.target.value.split(':', 2)[1].trim() ?? '');
+    if (this.formaPagos && this.formaPagos.length > 0) {
+      const formaPago = this.formaPagos.find(fp => fp.id === selectedValue);
+      if (formaPago) {
+        this.formaPago.id = formaPago.id;
+        this.formaPago.descripcion = formaPago.descripcion;
+      }
+    }
+  }
+
+  onChangeMetodoPago(event: any = null, val: string = null) {
+    const selectedValue = val || (event.target.value.split(':', 2)[1].trim() ?? '');
+    if (this.metodoPagos && this.metodoPagos.length > 0) {
+      const metodoPago = this.metodoPagos.find(fp => fp.id === selectedValue);
+      if (metodoPago) {
+        this.metodoPago.id = metodoPago.id;
+        this.metodoPago.descripcion = metodoPago.descripcion;
+      }
+    }
+  }
+
+  onChangeUsoCFDI(event: any = null, val: string = null) {
+    const selectedValue = val || (event.target.value.split(':', 2)[1].trim() ?? '');
+    if (this.usoCFDIs && this.usoCFDIs.length > 0) {
+      const usoCFDI = this.usoCFDIs.find(fp => fp.id === selectedValue);
+      if (usoCFDI) {
+        this.usoCFDI.id = usoCFDI.id;
+        this.usoCFDI.descripcion = usoCFDI.descripcion;
+      }
+    }
   }
   //#endregion
 
