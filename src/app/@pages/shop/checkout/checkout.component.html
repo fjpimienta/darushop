@@ -402,7 +402,7 @@
                 </app-accordion>
 
                 <!-- Para Facturacion -->
-                <div class="row">
+                <div class="row" *ngIf="this.idDelivery">
                   <div class="col-12">
                     <!-- Nuevo título con checkbox -->
                     <label>
@@ -412,7 +412,7 @@
                     </label>
                   </div>
                 </div>
-                <app-card adClass="card-box card-sm bg-light" title="Datos Fiscales" [show]="showFacturacion">
+                <app-card *ngIf="this.idDelivery" adClass="card-box card-sm bg-light" title="Datos Fiscales" [show]="showFacturacion">
                   <form [formGroup]="formDataInvoice">
                     <div class="row">
                       <div class="col-12">
