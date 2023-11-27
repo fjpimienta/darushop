@@ -487,7 +487,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.metodoPagos = result.metodoPago;
         this.regimenFiscales = result.regimenFiscal;
         this.usoCFDIs = result.usoCFDI;
-        this.onChangeRegimenFiscal(null, '04');
+        this.onChangeRegimenFiscal(null, '612');
         this.onChangeFormaPago(null, '04');
         this.onChangeMetodoPago(null, 'PUE');
         this.onChangeUsoCFDI(null, 'G03');
