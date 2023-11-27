@@ -293,7 +293,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     const deliverySave = await this.deliverysService.add(OrderSupplier);
                     const NewProperty = 'receipt_email';
                     let internalEmail = false;
-                    let esFacturable = this.showFacturacion;
                     let typeAlert = TYPE_ALERT.SUCCESS;
                     let sendEmail = OrderSupplier.user.email;
                     let messageDelivery = 'El Pedido se ha realizado correctamente';
@@ -309,7 +308,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     }
                     // Si compra es OK, continua.
                     OrderSupplier[NewProperty] = sendEmail;
-                    this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios, esFacturable);
+                    this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
                     await infoEventAlert(messageDelivery, '', typeAlert);
                   } else {
                     await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
@@ -767,7 +766,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
       // Si compra es OK, continua.
       deliverySave[NewProperty] = sendEmail;
-      this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios);
+      this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
       console.log('this.mailService.sendEmail');
       this.router.navigate(['/dashboard']);
 
