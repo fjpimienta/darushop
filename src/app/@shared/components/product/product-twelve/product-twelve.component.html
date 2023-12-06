@@ -2,7 +2,7 @@
 
   <figure class="product-media">
     <span class="product-label label-circle label-new" *ngIf="product.new">Nuevo</span>
-    <span class="product-label label-circle label-sale" *ngIf="product.sale_price">Oferta</span>
+    <span class="product-label label-circle label-sale" *ngIf="product.featured">Oferta</span>
     <span class="product-label label-circle label-top" *ngIf="product.top">Top</span>
     <span class="product-label label-circle label-out" *ngIf="!product.stock || product.stock === 0">Agotado</span>
     <a [routerLink]="['/product/default/'+ product.id]">
