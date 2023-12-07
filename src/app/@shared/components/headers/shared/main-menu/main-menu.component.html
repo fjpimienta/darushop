@@ -7,11 +7,11 @@
       <a routerLink="ofertas">Ofertas</a>
     </li>
     <li [class.active]="current.includes('categorias')">
-      <a href="javascript:;" class="sf-with-ul">Categorias</a>
-      <ul>
+      <a href="javascript:;" class="sf-with-ul ">Categorias</a>
+      <ul class="megamenu">
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'computadoras'}">Computadoras</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']"
                 [queryParams]="{category: 'computadoras', subCategory: 'laptops'}">Laptops</a>
@@ -33,7 +33,7 @@
         </li>
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'software'}">Software</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']"
                 [queryParams]="{category: 'software', subCategory: 'antivirus'}">Antivirus</a>
@@ -51,7 +51,7 @@
         </li>
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'impresion'}">Impresión</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']"
                 [queryParams]="{category: 'impresion', subCategory: 'impresoras'}">Impresoras</a>
@@ -72,7 +72,7 @@
         </li>
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'energia'}">Energia</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']" [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}">No
                 Break y UPS</a>
@@ -87,14 +87,16 @@
             </li>
             <li>
               <a [routerLink]="['categoria']"
-                [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}">Baterias para UPS</a>
+                [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}">Baterias para
+                UPS</a>
             </li>
           </ul>
         </li>
         <li [class.active]="current.includes('categorias')">
-          <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'monitores-y-video'}">Monitores y
+          <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'monitores-y-video'}">Monitores
+            y
             Video</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']"
                 [queryParams]="{category: 'monitores-y-video', subCategory: 'pantallas-de-tv'}">Pantallas de
@@ -112,7 +114,7 @@
         </li>
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'redes'}">Redes</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']" [queryParams]="{category: 'redes', subCategory: 'access-point'}">Access
                 Point</a>
@@ -134,7 +136,7 @@
         </li>
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'componentes'}">Componentes</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']"
                 [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}">Memorias RAM</a>
@@ -166,7 +168,7 @@
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul"
             [queryParams]="{category: 'almacenamiento'}">Almacenamiento</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']"
                 [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-mecanicos'}">Discos
@@ -200,7 +202,7 @@
         </li>
         <li [class.active]="current.includes('categorias')">
           <a [routerLink]="['categoria']" class="sf-with-ul" [queryParams]="{category: 'accesorios'}">Accesorios</a>
-          <ul>
+          <ul class="megamenu submenu">
             <li>
               <a [routerLink]="['categoria']"
                 [queryParams]="{category: 'accesorios', subCategory: 'teclados'}">Teclados</a>
@@ -233,35 +235,25 @@
     </li>
     <li [class.active]="current.includes('/marcas')">
       <a routerLink="marcas" class="sf-with-ul">Marcas</a>
-      <div *ngIf="brands.length>0" class="megamenu megamenu-sm">
-        <div class="row no-gutters">
-          <div class="col-md-12">
-            <div class="menu-col">
-              <div class="row">
-                <div class="col-md-12">
-                  <ul>
-                    <li>
-                      <div class="header-search-wrapper">
-                        <label for="searchQuery" class="sr-only">Buscar</label>
-                        <input type="text" class="form-control" name="searchQuery" id="searchQuery" autocomplete="off"
-                          placeholder="Buscar marca ..." required (input)="searchBrands($event)" />
-                      </div>
-                    </li>
-                    <li [class.active]="current.includes('marca')" *ngFor="let item of brandsTmp; let id = index;">
-                      <a [routerLink]="['marca']" [queryParams]="{brand: item.slug}">{{
-                        item.description }}</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+      <div *ngIf="brands.length>0" class="megamenu redondeoMenu megamenu-sm">
+        <ul>
+          <li>
+            <div class="header-search-wrapper">
+              <label for="searchQuery" class="sr-only">Buscar</label>
+              <input type="text" class="form-control" name="searchQuery" id="searchQuery" autocomplete="off"
+                placeholder="Buscar Marca ..." required (input)="searchBrands($event)" />
             </div>
-          </div>
-        </div>
+          </li>
+          <li *ngFor="let item of brandsTmp; let id = index;">
+            <a [routerLink]="['marca']" [queryParams]="{brand: item.slug}">{{
+              item.description }}</a>
+          </li>
+        </ul>
       </div>
     </li>
     <li [class.active]="current.includes('/dashboard')">
       <a routerLink="/dashboard" class="sf-with-ul">Tu cuenta</a>
-      <ul>
+      <ul class="megamenu redondeoMenu">
         <li [class.active]="current.includes('dashboard')">
           <a routerLink="/dashboard">Mi cuenta</a>
         </li>
@@ -278,7 +270,7 @@
     </li>
     <li [class.active]="current.includes('/company')">
       <a href="javascript:;" class="sf-with-ul">Sobre DARU</a>
-      <ul>
+      <ul class="megamenu redondeoMenu">
         <li [class.active]="current.includes('conocenos')">
           <a routerLink="/conocenos">Con&oacute;cenos</a>
         </li>

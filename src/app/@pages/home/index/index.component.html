@@ -94,7 +94,8 @@
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
               <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
-                <a routerLink="/categoria/4cols" [queryParams]="{ category: 'camara' }" class="cat-block">
+                <a routerLink="/categoria/4cols" [queryParams]="{ category:'impresion', subCategory:'escaners' }"
+                  class="cat-block">
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/fotografia.jpg" width="131" height="76"
@@ -113,7 +114,8 @@
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
               <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
-                <a routerLink="/categoria/4cols" [queryParams]="{ category: 'audio' }" class="cat-block">
+                <a routerLink="/categoria/4cols" [queryParams]="{ category:'accesorios', subCategory:'audifonos' }"
+                  class="cat-block">
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/audio.jpg" width="131" height="76"
@@ -132,7 +134,7 @@
           <div class="col-6 col-sm-4 col-lg-2">
             <div class="content-center">
               <div class="heading mt-0" contentAnim aniName="fadeInRightShorter">
-                <a routerLink="/categoria/4cols" [queryParams]="{ category: 'gaming' }" class="cat-block">
+                <a routerLink="/categoria/4cols" [queryParams]="{ category: 'accesorios-gaming' }" class="cat-block">
                   <figure>
                     <span>
                       <img src="assets/images/home/categorias/gaming.jpg" width="131" height="76"
@@ -332,8 +334,7 @@
                 <span class="text-primary">
                   <h6><strong>Telefonía</strong></h6>
                 </span>
-                <a routerLink="/ofertas/" [queryParams]="{ category: 'telefonos' }"
-                  class="btn btn-primary btn-round">
+                <a routerLink="/ofertas/" [queryParams]="{ category: 'telefonos' }" class="btn btn-primary btn-round">
                   Ver ofertas</a>
               </div>
             </div>
@@ -459,7 +460,8 @@
           <form (ngSubmit)="onSubmit()" [formGroup]="formData">
             <div class="input-group input-group-round">
               <input type="email" name="email" class="form-control" formControlName="email"
-                class="form-control form-control-white border-0" placeholder="Reg&iacute;strate con tu correo electr&oacute;nico - Subscribirme"
+                class="form-control form-control-white border-0"
+                placeholder="Reg&iacute;strate con tu correo electr&oacute;nico - Subscribirme"
                 aria-label="Correo Electrónico" autocomplete="off" required />
               <div class="input-group-append">
                 <button class="btn btn-primary" type="submit" [disabled]="!formData.valid">

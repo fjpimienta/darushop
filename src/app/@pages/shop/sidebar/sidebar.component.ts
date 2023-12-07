@@ -25,9 +25,11 @@ export class SidebarPageComponent implements OnInit {
   firstLoad = false;
   brands = [];
   categories = [];
+  subCategories = [];
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -63,6 +65,7 @@ export class SidebarPageComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.activeRoute.params.subscribe(params => {
@@ -96,16 +99,28 @@ export class SidebarPageComponent implements OnInit {
         this.categories = [];
         this.categories.push(params.category);
       }
+      this.subCategories = null;
+      if (params.subCategory) {
+        this.subCategories = [];
+        this.subCategories.push(params.subCategory);
+      }
       if (params.page) {
         this.page = parseInt(params.page, 10);
       } else {
         this.page = 1;
       }
       this.productService.getProducts(
-        this.page, this.perPage, this.searchTerm.toLowerCase(), null, this.brands, this.categories
+        this.page,
+        this.perPage,
+        this.searchTerm.toLowerCase(),
+        null,
+        this.brands,
+        this.categories,
+        this.subCategories
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
+        const subCategory = [[]];
         let brands: string[] = [];
         if (params.brand) {
           brands = params.brand.split(',');
@@ -118,6 +133,10 @@ export class SidebarPageComponent implements OnInit {
         if (params.category) {
           category.push(params.category);
           this.products = utilsService.catFilter(this.products, category);
+        }
+        if (params.subCategory) {
+          subCategory.push(params.subCategory);
+          this.products = utilsService.subCatFilter(this.products, subCategory);
         }
         this.loaded = true;
         this.totalCount = result.info.total;

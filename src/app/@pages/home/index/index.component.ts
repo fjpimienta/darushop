@@ -42,6 +42,7 @@ export class IndexComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   @ViewChild('singleSlider') singleSlider: any;
@@ -123,6 +124,7 @@ export class IndexComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
   }
@@ -241,7 +243,27 @@ export class IndexComponent implements OnInit {
     const email = this.formData.controls.email.value;
     const receiptEmailInt = 'marketplace@daru.mx';
     const subjectInt = 'Dar de Alta a Usuario';
-    const html = `Agregar este correo ${email} a la lista de contactos`;
+    const html = `
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Contacto del Sitio DARU.MX</title>
+      </head>
+      <body>
+        <div class="container">
+          <h2>Correo Enviado desde el Home de DARU.MX</h2>
+          <p>Nos ha contactado ${email}, para ser agregado a la lista de contactos.</p>
+          <hr>
+          <p>Favor de atender la solicitud.</p>
+          <hr>
+          <p class="foot">
+          </p>
+        </div>
+      </body>
+      </html>
+      `;
 
     const mail: IMail = {
       to: receiptEmailInt,

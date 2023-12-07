@@ -17,32 +17,8 @@ const routes: Routes = [
     component: DefaultPageComponent
   },
   {
-    path: 'centered/:slug',
-    component: CenteredPageComponent
-  },
-  {
-    path: 'extended/:slug',
-    component: ExtendedPageComponent
-  },
-  {
-    path: 'fullwidth/:slug',
-    component: FullWidthPageComponent
-  },
-  {
     path: 'gallery/:slug',
     component: GalleryPageComponent
-  },
-  {
-    path: 'masonry/:slug',
-    component: MasonryPageComponent
-  },
-  {
-    path: 'sidebar/:slug',
-    component: SidebarPageComponent
-  },
-  {
-    path: 'sticky/:slug',
-    component: StickyInfoPageComponent
   }
 ];
 

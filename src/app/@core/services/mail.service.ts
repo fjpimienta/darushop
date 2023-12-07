@@ -26,7 +26,8 @@ export class MailService extends ApiService {
 
 
   //#region Emails  //ICharge
-  sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false, totalEnvios: string = '0'): void {
+  sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false,
+    totalEnvios: string = '0', esFacturable: boolean = false): void {
     const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos: ProductShipment[] = [];
@@ -51,6 +52,44 @@ export class MailService extends ApiService {
                     `
     }
     const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
+    let datosFactura = ''
+    if (esFacturable) {
+      const nombre = charge.invoiceConfig.nombreEmpresa !== '' ? charge.invoiceConfig.nombreEmpresa : charge.invoiceConfig.nombres + ' ' + charge.invoiceConfig.apellidos;
+      datosFactura = `
+      <tr>
+        <td colspan="2">DATOS PARA FACTURAR: </td>
+        <td colspan="2"></td>
+      </tr>
+      <tr>
+        <td colspan="2">Nombre</td>
+        <td colspan="2">${nombre}</td>
+      </tr>
+      <tr>
+        <td colspan="2">RFC</td>
+        <td colspan="2">${charge.invoiceConfig.rfc}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Codigo Postal: </td>
+        <td colspan="2">${charge.invoiceConfig.codigoPostal}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Forma de Pago: </td>
+        <td colspan="2">${charge.invoiceConfig.formaPago.id}: ${charge.invoiceConfig.formaPago.descripcion}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Metodo de Pago: </td>
+        <td colspan="2">${charge.invoiceConfig.metodoPago.id}: ${charge.invoiceConfig.metodoPago.descripcion}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Regimen Fiscal: </td>
+        <td colspan="2">${charge.invoiceConfig.regimenFiscal.id}: ${charge.invoiceConfig.regimenFiscal.descripcion}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Uso de CFDI: </td>
+        <td colspan="2">${charge.invoiceConfig.usoCFDI.id}: ${charge.invoiceConfig.usoCFDI.descripcion}</td>
+      </tr>
+    `;
+    }
     const productRows = productos.map((producto: any) => `
         <tr>
           <td colspan="2">${producto.name}</td>
@@ -152,6 +191,7 @@ export class MailService extends ApiService {
                 <td colspan="2"><strong>Total:</strong></td>
                 <td colspan="4" class="number">$ ${total.toFixed(2).toString()}</td>
               </tr>
+              ${datosFactura}
             </tfoot>
           </table>
           <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
@@ -166,6 +206,8 @@ export class MailService extends ApiService {
       </body>
       </html>
       `;
+    console.log('charge.invoceConfigInput: ', charge.invoceConfigInput);
+    console.log('receiptEmail: ', receiptEmail);
     // const subject
     const mail: IMail = {
       to: receiptEmail,

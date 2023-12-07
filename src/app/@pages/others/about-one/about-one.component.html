@@ -6,7 +6,7 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a [attr.href]="previousPageUrl" [innerHTML]="previousPageTitle"></a>
+          <a [routerLink]="[]" [queryParams]="queryParams" [innerHTML]="previousPageTitle"></a>
         </li>
         <li class="breadcrumb-item active">{{ pageTitle }}</li>
       </ol>
@@ -25,15 +25,17 @@
           <div class="pt-10">
             <h2 class="title-about">Quiénes Somos</h2>
             <p class="text-about">
-              En Daru Innovación, somos más que una empresa; somos un equipo comprometido con la excelencia y la
-              innovación. Nuestra pasión por ofrecer soluciones creativas y tecnológicas nos impulsa a superar los
-              límites y aportar valor a nuestros clientes y socios.
+              Más que una empresa, somos un equipo apasionado y comprometido con la excelencia y la innovación. Estamos
+              enfocados y dedicados a ser líderes en nuestra industria y a marcar la diferencia en el mundo de la
+              innovación tecnológica.
             </p>
             <p>
-              Fundada en 2022, hemos crecido y
-              evolucionado, pero nuestro compromiso con la calidad y la satisfacción del cliente nunca ha cambiado.
-              Estamos dedicados a ser líderes en nuestra industria y a marcar la diferencia en el mundo de la innovación
-              tecnológica.
+              Nuestra pasión por ofrecer soluciones creativas y tecnológicas nos impulsa a superar los límites,
+              aportando un valor agregado a nuestros clientes y socios.
+            </p>
+            <p>
+              Darú Innovación fue fundada en el 2022 y ha ido creciendo y evolucionando, gracias al compromiso con la
+              calidad y satisfacción al cliente.
             </p>
           </div>
         </div>
@@ -51,19 +53,17 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4 mb-lg-0">
-          <h2 class="text-white">Nuestra esencia</h2>
-          <p class="text-white">En Daru, nuestra esencia se encuentra en la búsqueda constante de la excelencia. Nos
-            esforzamos por ser pioneros en tecnología y creatividad, abrazando nuevos desafíos con entusiasmo y
-            determinación. Nuestra esencia se refleja en cada proyecto que emprendemos, en cada solución que ofrecemos y
-            en cada relación que construimos. Somos un equipo apasionado y diverso, unidos por la visión de crear un
-            mundo mejor a través de la innovación.</p>
+          <h2 class="text-white">Darú = Excelencia</h2>
+          <p class="text-white">Nuestra esencia se encuentra en la búsqueda constante de la excelencia. Trabajamos día a
+            día por ser pioneros en tecnología y creatividad, abrazando nuevos desafíos con entusiasmo y determinación,
+            lo cual se ve reflejado en cada proyecto que emprendemos, cada solución que ofrecemos y cada relación que
+            construimos.</p>
         </div>
         <div class="col-lg-4">
           <div class="member text-center">
             <div class="member-content">
               <h3 class="member-title">Misión
-                <p>Nuestra misión es ser la primera opción para aquellos que buscan soluciones tecnológicas de
-                  vanguardia.
+                <p>Ser la primera opción para aquellos que buscan soluciones tecnológicas de vanguardia.
                 </p>
                 <p>&nbsp;</p>
                 <p>&nbsp;</p>
@@ -76,9 +76,8 @@
           <div class="member text-center">
             <div class="member-content">
               <h3 class="member-title">Visión
-                <p>Estamos comprometidos a crecer, expandir nuestras capacidades, mantener nuestro enfoque en la
-                  satisfacción del cliente y la calidad excepcional, para forjar un mañana mejor a través
-                  de la tecnología innovadora.</p>
+                <p>Crecer, expandir nuestras capacidades, mantener nuestro enfoque en satisfacción al cliente y calidad
+                  excepcional para forjar un mejor mañana a través de la innovación tecnológica.</p>
               </h3>
             </div>
           </div>

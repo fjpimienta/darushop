@@ -21,6 +21,7 @@ export class BrandComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   searchTerm = '';
   containerClass = 'container';
   cols = 'col-6 col-md-4 col-lg-4 col-xl-3';
@@ -31,6 +32,7 @@ export class BrandComponent implements OnInit {
   page = 1;
   brands = [];
   categories = [];
+  subCategories = [];
   offer: boolean;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
@@ -46,11 +48,10 @@ export class BrandComponent implements OnInit {
     ])
       .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
       .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
-        // Obtener el título de la página actual a través de activeRoute.data
-        this.pageTitle = data.title || '';
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
+          console.log('navigation?.previousNavigation: ', navigation?.previousNavigation);
           const url = navigation.previousNavigation.finalUrl.toString();
           const firstSlashIndex = url.indexOf('/');
           const questionMarkIndex = url.indexOf('?');
@@ -67,6 +68,7 @@ export class BrandComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.toggle = false;
@@ -85,7 +87,7 @@ export class BrandComponent implements OnInit {
       this.loaded = false;
       this.offer = false;
 
-      this.pageTitle = 'MARCA';
+      this.pageTitle = 'Marca';
       if (params.description) {
         this.pageTitle = params.description.toUpperCase();
       }
@@ -109,6 +111,11 @@ export class BrandComponent implements OnInit {
         this.categories = [];
         this.categories.push(params.category);
       }
+      this.subCategories = null;
+      if (params.subCategory) {
+        this.subCategories = [];
+        this.subCategories.push(params.subCategory);
+      }
       if (params.page) {
         this.page = parseInt(params.page, 10);
       } else {
@@ -116,10 +123,17 @@ export class BrandComponent implements OnInit {
       }
       this.perPage = 48;
       this.productService.getProducts(
-        this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+        this.page,
+        this.perPage,
+        this.searchTerm.toLowerCase(),
+        this.offer,
+        this.brands,
+        this.categories,
+        this.subCategories
       ).subscribe(result => {
         this.products = result.products;
         const category = [[]];
+        const subCategory = [[]];
         let brands: string[] = [];
         if (params.brand) {
           brands = params.brand.split(',');
@@ -132,6 +146,10 @@ export class BrandComponent implements OnInit {
         if (params.category) {
           category.push(params.category);
           this.products = utilsService.catFilter(this.products, category);
+        }
+        if (params.subCategory) {
+          subCategory.push(params.subCategory);
+          this.products = utilsService.subCatFilter(this.products, subCategory);
         }
         if (this.orderBy) {
           switch (this.orderBy) {
@@ -177,11 +195,7 @@ export class BrandComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.activeRoute.data.subscribe((data: { title: string }) => {
-      this.pageTitle = data.title || this.pageTitle;
-    });
-  }
+  ngOnInit(): void { }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();

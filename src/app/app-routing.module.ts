@@ -20,6 +20,7 @@ import { WishlistComponent } from '@pages/shop/wishlist/wishlist.component';
 import { CheckoutComponent } from '@pages/shop/checkout/checkout.component';
 import { DashboardComponent } from '@pages/shop/dashboard/dashboard.component';
 import { AuthGuard } from '@core/guards/auth.guard';
+import { ProductsComponent } from '@pages/shop/products/products.component';
 
 const routes: Routes = [
   {
@@ -66,6 +67,18 @@ const routes: Routes = [
         path: 'ofertas',
         component: OffersComponent,
         data: { title: 'Ofertas' }
+      },
+      {
+        path: 'products',
+        component: ProductsComponent,
+        data: { title: 'Productos' },
+        redirectTo: 'products/4cols'
+      },
+      {
+        path: 'products/:type',
+        component: ProductsComponent,
+        pathMatch: 'full',
+        data: { title: 'Productos' }
       },
       {
         path: 'marcas',

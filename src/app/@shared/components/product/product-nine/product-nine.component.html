@@ -3,7 +3,7 @@
     <div class="col-lg-3 col-md-3 col-6">
       <figure class="product-media">
         <span class="product-label label-new" *ngIf="product.new">Nuevo</span>
-        <span class="product-label label-sale" *ngIf="product.sale_price">Oferta</span>
+        <span class="product-label label-sale" *ngIf="product.featured">Oferta</span>
         <span class="product-label label-top" *ngIf="product.top">Top</span>
         <span class="product-label label-out" *ngIf="!product.stock || product.stock == 0">No Disponible</span>
 
@@ -58,17 +58,18 @@
               <span class="old-price">{{ maxPrice.toFixed(2) | currency }}</span>
             </div>
             <ng-template #elseBlock>
-              <div class="product-price">{{minPrice.toFixed(2) | currency}}&ndash;{{maxPrice.toFixed(2) | currency}}</div>
+              <div class="product-price">{{minPrice.toFixed(2) | currency}}&ndash;{{maxPrice.toFixed(2) | currency}}
+              </div>
             </ng-template>
           </ng-template>
         </ng-template>
 
         <div class="ratings-container">
-          <!-- <div class="ratings">
+          <div *ngIf="product.ratings > 0" class="ratings">
             <div class="ratings-val" [style.width]="product.ratings * 20 + '%'"></div>
             <span class="tooltip-text">{{ product.ratings.toFixed(2) }}</span>
           </div>
-          <span class="ratings-text">( {{ product.review }} Reviews )</span> -->
+          <span *ngIf="product.review > 0" class="ratings-text">( {{ product.review }} Reviews )</span>
         </div>
 
         <div class="product-action">

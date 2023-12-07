@@ -10,10 +10,13 @@ import { Product } from '@shared/classes/product';
 export class InfoOneComponent implements OnInit {
 
   @Input() product: Product;
+  fragments: string[];
 
   constructor() { }
 
   ngOnInit(): void {
+    const text = this.product.generalInfo.SummaryDescription.LongSummaryDescription;
+    this.fragments = text.split('. ');
   }
 
   setRating = (event: any) => {
@@ -25,4 +28,5 @@ export class InfoOneComponent implements OnInit {
 
     event.currentTarget.classList.add('active');
   }
+
 }

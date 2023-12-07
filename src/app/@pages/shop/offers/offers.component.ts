@@ -27,6 +27,7 @@ export class OffersComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   toggle = false;
   searchTerm = '';
   loaded = false;
@@ -77,6 +78,7 @@ export class OffersComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.activeRoute.params.subscribe(params => {
@@ -87,9 +89,16 @@ export class OffersComponent implements OnInit {
       this.loaded = false;
       this.offer = true;
 
-      this.pageTitle = params.description;
+      this.pageTitle = 'Ofertas';
+      if (params.description) {
+        this.pageTitle = params.description.toUpperCase();
+      }
 
-      this.searchTerm = params.searchTerm || '';
+      if (params.searchTerm) {
+        this.searchTerm = params.searchTerm;
+      } else {
+        this.searchTerm = '';
+      }
 
       this.orderBy = params.orderBy || '';
 
@@ -109,6 +118,7 @@ export class OffersComponent implements OnInit {
       if (params.brand) {
         this.brands = [];
         this.brands = params.brand.split(',');
+        this.pageTitle += ' (' + params.brand.toUpperCase() + ')';
       }
       this.categories = null;
       if (params.category) {
@@ -136,6 +146,7 @@ export class OffersComponent implements OnInit {
         this.subCategories
       ).subscribe(result => {
         this.products = result.products;
+        console.log('this.products: ', this.products);
         const category = [[]];
         const subCategory = [[]];
         let brands: string[] = [];
@@ -152,8 +163,8 @@ export class OffersComponent implements OnInit {
           this.products = utilsService.catFilter(this.products, category);
         }
         if (params.subCategory) {
-          category.push(params.subCategory);
-          this.products = utilsService.catFilter(this.products, subCategory);
+          subCategory.push(params.subCategory);
+          this.products = utilsService.subCatFilter(this.products, subCategory);
         }
         if (this.orderBy) {
           switch (this.orderBy) {

@@ -23,6 +23,7 @@ export class CategoryComponent implements OnInit {
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
+  queryParams: object = {};
   toggle = false;
   searchTerm = '';
   loaded = false;
@@ -45,8 +46,6 @@ export class CategoryComponent implements OnInit {
     ])
       .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
       .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
-        // Obtener el título de la página actual a través de activeRoute.data
-        this.pageTitle = data.title || '';
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
@@ -66,6 +65,7 @@ export class CategoryComponent implements OnInit {
             this.previousPageTitle = url;
           }
           this.previousPageUrl = navigation.previousNavigation.finalUrl.toString();
+          this.queryParams = navigation.previousNavigation.finalUrl.queryParams;
         }
       });
     this.activeRoute.params.subscribe(params => {
@@ -75,7 +75,6 @@ export class CategoryComponent implements OnInit {
       this.loaded = false;
       this.offer = false;
 
-      this.pageTitle = params.category.toUpperCase() || '';
       this.searchTerm = params.searchTerm || '';
       this.orderBy = params.orderBy || '';
 
@@ -85,14 +84,21 @@ export class CategoryComponent implements OnInit {
         this.brands = params.brand.split(',');
       }
       this.categories = null;
-      if (params.category) {
-        this.categories = [];
-        this.categories.push(params.category);
-      }
-      this.subCategories = null;
-      if (params.subCategory) {
-        this.subCategories = [];
-        this.subCategories.push(params.subCategory);
+      this.pageTitle = 'Categoría';
+      if (Array.isArray(params.category)) {
+        this.categories = params.category;
+      } else {
+        if (params.category) {
+          this.categories = [];
+          this.categories.push(params.category);
+          this.pageTitle += ' (' + params.category.toUpperCase() + ')';
+        }
+        this.subCategories = null;
+        if (params.subCategory) {
+          this.subCategories = [];
+          this.subCategories.push(params.subCategory);
+          this.pageTitle += ' SubCategoría (' + params.subCategory.toUpperCase() + ')';
+        }
       }
       this.page = params.page ? parseInt(params.page, 10) : 1;
       this.perPage = 48;
@@ -106,7 +112,6 @@ export class CategoryComponent implements OnInit {
         this.subCategories
       ).subscribe(result => {
         this.products = result.products;
-        const category = [[]];
         let brands: string[] = [];
         if (params.brand) {
           brands = params.brand.split(',');
@@ -165,9 +170,6 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.toggle = window.innerWidth <= 991;
-    this.activeRoute.data.subscribe((data: { title: string }) => {
-      this.pageTitle = data.title || this.pageTitle;
-    });
   }
 
   ngOnDestroy(): void {

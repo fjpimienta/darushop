@@ -11,7 +11,7 @@
         <div class="widget-body">
           <div class="filter-items">
             <div class="filter-item" *ngFor="let item of brands; let index = index;">
-              <div class="custom-control custom-checkbox">
+              <div *ngIf="item.slug!=''" class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" [id]="item.slug"
                   [checked]="containsAttrInUrl('brand', item.slug)" (change)="onAttrClick('brand', item.slug)">
                 <label class="custom-control-label" [for]="item.slug">{{ item.description }}</label>
@@ -29,261 +29,242 @@
           <div class="filter-items filter-items-count">
             <div class="filter-item">
               <ul>
-                <li>
-                  <a [routerLink]="[]" [queryParams]="{category: 'computadoras'}"
+                <li *ngIf="totalComputadoras>0 || totalLaptops>0 || totalDesktops>0 || totalWorkStations>0 || totalTablets>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'computadoras'}" queryParamsHandling="merge"
                     routerLinkActive="active">Computadoras</a>
-                  <ul>
-                    <li>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalLaptops>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'laptops'}"
-                        routerLinkActive="active">Laptops</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Laptops</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'computadoras', subCategory: 'desktops'}"
-                        routerLinkActive="active">Desktops</a>
+                    <li *ngIf="totalDesktops>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'desktops'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Desktops</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}"
-                        routerLinkActive="active">Work
+                    <li *ngIf="totalWorkStations>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'work-stations'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Work
                         Stations</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalTablets>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'computadoras', subCategory: 'tablets'}"
-                        routerLinkActive="active">Tablets</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Tablets</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'software'}"
+                <li *ngIf="totalSofware>0 || totalAntivirus>0 || totalOfimatica>0 || totalSistemaOperativo>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'software'}" queryParamsHandling="merge"
                     routerLinkActive="active">Software</a>
-                  <ul>
-                    <li>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalAntivirus>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'antivirus'}"
-                        routerLinkActive="active">Antivirus</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Antivirus</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalOfimatica>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'ofimatica'}"
-                        routerLinkActive="active">Ofimatica</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Ofimatica</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}"
-                        routerLinkActive="active">Sistema
+                    <li *ngIf="totalSistemaOperativo>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'software', subCategory: 'sistema-operativo'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Sistema
                         Operativo</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'impresion'}"
+                <li *ngIf="totalImpresion>0 || totalImpresoras>0 || totalEscaners>0 || totalConsumibles>0 || totalRefacciones>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'impresion'}" queryParamsHandling="merge"
                     routerLinkActive="active">Impresión</a>
-                  <ul>
-                    <li>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalImpresoras>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'impresoras'}"
-                        routerLinkActive="active">Impresoras</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Impresoras</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalEscaners>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'escaners'}"
-                        routerLinkActive="active">Escaners</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Escaners</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'impresion', subCategory: 'consumibles'}"
-                        routerLinkActive="active">Consumibles</a>
+                    <li *ngIf="totalConsumibles>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'consumibles'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Consumibles</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'impresion', subCategory: 'refacciones'}"
-                        routerLinkActive="active">Refacciones</a>
+                    <li *ngIf="totalRefacciones>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'impresion', subCategory: 'refacciones'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Refacciones</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'energia'}"
+                <li *ngIf="totalEnergia>0 || totalNoBreakYUps>0 || totalReguladores>0 || totalMulticontacto>0 || totalBateriasParaUps>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'energia'}" queryParamsHandling="merge"
                     routerLinkActive="active">Energia</a>
-                  <ul>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}"
-                        routerLinkActive="active">No Break y
+                  <ul class="detail-ul">
+                    <li *ngIf="totalNoBreakYUps>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'no-break-y-ups'}"
+                        queryParamsHandling="merge" routerLinkActive="active">No Break y
                         UPS</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalReguladores>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'reguladores'}"
-                        routerLinkActive="active">Reguladores</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Reguladores</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'multicontacto'}"
-                        routerLinkActive="active">Multicontacto</a>
+                    <li *ngIf="totalMulticontacto>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'multicontacto'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Multicontacto</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}"
-                        routerLinkActive="active">Baterias
+                    <li *ngIf="totalBateriasParaUps>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'energia', subCategory: 'baterias-para-ups'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Baterias
                         para UPS</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video'}"
+                <li *ngIf="totalMonitoresYVideo>0 || totalPantallasDeTv>0 || totalMonitores>0 || totalProyectores>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video'}" queryParamsHandling="merge"
                     routerLinkActive="active">Monitores y
                     Video</a>
-                  <ul>
-                    <li>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalPantallasDeTv>0">
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'monitores-y-video', subCategory: 'pantallas-de-tv'}"
-                        routerLinkActive="active">Pantallas de
+                        queryParamsHandling="merge" routerLinkActive="active">Pantallas de
                         TV</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}"
-                        routerLinkActive="active">Monitores</a>
+                    <li *ngIf="totalMonitores>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'monitores'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Monitores</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
-                        routerLinkActive="active">Proyectores</a>
+                    <li *ngIf="totalProyectores>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Proyectores</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'redes'}"
+                <li *ngIf="totalRedes>0 || totalAccessPoint>0 || totalSwitches>0 || totalAdaptadoresDeRed>0 || totalTarjetasDeRed>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'redes'}" queryParamsHandling="merge"
                     routerLinkActive="active">Redes</a>
-                  <ul>
-                    <li>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalAccessPoint>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'access-point'}"
-                        routerLinkActive="active">Access Point</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Access Point</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalSwitches>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'switches'}"
-                        routerLinkActive="active">Switches</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Switches</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}"
-                        routerLinkActive="active">Adaptadores de
+                    <li *ngIf="totalAdaptadoresDeRed>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'adaptadores-de-red'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Adaptadores de
                         Red</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}"
-                        routerLinkActive="active">Tarjetas de
+                    <li *ngIf="totalTarjetasDeRed>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'redes', subCategory: 'tarjetas-de-red'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Tarjetas de
                         Red</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'componentes'}"
+                <li *ngIf="totalComponentes>0 || totalMemoriasRam>0 || totalDiscosDuros>0 || totalProcesadores>0 || totalFuentesDePoder>0 || totalPlacasMadres>0 || totalGabinetes>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'componentes'}" queryParamsHandling="merge"
                     routerLinkActive="active">Componentes</a>
-                  <ul>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}"
-                        routerLinkActive="active">Memorias RAM</a>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalMemoriasRam>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'memorias-ram'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Memorias RAM</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}"
-                        routerLinkActive="active">Discos Duros</a>
+                    <li *ngIf="totalDiscosDuros>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'discos-duros'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Discos Duros</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'procesadores'}"
-                        routerLinkActive="active">Procesadores</a>
+                    <li *ngIf="totalProcesadores>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'procesadores'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Procesadores</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}"
-                        routerLinkActive="active">Fuentes de
+                    <li *ngIf="totalFuentesDePoder>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'fuentes-de-poder'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Fuentes de
                         Poder</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}"
-                        routerLinkActive="active">Placas
+                    <li *ngIf="totalPlacasMadres>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'placas-madres'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Placas
                         Madres</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}"
-                        routerLinkActive="active">Gabinetes</a>
+                    <li *ngIf="totalGabinetes>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'componentes', subCategory: 'gabinetes'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Gabinetes</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento'}"
+                <li *ngIf="totalAlmacenamiento>0 || totalDiscosDurosMecanicos>0 || totalDiscosDurosSolidos>0 || totalMemoriasUsb>0 || totalDiscosDurosExternos>0 || totalLectoresDeMemorias>0 || totalGabineteParaDiscoDuro>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento'}" queryParamsHandling="merge"
                     routerLinkActive="active">Almacenamiento</a>
-                  <ul>
-                    <li>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalDiscosDurosMecanicos>0">
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-mecanicos'}"
-                        routerLinkActive="active">Discos
+                        queryParamsHandling="merge" routerLinkActive="active">Discos
                         Duros Mecanicos</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalDiscosDurosSolidos>0">
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-solidos'}"
-                        routerLinkActive="active">Discos
+                        queryParamsHandling="merge" routerLinkActive="active">Discos
                         Duros Sólidos</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]"
-                        [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}"
-                        routerLinkActive="active">Memorias USB</a>
+                    <li *ngIf="totalMemoriasUsb>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento', subCategory: 'nemorias-usb'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Memorias USB</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalDiscosDurosExternos>0">
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'discos-duros-externos'}"
-                        routerLinkActive="active">Discos
+                        queryParamsHandling="merge" routerLinkActive="active">Discos
                         Duros Externos</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalLectoresDeMemorias>0">
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'lectores-de-memorias'}"
-                        routerLinkActive="active">Lectores
+                        queryParamsHandling="merge" routerLinkActive="active">Lectores
                         de Memorias</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalGabineteParaDiscoDuro>0">
                       <a [routerLink]="[]"
                         [queryParams]="{category: 'almacenamiento', subCategory: 'gabinete-para-disco-duro'}"
-                        routerLinkActive="active">Gabinete
+                        queryParamsHandling="merge" routerLinkActive="active">Gabinete
                         para Disco Duro</a>
                     </li>
                   </ul>
                 </li>
-                <li class="parent">
-                  <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}"
+                <li *ngIf="totalAccesorios>0 || totalTeclados>0 || totalMouses>0 || totalAudifonos>0 || totalBocinas>0 || totalMochilas>0 || totalHubs>0 || totalMousepads>0">
+                  <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}" queryParamsHandling="merge"
                     routerLinkActive="active">Accesorios</a>
-                  <ul>
-                    <li>
+                  <ul class="detail-ul">
+                    <li *ngIf="totalTeclados>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'teclados'}"
-                        routerLinkActive="active">Teclados</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Teclados</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalMouses>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'mouses'}"
-                        routerLinkActive="active">Mouses</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Mouses</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalAudifonos>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'audifonos'}"
-                        routerLinkActive="active">Audífonos</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Audífonos</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalBocinas>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'bocinas'}"
-                        routerLinkActive="active">Bocinas</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Bocinas</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalMochilas>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'mochilas'}"
-                        routerLinkActive="active">Mochilas</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Mochilas</a>
                     </li>
-                    <li>
+                    <li *ngIf="totalHubs>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'hubs'}"
-                        routerLinkActive="active">Hubs</a>
+                        queryParamsHandling="merge" routerLinkActive="active">Hubs</a>
                     </li>
-                    <li>
-                      <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'Mousepads'}"
-                        routerLinkActive="active">Mousepads</a>
+                    <li *ngIf="totalMousepads>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'mousepads'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Mousepads</a>
                     </li>
                   </ul>
                 </li>

@@ -2,7 +2,7 @@
 
   <figure class="product-media">
     <span class="product-label label-circle label-new" *ngIf="product.new">Nuevo</span>
-    <span class="product-label label-circle label-sale" *ngIf="product.sale_price">Oferta</span>
+    <span class="product-label label-circle label-sale" *ngIf="product.featured">Oferta</span>
     <span class="product-label label-circle label-top" *ngIf="product.top">Top</span>
     <span class="product-label label-circle label-out" *ngIf="!product.stock || product.stock === 0">Agotado</span>
     <a [routerLink]="['/product/default/'+ product.id]">
@@ -63,15 +63,15 @@
     </ng-template>
     <div class="product-bra">
       <span *ngFor="let bra of product.brands; let i =index">
-        <a [routerLink]="['/products']" [queryParams]="{brand: bra.slug}">{{ bra.name }}</a>{{ i <
-          product.brands.length - 1 ? ',' : '' }}</span>
+        <a [routerLink]="['/products']" [queryParams]="{brand: bra.slug}">{{ bra.name }}</a>{{ i < product.brands.length
+          - 1 ? ',' : '' }}</span>
     </div>
     <div class="ratings-container">
-      <!-- <div class="ratings">
+      <div *ngIf="product.ratings > 0" class="ratings">
         <div class="ratings-val" [style.width]="product.ratings * 20 + '%'"></div>
         <span class="tooltip-text">{{ product.ratings.toFixed(2) }}</span>
       </div>
-      <span class="ratings-text">( {{ product.review }} Reviews )</span> -->
+      <span *ngIf="product.review > 0" class="ratings-text">( {{ product.review }} Reviews )</span>
     </div>
   </div>
 

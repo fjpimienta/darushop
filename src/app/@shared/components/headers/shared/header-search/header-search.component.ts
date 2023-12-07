@@ -128,7 +128,14 @@ export class HeaderSearchComponent implements OnInit, OnDestroy {
   submitSearchForm(e: Event): void {
     e.preventDefault();
     this.router.navigate(['/products'], { queryParams: { searchTerm: this.searchTerm } });
+    this.searchTerm = '';
+    // Restablece el valor del campo de entrada a una cadena vacía
+    const inputElement: any = document.getElementById('searchTerm');
+    if (inputElement) {
+      inputElement.value = '';
+    }
   }
+
 
   onCatSelect(event: any): void {
     this.cat = event.currentTarget.value;

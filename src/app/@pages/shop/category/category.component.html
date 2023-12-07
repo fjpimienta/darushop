@@ -1,6 +1,6 @@
 <div class="main shop-market">
-  <app-page-header title="" subtitle="pageTitle" image="assets/images/banners/banner-category.jpg"></app-page-header>
-
+  <app-page-header title="" subtitle="CATEGOR&Iacute;AS"
+    image="assets/images/banners/banner-category.jpg"></app-page-header>
   <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
     <div class="container">
       <ol class="breadcrumb">
@@ -8,7 +8,7 @@
           <a routerLink="/">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-          <a [attr.href]="previousPageUrl" [innerHTML]="previousPageTitle"></a>
+          <a [routerLink]="[]" [queryParams]="queryParams" [innerHTML]="previousPageTitle"></a>
         </li>
         <li class="breadcrumb-item active">{{ pageTitle }}</li>
         <li class="breadcrumb-item" *ngIf="searchTerm != ''">
@@ -42,7 +42,7 @@
                     <option value="nameDesc">Nombre Descendente</option>
                     <option value="priceAsc">Precio Ascendente</option>
                     <option value="priceDesc">Precio Descendente</option>
-                        <!-- <option value="featured">Más Popular</option>
+                    <!-- <option value="featured">Más Popular</option>
                     <option value="rating">Más Valorado</option>
                     <option value="new">Fecha</option> -->
                   </select>
@@ -112,7 +112,7 @@
             <div class="skel-widget"></div>
           </div>
           <ng-template #sidebarLoaded>
-            <app-shop-sidebar-one [toggle]="toggle" [offer]="offer" [offer]="offer">
+            <app-shop-sidebar-one [toggle]="toggle" [offer]="offer" [offer]="offer" [products]="products">
             </app-shop-sidebar-one>
 
             <button class="sidebar-fixed-toggler" (click)="toggleSidebar()" *ngIf="toggle">

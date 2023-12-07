@@ -58,6 +58,8 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity .2s;
+    border-radius: 10px;
+    background-color: #fff;
 
     &.megamenu-sm {
       left: 0;
@@ -69,6 +71,11 @@
       left: -10rem;
       right: auto;
       width: 694px;
+    }
+
+    &.submenu {
+      margin-left: 19rem;
+      margin-top: -3rem;
     }
 
     >ul,
@@ -462,4 +469,19 @@
   .header-bottom .menu .megamenu.megamenu-md {
     left: -2rem;
   }
+}
+
+.menu.sf-arrows ul .sf-with-ul {
+  padding-right: 3rem;
+  padding-left: 2rem;
+}
+
+.menu .megamenu li a {
+  padding-right: 0;
+  padding-left: 2rem;
+}
+
+.menu .megamenu, .menu ul {
+  background-color: #333;
+  box-shadow: 5px 10px 16px #3333330d, -5px 10px 16px #3333330d;
 }
