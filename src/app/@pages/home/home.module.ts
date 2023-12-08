@@ -8,10 +8,12 @@ import { SharedModule } from '@shared/shared.module';
 
 import { IndexComponent } from './index/index.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WellcomeComponent } from './wellcome/wellcome.component';
 
 @NgModule({
   declarations: [
     IndexComponent,
+    WellcomeComponent,
   ],
 
   imports: [

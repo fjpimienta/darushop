@@ -21,6 +21,7 @@ import { CheckoutComponent } from '@pages/shop/checkout/checkout.component';
 import { DashboardComponent } from '@pages/shop/dashboard/dashboard.component';
 import { AuthGuard } from '@core/guards/auth.guard';
 import { ProductsComponent } from '@pages/shop/products/products.component';
+import { WellcomeComponent } from '@pages/home/wellcome/wellcome.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,12 @@ const routes: Routes = [
         pathMatch: 'full',
         component: IndexComponent,
         data: { title: 'Inicio' }
+      },
+      {
+        path: 'wellcome',
+        pathMatch: 'full',
+        component: WellcomeComponent,
+        data: { title: 'Wellcome' }
       },
       {
         path: 'login',
