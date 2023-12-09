@@ -183,7 +183,7 @@ export class ComingSoonPageComponent implements OnInit {
                 <tr>
                   <td align='center' valign='top' style='width:100%;'>
                     <center>
-                      <a href="https://www.daru.mx/wellcome" target="_blank" data-label="Bienvenida">
+                      <a href="https://qa.daru.mx/wellcome" target="_blank" data-label="Bienvenida">
                         Ir a la Version Web
                       </a>
                     </center>
@@ -203,7 +203,7 @@ export class ComingSoonPageComponent implements OnInit {
                                       <table cellpadding="0" cellspacing="0" width="100%" align="center">
                                         <tr>
                                           <td style="padding: 0px;">
-                                            <a href="https://www.daru.mx/ofertas" target="_blank" data-label="Ofertas">
+                                            <a href="https://qa.daru.mx/ofertas" target="_blank" data-label="Ofertas">
                                               <img src="https://s3.amazonaws.com/imagesrepository.icommarketing.com/ImagesRepo/MjU0NC04MzQxLWRhcnVteF91c3I1/8382/NEWSLETTER_3+codigo+de+descuento.jpg"
                                                 width="600" alt="Link Bienvenida" border="0"
                                                 style="display: block; width: 600px; height: auto; max-width: 600px; position: relative; visibility: visible;"

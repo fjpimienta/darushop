@@ -31,7 +31,7 @@
     }
   },
   "/graphql": {
-    "target": "https://api.daru.mx:3000/graphql",
+    "target": "https://apidev.daru.mx:3001/graphql",
     "secure": true
   }
 }
