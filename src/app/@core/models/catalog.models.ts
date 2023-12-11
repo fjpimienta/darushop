@@ -2,16 +2,19 @@
  * Clase del Catalogo Maestro.
  */
 export class Catalog {
-  id: string;
-  description: string;
-  slug: string;
-  active: boolean;
+  id?: string;
+  description?: string;
+  slug?: string;
+  active?: boolean;
   total?: number;
   order?: number;
   param?: {
     category: string,
     description: string
   };
+  email?: string;
+  name?: string;
+  cupon?: string;
 }
 
 /**
