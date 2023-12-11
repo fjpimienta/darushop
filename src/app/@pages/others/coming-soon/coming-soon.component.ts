@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IMail } from '@core/interfaces/mail.interface';
+import { Catalog } from '@core/models/catalog.models';
 import { MailService } from '@core/services/mail.service';
+import { WelcomesService } from '@core/services/welcomes.service';
 import { infoEventAlert } from '@shared/alert/alerts';
 import { TYPE_ALERT } from '@shared/alert/values.config';
 
@@ -16,7 +18,8 @@ export class ComingSoonPageComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private mailService: MailService
+    private mailService: MailService,
+    private welcomesService: WelcomesService
   ) {
 
   }
@@ -46,44 +49,43 @@ export class ComingSoonPageComponent implements OnInit {
     const receiptEmailInt = 'marketplace@daru.mx';
     const subjectInt = 'Dar de Alta a Usuario';
     const subjectInt2 = 'Felicidades tienes un cupon DARU';
-    const html = `
-      <!DOCTYPE html>
-      <html lang="es">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Contacto del Sitio DARU.MX</title>
-      </head>
-      <body>
-        <div class="container">
-          <h2>Correo Enviado desde Proximamente</h2>
-          <p>Nos ha contactado ${email}, para ser agregado a la lista de contactos.</p>
-          <hr>
-          <p>Favor de atender la solicitud.</p>
-          <hr>
-          <p class="foot">
-          </p>
-        </div>
-      </body>
-      </html>
-      `;
+    // const html = `
+    //   <!DOCTYPE html>
+    //   <html lang="es">
+    //   <head>
+    //     <meta charset="UTF-8">
+    //     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    //     <title>Contacto del Sitio DARU.MX</title>
+    //   </head>
+    //   <body>
+    //     <div class="container">
+    //       <h2>Correo Enviado desde Proximamente</h2>
+    //       <p>Nos ha contactado ${email}, para ser agregado a la lista de contactos.</p>
+    //       <hr>
+    //       <p>Favor de atender la solicitud.</p>
+    //       <hr>
+    //       <p class="foot">
+    //       </p>
+    //     </div>
+    //   </body>
+    //   </html>
+    //   `;
 
-    const mail: IMail = {
-      to: receiptEmailInt,
-      subject: subjectInt,
-      html: html
-    };
+    // const mail: IMail = {
+    //   to: receiptEmailInt,
+    //   subject: subjectInt,
+    //   html: html
+    // };
 
-    this.mailService.send(mail).subscribe(
-      (response) => {
-        infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
-        this.formData.controls.email.setValue('');
-      },
-      (error) => {
-        infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
-      }
-    );
-
+    // this.mailService.send(mail).subscribe(
+    //   (response) => {
+    //     infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
+    //     this.formData.controls.email.setValue('');
+    //   },
+    //   (error) => {
+    //     infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
+    //   }
+    // );
 
     const html2 = `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -236,11 +238,24 @@ export class ComingSoonPageComponent implements OnInit {
       subject: subjectInt2,
       html: html2
     };
+    const partes = email.split("@");
+    const name = partes[0];
+    const cupon= 'DARU-2501500';
 
     this.mailService.send(mail2).subscribe(
       (response) => {
-        infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
+        const welcome: Catalog = {
+          description:'',
+          slug:'',
+          active: true,
+          email,
+          name,
+          cupon
+        }
+        console.log('welcome: ', welcome);
+        this.welcomesService.add(welcome);
         this.formData.controls.email.setValue('');
+        infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
       },
       (error) => {
         infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
