@@ -49,9 +49,8 @@ export class AppComponent {
         && !event.url.includes('/market') && !event.url.includes('/blog')) {
         this.viewPort.scrollToPosition([0, 0]);
       }
-
       if (event.url === '/') {
-        document.querySelector('.sticky-wrapper').classList.remove('bg-black');
+        // document.querySelector('.sticky-wrapper').classList.remove('bg-black');
       } else {
         if (event.url !== '/soon') {
           document.querySelector('.sticky-wrapper').classList.add('bg-black');

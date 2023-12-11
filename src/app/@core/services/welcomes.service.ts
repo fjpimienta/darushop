@@ -14,14 +14,15 @@ export class WelcomesService extends ApiService {
     super(apollo);
   }
 
-  add(welcome: ICatalog) {
-    return this.set(
-      ADD_WELCOME,
-      {
-        welcome
-      }, {}).pipe(map((result: any) => {
-        return result.welcome;
-      })
-      );
+  async add(welcome: Object): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.set(ADD_WELCOME, welcome, {}).subscribe(
+        (result: any) => {
+          resolve(result.addWelcome);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
   }
 }
