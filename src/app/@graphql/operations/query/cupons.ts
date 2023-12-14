@@ -20,8 +20,8 @@ export const CUPONS_LIST_QUERY = gql`
 `;
 
 export const CUPON_QUERY = gql`
-   query cuponData($name: String!) {
-      cupon(name: $name){
+   query cuponData($cupon: String!) {
+      cupon(cupon: $cupon){
          status
          message
          cupon {

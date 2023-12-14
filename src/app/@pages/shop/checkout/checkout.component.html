@@ -21,11 +21,18 @@
       <div class="container">
         <div class="checkout-discount">
           <form action="#" id="checkout-discount-form">
-            <input type="text" class="form-control" (input)="convertToUppercaseCupon($event)" required
-              id="checkout-discount-input" maxlength="11" (click)="addOpacity($event)"
-              (blur)="validateDiscount($event)">
+            <input type="text" class="form-control" (input)="convertToUppercaseCupon($event)" [(ngModel)]="cuponInput"
+              id="checkout-discount-input" maxlength="12" (click)="addOpacity($event)" (blur)="validateDiscount($event)"
+              required>
             <label for="checkout-discount-input" class="text-truncate">Tienes un CUPÓN de descuento? <span>Introduce tu
                 código aqui</span></label>
+
+
+            <!--
+                <input type="text" placeholder="Nombre(s)" maxlength="20" [(ngModel)]="nameCard"
+                                          name="nameCard" (input)="convertToUppercase($event)"
+                                          (blur)="onAsignarNombresCard($event)">
+                                           -->
           </form>
         </div>
         <form (ngSubmit)="onSubmit()" [formGroup]="formData">
@@ -69,7 +76,8 @@
                 </div>
                 <div class="col-sm-6">
                   <label>Correo Electrónico *</label>
-                  <input type="email" name="email" class="form-control" formControlName="email" required>
+                  <input type="email" name="email" class="form-control" formControlName="email" required
+                    (blur)="validateDiscountByEmail($event)">
                   <div class="alert alert-danger"
                     *ngIf="formData.get('email').invalid && (formData.get('email').dirty || formData.get('email').touched)">
                     <div *ngIf="formData.get('email').hasError('required')">El correo electrónico es requerido.</div>
@@ -240,7 +248,11 @@
                       <td>Subtotal:</td>
                       <td>{{ (cartService.priceTotal | async).toFixed(2) | currency }}</td>
                     </tr>
-                    <tr *ngIf="discountPorc!=='0'" class="summary-subtotal">
+                    <tr *ngIf="typeDiscount==='importe'" class="summary-subtotal">
+                      <td>Descuentos:</td>
+                      <td>{{discount | currency}}</td>
+                    </tr>
+                    <tr *ngIf="typeDiscount!=='importe'" class="summary-subtotal">
                       <td>Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
@@ -412,7 +424,8 @@
                     </label>
                   </div>
                 </div>
-                <app-card *ngIf="!this.idDelivery" adClass="card-box card-sm bg-light" title="Datos Fiscales" [show]="showFacturacion">
+                <app-card *ngIf="!this.idDelivery" adClass="card-box card-sm bg-light" title="Datos Fiscales"
+                  [show]="showFacturacion">
                   <form [formGroup]="formDataInvoice">
                     <div class="row">
                       <div class="col-12">
