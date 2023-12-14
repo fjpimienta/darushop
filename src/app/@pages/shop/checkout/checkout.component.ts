@@ -345,6 +345,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (result.delivery.delivery) {
             this.delivery = result.delivery.delivery;
             this.onSetDelivery(this.formData, result.delivery.delivery);
+            const discount =  parseFloat(result.delivery.delivery.discount);
+            const totalEnvios = parseFloat(this.totalEnvios);
+            this.cartService.priceTotal.subscribe(total => {
+              this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
+            });
           }
           return result.delivery.delivery;
         });
@@ -833,6 +838,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       totalShips += ships.costo;
     }
     this.totalEnvios = totalShips.toFixed(2).toString();
+    this.discount = delivery.discount.toString();
     this.changeShipping(totalShips);
   }
 
