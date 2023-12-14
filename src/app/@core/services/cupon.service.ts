@@ -75,9 +75,9 @@ export class CuponsService extends ApiService {
     });
   }
 
-  async getCupon(name: string): Promise<any> {
+  async getCupon(cupon: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.get(CUPON_QUERY, { name }).subscribe(
+      this.get(CUPON_QUERY, { cupon }).subscribe(
         (result: any) => {
           resolve(result.cupon);
         },

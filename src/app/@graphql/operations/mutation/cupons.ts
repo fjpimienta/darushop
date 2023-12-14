@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import { CUPON_FRAGMENT } from 'src/app/@graphql/operations/fragment/cupon';
 
 export const ADD_CUPON = gql`
-   mutation addCupon($cupon: CatalogInput!) {
+   mutation addCupon($cupon: CuponInput!) {
       addCupon(cupon: $cupon) {
          status
          message
@@ -15,7 +15,7 @@ export const ADD_CUPON = gql`
 `;
 
 export const ADD_CUPON_LIST = gql`
-   mutation addCupons($cupons: [CatalogInput!]!, $supplier: SupplierInput) {
+   mutation addCupons($cupons: [CuponInput!]!, $supplier: SupplierInput) {
       addCupons(cupons: $cupons, supplier: $supplier) {
          status
          message
@@ -28,7 +28,7 @@ export const ADD_CUPON_LIST = gql`
 `;
 
 export const UPDATE_CUPON = gql`
-   mutation updateCupon($cupon: CatalogInput!) {
+   mutation updateCupon($cupon: CuponInput!) {
       updateCupon(cupon: $cupon) {
          status
          message
