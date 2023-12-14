@@ -52,6 +52,9 @@ import { CuponsService } from '@core/services/cupon.service';
 import { ICatalog } from '@core/interfaces/catalog.interface';
 import { InvoiceConfigsService } from '@core/services/invoiceconfig.service';
 import { FormaPago, InvoiceConfig, InvoiceConfigInput, MetodoPago, RegimenFiscal, UsoCFDI } from '@core/models/invoiceConfig.models';
+import { WelcomesService } from '@core/services/welcomes.service';
+import { ICupon } from '@core/interfaces/cupon.interface';
+import { Cupon } from '@core/models/cupon.models';
 
 declare var $: any;
 declare var OpenPay: any
@@ -95,7 +98,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   deliverys: Delivery[];
   suppliers: [ISupplier];
   shippings: [IShipping];
-  cupon: ICatalog;
+  cupon: Cupon;
 
   session: IMeData = {
     status: false
@@ -112,7 +115,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   totalEnvios: string;
   discountPorc: string = '0';
   discount: string = '0';
+  discountImporte: string = '0';
   resultCustomer: IResultStripeCustomer;
+  typeDiscount = '';
 
   myCurrency = CURRENCIES_SYMBOL[CURRENCY_LIST.MEXICAN_PESO];
 
@@ -176,6 +181,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   esPersonaMoral: Boolean = false;
   rfcLength: number = 13;
 
+  cuponInput: string = '';
+
   constructor(
     private router: Router,
     private el: ElementRef,
@@ -196,7 +203,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public deliverysService: DeliverysService,
     public chargeOpenpayService: ChargeOpenpayService,
     public cuponsService: CuponsService,
-    public invoiceConfigsService: InvoiceConfigsService
+    public invoiceConfigsService: InvoiceConfigsService,
+    public welcomesService: WelcomesService
   ) {
     try {
       this.activeRoute.queryParams.subscribe(params => {
@@ -1334,8 +1342,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.cartService.priceTotal.subscribe(total => {
         this.totalPagar = (total).toFixed(2).toString();
       });
-      const discountPorc = this.cupon.order;
-      discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
+      const discountPorc = this.cupon.amountDiscount;
+      const discountImporte = this.cupon.amountDiscount;
+      if (this.cupon.typeDiscount === 'importe') {
+        discountI = discountImporte;
+      } else {
+        discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
+      }
       this.discount = discountI.toFixed(2).toString();
     }
     if (costo) {
@@ -1354,7 +1367,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       deliveryI = parseFloat(this.totalEnvios);
     }
     if (this.cupon) {
-      discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
+      if (this.cupon.typeDiscount === 'importe') {
+        discountI = this.cupon.amountDiscount;
+      } else {
+        discountI = (parseFloat(this.totalPagar) * discountPorc / 100);
+      }
       this.discount = discountI.toFixed(2).toString();
       this.cartService.priceTotal.subscribe(total => {
         this.totalPagar = (total - discountI + deliveryI).toFixed(2).toString();
@@ -1397,14 +1414,65 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.discountPorc = "0";
     if (cupon) {
       this.cupon = cupon;
-      discountPorc = cupon.order;
-      this.discountPorc = cupon.order.toString();
+      const email = this.formData.controls.email.value;
+      this.typeDiscount = cupon.typeDiscount;
+      const totalCharge = parseFloat(this.totalPagar);
+      if (this.cupon.minimumPurchase > totalCharge) {
+        const msj = `Para que utilices tu cupon se requiere esta cantidad minima: ${this.cupon.minimumPurchase.toFixed(2).toString()}`
+        infoEventAlert(msj, '');
+        this.cuponInput = '';
+        this.cupon = new Cupon();
+        return;
+      }
+      if (email === '') {
+        infoEventAlert('Para que utilices tu cupon se requiere el correo electronico donde llego.', '');
+        return;
+      }
+      const welcome = await this.welcomesService.getWelcome(email);
+      if (!welcome.status) {
+        console.log('welcome.messaje: ', welcome.message);
+        return;
+      }
+      discountPorc = discountPorc ? this.cupon.amountDiscount : 0;
+      this.discountPorc = discountPorc.toString();
     } else {
       if (inputValue !== '') {
         infoEventAlert('Lo siento este código no lo reconozco.', '');
         event.target.value = '';
+        this.cupon = new Cupon();
+        return;
       }
     }
+    console.log('this.cupon: ', this.cupon);
+    console.log('discountPorc: ', discountPorc);
+    this.changeDiscount(discountPorc);
+  }
+
+  async validateDiscountByEmail(event: any): Promise<void> {
+    const inputValue = event.target.value;
+    console.log('this.cuponInput: ', this.cuponInput);
+    const cupon = await this.cuponsService.getCupon(this.cuponInput)  // Recuperar el descuento del cupon.
+      .then(async result => {
+        return await result.cupon;
+      });
+    let discountPorc = 0;
+    this.discountPorc = "0";
+    console.log('cupon: ', cupon);
+    if (cupon) {
+      const email = this.formData.controls.email.value;
+      const welcome = await this.welcomesService.getWelcome(email);
+      this.cupon = cupon;
+      this.typeDiscount = cupon.typeDiscount;
+      // discountPorc = cupon.order;
+      // this.discountPorc = cupon.order.toString();
+    } else {
+      infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
+      this.cuponInput = '';
+      this.cupon = new Cupon();
+      return;
+    }
+    console.log('this.cupon: ', this.cupon);
+    console.log('discountPorc: ', discountPorc);
     this.changeDiscount(discountPorc);
   }
 

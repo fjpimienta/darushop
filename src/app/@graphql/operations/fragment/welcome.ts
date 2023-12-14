@@ -6,5 +6,6 @@ export const WELCOME_FRAGMENT = gql`
     email
     name
     cupon
+    active
   }
 `;
