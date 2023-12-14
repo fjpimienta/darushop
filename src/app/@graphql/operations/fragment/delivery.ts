@@ -7,10 +7,11 @@ export const DELIVERY_FRAGMENT = gql`
       cliente
       cupon {
         id
+        cupon
         description
-        slug
-        order
-        active
+        typeDiscount
+        amountDiscount
+        minimumPurchase
       }
       discount
       importe

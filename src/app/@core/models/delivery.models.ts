@@ -1,4 +1,5 @@
 import { Catalog } from './catalog.models';
+import { Cupon } from './cupon.models';
 import { InvoiceConfigInput } from './invoiceConfig.models';
 import { OrderCt } from './suppliers/orderct.models';
 import { OrderCtConfirmResponse, OrderCtResponse } from './suppliers/orderctresponse.models';
@@ -14,7 +15,7 @@ export class Delivery {
   id: string;
   deliveryId: string;
   cliente: string;
-  cupon?: Catalog;
+  cupon?: Cupon;
   discount: number;
   importe: number;
   registerDate?: string;
