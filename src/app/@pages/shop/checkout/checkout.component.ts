@@ -870,7 +870,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onSetInvoiceConfig(formData: FormGroup): InvoiceConfigInput {
-    console.log('formData: ', formData);
     const invoice = new InvoiceConfigInput();
     invoice.factura = this.showFacturacion;
     invoice.nombres = this.showFacturacion ? formData.controls.nombresInvoice.value : "";
@@ -1433,6 +1432,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         console.log('welcome.messaje: ', welcome.message);
         return;
       }
+      if (welcome && !welcome.welcome.active) {
+        const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+        infoEventAlert(mensaje, '');
+        this.discount = '';
+        this.cuponInput = '';
+        this.cartService.priceTotal.subscribe(total => {
+          this.totalPagar = (total).toFixed(2).toString();
+        });
+        this.cupon = new Cupon();
+        return;
+      }
       discountPorc = discountPorc ? this.cupon.amountDiscount : 0;
       this.discountPorc = discountPorc.toString();
     } else {
@@ -1443,24 +1453,31 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return;
       }
     }
-    console.log('this.cupon: ', this.cupon);
-    console.log('discountPorc: ', discountPorc);
     this.changeDiscount(discountPorc);
   }
 
   async validateDiscountByEmail(event: any): Promise<void> {
     const inputValue = event.target.value;
-    console.log('this.cuponInput: ', this.cuponInput);
     const cupon = await this.cuponsService.getCupon(this.cuponInput)  // Recuperar el descuento del cupon.
       .then(async result => {
         return await result.cupon;
       });
     let discountPorc = 0;
     this.discountPorc = "0";
-    console.log('cupon: ', cupon);
     if (cupon) {
       const email = this.formData.controls.email.value;
       const welcome = await this.welcomesService.getWelcome(email);
+      if (welcome && !welcome.welcome.active) {
+        const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+        infoEventAlert(mensaje, '');
+        this.discount = '';
+        this.cuponInput = '';
+        this.cartService.priceTotal.subscribe(total => {
+          this.totalPagar = (total).toFixed(2).toString();
+        });
+        this.cupon = new Cupon();
+        return;
+      }
       this.cupon = cupon;
       this.typeDiscount = cupon.typeDiscount;
       // discountPorc = cupon.order;
@@ -1471,8 +1488,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.cupon = new Cupon();
       return;
     }
-    console.log('this.cupon: ', this.cupon);
-    console.log('discountPorc: ', discountPorc);
     this.changeDiscount(discountPorc);
   }
 
