@@ -51,7 +51,7 @@ export class MailService extends ApiService {
                       </tr>
                     `
     }
-    const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
+    const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? 0 : parseFloat(discount));
     let datosFactura = ''
     if (esFacturable) {
       const nombre = charge.invoiceConfig.nombreEmpresa !== '' ? charge.invoiceConfig.nombreEmpresa : charge.invoiceConfig.nombres + ' ' + charge.invoiceConfig.apellidos;
@@ -258,7 +258,7 @@ export class MailService extends ApiService {
                       </tr>
                     `
     }
-    const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
+    const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? 0 : parseFloat(discount));
     const productRows = productos.map((producto: any) => `
         <tr>
           <td>${producto.name}</td>
