@@ -97,6 +97,9 @@ export class IndexComponent implements OnInit {
     public utilsService: UtilsService,
     public productService: ProductsService
   ) {
+    // Mostrar el Newsletter
+    this.modalService.openNewsletter();
+    // Fin
     combineLatest([
       this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
       this.activeRoute.data

@@ -1,0 +1,52 @@
+/* Estilo para centrar el contenido en dispositivos pequeños */
+.soon-content {
+  display: flex;
+  /* Utilizar flexbox para alinear contenido verticalmente */
+  flex-direction: column;
+  /* Colocar los elementos en columna */
+  justify-content: flex-end;
+  /* Alinea el contenido en la parte inferior */
+  align-items: center;
+  /* Centra horizontalmente el contenido */
+  height: 100vh;
+  /* Establece la altura del contenedor al 100% de la altura de la ventana */
+}
+
+/* Media query para dispositivos medianos o grandes */
+@media (min-width: 768px) {
+  .soon-content {
+    padding: 20px 0;
+    /* Ajusta el espacio arriba y abajo según tus necesidades */
+  }
+}
+
+/* Estilo base para dispositivos pequeños */
+.soon {
+  background-image: url('../../../../../assets/images/backgrounds/daru_espera_2.jpg');
+  background-size: 100% auto;
+  /* Hace que el fondo sea responsive */
+  padding: 10%;
+  height: 100%;
+  /* Establece la altura del contenedor al 100% de la altura de la ventana */
+  overflow: hidden;
+}
+
+.soon img {
+  max-width: 100%;
+}
+
+/* Estilo para el div con la clase soon-content-wrapper */
+.soon-content-wrapper {
+  flex-grow: 0.35; /* Hace que el div crezca y empuje hacia arriba */
+  position: relative; /* Establece una posición relativa */
+  z-index: 1; /* Cambia el z-index para asegurarte de que esté por encima de otros elementos */
+  /* Otros estilos adicionales según tus necesidades */
+}
+
+/* Media query para dispositivos móviles */
+@media (max-width: 767px) {
+  .soon-content-wrapper {
+    flex-grow: 0.8; /* Nuevo valor para dispositivos móviles */
+    backdrop-filter: blur(10px); /* Aplica un efecto de desenfoque */
+  }
+}
