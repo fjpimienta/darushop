@@ -227,7 +227,7 @@ export class NewsletterModalComponent implements OnInit {
     }
     const respuesta = await this.welcomesService.add(welcome);
     if (!respuesta.status) {
-      infoEventAlert(respuesta.message, '', TYPE_ALERT.SUCCESS);
+      infoEventAlert(respuesta.message, '', TYPE_ALERT.WARNING);
       this.formData.controls.email.setValue('');
       return;
     }
@@ -235,6 +235,7 @@ export class NewsletterModalComponent implements OnInit {
       (response) => {
         this.formData.controls.email.setValue('');
         infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
+        this.closeModal();
       },
       (error) => {
         infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
