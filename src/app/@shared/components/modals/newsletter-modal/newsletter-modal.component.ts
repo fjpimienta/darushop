@@ -216,7 +216,7 @@ export class NewsletterModalComponent implements OnInit {
     };
     const partes = email.split("@");
     const name = partes[0];
-    const cupon = 'DARU-2501500';
+    const cupon = 'BIENVENIDOADARU';
 
     const welcome = {
       'welcome': {
