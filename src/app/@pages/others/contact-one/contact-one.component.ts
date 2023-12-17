@@ -111,8 +111,9 @@ export class ContactOnePageComponent implements OnInit {
 
   //#region Emails  //ICharge
   async sendEmail(contact: any): Promise<any> {
-    const receiptEmail = 'marketplace@daru.mx';
+    const receiptEmail = 'DARU Shop <marketplace@daru.mx>';
     const subject = contact.csubject;
+    const receiptEmailInt = contact.cmail;
     const html = `
       <!DOCTYPE html>
       <html lang="es">
@@ -140,12 +141,12 @@ export class ContactOnePageComponent implements OnInit {
     const mail: IMail = {
       to: receiptEmail,
       subject,
-      html
+      html,
+      from: receiptEmailInt,
     };
     this.mailService.send(mail).pipe(first()).subscribe();
 
     // Respuesta al cliente.
-    const receiptEmailInt = contact.cmail;
     const subjectInt = contact.csubject;
     let htmlInt = `
     <!DOCTYPE html>
@@ -173,7 +174,8 @@ export class ContactOnePageComponent implements OnInit {
     const mailInt: IMail = {
       to: receiptEmailInt,
       subject: subjectInt,
-      html: htmlInt
+      html: htmlInt,
+      from: receiptEmail,
     };
     this.mailService.send(mailInt).pipe(first()).subscribe();
 
