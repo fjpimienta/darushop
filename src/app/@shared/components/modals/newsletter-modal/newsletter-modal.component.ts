@@ -60,6 +60,7 @@ export class NewsletterModalComponent implements OnInit {
       return;
     }
 
+    const emailFrom = 'DARU Shop <marketplace@daru.mx>';
     const email = this.formData.controls.email.value;
     const subjectInt2 = 'Felicidades tienes un cupon DARU';
 
@@ -212,7 +213,8 @@ export class NewsletterModalComponent implements OnInit {
     const mail2: IMail = {
       to: email,
       subject: subjectInt2,
-      html: html2
+      html: html2,
+      from: emailFrom,
     };
     const partes = email.split("@");
     const name = partes[0];
