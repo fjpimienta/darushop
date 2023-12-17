@@ -70,7 +70,8 @@ export class ComingSoonPageComponent implements OnInit {
     const mail: IMail = {
       to: receiptEmailInt,
       subject: subjectInt,
-      html: html
+      html: html,
+      from: email,
     };
 
     this.mailService.send(mail).subscribe(
