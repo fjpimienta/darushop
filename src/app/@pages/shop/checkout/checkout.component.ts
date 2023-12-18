@@ -1471,16 +1471,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const email = this.formData.controls.email.value;
       const welcome = await this.welcomesService.getWelcome(email);
       console.log('welcome: ', welcome);
-      if (welcome && welcome.welcome && !welcome.welcome.active) {
-        const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
-        infoEventAlert(mensaje, '');
-        this.discount = '';
-        this.cuponInput = '';
-        this.cartService.priceTotal.subscribe(total => {
-          this.totalPagar = (total).toFixed(2).toString();
-        });
-        this.cupon = new Cupon();
-        return;
+      if (welcome && welcome.status) {
+        if (!welcome.welcome.active) {
+          const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+          infoEventAlert(mensaje, '');
+          this.discount = '';
+          this.cuponInput = '';
+          this.cartService.priceTotal.subscribe(total => {
+            this.totalPagar = (total).toFixed(2).toString();
+          });
+          this.cupon = new Cupon();
+          return;
+        }
       } else {
         infoEventAlert('Lo siento este email no esta ligado a este cupón.', '');
         this.cuponInput = '';
