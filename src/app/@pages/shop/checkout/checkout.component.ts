@@ -1469,7 +1469,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (cupon) {
       const email = this.formData.controls.email.value;
       const welcome = await this.welcomesService.getWelcome(email);
-      if (welcome && !welcome.welcome.active) {
+      if (welcome && welcome.welcome && !welcome.welcome.active) {
         const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
         infoEventAlert(mensaje, '');
         this.discount = '';
