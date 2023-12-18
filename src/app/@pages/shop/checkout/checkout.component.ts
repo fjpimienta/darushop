@@ -1399,12 +1399,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // Eliminar caracteres no válidos
     inputValue = inputValue.replace(/[^A-Z0-9]/g, '');
     // Limitar a 11 caracteres alfanuméricos
-    if (inputValue.length > 11) {
-      inputValue = inputValue.slice(0, 11);
-    }
-    // Formatear como "DARU-XXXXXX"
-    if (inputValue.length >= 5) {
-      inputValue = "DARU-" + inputValue.slice(4); // Mantener solo los últimos 6 caracteres
+    if (inputValue.length > 15) {
+      inputValue = inputValue.slice(0, 15);
     }
     event.target.value = inputValue;
   }
