@@ -48,7 +48,7 @@ $dot-background-active: #cccccc !default;
       width: $nav-width;
       height: $nav-height;
       margin: 0;
-      margin-top: -$nav-height / 2;
+      margin-top: math.div(-$nav-height, 2);
       color: $nav-color;
       font-size: $nav-font-size;
       line-height: 1;
