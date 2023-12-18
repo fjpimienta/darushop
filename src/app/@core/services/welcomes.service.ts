@@ -31,7 +31,7 @@ export class WelcomesService extends ApiService {
     return new Promise<any>((resolve, reject) => {
       this.get(WELCOME_QUERY, { email }).subscribe(
         (result: any) => {
-          resolve(result.welcomeByField);
+          resolve(result.welcome);
         },
         (error: any) => {
           reject(error);
