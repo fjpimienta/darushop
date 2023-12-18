@@ -345,7 +345,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (result.delivery.delivery) {
             this.delivery = result.delivery.delivery;
             this.onSetDelivery(this.formData, result.delivery.delivery);
-            const discount =  parseFloat(result.delivery.delivery.discount);
+            const discount = parseFloat(result.delivery.delivery.discount);
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
@@ -1477,6 +1477,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.cartService.priceTotal.subscribe(total => {
           this.totalPagar = (total).toFixed(2).toString();
         });
+        this.cupon = new Cupon();
+        return;
+      } else {
+        infoEventAlert('Lo siento este email no esta ligado a este cupón.', '');
+        this.cuponInput = '';
         this.cupon = new Cupon();
         return;
       }
