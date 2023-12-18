@@ -345,7 +345,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (result.delivery.delivery) {
             this.delivery = result.delivery.delivery;
             this.onSetDelivery(this.formData, result.delivery.delivery);
-            const discount =  parseFloat(result.delivery.delivery.discount);
+            const discount = parseFloat(result.delivery.delivery.discount);
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
@@ -1399,12 +1399,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // Eliminar caracteres no válidos
     inputValue = inputValue.replace(/[^A-Z0-9]/g, '');
     // Limitar a 11 caracteres alfanuméricos
-    if (inputValue.length > 11) {
-      inputValue = inputValue.slice(0, 11);
-    }
-    // Formatear como "DARU-XXXXXX"
-    if (inputValue.length >= 5) {
-      inputValue = "DARU-" + inputValue.slice(4); // Mantener solo los últimos 6 caracteres
+    if (inputValue.length > 15) {
+      inputValue = inputValue.slice(0, 15);
     }
     event.target.value = inputValue;
   }
@@ -1438,7 +1434,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         console.log('welcome.messaje: ', welcome.message);
         return;
       }
-      if (welcome && !welcome.welcome.active) {
+      if (welcome && welcome.welcome && !welcome.welcome.active) {
         const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
         infoEventAlert(mensaje, '');
         this.discount = '';
@@ -1463,19 +1459,32 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async validateDiscountByEmail(event: any): Promise<void> {
-    const inputValue = event.target.value;
+    console.log('this.cuponInput: ', this.cuponInput);
     const cupon = await this.cuponsService.getCupon(this.cuponInput)  // Recuperar el descuento del cupon.
       .then(async result => {
         return await result.cupon;
       });
+    console.log('cupon: ', cupon);
     let discountPorc = 0;
     this.discountPorc = "0";
     if (cupon) {
       const email = this.formData.controls.email.value;
       const welcome = await this.welcomesService.getWelcome(email);
-      if (welcome && !welcome.welcome.active) {
-        const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
-        infoEventAlert(mensaje, '');
+      console.log('welcome: ', welcome);
+      if (welcome && welcome.status) {
+        if (!welcome.welcome.active) {
+          const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+          infoEventAlert(mensaje, '');
+          this.discount = '';
+          this.cuponInput = '';
+          this.cartService.priceTotal.subscribe(total => {
+            this.totalPagar = (total).toFixed(2).toString();
+          });
+          this.cupon = new Cupon();
+          return;
+        }
+      } else {
+        infoEventAlert('Lo siento este email no esta ligado a este cupón.', '');
         this.discount = '';
         this.cuponInput = '';
         this.cartService.priceTotal.subscribe(total => {

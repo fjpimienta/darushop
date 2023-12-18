@@ -22,17 +22,10 @@
         <div class="checkout-discount">
           <form action="#" id="checkout-discount-form">
             <input type="text" class="form-control" (input)="convertToUppercaseCupon($event)" [(ngModel)]="cuponInput"
-              id="checkout-discount-input" maxlength="12" (click)="addOpacity($event)" (blur)="validateDiscount($event)"
+              id="checkout-discount-input" maxlength="15" (click)="addOpacity($event)" (blur)="validateDiscount($event)"
               required>
             <label for="checkout-discount-input" class="text-truncate">Tienes un CUPÓN de descuento? <span>Introduce tu
                 código aqui</span></label>
-
-
-            <!--
-                <input type="text" placeholder="Nombre(s)" maxlength="20" [(ngModel)]="nameCard"
-                                          name="nameCard" (input)="convertToUppercase($event)"
-                                          (blur)="onAsignarNombresCard($event)">
-                                           -->
           </form>
         </div>
         <form (ngSubmit)="onSubmit()" [formGroup]="formData">
