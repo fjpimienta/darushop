@@ -1485,7 +1485,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       } else {
         infoEventAlert('Lo siento este email no esta ligado a este cupón.', '');
+        this.discount = '';
         this.cuponInput = '';
+        this.cartService.priceTotal.subscribe(total => {
+          this.totalPagar = (total).toFixed(2).toString();
+        });
         this.cupon = new Cupon();
         return;
       }
