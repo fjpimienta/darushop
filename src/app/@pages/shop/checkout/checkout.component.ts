@@ -1434,7 +1434,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         console.log('welcome.messaje: ', welcome.message);
         return;
       }
-      if (welcome && !welcome.welcome.active) {
+      if (welcome && welcome.welcome && !welcome.welcome.active) {
         const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
         infoEventAlert(mensaje, '');
         this.discount = '';
@@ -1459,11 +1459,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async validateDiscountByEmail(event: any): Promise<void> {
-    const inputValue = event.target.value;
+    console.log('this.cuponInput: ', this.cuponInput);
     const cupon = await this.cuponsService.getCupon(this.cuponInput)  // Recuperar el descuento del cupon.
       .then(async result => {
         return await result.cupon;
       });
+    console.log('cupon: ', cupon);
     let discountPorc = 0;
     this.discountPorc = "0";
     if (cupon) {
