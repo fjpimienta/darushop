@@ -10,6 +10,8 @@ import { infoEventAlert } from '@shared/alert/alerts';
 import { IMail } from '@core/interfaces/mail.interface';
 import { TYPE_ALERT } from '@shared/alert/values.config';
 import { WelcomesService } from '@core/services/welcomes.service';
+import { IcommktsService } from '@core/services/suppliers/icommkts.service';
+import { IIcommktContact } from '@core/interfaces/suppliers/icommkt.interface';
 
 @Component({
   selector: 'app-newsletter-modal',
@@ -26,12 +28,17 @@ export class NewsletterModalComponent implements OnInit {
     private modalService: NgbActiveModal,
     private formBuilder: FormBuilder,
     private mailService: MailService,
-    private welcomesService: WelcomesService
+    private welcomesService: WelcomesService,
+    private icommktsService: IcommktsService
   ) { }
 
   ngOnInit(): void {
     this.formData = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]]
+      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
+      nombre: ['', [Validators.required]],
+      apellido: ['', [Validators.required]],
+      sexo: [''],
+      fecha_de_nacimiento: ['']
     });
   }
 
@@ -56,168 +63,50 @@ export class NewsletterModalComponent implements OnInit {
 
   async onSubmit() {
     if (!this.formData.valid) {
-      infoEventAlert('Es necesario un correo electrónico.', '');
+      infoEventAlert('Revisar los campos requeridos.', '');
       return;
     }
 
-    const emailFrom = 'DARU Shop <marketplace@daru.mx>';
-    const email = this.formData.controls.email.value;
-    const subjectInt2 = 'Felicidades tienes un cupon DARU';
+    const contactos = await this.icommktsService.getIcommktContacts().then;
+    console.log('contactos: ', contactos);
 
-    const html2 = `
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-    <html xmlns:v="urn:schemas-microsoft-com:vml">
+    const nombre: string = this.formData.controls.nombre.value;
+    const apellido: string = this.formData.controls.apellido.value;
+    const sexo: string = this.formData.controls.sexo.value;
+    const fecha_de_nacimiento: string = this.formData.controls.fecha_de_nacimiento.value;
+    const email: string = this.formData.controls.email.value;
 
-    <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-      <meta name="color-scheme" content="light dark">
-      <meta name="supported-color-schemes" content="light dark">
-
-      <style type="text/css">
-        v\:* {
-          behavior: url(#default#VML);
-          display: inline-block;
+    const icommktContact: IIcommktContact = {
+      "Email": email,
+      "CustomFields": [
+        {
+          "Key": "nombre",
+          "Value": nombre
+        },
+        {
+          "Key": "apellido",
+          "Value": apellido
+        },
+        {
+          "Key": "sexo",
+          "Value": sexo
+        },
+        {
+          "Key": "fecha_de_nacimiento",
+          "Value": fecha_de_nacimiento
         }
-
-        a {
-          text-decoration: none;
-        }
-
-        .column {
-          min-width: 0px !important;
-        }
-
-        .innerMultiTD,
-        .innerTD {
-          height: 1px;
-        }
-
-        /* iOS LINKS AZULES HEREDAN COLORES DEL HTML */
-        a[x-apple-data-detectors] {
-          color: inherit !important;
-          text-decoration: none !important;
-          font-size: inherit !important;
-          font-family: inherit !important;
-          font-weight: inherit !important;
-          line-height: inherit !important;
-        }
-
-        @media only screen and (max-width: 599px) {
-          .mobileColumn {
-            width: 100% !important;
-            max-width: 100% !important;
-          }
-
-          .tdMobile {
-            margin: 0px !important;
-            padding: 0px !important;
-          }
-
-          img {
-            max-width: 100% !important;
-            width: 100% !important;
-          }
-
-          #newsTable {
-            margin: 0;
-            padding: 0;
-            width: 100% !important;
-          }
-        }
-      </style>
-
-      <!--[if mso]>
-        <style type="text/css">
-          /* Estilos adicionales específicos de Outlook */
-          /* ESTILOS PARA OUTLOOK */
-          body,
-          table,
-          td,
-          a {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-          }
-
-          table,
-          td {
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
-          }
-
-          img {
-            -ms-interpolation-mode: bicubic;
-          }
-          /* ... */
-        </style>
-      <![endif]-->
-    </head>
-
-    <body style="text-align: center;min-width:100%;color:#000000;">
-      <div align="center" style="margin-left:auto;margin-right:auto;">
-        <table border="0" cellpadding="0" cellspacing="0" bgcolor='#ffffff' width='100%' style='width:600px;'>
-          <tr>
-            <td align='center' valign='top' style='width:100%;'>
-              <table cellpadding='0' cellspacing='0' border='0' width='600' style='width:600px;'>
-                <tr>
-                  <td align='center' valign='top' style='width:100%;'>
-                    <center>
-                      <a href="https://qa.daru.mx/wellcome" target="_blank" data-label="Bienvenida">
-                        Ir a la Version Web
-                      </a>
-                    </center>
-                  </td>
-                </tr>
-                <tr>
-                  <td align='center' valign='top' style='width:100%;'>
-                    <center>
-                      <div style='padding: 0px;'>
-                        <div align="center">
-                          <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                            <tr>
-                              <td align="center" style="padding: 0px;">
-                                <table cellpadding="0" cellspacing="0" border="0" width="auto" align="center" style="z-index: 999;">
-                                  <tr>
-                                    <td valign="top" align="center" style="padding: 0px;">
-                                      <table cellpadding="0" cellspacing="0" width="100%" align="center">
-                                        <tr>
-                                          <td style="padding: 0px;">
-                                            <a href="https://qa.daru.mx/ofertas" target="_blank" data-label="Ofertas">
-                                              <img src="https://s3.amazonaws.com/imagesrepository.icommarketing.com/ImagesRepo/MjU0NC04MzQxLWRhcnVteF91c3I1/8382/NEWSLETTER_3+codigo+de+descuento.jpg"
-                                                width="600" alt="Link Bienvenida" border="0"
-                                                style="display: block; width: 600px; height: auto; max-width: 600px; position: relative; visibility: visible;"
-                                              >
-                                            </a>
-                                          </td>
-                                        </tr>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </div>
-                      </div>
-                    </center>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </body>
-    </html>
-    `
-    const mail2: IMail = {
-      to: email,
-      subject: subjectInt2,
-      html: html2,
-      from: emailFrom,
+      ]
     };
-    const partes = email.split("@");
-    const name = partes[0];
+
+    const contacto = await this.icommktsService.add(icommktContact);
+
+    if (!contacto.status) {
+      infoEventAlert(contacto.message, '', TYPE_ALERT.WARNING);
+      this.onCleanForm();
+      return;
+    }
+
+    const name = nombre + ' ' + apellido;
     const cupon = 'BIENVENIDOADARU';
 
     const welcome = {
@@ -233,15 +122,23 @@ export class NewsletterModalComponent implements OnInit {
       this.formData.controls.email.setValue('');
       return;
     }
-    this.mailService.send(mail2).subscribe(
-      (response) => {
-        this.formData.controls.email.setValue('');
-        infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
-        this.closeModal();
-      },
-      (error) => {
-        infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
-      }
-    );
+
+    this.onCleanForm();
+    infoEventAlert('Cuenta agregada correctamente. Esperar correo de bienvenida', '', TYPE_ALERT.SUCCESS);
+    this.closeModal();
+
+  }
+
+  onCleanForm() {
+    this.formData.controls.nombre.setValue('');
+    this.formData.controls.apellido.setValue('');
+    this.formData.controls.sexo.setValue('');
+    this.formData.controls.fecha_de_nacimiento.setValue('');
+    this.formData.controls.email.setValue('');
+  }
+
+  convertToUppercase(event: any) {
+    let inputValue = event.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+    event.target.value = inputValue;
   }
 }
