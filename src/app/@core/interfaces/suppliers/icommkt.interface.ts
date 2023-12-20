@@ -1,9 +1,9 @@
-export interface ICommktContactInput {
+export interface IIcommktContact {
   Email: string;
-  CustomFields: CustomFieldInput[];
+  CustomFields: CustomField[];
 }
 
-export interface CustomFieldInput {
+export interface CustomField {
   Key: string;
   Value: string;
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ICommktContactInput } from '@core/interfaces/suppliers/icommkt.interface';
+import { IIcommktContact } from '@core/interfaces/suppliers/icommkt.interface';
 import { ADD_ICOMMKT } from '@graphql/operations/mutation/suppliers/icommkt';
 import { ICOMMKT_CONTACTS_QUERY, ICOMMKT_CONTACT_QUERY } from '@graphql/operations/query/suppliers/icommkt';
 import { ORDERCTS_LIST_QUERY, ORDERCT_DATA_QUERY } from '@graphql/operations/query/suppliers/orderct';
@@ -16,10 +16,10 @@ export class IcommktsService extends ApiService {
     super(apollo);
   }
 
-  async add(icommktContact: ICommktContactInput): Promise<any> {
+  async add(icommkContactInput: IIcommktContact): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.get(ADD_ICOMMKT, {
-        icommktContact
+      this.set(ADD_ICOMMKT, {
+        icommkContactInput
       }, {}).subscribe(
         (result: any) => {
           resolve(result.addContact);
