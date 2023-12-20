@@ -10,6 +10,9 @@ import { infoEventAlert } from '@shared/alert/alerts';
 import { IMail } from '@core/interfaces/mail.interface';
 import { TYPE_ALERT } from '@shared/alert/values.config';
 import { WelcomesService } from '@core/services/welcomes.service';
+import { IcommktsService } from '@core/services/suppliers/icommkts.service';
+import { IcommktContact } from '@core/models/suppliers/icommkt.models';
+import { ICommktContactInput } from '@core/interfaces/suppliers/icommkt.interface';
 
 @Component({
   selector: 'app-newsletter-modal',
@@ -26,12 +29,17 @@ export class NewsletterModalComponent implements OnInit {
     private modalService: NgbActiveModal,
     private formBuilder: FormBuilder,
     private mailService: MailService,
-    private welcomesService: WelcomesService
+    private welcomesService: WelcomesService,
+    private icommktsService: IcommktsService
   ) { }
 
   ngOnInit(): void {
     this.formData = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]]
+      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
+      nombre: ['', [Validators.required]],
+      apellido: ['', [Validators.required]],
+      sexo: [''],
+      fecha_de_nacimiento: ['']
     });
   }
 
@@ -56,12 +64,48 @@ export class NewsletterModalComponent implements OnInit {
 
   async onSubmit() {
     if (!this.formData.valid) {
-      infoEventAlert('Es necesario un correo electrónico.', '');
+      infoEventAlert('Revisar los campos requeridos.', '');
       return;
     }
 
+    const contactos = await this.icommktsService.getIcommktContacts().then;
+    console.log('contactos: ', contactos);
+
+    const nombre: string = this.formData.controls.nombre.value;
+    const apellido: string = this.formData.controls.apellido.value;
+    const sexo: string = this.formData.controls.sexo.value;
+    const fecha_de_nacimiento: string = this.formData.controls.fecha_de_nacimiento.value;
+    const email: string = this.formData.controls.email.value;
+
+    const icommktContact: ICommktContactInput = {
+      "Email": email,
+      "CustomFields": [
+        {
+          "Key": "nombre",
+          "Value": nombre
+        },
+        {
+          "Key": "apellido",
+          "Value": apellido
+        },
+        {
+          "Key": "sexo",
+          "Value": sexo
+        },
+        {
+          "Key": "fecha_de_nacimiento",
+          "Value": fecha_de_nacimiento
+        }
+      ]
+    };
+
+    const contacto = await this.icommktsService.add(icommktContact).then;
+    console.log('contactos: ', contactos);
+
+    console.log('icommktContact: ', icommktContact);
+    return;
+
     const emailFrom = 'DARU Shop <marketplace@daru.mx>';
-    const email = this.formData.controls.email.value;
     const subjectInt2 = 'Felicidades tienes un cupon DARU';
 
     const html2 = `
@@ -243,5 +287,10 @@ export class NewsletterModalComponent implements OnInit {
         infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
       }
     );
+  }
+
+  convertToUppercase(event: any) {
+    let inputValue = event.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+    event.target.value = inputValue;
   }
 }
