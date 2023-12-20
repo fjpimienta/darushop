@@ -37,16 +37,47 @@
 
 /* Estilo para el div con la clase soon-content-wrapper */
 .soon-content-wrapper {
-  flex-grow: 0.35; /* Hace que el div crezca y empuje hacia arriba */
-  position: relative; /* Establece una posición relativa */
-  z-index: 1; /* Cambia el z-index para asegurarte de que esté por encima de otros elementos */
+  flex-grow: 0.35;
+  /* Hace que el div crezca y empuje hacia arriba */
+  position: relative;
+  /* Establece una posición relativa */
+  z-index: 1;
+  /* Cambia el z-index para asegurarte de que esté por encima de otros elementos */
   /* Otros estilos adicionales según tus necesidades */
 }
 
 /* Media query para dispositivos móviles */
 @media (max-width: 767px) {
   .soon-content-wrapper {
-    flex-grow: 0.8; /* Nuevo valor para dispositivos móviles */
-    backdrop-filter: blur(10px); /* Aplica un efecto de desenfoque */
+    flex-grow: 0.8;
+    /* Nuevo valor para dispositivos móviles */
+    backdrop-filter: blur(10px);
+    /* Aplica un efecto de desenfoque */
   }
+}
+
+.container {
+  width: 800px !important;
+  max-width: 920px !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.soon-content {
+  width: 800px !important;
+  max-width: 920px !important;
+}
+
+.soon-content-wrapper {
+  width: 800px !important;
+  max-width: 920px !important;
+}
+
+.soon-content form {
+  width: 800px !important;
+  max-width: 920px !important;
+}
+
+.selector {
+  width: 97%;
 }
