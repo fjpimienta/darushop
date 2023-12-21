@@ -1408,7 +1408,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async validateDiscount(event: any): Promise<void> {
-    const inputValue = event.target.value;
+    const inputValue = event.target.value.toUpperCase();
     const cupon = await this.cuponsService.getCupon(inputValue)  // Recuperar el descuento del cupon.
       .then(async result => {
         return await result.cupon;
@@ -1469,22 +1469,39 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async validateDiscountByEmail(event: any): Promise<void> {
     const cuponInput = this.cuponInput.toLocaleUpperCase();
-    console.log('cuponInput: ', cuponInput);
-    const cupon = await this.cuponsService.getCupon(cuponInput)  // Recuperar el descuento del cupon.
-      .then(async result => {
-        return await result.cupon;
-      });
-    console.log('cupon: ', cupon);
-    let discountPorc = 0;
-    this.discountPorc = "0";
-    if (cupon) {
-      const email = this.formData.controls.email.value;
-      const welcome = await this.welcomesService.getWelcome(email);
-      console.log('welcome: ', welcome);
-      if (welcome && welcome.status) {
-        if (!welcome.welcome.active) {
-          const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
-          infoEventAlert(mensaje, '');
+    if (cuponInput !== '') {
+      console.log('cuponInput: ', cuponInput);
+      const cupon = await this.cuponsService.getCupon(cuponInput)  // Recuperar el descuento del cupon.
+        .then(async result => {
+          return await result.cupon;
+        });
+      console.log('cupon: ', cupon);
+      let discountPorc = 0;
+      this.discountPorc = "0";
+      if (cupon) {
+        const email = this.formData.controls.email.value;
+        const welcome = await this.welcomesService.getWelcome(email);
+        console.log('welcome: ', welcome);
+        const icommktContact = await this.icommktsService.getIcommktContact(email);
+        console.log('icommktContact: ', icommktContact);
+        if (!icommktContact.status) {
+          console.log('welcome.messaje: ', welcome.message);
+          return;
+        }
+        if (welcome && welcome.status) {
+          if (!welcome.welcome.active) {
+            const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+            infoEventAlert(mensaje, '');
+            this.discount = '';
+            this.cuponInput = '';
+            this.cartService.priceTotal.subscribe(total => {
+              this.totalPagar = (total).toFixed(2).toString();
+            });
+            this.cupon = new Cupon();
+            return;
+          }
+        } else {
+          infoEventAlert('Lo siento este email no esta ligado a este cupón.', '');
           this.discount = '';
           this.cuponInput = '';
           this.cartService.priceTotal.subscribe(total => {
@@ -1493,27 +1510,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           this.cupon = new Cupon();
           return;
         }
+        this.cupon = cupon;
+        this.typeDiscount = cupon.typeDiscount;
+        // discountPorc = cupon.order;
+        // this.discountPorc = cupon.order.toString();
       } else {
-        infoEventAlert('Lo siento este email no esta ligado a este cupón.', '');
-        this.discount = '';
+        infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
         this.cuponInput = '';
-        this.cartService.priceTotal.subscribe(total => {
-          this.totalPagar = (total).toFixed(2).toString();
-        });
         this.cupon = new Cupon();
         return;
       }
-      this.cupon = cupon;
-      this.typeDiscount = cupon.typeDiscount;
-      // discountPorc = cupon.order;
-      // this.discountPorc = cupon.order.toString();
-    } else {
-      infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
-      this.cuponInput = '';
-      this.cupon = new Cupon();
-      return;
+      this.changeDiscount(discountPorc);
     }
-    this.changeDiscount(discountPorc);
   }
 
   async onHabilitaPago(payMent: string): Promise<void> {
