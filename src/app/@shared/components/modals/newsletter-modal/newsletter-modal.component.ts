@@ -38,8 +38,22 @@ export class NewsletterModalComponent implements OnInit {
       nombre: ['', [Validators.required]],
       apellido: ['', [Validators.required]],
       sexo: [''],
-      fecha_de_nacimiento: ['']
+      fecha_de_nacimiento: ['', this.fechaValida]
     });
+  }
+
+  fechaValida(control) {
+    const inputValue = control.value;
+    // Validar el formato y longitud según tus requisitos
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(inputValue)) {
+      return { formatoInvalido: true };
+    }
+    const year = Number(inputValue.split('-')[0]);
+    // Validar la longitud del año (puedes ajustar la longitud según tus necesidades)
+    if (year.toString().length !== 4) {
+      return { longitudInvalida: true };
+    }
+    return null; // La validación es exitosa
   }
 
   customEmailValidator(control) {
@@ -67,14 +81,12 @@ export class NewsletterModalComponent implements OnInit {
       return;
     }
 
-    const contactos = await this.icommktsService.getIcommktContacts().then;
-    console.log('contactos: ', contactos);
-
-    const nombre: string = this.formData.controls.nombre.value;
-    const apellido: string = this.formData.controls.apellido.value;
-    const sexo: string = this.formData.controls.sexo.value;
-    const fecha_de_nacimiento: string = this.formData.controls.fecha_de_nacimiento.value;
-    const email: string = this.formData.controls.email.value;
+    const nombre: string = this.formData.controls.nombre.value.toUpperCase();
+    const apellido: string = this.formData.controls.apellido.value.toUpperCase();
+    const sexo: string = this.formData.controls.sexo.value.toUpperCase();
+    const fecha: string = this.formData.controls.fecha_de_nacimiento.value;
+    const fecha_de_nacimiento = this.cambiarFormatoFecha(fecha);
+    const email: string = this.formData.controls.email.value.toLowerCase();
 
     const icommktContact: IIcommktContact = {
       "Email": email,
@@ -140,5 +152,21 @@ export class NewsletterModalComponent implements OnInit {
   convertToUppercase(event: any) {
     let inputValue = event.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
     event.target.value = inputValue;
+  }
+
+  validarFecha(event: any) {
+    const inputValue = event.target.value;
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(inputValue)) {
+      console.log('Formato de fecha no válido');
+    }
+  }
+
+  cambiarFormatoFecha(fecha: string): string {
+    const fechaObj = new Date(fecha + 'T00:00:00Z');
+    const dia = fechaObj.getUTCDate();
+    const mes = fechaObj.getUTCMonth() + 1;
+    const anio = fechaObj.getUTCFullYear();
+    const fechaFormateada = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
+    return fechaFormateada;
   }
 }

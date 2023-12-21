@@ -1,86 +1,73 @@
-<div class="soon">
-  <div class="container justify-content-center">
-    <div class="row">
-      <div class="col-md-12 col-lg-12">
-        <div class="soon-content justify-content-center">
-          <div class="soon-content-wrapper justify-content-center mt-3">
-            <app-count-down until="2023-12-23" format="DHMS"
-              wrap="coming-countdown countdown-separator text-center mt-10">
-            </app-count-down>
-            <form (ngSubmit)="onSubmit()" [formGroup]="formData">
-              <div class="input-group justify-content-center">
-                <div class="row text-center">
-                  <div class="col-md-3 form-group">
-                    <label class="text-white" for="nombre">Nombre(s) *</label>
-                    <input type="text" class="form-control" name="nombre" formControlName="nombre"
-                      (input)="convertToUppercase($event)" required>
-                    <div class="alert alert-danger selector"
-                      *ngIf="formData.get('nombre').invalid && (formData.get('nombre').dirty || formData.get('nombre').touched)">
-                      <div *ngIf="formData.get('nombre').hasError('required')">Nombre requerido.</div>
-                    </div>
-                  </div>
-                  <div class="col-md-3 form-group">
-                    <label class="text-white" for="apellido">Apellido(s) *</label>
-                    <input type="text" class="form-control" name="apellido" formControlName="apellido"
-                      (input)="convertToUppercase($event)" required>
-                    <div class="alert alert-danger selector"
-                      *ngIf="formData.get('apellido').invalid && (formData.get('apellido').dirty || formData.get('apellido').touched)">
-                      <div *ngIf="formData.get('apellido').hasError('required')">Apellido requerido.</div>
-                    </div>
-                  </div>
-                  <div class="col-md-3 form-group">
-                    <label class="text-white" for="sexo">Sexo</label>
-                    <select name="sexo" id="sexo" formControlName="sexo" class="form-control selector">
-                      <option value="" disabled [selected]="true">Prefiero no contestar</option>
-                      <option value="mujer">Mujer</option>
-                      <option value="hombre">Hombre</option>
-                    </select>
-                  </div>
-                  <div class="col-md-3 form-group">
-                    <label class="text-white" for="fecha_de_nacimiento">Fecha de Nacimiento</label>
-                    <input type="text" id="fecha_de_nacimiento" name="fecha_de_nacimiento"
-                      formControlName="fecha_de_nacimiento" class="form-control" pattern="\d{2}/\d{2}/\d{4}"
-                      placeholder="dd/mm/yyyy">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6 form-group">
-                    <input type="email" name="email" formControlName="email" class="form-control"
-                      placeholder="Correo Electr&oacute;nico" autocomplete="off" required>
-                  </div>
-                  <div class="col-sm-6 form-group">
-                    <div class="input-group-append">
-                      <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid">
-                        <span>Subscribete!!!</span>
-                        <i class="icon-long-arrow-right"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+<div class="modal-dialog modal-dialog-centered modal-lg soon" role="document">
+  <div class="modal-content">
+    <div class="modal-header justify-content-center">
+      <!-- Encabezado del modal -->
+      <app-count-down until="2023-12-23" format="DHMS" wrap="coming-countdown countdown-separator text-center mt-10">
+      </app-count-down>
+    </div>
+    <div class="modal-body">
+      <!-- Cuerpo del modal -->
+      <form (ngSubmit)="onSubmit()" [formGroup]="formData">
+        <div class="input-group justify-content-center">
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="nombre">Nombre(s) *</label>
+              <input type="text" class="form-control" name="nombre" formControlName="nombre"
+                (input)="convertToUppercase($event)" required>
+              <div class="alert alert-danger"
+                *ngIf="formData.get('nombre').invalid && (formData.get('nombre').dirty || formData.get('nombre').touched)">
+                <div *ngIf="formData.get('nombre').hasError('required')">Nombre requerido.</div>
               </div>
-            </form>
-            <div class="social-icons justify-content-center">
-              <a class="social-icon" style="background-color: #3b5998; color: white;"
-                href="https://www.facebook.com/profile.php?id=100090283260099" target="_blank">
-                <i class="fa-brands fa-facebook"></i>
-              </a>
-              <!-- <a class="social-icon" style="background-color: #55acee; color: white;" href="javascript:;">
-                <i class="fa-brands fa-x-twitter"></i>
-              </a> -->
-              <a class="social-icon" style="background-color: #ac2bac; color: white;"
-                href="https://instagram.com/mx_daru?igshid=OGQ5ZDc2ODk2ZA==" target="_blank"><i
-                  class="fa-brands fa-instagram"></i>
-              </a>
-              <!-- <a class="social-icon" style="background-color: #ed302f; color: white;" href="javascript:;"><i
-                  class="fa-brands fa-youtube"></i>
-              </a>
-              <a class="social-icon" style="background-color: #c61118; color: white;" href="javascript:;"><i
-                  class="fa-brands fa-pinterest"></i>
-              </a> -->
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="apellido">Apellido(s) *</label>
+              <input type="text" class="form-control" name="apellido" formControlName="apellido"
+                (input)="convertToUppercase($event)" required>
+              <div class="alert alert-danger"
+                *ngIf="formData.get('apellido').invalid && (formData.get('apellido').dirty || formData.get('apellido').touched)">
+                <div *ngIf="formData.get('apellido').hasError('required')">Apellido requerido.</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="sexo">Sexo</label>
+              <select name="sexo" id="sexo" formControlName="sexo" class="form-control selector">
+                <option value="" disabled [selected]="true">Sin contestar</option>
+                <option value="mujer">Mujer</option>
+                <option value="hombre">Hombre</option>
+              </select>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="fecha_de_nacimiento">Fecha de Nacimiento</label>
+              <input type="date" id="fecha_de_nacimiento" name="fecha_de_nacimiento"
+                formControlName="fecha_de_nacimiento" class="form-control">
+              <div class="alert alert-danger" *ngIf="formData.get('fecha_de_nacimiento').hasError('formatoInvalido')">
+                Fecha inválida.
+              </div>
+              <div class="alert alert-danger" *ngIf="formData.get('fecha_de_nacimiento').hasError('longitudInvalida')">
+                Año inválido.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <input type="email" name="email" formControlName="email" class="form-control"
+                placeholder="Correo Electr&oacute;nico" autocomplete="off" required>
+            </div>
+            <div class="col-md-6 form-group text-center">
+              <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid">
+                <span>¡Suscríbete!</span>
+                <i class="icon-long-arrow-right"></i>
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <!-- Pie del modal -->
+      <!-- Aquí puedes agregar botones adicionales o información en el pie del modal -->
     </div>
   </div>
 </div>
