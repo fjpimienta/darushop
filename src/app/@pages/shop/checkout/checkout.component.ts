@@ -1482,8 +1482,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const email = this.formData.controls.email.value;
         // Buscar contacto en icommkt
         const icommktContact = await this.icommktsService.getIcommktContact(email);
+        console.log('icommktContact: ', icommktContact);
         if (icommktContact && icommktContact.icommktContact) {
-          console.log('icommktContact: ', icommktContact);
           if (!icommktContact.icommktContact.status) {
             console.log('icommktContact.icommktContact.messaje: ', icommktContact.icommktContact.message);
             return;
@@ -1506,6 +1506,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           this.typeDiscount = cupon.typeDiscount;
           discountPorc = cupon.order;
           this.discountPorc = cupon.order.toString();
+        } else {
+          infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
+          this.cuponInput = '';
+          this.cupon = new Cupon();
+          return;
         }
       } else {
         infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
@@ -1513,7 +1518,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.cupon = new Cupon();
         return;
       }
-      console.log('this.cupon: ', this.cupon);
       console.log('this.typeDiscount: ', this.typeDiscount);
       console.log('discountPorc: ', discountPorc);
       this.changeDiscount(discountPorc);
