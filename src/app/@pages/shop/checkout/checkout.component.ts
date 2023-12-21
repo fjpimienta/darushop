@@ -1481,7 +1481,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       let discountPorc = 0;
       this.discountPorc = "0";
       if (cupon) {
-        const email = event;
+        const email = event.target.value;
         // Buscar contacto en icommkt
         console.log('email: ', email);
         const icommktContact = await this.icommktsService.getIcommktContact(email);
