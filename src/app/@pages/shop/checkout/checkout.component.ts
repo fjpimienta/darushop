@@ -1435,27 +1435,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       console.log('welcome: ', welcome);
       const icommktContact = await this.icommktsService.getIcommktContact(email);
       console.log('icommktContact: ', icommktContact);
-      if (!icommktContact.status) {
-        console.log('welcome.messaje: ', welcome.message);
-        return;
+      if (icommktContact && icommktContact.icommktContact) {
+        if (!icommktContact.icommktContact.status) {
+          console.log('icommktContact.icommktContact.messaje: ', icommktContact.icommktContact.message);
+          return;
+        }
+        if (!welcome.status) {
+          console.log('welcome.messaje: ', welcome.message);
+          return;
+        }
+        if (welcome && welcome.welcome && !welcome.welcome.active) {
+          const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+          infoEventAlert(mensaje, '');
+          this.discount = '';
+          this.cuponInput = '';
+          this.cartService.priceTotal.subscribe(total => {
+            this.totalPagar = (total).toFixed(2).toString();
+          });
+          this.cupon = new Cupon();
+          return;
+        }
+        discountPorc = discountPorc ? this.cupon.amountDiscount : 0;
+        this.discountPorc = discountPorc.toString();
       }
-      if (!welcome.status) {
-        console.log('welcome.messaje: ', welcome.message);
-        return;
-      }
-      if (welcome && welcome.welcome && !welcome.welcome.active) {
-        const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
-        infoEventAlert(mensaje, '');
-        this.discount = '';
-        this.cuponInput = '';
-        this.cartService.priceTotal.subscribe(total => {
-          this.totalPagar = (total).toFixed(2).toString();
-        });
-        this.cupon = new Cupon();
-        return;
-      }
-      discountPorc = discountPorc ? this.cupon.amountDiscount : 0;
-      this.discountPorc = discountPorc.toString();
     } else {
       if (inputValue !== '') {
         infoEventAlert('Lo siento este código no lo reconozco.', '');
@@ -1479,8 +1481,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       let discountPorc = 0;
       this.discountPorc = "0";
       if (cupon) {
-        const email = this.formData.controls.email.value;
+        const email = event;
         // Buscar contacto en icommkt
+        console.log('email: ', email);
         const icommktContact = await this.icommktsService.getIcommktContact(email);
         console.log('icommktContact: ', icommktContact);
         if (icommktContact && icommktContact.icommktContact) {
