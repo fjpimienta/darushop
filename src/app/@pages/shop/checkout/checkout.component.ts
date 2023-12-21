@@ -1480,16 +1480,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.discountPorc = "0";
       if (cupon) {
         const email = this.formData.controls.email.value;
-        const welcome = await this.welcomesService.getWelcome(email);
-        console.log('welcome: ', welcome);
+        // Buscar contacto en icommkt
         const icommktContact = await this.icommktsService.getIcommktContact(email);
-        console.log('icommktContact: ', icommktContact);
-        if (!icommktContact.status) {
-          console.log('welcome.messaje: ', welcome.message);
-          return;
-        }
-        if (welcome && welcome.status) {
-          if (!welcome.welcome.active) {
+        if (icommktContact && icommktContact.icommktContact) {
+          console.log('icommktContact: ', icommktContact);
+          if (!icommktContact.icommktContact.status) {
+            console.log('icommktContact.icommktContact.messaje: ', icommktContact.icommktContact.message);
+            return;
+          }
+          // Buscar si ya se ocupo el cupon.
+          const welcome = await this.welcomesService.getWelcome(email);
+          console.log('welcome: ', welcome);
+          if (welcome && welcome.status && !welcome.welcome.active) {
             const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
             infoEventAlert(mensaje, '');
             this.discount = '';
@@ -1500,26 +1502,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.cupon = new Cupon();
             return;
           }
-        } else {
-          infoEventAlert('Lo siento este email no esta ligado a este cupón.', '');
-          this.discount = '';
-          this.cuponInput = '';
-          this.cartService.priceTotal.subscribe(total => {
-            this.totalPagar = (total).toFixed(2).toString();
-          });
-          this.cupon = new Cupon();
-          return;
+          this.cupon = cupon;
+          this.typeDiscount = cupon.typeDiscount;
+          discountPorc = cupon.order;
+          this.discountPorc = cupon.order.toString();
         }
-        this.cupon = cupon;
-        this.typeDiscount = cupon.typeDiscount;
-        // discountPorc = cupon.order;
-        // this.discountPorc = cupon.order.toString();
       } else {
         infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
         this.cuponInput = '';
         this.cupon = new Cupon();
         return;
       }
+      console.log('this.cupon: ', this.cupon);
+      console.log('this.typeDiscount: ', this.typeDiscount);
+      console.log('discountPorc: ', discountPorc);
       this.changeDiscount(discountPorc);
     }
   }
