@@ -55,6 +55,7 @@ import { FormaPago, InvoiceConfig, InvoiceConfigInput, MetodoPago, RegimenFiscal
 import { WelcomesService } from '@core/services/welcomes.service';
 import { ICupon } from '@core/interfaces/cupon.interface';
 import { Cupon } from '@core/models/cupon.models';
+import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 
 declare var $: any;
 declare var OpenPay: any
@@ -204,7 +205,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public chargeOpenpayService: ChargeOpenpayService,
     public cuponsService: CuponsService,
     public invoiceConfigsService: InvoiceConfigsService,
-    public welcomesService: WelcomesService
+    public welcomesService: WelcomesService,
+    private icommktsService: IcommktsService
   ) {
     try {
       this.activeRoute.queryParams.subscribe(params => {
@@ -1430,6 +1432,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return;
       }
       const welcome = await this.welcomesService.getWelcome(email);
+      console.log('welcome: ', welcome);
+      const icommktContact = await this.icommktsService.getIcommktContact(email);
+      console.log('icommktContact: ', icommktContact);
+      if (!icommktContact.status) {
+        console.log('welcome.messaje: ', welcome.message);
+        return;
+      }
       if (!welcome.status) {
         console.log('welcome.messaje: ', welcome.message);
         return;
@@ -1459,8 +1468,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async validateDiscountByEmail(event: any): Promise<void> {
-    console.log('this.cuponInput: ', this.cuponInput);
-    const cupon = await this.cuponsService.getCupon(this.cuponInput)  // Recuperar el descuento del cupon.
+    const cuponInput = this.cuponInput.toLocaleUpperCase();
+    console.log('cuponInput: ', cuponInput);
+    const cupon = await this.cuponsService.getCupon(cuponInput)  // Recuperar el descuento del cupon.
       .then(async result => {
         return await result.cupon;
       });
