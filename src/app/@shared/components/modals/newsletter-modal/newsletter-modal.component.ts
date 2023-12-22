@@ -27,7 +27,6 @@ export class NewsletterModalComponent implements OnInit {
   constructor(
     private modalService: NgbActiveModal,
     private formBuilder: FormBuilder,
-    private mailService: MailService,
     private welcomesService: WelcomesService,
     private icommktsService: IcommktsService
   ) { }
