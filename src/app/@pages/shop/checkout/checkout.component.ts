@@ -1423,7 +1423,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.cupon.minimumPurchase > totalCharge) {
         const msj = `Para que utilices tu cupon se requiere esta cantidad minima: ${this.cupon.minimumPurchase.toFixed(2).toString()}`
         infoEventAlert(msj, '');
+        this.discount = '';
         this.cuponInput = '';
+        this.cartService.priceTotal.subscribe(total => {
+          this.totalPagar = (total).toFixed(2).toString();
+        });
         this.cupon = new Cupon();
         return;
       }
@@ -1431,15 +1435,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         infoEventAlert('Para que utilices tu cupon se requiere el correo electronico donde llego.', '');
         return;
       }
-      const welcome = await this.welcomesService.getWelcome(email);
-      console.log('welcome: ', welcome);
       const icommktContact = await this.icommktsService.getIcommktContact(email);
       console.log('icommktContact: ', icommktContact);
       if (icommktContact && icommktContact.icommktContact) {
-        if (!icommktContact.icommktContact.status) {
-          console.log('icommktContact.icommktContact.messaje: ', icommktContact.icommktContact.message);
+        if (!icommktContact.status) {
+          console.log('icommktContact.messaje: ', icommktContact.message);
           return;
         }
+        const welcome = await this.welcomesService.getWelcome(email);
+        console.log('welcome: ', welcome);
         if (!welcome.status) {
           console.log('welcome.messaje: ', welcome.message);
           return;
@@ -1457,11 +1461,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
         discountPorc = discountPorc ? this.cupon.amountDiscount : 0;
         this.discountPorc = discountPorc.toString();
+      } else {
+        infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
+        this.discount = '';
+        this.cuponInput = '';
+        this.cartService.priceTotal.subscribe(total => {
+          this.totalPagar = (total).toFixed(2).toString();
+        });
+        this.cupon = new Cupon();
+        return;
       }
     } else {
       if (inputValue !== '') {
         infoEventAlert('Lo siento este código no lo reconozco.', '');
         event.target.value = '';
+        this.discount = '';
+        this.cuponInput = '';
+        this.cartService.priceTotal.subscribe(total => {
+          this.totalPagar = (total).toFixed(2).toString();
+        });
         this.cupon = new Cupon();
         return;
       }
@@ -1487,8 +1505,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const icommktContact = await this.icommktsService.getIcommktContact(email);
         console.log('icommktContact: ', icommktContact);
         if (icommktContact && icommktContact.icommktContact) {
-          if (!icommktContact.icommktContact.status) {
-            console.log('icommktContact.icommktContact.messaje: ', icommktContact.icommktContact.message);
+          if (!icommktContact.status) {
+            console.log('icommktContact.messaje: ', icommktContact.message);
             return;
           }
           // Buscar si ya se ocupo el cupon.
@@ -1507,17 +1525,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
           this.cupon = cupon;
           this.typeDiscount = cupon.typeDiscount;
-          discountPorc = cupon.order;
-          this.discountPorc = cupon.order.toString();
+          discountPorc = cupon.amountDiscount;
+          this.discountPorc = cupon.amountDiscount.toString();
         } else {
           infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
+          this.discount = '';
           this.cuponInput = '';
+          this.cartService.priceTotal.subscribe(total => {
+            this.totalPagar = (total).toFixed(2).toString();
+          });
           this.cupon = new Cupon();
           return;
         }
       } else {
         infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
+        this.discount = '';
         this.cuponInput = '';
+        this.cartService.priceTotal.subscribe(total => {
+          this.totalPagar = (total).toFixed(2).toString();
+        });
         this.cupon = new Cupon();
         return;
       }

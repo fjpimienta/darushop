@@ -34,7 +34,7 @@ export class IcommktsService extends ApiService {
     return new Promise<any>((resolve, reject) => {
       this.get(ICOMMKT_CONTACTS_QUERY, {}, {}).subscribe(
         (result: any) => {
-          resolve(result.icecatProduct);
+          resolve(result.icommktContact);
         },
         (error: any) => {
           reject(error);
@@ -48,7 +48,7 @@ export class IcommktsService extends ApiService {
         email
       }, {}).subscribe(
         (result: any) => {
-          resolve(result.icecatProduct);
+          resolve(result.icommktContact);
         },
         (error: any) => {
           reject(error);

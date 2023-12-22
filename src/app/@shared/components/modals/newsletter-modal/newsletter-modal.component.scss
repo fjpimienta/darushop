@@ -78,7 +78,25 @@
   max-width: 920px !important;
 }
 
+/* Estilos para pantallas más grandes (mayores a 768px) */
 .selector {
-  width: 97%;
+  width: 100%;
   margin-left: 0.8rem;
+}
+
+/* Estilos específicos para pantallas más pequeñas (768px o menos) */
+@media only screen and (max-width: 768px) {
+  .selector {
+    display: block;
+    /* Puedes incluir una propiedad sin cambiar su valor */
+    margin-left: 0 !important;
+  }
+  .mobile-modal {
+    position: fixed;
+    top: -50em;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* Permitir desplazamiento vertical si el contenido es largo */
+  }
 }
