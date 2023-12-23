@@ -30,7 +30,7 @@ export class CenteredPageComponent implements OnInit {
       this.loaded = false;
       this.productService.getProduct(params.slug).subscribe(result => {
         this.product = result.product.product;
-        this.productName = result.product.product.sku;
+        this.productName = result.product.product.partnumber;
         // this.prev = this.product;
         // this.next = this.product;
         // this.product = result.product;

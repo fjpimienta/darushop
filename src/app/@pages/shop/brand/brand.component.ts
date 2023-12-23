@@ -87,7 +87,6 @@ export class BrandComponent implements OnInit {
       this.loaded = false;
       this.offer = false;
 
-      this.pageTitle = 'Marca';
       if (params.description) {
         this.pageTitle = params.description.toUpperCase();
       }
@@ -104,7 +103,7 @@ export class BrandComponent implements OnInit {
       if (params.brand) {
         this.brands = [];
         this.brands = params.brand.split(',');
-        this.pageTitle += ' (' + params.brand.toUpperCase() + ')';
+        this.pageTitle = params.brand.toUpperCase();
       }
       this.categories = null;
       if (params.category) {
