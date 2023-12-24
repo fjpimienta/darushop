@@ -51,8 +51,7 @@ export class BrandComponent implements OnInit {
         // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
-          console.log('navigation?.previousNavigation: ', navigation?.previousNavigation);
-          const url = navigation.previousNavigation.finalUrl.toString();
+          const url = navigation.previousNavigation.extractedUrl.toString();
           const firstSlashIndex = url.indexOf('/');
           const questionMarkIndex = url.indexOf('?');
           const secondSlashIndex = url.indexOf('/', firstSlashIndex + 1);
@@ -62,6 +61,7 @@ export class BrandComponent implements OnInit {
           } else if (firstSlashIndex !== -1 && questionMarkIndex !== -1) {
             const previousPageTitle = url.substring(firstSlashIndex + 1, questionMarkIndex);
             this.previousPageTitle = previousPageTitle;
+            this.previousPageTitle = this.previousPageTitle.charAt(0).toUpperCase() + this.previousPageTitle.slice(1).toLowerCase();
           } else if (firstSlashIndex !== -1) {
             this.previousPageTitle = url.substring(firstSlashIndex + 1);
           } else {
