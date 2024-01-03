@@ -28,6 +28,7 @@ export class MailService extends ApiService {
   //#region Emails  //ICharge
   sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false,
     totalEnvios: string = '0', esFacturable: boolean = false): void {
+    const emailFrom = 'DARU Shop <marketplace@daru.mx>';
     const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos: ProductShipment[] = [];
@@ -51,7 +52,7 @@ export class MailService extends ApiService {
                       </tr>
                     `
     }
-    const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
+    const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? 0 : parseFloat(discount));
     let datosFactura = ''
     if (esFacturable) {
       const nombre = charge.invoiceConfig.nombreEmpresa !== '' ? charge.invoiceConfig.nombreEmpresa : charge.invoiceConfig.nombres + ' ' + charge.invoiceConfig.apellidos;
@@ -212,7 +213,8 @@ export class MailService extends ApiService {
     const mail: IMail = {
       to: receiptEmail,
       subject,
-      html
+      html,
+      from: emailFrom,
     };
     this.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
     if (internal) {                                                        // Correos internos
@@ -228,13 +230,15 @@ export class MailService extends ApiService {
       const mailInt: IMail = {
         to: receiptEmailInt,
         subject: subjectInt,
-        html: htmlInt
+        html: htmlInt,
+        from: emailFrom,
       };
       this.send(mailInt).pipe(first()).subscribe();                      // Envio de correo externo.
     }
   }
 
   sendEmailSpei(charge: any, issue: string = '', message: string = '', internal: boolean = false, totalEnvios: string = '0'): void {
+    const emailFrom = 'DARU Shop <marketplace@daru.mx>';
     const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos: ProductShipment[] = [];
@@ -258,7 +262,7 @@ export class MailService extends ApiService {
                       </tr>
                     `
     }
-    const total = totalProd + parseFloat(totalEnvios) + (Number.isNaN(discount) ? 0 : parseFloat(discount));
+    const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? 0 : parseFloat(discount));
     const productRows = productos.map((producto: any) => `
         <tr>
           <td>${producto.name}</td>
@@ -399,7 +403,8 @@ export class MailService extends ApiService {
     const mail: IMail = {
       to: receiptEmail,
       subject,
-      html
+      html,
+      from: emailFrom,
     };
     this.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
     if (internal) {                                                        // Correos internos
@@ -415,7 +420,8 @@ export class MailService extends ApiService {
       const mailInt: IMail = {
         to: receiptEmailInt,
         subject: subjectInt,
-        html: htmlInt
+        html: htmlInt,
+        from: emailFrom,
       };
       this.send(mailInt).pipe(first()).subscribe();                      // Envio de correo externo.
     }

@@ -74,7 +74,7 @@ import { PostOneComponent } from './components/blog-post/post-one/post-one.compo
 import { PostTwoComponent } from './components/blog-post/post-two/post-two.component';
 import { PostThreeComponent } from './components/blog-post/post-three/post-three.component';
 import { PostFourComponent } from './components/blog-post/post-four/post-four.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePickerLegalAgeModule } from './calendar/date-picker-legal-age/date-picker-legal-age.module';
 
 @NgModule({
@@ -140,6 +140,7 @@ import { DatePickerLegalAgeModule } from './calendar/date-picker-legal-age/date-
         CommonModule,
         RouterModule,
         NgbModule,
+        ReactiveFormsModule,
         FormsModule,
         TranslateModule,
         OwlModule,

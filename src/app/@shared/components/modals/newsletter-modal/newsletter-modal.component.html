@@ -1,42 +1,73 @@
-<div class="container newsletter-popup-container h-auto" id="newsletter-popup-form">
-    <div class="modal-content overflow-hidden m-0">
-        <div class="row justify-content-center position-relative">
-            <div class="col-12">
-                <div class="row no-gutters bg-white newsletter-popup-content">
-                    <div class="col-xl-3-5col col-lg-7 banner-content-wrap">
-                        <div class="banner-content text-center">
-                            <img src="assets/images/popup/newsletter/logo.png" class="logo" alt="logo" width="60"
-                                height="15">
-                            <h2 class="banner-title">Oferta <span>5<span style="font-weight: 400">%</span></span> descuentos</h2>
-                            <p>Suscríbase al boletín de DARU MarketPlace para recibir actualizaciones oportunas de su
-                                producto favorito.</p>
-                            <form action="#">
-                                <div class="input-group input-group-round">
-                                    <input type="email" class="form-control form-control-white"
-                                        placeholder="Tu dirección de correo electrónico" aria-label="Correo Electrónico" required>
-                                    <div class="input-group-append">
-                                        <button class="btn" type="submit"><span>Ir</span></button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <div class="custom-control custom-checkbox pl-4 ml-3">
-                                <input type="checkbox" class="custom-control-input" id="register-policy-2"
-                                    (click)="changeCheck()">
-                                <label class="custom-control-label" for="register-policy-2">No mostrar esta ventana emergente
-                                    otra vez</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-2-5col col-lg-5 d-none d-lg-block">
-                        <app-image src="assets/images/popup/newsletter/img-1.jpg" width="396" height="420"
-                            class="newsletter-img" alt="newsletter"></app-image>
-                    </div>
-                </div>
-            </div>
-
-            <button title="Close (Esc)" type="button" class="mfp-close" (click)="closeModal()"><span>×</span></button>
-        </div>
+<div class="modal-dialog modal-dialog-centered modal-lg soon" role="document">
+  <div class="modal-content">
+    <div class="modal-header justify-content-center">
+      <!-- Encabezado del modal -->
+      <app-count-down until="2024-01-15" format="DHMS" wrap="coming-countdown countdown-separator text-center mt-10">
+      </app-count-down>
     </div>
+    <div class="modal-body">
+      <!-- Cuerpo del modal -->
+      <form (ngSubmit)="onSubmit()" [formGroup]="formData">
+        <div class="input-group justify-content-center">
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="nombre">Nombre(s) *</label>
+              <input type="text" class="form-control" name="nombre" formControlName="nombre"
+                (input)="convertToUppercase($event)" required>
+              <div class="alert alert-danger"
+                *ngIf="formData.get('nombre').invalid && (formData.get('nombre').dirty || formData.get('nombre').touched)">
+                <div *ngIf="formData.get('nombre').hasError('required')">Nombre requerido.</div>
+              </div>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="apellido">Apellido(s) *</label>
+              <input type="text" class="form-control" name="apellido" formControlName="apellido"
+                (input)="convertToUppercase($event)" required>
+              <div class="alert alert-danger"
+                *ngIf="formData.get('apellido').invalid && (formData.get('apellido').dirty || formData.get('apellido').touched)">
+                <div *ngIf="formData.get('apellido').hasError('required')">Apellido requerido.</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="sexo">Sexo</label>
+              <select name="sexo" id="sexo" formControlName="sexo" class="form-control selector">
+                <option value="" disabled [selected]="true">Sin contestar</option>
+                <option value="mujer">Mujer</option>
+                <option value="hombre">Hombre</option>
+              </select>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="text-white" for="fecha_de_nacimiento">Fecha de Nacimiento *</label>
+              <input type="date" id="fecha_de_nacimiento" name="fecha_de_nacimiento"
+                formControlName="fecha_de_nacimiento" class="form-control">
+              <div class="alert alert-danger" *ngIf="formData.get('fecha_de_nacimiento').hasError('formatoInvalido')">
+                Fecha inválida.
+              </div>
+              <div class="alert alert-danger" *ngIf="formData.get('fecha_de_nacimiento').hasError('longitudInvalida')">
+                Año inválido.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <input type="email" name="email" formControlName="email" class="form-control"
+                placeholder="Correo Electr&oacute;nico" autocomplete="off" required>
+            </div>
+            <div class="col-md-6 form-group text-center">
+              <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid">
+                <span>¡Suscríbete!</span>
+                <i class="icon-long-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <!-- Pie del modal -->
+      <!-- Aquí puedes agregar botones adicionales o información en el pie del modal -->
+    </div>
+  </div>
 </div>
