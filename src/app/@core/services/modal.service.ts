@@ -26,6 +26,8 @@ export class ModalService {
     centered: true,
     size: 'xl',
     windowClass: 'newsletter-modal',
+    backdrop: 'static',  // No cerrar al hacer clic fuera
+    keyboard: false,  // No cerrar con la tecla Esc
     beforeDismiss: async () => {
       document.querySelector('body')?.classList.remove('modal-open');
 
