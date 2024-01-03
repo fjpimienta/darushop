@@ -136,7 +136,7 @@ export class NewsletterModalComponent implements OnInit {
 
     this.onCleanForm();
     infoEventAlert('Cuenta agregada correctamente. Esperar correo de bienvenida', '', TYPE_ALERT.SUCCESS);
-    this.closeModal();
+    // this.closeModal();
 
   }
 
