@@ -9,6 +9,8 @@ export const INVOICECONFIG_FRAGMENT = gql`
         metodoPago {
           id
           descripcion
+          fechaInicioDeVigencia
+          fechaFinDeVigencia
         }
         regimenFiscal {
           id
