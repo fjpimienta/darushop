@@ -140,6 +140,9 @@ export class IndexComponent implements OnInit {
     this.activeRoute.data.subscribe((data: { title: string }) => {
       this.pageTitle = data.title || this.pageTitle;
     });
+    // Mostrar el Newsletter
+    this.modalService.openNewsletter();
+    // Fin
   }
 
   ngOnDestroy(): void {
