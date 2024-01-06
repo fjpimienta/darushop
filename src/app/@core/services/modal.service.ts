@@ -112,14 +112,14 @@ export class ModalService {
         (document.querySelector('.logo') as HTMLElement).focus({ preventScroll: true });
 
         setTimeout(() => {
-          if (this.router.url === '/' && !document.querySelector('.newsletter-modal')) {
+          // if (this.router.url === '/' && !document.querySelector('.newsletter-modal')) {
             this.modalService.open(
               NewsletterModalComponent,
               this.modalOption1
             );
-          }
-        }, 400);
-      }, 5000);
+          // }
+        }, 4);
+      }, 50);
     }
   }
 
