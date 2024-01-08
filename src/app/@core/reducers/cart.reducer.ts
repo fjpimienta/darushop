@@ -18,6 +18,32 @@ function getState(key: string): any {
   const initialState = {
     data: []
   };
+  const localStorag = localStorage.getItem(key);
+  if (localStorag && JSON.parse(localStorag) && JSON.parse(localStorag).cart && JSON.parse(localStorag).cart.data && JSON.parse(localStorag).cart.data.length > 0) {
+    const cartData = JSON.parse(localStorage.getItem(key)).cart.data;
+    for (let i = 0; i < cartData.length; i++) {
+      const item = cartData[i];
+      const fecha = new Date(item.fecha);
+      const fechaActual = new Date();
+      //fecha.setDate(fecha.getDate() - 1);
+      const diferenciaEnMilisegundos = fechaActual.getTime() - fecha.getTime();
+      const diferenciaEnHoras = diferenciaEnMilisegundos / (1000 * 60 * 60);
+      const haPasadoMasDe10Horas = diferenciaEnHoras > 10;
+      if (haPasadoMasDe10Horas) {
+        console.log("Ha pasado más de 10 horas");
+        const storageValue = localStorage.getItem(key);
+        const cartData = storageValue ? JSON.parse(storageValue).cart.data : [];
+        function eliminarItemPorId(id: string): void {
+          const indice = cartData.findIndex((item: any) => item.id === id);
+          if (indice !== -1) {
+            cartData.splice(indice, 1); // Elimina 1 elemento en el índice encontrado
+          }
+        }
+        eliminarItemPorId(item.id);
+        localStorage.setItem(key, JSON.stringify({ ...JSON.parse(storageValue), cart: { data: cartData } }));
+      }
+    }
+  }
 
   return (localStorage.getItem(key) && JSON.parse(localStorage.getItem(key)).cart)
     ? JSON.parse(localStorage.getItem(key)).cart
@@ -25,6 +51,7 @@ function getState(key: string): any {
 }
 
 export function cartReducer(state = getState('molla'), action): any {
+  const fecha = new Date(Date.now());
   switch (action.type) {
     case ADD_TO_CART:
       let findIndex = state.data.findIndex(item => item.id === action.payload.product.id);
@@ -43,12 +70,12 @@ export function cartReducer(state = getState('molla'), action): any {
                   qty: product.qty + qty,
                   sum: (action.payload.product.sale_price
                     ? action.payload.product.sale_price
-                    : action.payload.product.price) * (product.qty + qty)
+                    : action.payload.product.price) * (product.qty + qty),
+                  fecha: fecha
                 });
               } else {
                 acc.push(product);
               }
-
               return acc;
             }, [])
           ]
@@ -61,7 +88,8 @@ export function cartReducer(state = getState('molla'), action): any {
               ...action.payload.product,
               qty,
               price: action.payload.product.sale_price ? action.payload.product.sale_price : action.payload.product.price,
-              sum: qty * (action.payload.product.sale_price ? action.payload.product.sale_price : action.payload.product.price)
+              sum: qty * (action.payload.product.sale_price ? action.payload.product.sale_price : action.payload.product.price),
+              fecha: fecha
             }
           ]
         };
