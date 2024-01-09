@@ -1413,10 +1413,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       .then(async result => {
         return await result.cupon;
       });
+    console.log('getCupon: ', cupon);
     let discountPorc = 0;
     this.discountPorc = "0";
     if (cupon) {
+      cupon.active = false;
       this.cupon = cupon;
+      console.log('cupon: ', cupon);
       const email = this.formData.controls.email.value;
       this.typeDiscount = cupon.typeDiscount;
       const totalCharge = parseFloat(this.totalPagar);
@@ -1495,12 +1498,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         .then(async result => {
           return await result.cupon;
         });
+      console.log('getCupon: ', cupon);
       let discountPorc = 0;
       this.discountPorc = "0";
       if (cupon) {
         cupon.active = false;
         console.log('cupon: ', cupon);
-          const email = event.target.value;
+        const email = event.target.value;
         // Buscar contacto en icommkt
         console.log('email: ', email);
         const icommktContact = await this.icommktsService.getIcommktContact(email);
