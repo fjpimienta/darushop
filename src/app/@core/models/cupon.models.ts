@@ -5,4 +5,5 @@ export class Cupon {
   typeDiscount?: string;
   amountDiscount?: number;
   minimumPurchase?: number;
+  active?: boolean;
 }
