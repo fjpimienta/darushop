@@ -12,6 +12,7 @@ export const DELIVERY_FRAGMENT = gql`
         typeDiscount
         amountDiscount
         minimumPurchase
+        active
       }
       discount
       importe
