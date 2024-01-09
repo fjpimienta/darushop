@@ -8,5 +8,6 @@ export const CUPON_FRAGMENT = gql`
     typeDiscount
     amountDiscount
     minimumPurchase
+    active
   }
 `;
