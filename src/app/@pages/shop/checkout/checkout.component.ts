@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, ElementRef, HostListener } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 import { CartService } from '@core/services/cart.service';
 import { CountrysService } from '@core/services/countrys.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
@@ -17,7 +17,7 @@ import { CURRENCIES_SYMBOL, CURRENCY_LIST } from '@mugan86/ng-shop-ui';
 import { CURRENCY_CODE } from '@core/constants/config';
 import { infoEventAlert, loadData } from '@shared/alert/alerts';
 import { CustomersService } from '@core/services/stripe/customers.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { ICustomer, IResultStripeCustomer } from '@core/interfaces/stripe/customer.interface';
 import { ChargeService } from '@core/services/stripe/charge.service';
 import { IPayment } from '@core/interfaces/stripe/payment.interface';
@@ -49,11 +49,9 @@ import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
 import { AddressOpenpayInput, ChargeOpenpayInput, CustomerOpenpayInput } from '@core/models/openpay/_openpay.models';
 import * as crypto from 'crypto-js';
 import { CuponsService } from '@core/services/cupon.service';
-import { ICatalog } from '@core/interfaces/catalog.interface';
 import { InvoiceConfigsService } from '@core/services/invoiceconfig.service';
 import { FormaPago, InvoiceConfig, InvoiceConfigInput, MetodoPago, RegimenFiscal, UsoCFDI } from '@core/models/invoiceConfig.models';
 import { WelcomesService } from '@core/services/welcomes.service';
-import { ICupon } from '@core/interfaces/cupon.interface';
 import { Cupon } from '@core/models/cupon.models';
 import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 
@@ -209,6 +207,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private icommktsService: IcommktsService
   ) {
     try {
+      this.subscribeToRouterEvents();
       this.activeRoute.queryParams.subscribe(params => {
         if (params.id) {
           this.idTransaction = params.id;
@@ -336,6 +335,40 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.log('error: ', error);
     }
+  }
+
+  private confirmationSubject = new Subject<boolean>();
+
+  private subscribeToRouterEvents() {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        // Evento de inicio de navegación (puede ser causado por el botón "Atrás" del navegador)
+        // Realiza tu lógica para evitar el cierre de la ventana
+        // Puedes mostrar una confirmación, realizar acciones, etc.
+        const confirmation = confirm('¿Seguro que quieres salir?. ');
+        this.confirmationSubject.next(confirmation);
+        if (!confirmation) {
+          console.log('!confirmation');
+          // Cancela la navegación para evitar el retroceso
+          this.router.navigate([], { skipLocationChange: true });
+        }
+        this.onSubmitCapture();
+        console.log('subscribeToRouterEvents.confirmation.onSubmitCapture');
+      }
+    });
+  }
+
+  getConfirmation(): Subject<boolean> {
+    return this.confirmationSubject;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  beforeUnloadHandler(event: any) {
+    console.log('beforeUnloadHandler');
+    // Mostrar una confirmación personalizada antes de cerrar la ventana
+    const confirmationMessage = '¿Seguro que quieres salir?';
+    (event || window.event).returnValue = confirmationMessage;
+    return confirmationMessage;
   }
 
   //#region Metodos Componente
@@ -1413,10 +1446,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       .then(async result => {
         return await result.cupon;
       });
+    console.log('getCupon: ', cupon);
     let discountPorc = 0;
     this.discountPorc = "0";
     if (cupon) {
+      cupon.active = false;
       this.cupon = cupon;
+      console.log('cupon: ', cupon);
       const email = this.formData.controls.email.value;
       this.typeDiscount = cupon.typeDiscount;
       const totalCharge = parseFloat(this.totalPagar);
@@ -1495,12 +1531,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         .then(async result => {
           return await result.cupon;
         });
+      console.log('getCupon: ', cupon);
       let discountPorc = 0;
       this.discountPorc = "0";
       if (cupon) {
         cupon.active = false;
         console.log('cupon: ', cupon);
-          const email = event.target.value;
+        const email = event.target.value;
         // Buscar contacto en icommkt
         console.log('email: ', email);
         const icommktContact = await this.icommktsService.getIcommktContact(email);
