@@ -21,6 +21,7 @@ import { CheckoutComponent } from '@pages/shop/checkout/checkout.component';
 import { DashboardComponent } from '@pages/shop/dashboard/dashboard.component';
 import { AuthGuard } from '@core/guards/auth.guard';
 import { ProductsComponent } from '@pages/shop/products/products.component';
+import { CheckoutGuard } from '@core/guards/checkout.guard';
 
 const routes: Routes = [
   {
@@ -122,11 +123,13 @@ const routes: Routes = [
       },
       {
         path: 'checkout',
-        component: CheckoutComponent
+        component: CheckoutComponent,
+        canDeactivate: [CheckoutGuard],
       },
       {
         path: 'checkout/:idOrder/:id',
-        component: CheckoutComponent
+        component: CheckoutComponent,
+        canDeactivate: [CheckoutGuard],
       },
       {
         path: 'dashboard',

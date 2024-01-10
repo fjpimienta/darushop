@@ -54,6 +54,7 @@ import { FormaPago, InvoiceConfig, InvoiceConfigInput, MetodoPago, RegimenFiscal
 import { WelcomesService } from '@core/services/welcomes.service';
 import { Cupon } from '@core/models/cupon.models';
 import { IcommktsService } from '@core/services/suppliers/icommkts.service';
+import { CheckoutExitConfirmationService } from '@core/services/navigationConfirmation.service';
 
 declare var $: any;
 declare var OpenPay: any
@@ -204,10 +205,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public cuponsService: CuponsService,
     public invoiceConfigsService: InvoiceConfigsService,
     public welcomesService: WelcomesService,
-    private icommktsService: IcommktsService
+    private icommktsService: IcommktsService,
+    private confirmationService: CheckoutExitConfirmationService
   ) {
     try {
-      // this.subscribeToRouterEvents();
       this.activeRoute.queryParams.subscribe(params => {
         if (params.id) {
           this.idTransaction = params.id;
@@ -337,41 +338,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  private confirmationSubject = new Subject<boolean>();
-
-  private subscribeToRouterEvents() {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        // Evento de inicio de navegación (puede ser causado por el botón "Atrás" del navegador)
-        // Realiza tu lógica para evitar el cierre de la ventana
-        // Puedes mostrar una confirmación, realizar acciones, etc.
-        const confirmation = confirm('¿Seguro que quieres salir?. ');
-        this.confirmationSubject.next(confirmation);
-        if (!confirmation) {
-          console.log('!confirmation');
-          // Cancela la navegación para evitar el retroceso
-          this.router.navigate([], { skipLocationChange: true });
-        }
-        if (this.isSubmittingCapture) {
-          this.onSubmitCapture();
-        }
-        console.log('subscribeToRouterEvents.confirmation.onSubmitCapture');
-      }
-    });
+  canDeactivate(): boolean {
+    if (this.isSubmittingCapture) {
+      this.onSubmitCapture();
+    }
+    this.confirmationService.setConfirmationStatus(true);
+    return true;
   }
-
-  getConfirmation(): Subject<boolean> {
-    return this.confirmationSubject;
-  }
-
-  // @HostListener('window:beforeunload', ['$event'])
-  // beforeUnloadHandler(event: any) {
-  //   console.log('beforeUnloadHandler');
-  //   // Mostrar una confirmación personalizada antes de cerrar la ventana
-  //   const confirmationMessage = '¿Seguro que quieres salir?';
-  //   (event || window.event).returnValue = confirmationMessage;
-  //   return confirmationMessage;
-  // }
 
   //#region Metodos Componente
   ngOnInit(): void {
@@ -829,6 +802,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscr.unsubscribe();
     document.querySelector('body').removeEventListener('click', () => this.clearOpacity());
+    this.confirmationService.resetConfirmationStatus();
   }
   //#endregion Metodos Componentes
 
