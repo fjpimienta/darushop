@@ -352,7 +352,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           // Cancela la navegación para evitar el retroceso
           this.router.navigate([], { skipLocationChange: true });
         }
-        this.onSubmitCapture();
+        if (this.isSubmittingCapture) {
+          this.onSubmitCapture();
+        }
         console.log('subscribeToRouterEvents.confirmation.onSubmitCapture');
       }
     });
