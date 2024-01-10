@@ -207,7 +207,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private icommktsService: IcommktsService
   ) {
     try {
-      this.subscribeToRouterEvents();
+      // this.subscribeToRouterEvents();
       this.activeRoute.queryParams.subscribe(params => {
         if (params.id) {
           this.idTransaction = params.id;
@@ -364,14 +364,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return this.confirmationSubject;
   }
 
-  @HostListener('window:beforeunload', ['$event'])
-  beforeUnloadHandler(event: any) {
-    console.log('beforeUnloadHandler');
-    // Mostrar una confirmación personalizada antes de cerrar la ventana
-    const confirmationMessage = '¿Seguro que quieres salir?';
-    (event || window.event).returnValue = confirmationMessage;
-    return confirmationMessage;
-  }
+  // @HostListener('window:beforeunload', ['$event'])
+  // beforeUnloadHandler(event: any) {
+  //   console.log('beforeUnloadHandler');
+  //   // Mostrar una confirmación personalizada antes de cerrar la ventana
+  //   const confirmationMessage = '¿Seguro que quieres salir?';
+  //   (event || window.event).returnValue = confirmationMessage;
+  //   return confirmationMessage;
+  // }
 
   //#region Metodos Componente
   ngOnInit(): void {
