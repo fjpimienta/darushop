@@ -339,8 +339,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   canDeactivate(): boolean {
-    if (this.isSubmittingCapture) {
+    if (this.idDelivery !== undefined) {
       this.onSubmitCapture();
+      return true;
     }
     this.confirmationService.setConfirmationStatus(true);
     return true;
