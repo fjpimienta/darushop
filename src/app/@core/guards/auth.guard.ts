@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         return this.redirect();
       }
       // El role del usuario es ADMIN
-      if (dataDecode.user.role === 'ADMIN' || dataDecode.user.role === 'SELLER') {
+      if (dataDecode.user.role === 'ADMIN' || dataDecode.user.role === 'CLIENT' || dataDecode.user.role === 'SELLER') {
         return true;
       }
       return this.redirect();
