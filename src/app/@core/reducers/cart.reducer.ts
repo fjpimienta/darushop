@@ -28,9 +28,9 @@ function getState(key: string): any {
       //fecha.setDate(fecha.getDate() - 1);
       const diferenciaEnMilisegundos = fechaActual.getTime() - fecha.getTime();
       const diferenciaEnHoras = diferenciaEnMilisegundos / (1000 * 60 * 60);
-      const haPasadoMasDe10Horas = diferenciaEnHoras > 10;
+      const haPasadoMasDe10Horas = diferenciaEnHoras > 1;
       if (haPasadoMasDe10Horas) {
-        console.log("Ha pasado más de 10 horas");
+        console.log("Ha pasado más de 1 hora");
         const storageValue = localStorage.getItem(key);
         const cartData = storageValue ? JSON.parse(storageValue).cart.data : [];
         function eliminarItemPorId(id: string): void {
