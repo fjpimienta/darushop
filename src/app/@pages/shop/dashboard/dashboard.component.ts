@@ -5,13 +5,18 @@ import { IMeData } from '@core/interfaces/session.interface';
 import { ChargeInput } from '@core/models/charge.models';
 import { Codigopostal } from '@core/models/codigopostal.models';
 import { Country, Estado, Municipio } from '@core/models/country.models';
+import { Delivery } from '@core/models/delivery.models';
 import { OrderInput } from '@core/models/order.models';
+import { Product } from '@core/models/product.models';
+import { ProductShipment } from '@core/models/productShipment.models';
 import { UserInput } from '@core/models/user.models';
 import { AuthenticationService } from '@core/services/auth.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
 import { CountrysService } from '@core/services/countrys.service';
+import { DeliverysService } from '@core/services/deliverys.service';
 import { OrdersService } from '@core/services/orders.service';
 import { ChargeService } from '@core/services/stripe/charge.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { infoEventAlert } from '@shared/alert/alerts';
 import jwtDecode from 'jwt-decode';
 import { Subject, combineLatest } from 'rxjs';
@@ -37,7 +42,7 @@ export class DashboardComponent implements OnInit {
   userName = '';
   user: UserInput;
   orders: OrderInput[] = [];
-  charges: ChargeInput[] = [];
+  charges: Delivery[] = [];
 
   byCodigopostal: boolean;
   codigoPostal: string;
@@ -62,6 +67,13 @@ export class DashboardComponent implements OnInit {
   queryParams: object = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
 
+  data: any;
+  productos = [];
+  totalProd = 0.0;
+  totalEnvios = 0;
+  discount = 0;
+  total = 0.0;
+
   constructor(
     public router: Router,
     public activeRoute: ActivatedRoute,
@@ -69,10 +81,11 @@ export class DashboardComponent implements OnInit {
     private formBuilder: FormBuilder,
     private renderer: Renderer2,
     public authService: AuthenticationService,
-    public ordersService: OrdersService,
+    public deliverysService: DeliverysService,
     public chargeService: ChargeService,
     public codigopostalsService: CodigopostalsService,
     public countrysService: CountrysService,
+    private modalService: NgbModal,
   ) {
     combineLatest([
       this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
@@ -161,26 +174,15 @@ export class DashboardComponent implements OnInit {
       this.access = this.session.status;
       this.role = this.session.user?.role;
       this.userName = `${this.session.user?.name} ${this.session.user?.lastname}`;
-      // Obtener Pedidos
-      this.ordersService.getOrders(1, 0, this.session.user?.email).subscribe(resultOrders => {
-        let i = 0;
-        this.charges = [];
-        this.orders = resultOrders.orders;
-        this.orders.forEach(order => {
-          i += 1;
-          let newCharge = new ChargeInput();
-          newCharge.id = i.toString();
-          const fechaReg = new Date(order.charge.created);
-          const fecha = fechaReg.getDate() + '/' + fechaReg.getMonth() + '/' + fechaReg.getFullYear();
-          newCharge.created = fecha;
-          newCharge.description = order.charge.description;
-          newCharge.amount = order.charge.amount;
-          this.charges.push(newCharge);
-        });
-      });
+
       // Obtener Direcciones
       if (result.user) {
         this.user = result.user;
+
+        // Obtener Pedidos
+        const deliverys = this.deliverysService.getDeliverys(1, 0, this.session.user?.email).then(async (res) => {
+          this.charges = res.deliverys;
+        });
 
         // Datos Principales
         this.formDataMain.controls.name.setValue(this.user.name);
@@ -193,44 +195,44 @@ export class DashboardComponent implements OnInit {
           this.countrysService.countrys$.subscribe((result) => {
             this.countrys = result;
             this.session.user?.addresses.forEach(direction => {
-              if (direction.dir_delivery_main === true) {
-                this.formDataAddress.controls.codigoPostal.setValue(direction.d_codigo);
-                this.formDataAddress.controls.selectColonia.setValue(direction.d_asenta);
-                this.formDataAddress.controls.directions.setValue(direction.directions);
-                this.formDataAddress.controls.references.setValue(direction.references);
-                if (this.countrys.length > 0) {
-                  this.countrys.forEach(country => {
-                    if (country.c_pais === direction.c_pais) {
-                      this.estados = country.estados;
-                      this.formDataAddress.controls.selectCountry.setValue(direction.c_pais);
-                      this.selectCountry.c_pais = direction.c_pais;
-                      this.selectCountry.d_pais = direction.d_pais;
-                      country.estados.forEach(estado => {
-                        if (estado.c_estado === direction.c_estado) {
-                          this.municipios = estado.municipios;
-                          this.formDataAddress.controls.selectEstado.setValue(direction.c_estado);
-                          this.selectEstado.c_estado = direction.c_estado;
-                          this.selectEstado.d_estado = direction.d_estado;
-                          estado.municipios.forEach(municipio => {
-                            if (municipio.c_mnpio === direction.c_mnpio) {
-                              this.formDataAddress.controls.selectMunicipio.setValue(direction.c_mnpio);
-                              this.selectMunicipio.c_mnpio = direction.c_mnpio;
-                              this.selectMunicipio.D_mnpio = direction.d_mnpio;
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
-                  // Agregar las colonias del CP
-                  this.colonias = [];
-                  this.cps.forEach(codigo => {
-                    if (codigo.d_asenta) {
-                      this.colonias.push(codigo.d_asenta);
-                    }
-                  });
-                }
+              // if (direction.dir_delivery_main === true) {
+              this.formDataAddress.controls.codigoPostal.setValue(direction.d_codigo);
+              this.formDataAddress.controls.selectColonia.setValue(direction.d_asenta);
+              this.formDataAddress.controls.directions.setValue(direction.directions);
+              this.formDataAddress.controls.references.setValue(direction.references);
+              if (this.countrys.length > 0) {
+                this.countrys.forEach(country => {
+                  if (country.c_pais === direction.c_pais) {
+                    this.estados = country.estados;
+                    this.formDataAddress.controls.selectCountry.setValue(direction.c_pais);
+                    this.selectCountry.c_pais = direction.c_pais;
+                    this.selectCountry.d_pais = direction.d_pais;
+                    country.estados.forEach(estado => {
+                      if (estado.c_estado === direction.c_estado) {
+                        this.municipios = estado.municipios;
+                        this.formDataAddress.controls.selectEstado.setValue(direction.c_estado);
+                        this.selectEstado.c_estado = direction.c_estado;
+                        this.selectEstado.d_estado = direction.d_estado;
+                        estado.municipios.forEach(municipio => {
+                          if (municipio.c_mnpio === direction.c_mnpio) {
+                            this.formDataAddress.controls.selectMunicipio.setValue(direction.c_mnpio);
+                            this.selectMunicipio.c_mnpio = direction.c_mnpio;
+                            this.selectMunicipio.D_mnpio = direction.d_mnpio;
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+                // Agregar las colonias del CP
+                this.colonias = [];
+                this.cps.forEach(codigo => {
+                  if (codigo.d_asenta) {
+                    this.colonias.push(codigo.d_asenta);
+                  }
+                });
               }
+              // }
             });
           });
         }
@@ -377,4 +379,30 @@ export class DashboardComponent implements OnInit {
   onSetColonias(event): void {
   }
   //#endregion
+
+  openModal(content: any, data: any) {
+    this.data = data;
+    this.productos = [];
+    this.totalProd = 0.0;
+    this.totalEnvios = 0;
+    if (this.data) {
+      for (const idW of Object.keys(this.data.warehouses)) {
+        const warehouse = this.data.warehouses[idW];
+        for (const idP of Object.keys(warehouse.productShipments)) {
+          const prod = warehouse.productShipments[idP];
+          this.totalProd += (prod.precio * prod.cantidad);
+          this.productos.push(prod);
+        }
+        for (const idE of Object.keys(warehouse.shipments)) {
+          const ship = warehouse.shipments[idE];
+          this.totalEnvios += ship.costo;
+        }
+      }
+      this.discount = this.data.discount;
+      this.total = this.totalProd + this.totalEnvios - this.discount;
+
+      this.modalService.open(content, { size: 'lg', centered: true });
+    }
+  }
+
 }
