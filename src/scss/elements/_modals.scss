@@ -97,9 +97,9 @@
 
 .modal-dialog {
   margin: 1rem auto;
-  max-width: 1188px;
   animation-name: modalFadeUpOut;
   animation-duration: .3s;
+  background-color: white;
 }
 
 .modal-open {
