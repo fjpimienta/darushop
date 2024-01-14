@@ -401,7 +401,7 @@ export class DashboardComponent implements OnInit {
       this.discount = this.data.discount;
       this.total = this.totalProd + this.totalEnvios - this.discount;
 
-      this.modalService.open(content, { size: 'lg', centered: true });
+      this.modalService.open(content, { size: 'lg', centered: true, windowClass: 'custom-modal' });
     }
   }
 
