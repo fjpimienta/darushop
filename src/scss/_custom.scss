@@ -1268,3 +1268,94 @@ p {
   font-size: 24px;
   /* Cambia el tamaño de la fuente según tus preferencias */
 }
+
+// Modal Dashboard
+
+.custom-modal .modal-content {
+  height: 600px;
+
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    color: #333333;
+    margin-top: 0;
+  }
+
+  p {
+    color: #666666;
+    line-height: 1.5;
+    font-size: 10px;
+    /* Tamaño de letra de los párrafos */
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    /* Tamaño de letra de los párrafos */
+  }
+
+  th,
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #dddddd;
+  }
+
+  th {
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .number tbody th {
+    text-align: right !important;
+    font-weight: bold !important;
+  }
+
+  .texto tbody th {
+    text-align: left !important;
+    font-size: 8px !important;
+    /* Tamaño de letra de los párrafos */
+  }
+
+  tfoot td {
+    text-align: right;
+    font-weight: bold;
+  }
+
+  foot {
+    color: #666666;
+    font-size: 8px;
+    /* Tamaño de letra de los párrafos */
+  }
+
+  .custom-class {
+    text-align: right !important;
+  }
+
+  .thead-class {
+    text-align: center !important;
+  }
+
+  .address {
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
