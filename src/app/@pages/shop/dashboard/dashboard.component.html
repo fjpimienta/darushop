@@ -338,7 +338,7 @@
               <span class="d-none d-sm-block">Cliente</span>
             </a>
             <ng-template ngbNavContent>
-              <div class="client">
+              <div class="address">
                 <h6>Datos del Usuario</h6>
                 <div class="table-responsive">
                   <table class="table mb-0">
@@ -352,7 +352,7 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <th>{{data.user.name.toUpperCase()}}</th>
+                        <td>{{data.user.name.toUpperCase()}}</td>
                         <td>{{data.user.lastname.toUpperCase()}}</td>
                         <td>{{data.user.phone}}</td>
                         <td>{{data.user.email}}</td>
@@ -389,7 +389,7 @@
                           {{data.user.addresses[0].d_estado}}
                           {{data.user.addresses[0].d_pais}}
                         </td>
-                        <th>{{data.user.addresses[0].d_codigo}}</th>
+                        <td>{{data.user.addresses[0].d_codigo}}</td>
                         <td>{{data.user.addresses[0].phone}}</td>
                         <td>{{data.user.addresses[0].references}}</td>
                       </tr>
@@ -405,6 +405,8 @@
               <span class="d-none d-sm-block">Facturaci&oacute;n</span>
             </a>
             <ng-template ngbNavContent>
+              <div class="address">
+                <h6>Datos para Facturar</h6>
               <div class="table-responsive">
                 <table class="table mb-0">
                   <thead class="thead-dark">
@@ -420,8 +422,8 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <th *ngIf="data.invoiceConfig.nombreEmpresa == ''">{{data.invoiceConfig.nombres}}
-                        {{data.invoiceConfig.apellidos}}</th>
+                      <td *ngIf="data.invoiceConfig.nombreEmpresa == ''">{{data.invoiceConfig.nombres}}
+                        {{data.invoiceConfig.apellidos}}</td>
                       <td *ngIf="data.invoiceConfig.nombreEmpresa != ''">{{data.invoiceConfig.nombreEmpresa}}</td>
                       <td>{{data.invoiceConfig.rfc}}</td>
                       <td>{{data.invoiceConfig.codigoPostal}}</td>
@@ -433,6 +435,7 @@
                   </tbody>
                 </table>
               </div>
+            </div>
             </ng-template>
           </li>
           <li *ngIf="data.orderCtResponse" [ngbNavItem]="5">
@@ -457,7 +460,7 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <th>{{data.orderCtResponse.pedidoWeb}}</th>
+                        <td>{{data.orderCtResponse.pedidoWeb}}</td>
                         <td>{{data.orderCtResponse.fecha}}</td>
                         <td>{{data.orderCtConfirmResponse.okCode}}</td>
                         <td>{{data.orderCtConfirmResponse.okMessage}}</td>
@@ -492,7 +495,7 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <th>{{data.orderCvaResponse.pedido}}</th>
+                        <td>{{data.orderCvaResponse.pedido}}</td>
                         <td>{{data.orderCvaResponse.estado}}</td>
                         <td>{{data.orderCvaResponse.total}}</td>
                         <td>{{data.orderCvaResponse.agentemail}}</td>
