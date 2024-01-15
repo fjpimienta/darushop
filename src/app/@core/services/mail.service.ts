@@ -29,7 +29,7 @@ export class MailService extends ApiService {
   sendEmail(charge: any, issue: string = '', message: string = '', internal: boolean = false,
     totalEnvios: string = '0', esFacturable: boolean = false): void {
     const emailFrom = 'DARU Shop <marketplace@daru.mx>';
-    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
+    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx; ventas@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos: ProductShipment[] = [];
     let totalProd = 0.0;
@@ -218,7 +218,7 @@ export class MailService extends ApiService {
     };
     this.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
     if (internal) {                                                        // Correos internos
-      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
+      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx; ventas@daru.mx';
       const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
       let htmlInt = '';
       if (charge.orderCtResponse) {
@@ -239,7 +239,7 @@ export class MailService extends ApiService {
 
   sendEmailSpei(charge: any, issue: string = '', message: string = '', internal: boolean = false, totalEnvios: string = '0'): void {
     const emailFrom = 'DARU Shop <marketplace@daru.mx>';
-    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx';
+    const receiptEmail = charge.receipt_email + '; marketplace@daru.mx; ventas@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos: ProductShipment[] = [];
     let totalProd = 0.0;
@@ -408,7 +408,7 @@ export class MailService extends ApiService {
     };
     this.send(mail).pipe(first()).subscribe();                      // Envio de correo externo.
     if (internal) {                                                        // Correos internos
-      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx';
+      const receiptEmailInt = charge.receipt_email + '; marketplace@daru.mx; ventas@daru.mx';
       const subjectInt = issue !== '' ? issue : 'Pedido solicitado al proveedor';
       let htmlInt = '';
       if (charge.orderCtResponse) {
