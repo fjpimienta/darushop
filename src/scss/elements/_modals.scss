@@ -161,3 +161,25 @@
     margin: 0 auto;
   }
 }
+
+/* Estilos generales */
+
+/* Estilos específicos para dispositivos móviles */
+@media only screen and (max-width: 767px) {
+  .modal-dialog {
+    margin: -5rem 1rem 1rem 1rem;
+    animation-name: modalFadeUpOut;
+    animation-duration: .3s;
+    background-color: white;
+  }
+}
+
+/* Estilos específicos para iOS (Safari) */
+@media only screen and (max-width: 767px) and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+  .modal-dialog {
+    margin: -5rem 1rem 1rem 1rem;
+    animation-name: modalFadeUpOut;
+    animation-duration: .3s;
+    background-color: white;
+  }
+}
