@@ -54,3 +54,18 @@
     color: white;
   }
 }
+
+/* Estilos específicos para pantallas más pequeñas (768px o menos) */
+@media only screen and (max-width: 768px) {
+  .countdown-amount {
+    font-size: 1.5em !important;
+    font-weight: 200 !important;
+  }
+  .countdown-section {
+    margin-left: 1rem !important;
+    background-color: #000 !important;
+    color: #fff !important;
+    margin-right: 1rem !important;
+    text-align: center !important;
+  }
+}
