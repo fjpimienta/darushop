@@ -40,42 +40,6 @@
   margin-left: 0.8rem;
 }
 
-/* Estilos específicos para pantallas más pequeñas (768px o menos) */
-@media only screen and (max-width: 768px) {
-  .logo h3 {
-    font-size: 3rem;
-    width: 400px !important;
-    top: 3rem !important;
-    color: white !important;
-    padding-top: 7rem;
-  }
-
-  .soon {
-    background-image: url('../../../../../assets/images/backgrounds/daru_espera_1.png');
-    background-size: 100% auto;
-    /* Hace que el fondo sea responsive */
-    padding: 1%;
-    height: 90%;
-    /* Establece la altura del contenedor al 100% de la altura de la ventana */
-    overflow: hidden;
-  }
-
-  .selector {
-    display: block;
-    /* Puedes incluir una propiedad sin cambiar su valor */
-    margin-left: 0 !important;
-  }
-
-  .mobile-modal {
-    position: fixed;
-    top: -50em;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-  }
-}
-
 .rounded {
   border-radius: 2.25rem !important;
 }
@@ -121,4 +85,76 @@ select.form-control:not([size]):not([multiple]) {
 
 .strong {
   font-weight: 700 !important;
+}
+
+/* Estilos específicos para pantallas más pequeñas (768px o menos) */
+@media only screen and (max-width: 768px) {
+  .logo h3 {
+    width: 400px !important;
+    top: 3rem !important;
+    color: white !important;
+    padding-top: 7rem;
+  }
+
+  .bottom {
+    color: white !important;
+    font-weight: 700 !important;
+    padding-top: 8rem !important;
+    font-family: Lato !important;
+    font-size: 2rem !important;
+  }
+
+  .soon {
+    background-image: url('../../../../../assets/images/backgrounds/daru_espera_1.png');
+    background-size: 100% auto;
+    /* Hace que el fondo sea responsive */
+    padding: 1%;
+    height: 100%;
+    /* Establece la altura del contenedor al 100% de la altura de la ventana */
+    overflow: hidden;
+  }
+
+  .selector {
+    display: block;
+    /* Puedes incluir una propiedad sin cambiar su valor */
+    margin-left: 0 !important;
+  }
+
+  .mobile-modal {
+    position: fixed;
+    top: -50em;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* Standard 'appearance' property */
+  input[type="date"] {
+    appearance: none;
+    /* Standard property */
+
+    /* Vendor-prefixed properties for compatibility */
+    -moz-appearance: none;
+    /* Firefox */
+    -webkit-appearance: none;
+    /* WebKit browsers (Safari, Chrome) */
+    -ms-appearance: none;
+    /* Microsoft browsers (Edge) */
+  }
+
+  /* Additional styling for iOS */
+  /* -webkit-box-shadow is used to hide the default iOS styling */
+  input[type="date"].ios-style {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    /* Standard property */
+
+    /* Vendor-prefixed properties for compatibility */
+    -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    /* WebKit browsers (Safari, Chrome) */
+    -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    /* Firefox */
+    -ms-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    /* Microsoft browsers (Edge) */
+  }
 }
