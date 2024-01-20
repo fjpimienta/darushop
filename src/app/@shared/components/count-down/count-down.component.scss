@@ -7,16 +7,50 @@
 }
 
 .countdown-row {
-  width: 90% !important;
+  width: 100% !important;
   max-width: 100% !important;
 }
 
 .coming-countdown {
-  width: 90% !important;
+  width: 100% !important;
   max-width: 100% !important;
 }
 
 .countdown-separator {
-  width: 90% !important;
+  width: 100% !important;
   max-width: 100% !important;
+}
+
+/* Media query para dispositivos medianos o grandes */
+@media (min-width: 768px) {
+  .countdown-amount {
+    font-size: 6em !important;
+    font-weight: 700 !important;
+  }
+
+  .countdown-period {
+    font-size: 1.5em !important;
+    font-weight: 700 !important;
+    color: grey !important;
+    margin-left: -1rem !important;
+  }
+
+  .countdown-section {
+    background-color: black;
+    /* Fondo negro */
+    color: white;
+    /* Texto en color blanco para contrastar */
+    padding: 30px;
+    /* Ajusta el relleno según tus preferencias */
+    margin: 10px;
+    /* Ajusta el margen según tus preferencias */
+    border-radius: 5px;
+    /* Añade bordes redondeados para un aspecto más estilizado */
+  }
+
+  .countdown-amount,
+  .countdown-period {
+    /* Ajusta el color del texto si es necesario */
+    color: white;
+  }
 }
