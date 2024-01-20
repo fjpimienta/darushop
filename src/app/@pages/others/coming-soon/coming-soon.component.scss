@@ -10,17 +10,9 @@
   /* Centra horizontalmente el contenido */
   height: 100vh;
   /* Establece la altura del contenedor al 100% de la altura de la ventana */
+  padding: 20px 0;
 }
 
-/* Media query para dispositivos medianos o grandes */
-@media (min-width: 768px) {
-  .soon-content {
-    padding: 20px 0;
-    /* Ajusta el espacio arriba y abajo según tus necesidades */
-  }
-}
-
-/* Estilo base para dispositivos pequeños */
 .soon {
   background-image: url('../../../../assets/images/backgrounds/daru_espera_2.jpg');
   background-size: 100% auto;
@@ -35,18 +27,51 @@
   max-width: 100%;
 }
 
-/* Estilo para el div con la clase soon-content-wrapper */
 .soon-content-wrapper {
-  flex-grow: 0.35; /* Hace que el div crezca y empuje hacia arriba */
-  position: relative; /* Establece una posición relativa */
-  z-index: 1; /* Cambia el z-index para asegurarte de que esté por encima de otros elementos */
+  flex-grow: 0.35;
+  /* Hace que el div crezca y empuje hacia arriba */
+  position: relative;
+  /* Establece una posición relativa */
+  z-index: 1;
+  /* Cambia el z-index para asegurarte de que esté por encima de otros elementos */
   /* Otros estilos adicionales según tus necesidades */
 }
 
+.soon-content {
+  width: 800px !important;
+  max-width: 920px !important;
+}
+
+.soon-content-wrapper {
+  width: 800px !important;
+  max-width: 920px !important;
+}
+
+.soon-content form {
+  width: 800px !important;
+  max-width: 920px !important;
+}
+
+.soon-content-wrapper {
+  flex-grow: 0.8;
+  /* Nuevo valor para dispositivos móviles */
+  backdrop-filter: blur(10px);
+  /* Aplica un efecto de desenfoque */
+}
+
+
 /* Media query para dispositivos móviles */
 @media (max-width: 767px) {
+  /* Estilo para el div con la clase soon-content-wrapper */
   .soon-content-wrapper {
-    flex-grow: 0.8; /* Nuevo valor para dispositivos móviles */
-    backdrop-filter: blur(10px); /* Aplica un efecto de desenfoque */
+    flex-grow: 0.8;
+    backdrop-filter: blur(10px);
+    /* Hace que el div crezca y empuje hacia arriba */
+    position: relative;
+    /* Establece una posición relativa */
+    z-index: 1;
+    /* Cambia el z-index para asegurarte de que esté por encima de otros elementos */
+    /* Otros estilos adicionales según tus necesidades */
   }
+
 }

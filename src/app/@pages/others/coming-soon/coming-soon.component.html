@@ -4,9 +4,8 @@
       <div class="col-md-12 col-lg-12">
         <div class="soon-content text-center">
           <div class="soon-content-wrapper">
-            <app-count-down until="2023-10-01" format="DHMS" wrap="coming-countdown countdown-separator">
+            <app-count-down until="2023-12-28" format="DHMS" wrap="coming-countdown countdown-separator">
             </app-count-down>
-            <br class="mt-2 mb-3 mt-md-3">
             <form (ngSubmit)="onSubmit()" [formGroup]="formData">
               <div class="input-group mb-5">
                 <input type="email" name="email" formControlName="email" class="form-control bg-transparent"
@@ -19,23 +18,6 @@
                 </div>
               </div>
             </form>
-            <div class="social-icons justify-content-center mb-0">
-              <a class="social-icon" style="background-color: #3b5998; color: white;" href="javascript:;">
-                <i class="fa-brands fa-facebook"></i>
-              </a>
-              <a class="social-icon" style="background-color: #55acee; color: white;" href="javascript:;">
-                <i class="fa-brands fa-x-twitter"></i>
-              </a>
-              <a class="social-icon" style="background-color: #ac2bac; color: white;" href="javascript:;"><i
-                  class="fa-brands fa-instagram"></i>
-              </a>
-              <a class="social-icon" style="background-color: #ed302f; color: white;" href="javascript:;"><i
-                  class="fa-brands fa-youtube"></i>
-              </a>
-              <a class="social-icon" style="background-color: #c61118; color: white;" href="javascript:;"><i
-                  class="fa-brands fa-pinterest"></i>
-              </a>
-            </div>
           </div>
         </div>
       </div>

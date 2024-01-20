@@ -1,61 +1,3 @@
-/* Estilo para centrar el contenido en dispositivos pequeños */
-.soon-content {
-  display: flex;
-  /* Utilizar flexbox para alinear contenido verticalmente */
-  flex-direction: column;
-  /* Colocar los elementos en columna */
-  justify-content: flex-end;
-  /* Alinea el contenido en la parte inferior */
-  align-items: center;
-  /* Centra horizontalmente el contenido */
-  height: 100vh;
-  /* Establece la altura del contenedor al 100% de la altura de la ventana */
-}
-
-/* Media query para dispositivos medianos o grandes */
-@media (min-width: 768px) {
-  .soon-content {
-    padding: 20px 0;
-    /* Ajusta el espacio arriba y abajo según tus necesidades */
-  }
-}
-
-/* Estilo base para dispositivos pequeños */
-.soon {
-  background-image: url('../../../../../assets/images/backgrounds/daru_espera_2.jpg');
-  background-size: 100% auto;
-  /* Hace que el fondo sea responsive */
-  padding: 10%;
-  height: 100%;
-  /* Establece la altura del contenedor al 100% de la altura de la ventana */
-  overflow: hidden;
-}
-
-.soon img {
-  max-width: 100%;
-}
-
-/* Estilo para el div con la clase soon-content-wrapper */
-.soon-content-wrapper {
-  flex-grow: 0.35;
-  /* Hace que el div crezca y empuje hacia arriba */
-  position: relative;
-  /* Establece una posición relativa */
-  z-index: 1;
-  /* Cambia el z-index para asegurarte de que esté por encima de otros elementos */
-  /* Otros estilos adicionales según tus necesidades */
-}
-
-/* Media query para dispositivos móviles */
-@media (max-width: 767px) {
-  .soon-content-wrapper {
-    flex-grow: 0.8;
-    /* Nuevo valor para dispositivos móviles */
-    backdrop-filter: blur(10px);
-    /* Aplica un efecto de desenfoque */
-  }
-}
-
 .container {
   width: 800px !important;
   max-width: 920px !important;
@@ -63,22 +5,36 @@
   padding-right: 1rem !important;
 }
 
-.soon-content {
-  width: 800px !important;
-  max-width: 920px !important;
+.logo {
+  background-image: url('../../../../../assets/images/logocolor-footer.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  width: 400px !important;
+  height: 75px;
+  margin-right: 10px;
 }
 
-.soon-content-wrapper {
-  width: 800px !important;
-  max-width: 920px !important;
+.bottom {
+  color: white !important;
+  font-weight: 700 !important;
+  padding-top: 6rem !important;
 }
 
-.soon-content form {
-  width: 800px !important;
-  max-width: 920px !important;
+.soon {
+  background-image: url('../../../../../assets/images/backgrounds/daru_espera_1.png');
+  background-size: 100% auto;
+  // background-repeat: no-repeat;
+  padding: 2%;
+  height: 100%;
+  /* Establece la altura del contenedor al 100% de la altura de la ventana */
+  overflow: visible;
 }
 
-/* Estilos para pantallas más grandes (mayores a 768px) */
+.soon img {
+  max-width: 100%;
+}
+
 .selector {
   width: 100%;
   margin-left: 0.8rem;
@@ -86,17 +42,83 @@
 
 /* Estilos específicos para pantallas más pequeñas (768px o menos) */
 @media only screen and (max-width: 768px) {
+  .logo h3 {
+    font-size: 3rem;
+    width: 400px !important;
+    top: 3rem !important;
+    color: white !important;
+    padding-top: 7rem;
+  }
+
+  .soon {
+    background-image: url('../../../../../assets/images/backgrounds/daru_espera_1.png');
+    background-size: 100% auto;
+    /* Hace que el fondo sea responsive */
+    padding: 1%;
+    height: 90%;
+    /* Establece la altura del contenedor al 100% de la altura de la ventana */
+    overflow: hidden;
+  }
+
   .selector {
     display: block;
     /* Puedes incluir una propiedad sin cambiar su valor */
     margin-left: 0 !important;
   }
+
   .mobile-modal {
     position: fixed;
     top: -50em;
     left: 0;
     width: 100%;
     height: 100%;
-    overflow-y: auto; /* Permitir desplazamiento vertical si el contenido es largo */
+    overflow-y: auto;
   }
+}
+
+.rounded {
+  border-radius: 2.25rem !important;
+}
+
+.form-control {
+  height: 30px;
+  padding: 0.85rem 4rem;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  font-weight: 300;
+  color: #fff;
+  background-color: #343a40;
+  border: 1px solid #ebebeb;
+  border-radius: 0;
+  margin-bottom: 0.5rem;
+  transition: all .3s;
+  outline-width: 0;
+}
+
+select.form-control:not([size]):not([multiple]) {
+  height: 33px;
+}
+
+.alert {
+  font-weight: 300;
+  font-size: 1.4rem;
+  line-height: 0.43;
+  letter-spacing: -.01em;
+  border-radius: 0;
+  margin: 0;
+  padding: 1rem 1.5rem;
+  border: none;
+}
+
+.btn {
+  line-height: 0.5 !important;
+}
+
+.send {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+.strong {
+  font-weight: 700 !important;
 }
