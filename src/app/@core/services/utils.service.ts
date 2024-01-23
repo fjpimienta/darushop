@@ -58,23 +58,33 @@ export class UtilsService {
    * Scrolling to Page content section
    */
   scrollToPageContent(target = '.page-content') {
-    const to = (document.querySelector(target) as HTMLElement).offsetTop - 74;
-    if (this.isSafariBrowser() || this.isEdgeBrowser()) {
-      let pos = window.pageYOffset;
-      const timerId = setInterval(() => {
-        if (pos <= to) { clearInterval(timerId); }
-        else {
-          window.scrollBy(0, -120);
-          pos -= 120;
-        }
-      }, 1);
+    const pageContentElement = document.querySelector(target) as HTMLElement;
+
+    // Verificar si el elemento existe antes de intentar acceder a offsetTop
+    if (pageContentElement) {
+      const to = pageContentElement.offsetTop - 74;
+
+      if (this.isSafariBrowser() || this.isEdgeBrowser()) {
+        let pos = window.pageYOffset;
+        const timerId = setInterval(() => {
+          if (pos <= to) {
+            clearInterval(timerId);
+          } else {
+            window.scrollBy(0, -120);
+            pos -= 120;
+          }
+        }, 1);
+      } else {
+        window.scrollTo({
+          top: to,
+          behavior: 'smooth'
+        });
+      }
     } else {
-      window.scrollTo({
-        top: to,
-        behavior: 'smooth'
-      });
+      console.error("El elemento no se encontró. No se puede realizar el desplazamiento.");
     }
   }
+
 
   /**
    * Scroll Top Button

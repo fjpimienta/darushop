@@ -21,25 +21,32 @@ export class CountToComponent implements OnInit {
 	@HostListener('window:scroll', ['$event'])
 
 	scrollHandler() {
-		let pt = 0,
-			amount = this.to - this.from,
-			height = this.renderer.parentNode(this.renderer.parentNode(this.renderer.parentNode(this.elRef.nativeElement))).offsetTop
+    let pt = 0;
+    const amount = this.to - this.from;
+    const parentNode = this.renderer.parentNode(this.elRef.nativeElement);
 
-		if (!this.isExcuted && pt <= this.speed && height >= window.pageYOffset) {
-			if (!this.isExcuted) {
-				let timer = setInterval(() => {
-					if (pt >= this.speed) {
-						clearInterval(timer);
-					}
+    // Verificar si el nodo padre existe antes de intentar acceder a offsetTop
+    if (parentNode) {
+      const height = parentNode.offsetTop;
 
-					this.elRef.nativeElement.innerHTML = Math.ceil(pt * amount / this.speed).toString();
-					pt = pt + this.interval;
-				}, this.interval);
-			}
+      if (!this.isExcuted && pt <= this.speed && height >= window.pageYOffset) {
+        if (!this.isExcuted) {
+          let timer = setInterval(() => {
+            if (pt >= this.speed) {
+              clearInterval(timer);
+            }
 
-			this.isExcuted = true;
-		}
-	}
+            this.elRef.nativeElement.innerHTML = Math.ceil(pt * amount / this.speed).toString();
+            pt = pt + this.interval;
+          }, this.interval);
+        }
+
+        this.isExcuted = true;
+      }
+    } else {
+      console.error("El nodo padre no se encontró. No se puede manejar el desplazamiento.");
+    }
+  }
 
 	ngOnInit(): void {
 	}
