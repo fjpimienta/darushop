@@ -1715,8 +1715,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     charge.customer = customer;
     charge.send_email = true;
-    // =========================> OJO - Cambiar ruta al publicar <==============================
-    charge.redirect_url = "https://dev.daru.mx/checkout?idOrder=" + orderUniqueId;
+    charge.redirect_url = environment.checkoutUrl + orderUniqueId;
     charge.use_3d_secure = true;
     charge.confirm = true;
 
