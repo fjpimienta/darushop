@@ -659,12 +659,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
+              console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
                 return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
+              console.log('OrderSupplier: ', OrderSupplier);
               if (OrderSupplier.statusError) {
                 this.isSubmitting = false;
                 return await infoEventAlert(OrderSupplier.messageError, '', TYPE_ALERT.ERROR);
@@ -674,6 +676,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               OrderSupplier.discount = parseFloat(this.discount);
               OrderSupplier.importe = parseFloat(this.totalPagar);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
+              console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
                 return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
@@ -1187,7 +1190,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 const carItemsSupplierByBranchOffice = carItemsWithoutAssignedBranch.filter((item) =>
                   item.suppliersProd.branchOffices.some((branchOffice) => branchOffice.id === commonBranch.id)
                 );
-                console.log(`commonBranch.id: ${commonBranch.id}, carItemsSupplierByBranchOffice: `, carItemsSupplierByBranchOffice);
                 const productsNacional: ProductShipment[] = [];
                 const warehouseNacional = new Warehouse();
 
