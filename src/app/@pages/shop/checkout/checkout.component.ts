@@ -658,6 +658,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.isSubmitting = false;
                 return await infoEventAlert('Error en servicio interno (Next Id Delivery).', TYPE_ALERT.ERROR);
               }
+              // Realizar Cargo con la Tarjeta
+              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
+              console.log('pagoOpenpay: ', pagoOpenpay);
+              if (pagoOpenpay.status === false) {
+                this.isSubmitting = false;
+                console.error('pagoOpenpay.message: ', pagoOpenpay.message);
+                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+              }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
               console.log('OrderSupplier: ', OrderSupplier);
@@ -676,14 +684,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.isSubmitting = false;
                 console.error('deliverySave.messageError: ', deliverySave.messageError);
                 return await infoEventAlert('Hoy no es tu dia, tengo problemas el registro del pedido. Intenta mas tarde', '', TYPE_ALERT.ERROR);
-              }
-              // Realizar Cargo con la Tarjeta
-              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, OrderSupplier.deliveryId, this.formData);
-              console.log('pagoOpenpay: ', pagoOpenpay);
-              if (pagoOpenpay.status === false) {
-                this.isSubmitting = false;
-                console.error('pagoOpenpay.message: ', pagoOpenpay.message);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
               }
               if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
                 window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
