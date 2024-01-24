@@ -364,7 +364,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
           return result.delivery.delivery;
         });
-        console.log('delivery: ', delivery);
       }
       this.countrys = [];
       this.selectCountry = new Country();
@@ -660,30 +659,24 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Realizar Cargo con la Tarjeta
               const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
-              console.log('pagoOpenpay: ', pagoOpenpay);
               if (pagoOpenpay.status === false) {
                 this.isSubmitting = false;
-                console.error('pagoOpenpay.message: ', pagoOpenpay.message);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-              console.log('OrderSupplier: ', OrderSupplier);
               if (OrderSupplier.statusError) {
                 this.isSubmitting = false;
-                console.error('OrderSupplier.messageError: ', OrderSupplier.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con la orden. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert(OrderSupplier.messageError, '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplier.cliente = OrderSupplier.user.email;
               OrderSupplier.discount = parseFloat(this.discount);
               OrderSupplier.importe = parseFloat(this.totalPagar);
               const deliverySave = await this.deliverysService.add(OrderSupplier);
-              console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
-                console.error('deliverySave.messageError: ', deliverySave.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas el registro del pedido. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
               }
               if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
                 window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
@@ -699,30 +692,24 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const deliveryIdT = this.generarNumeroAleatorioEncriptado();
               // Realizar Cargo con la Tarjeta
               const pagoOpenpayT = await this.payOpenpaySpei(deliveryIdT);
-              console.log('pagoOpenpayT: ', pagoOpenpayT);
               if (pagoOpenpayT.status === false) {
                 this.isSubmitting = false;
-                console.error('pagoOpenpayT.message: ', pagoOpenpayT.message);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas para realizar el cargo. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert(pagoOpenpayT.message, '', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
               if (OrderSupplierT.error) {
                 this.isSubmitting = false;
-                console.error('OrderSupplierT.messageError: ', OrderSupplierT.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con la creacion de la orden. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert(OrderSupplierT.messageError, '', TYPE_ALERT.ERROR);
               }
               // Registrar Pedido en DARU.
               OrderSupplierT.cliente = OrderSupplierT.user.email;
               OrderSupplierT.discount = parseFloat(this.discount);
               OrderSupplierT.importe = parseFloat(this.totalPagar);
-              console.log('OrderSupplierT: ', OrderSupplierT);
               const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
-              console.log('deliverySaveT: ', deliverySaveT);
               if (deliverySaveT.error) {
                 this.isSubmitting = false;
-                console.error('deliverySaveT.messageError: ', deliverySaveT.messageError);
-                return await infoEventAlert('Hoy no es tu dia, tengo problemas con la creacion del pedido. Intenta mas tarde', '', TYPE_ALERT.ERROR);
+                return await infoEventAlert(deliverySaveT.messageError, '', TYPE_ALERT.ERROR);
               }
               const NewPropertyT = 'receipt_email';
               let internalEmailT = false;
@@ -741,7 +728,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Si compra es OK, continua.
               OrderSupplierT[NewPropertyT] = sendEmailT;
-              console.log('OrderSupplierT: ', OrderSupplierT);
               this.mailService.sendEmailSpei(OrderSupplierT, messageDeliveryT, '', internalEmailT, this.totalEnvios);
               await infoEventAlert(messageDeliveryT, '', typeAlertT);
               break;
@@ -791,7 +777,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // Si compra es OK, continua.
       deliverySave[NewProperty] = sendEmail;
       this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
-      console.log('this.mailService.sendEmail');
       this.router.navigate(['/dashboard']);
 
       await infoEventAlert(messageDelivery, '', typeAlert);
@@ -972,7 +957,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    console.log('cotizacionEnvios: ', cotizacionEnvios);
     if (cotizacionEnvios[0].costo <= 0) {
       const externos = await this.onCotizarEnviosExternos(cp, estado);
       if (externos.length > 0) {
@@ -1051,7 +1035,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       for (const branchId in branchOfficeQtyMap) {
         if (canFulfill(branchId)) {
           optimalBranchOffices.push(branchId);
-          console.log('optimalBranchOffices: ', optimalBranchOffices);
           return optimalBranchOffices;
         }
       }
@@ -1062,7 +1045,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         for (const branchCombination of this.getCombinations(allBranches, i)) {
           const canFulfillAll = branchCombination.every(branchId => canFulfill(branchId));
           if (canFulfillAll) {
-            console.log('branchCombination: ', branchCombination);
             return branchCombination;
           }
         }
@@ -1178,7 +1160,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               ...item,
               assignedBranchId: null
             }));
-            console.log('cartItemsWithNull:', cartItemsWithNull);
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
@@ -1197,14 +1178,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
               const commonBranchOffices = branchOfficesTot;
-              console.log('commonBranchOffices:', commonBranchOffices);
               for (const commonBranch of commonBranchOffices) {
                 const carItemsWarehouse = [];
                 const shipmentsSupp = [];
                 // Filtrar los elementos que no han sido asignados
                 const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
                 // const carItemsWithoutAssignedBranch = arreglo.filter((item) => item.assignedBranchId !== true);
-                console.log('carItemsWithoutAssignedBranch: ', carItemsWithoutAssignedBranch);
                 const carItemsSupplierByBranchOffice = carItemsWithoutAssignedBranch.filter((item) =>
                   item.suppliersProd.branchOffices.some((branchOffice) => branchOffice.id === commonBranch.id)
                 );
@@ -1214,14 +1193,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
                 for (const idCI of Object.keys(carItemsSupplierByBranchOffice)) {
                   const cartItem: CartItem = carItemsSupplierByBranchOffice[idCI];
-                  // console.log('carItemsSupplierByBranchOffice.cartItem:', cartItem);
-
                   // Marcar cartItem como asignado
                   const elementoEncontrado = cartItemsWithNull.find((item) => item.sku === cartItem.sku);
                   if (elementoEncontrado) {
                     // Cambia el valor de 'assignedBranchId' para el elemento encontrado
                     elementoEncontrado.assignedBranchId = true;
-                    // console.log('elementoEncontrado: ', elementoEncontrado);
                   }
 
                   const productShipment = new ProductShipment();
@@ -1287,8 +1263,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         }
       }
-      console.log('shipmentsEnd: ', shipmentsEnd);
-      console.log('this.warehouses: ', this.warehouses);
       return await shipmentsEnd;
     } catch (error) {
       console.error('error: ', error);
@@ -1423,13 +1397,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       .then(async result => {
         return await result.cupon;
       });
-    console.log('getCupon: ', cupon);
     let discountPorc = 0;
     this.discountPorc = "0";
     if (cupon) {
       cupon.active = false;
       this.cupon = cupon;
-      console.log('cupon: ', cupon);
       const email = this.formData.controls.email.value;
       this.typeDiscount = cupon.typeDiscount;
       const totalCharge = parseFloat(this.totalPagar);
@@ -1449,7 +1421,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return;
       }
       const icommktContact = await this.icommktsService.getIcommktContact(email);
-      console.log('icommktContact: ', icommktContact);
       if (icommktContact && icommktContact.icommktContact) {
         if (!icommktContact.status) {
           console.log('icommktContact.messaje: ', icommktContact.message);
@@ -1503,22 +1474,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async validateDiscountByEmail(event: any): Promise<void> {
     const cuponInput = this.cuponInput.toLocaleUpperCase();
     if (cuponInput !== '') {
-      console.log('cuponInput: ', cuponInput);
       const cupon = await this.cuponsService.getCupon(cuponInput)  // Recuperar el descuento del cupon.
         .then(async result => {
           return await result.cupon;
         });
-      console.log('getCupon: ', cupon);
       let discountPorc = 0;
       this.discountPorc = "0";
       if (cupon) {
         cupon.active = false;
-        console.log('cupon: ', cupon);
         const email = event.target.value;
         // Buscar contacto en icommkt
-        console.log('email: ', email);
         const icommktContact = await this.icommktsService.getIcommktContact(email);
-        console.log('icommktContact: ', icommktContact);
         if (icommktContact && icommktContact.icommktContact) {
           if (!icommktContact.status) {
             console.log('icommktContact.messaje: ', icommktContact.message);
@@ -1526,7 +1492,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
           // Buscar si ya se ocupo el cupon.
           const welcome = await this.welcomesService.getWelcome(email);
-          console.log('welcome: ', welcome);
           if (welcome && welcome.status && !welcome.welcome.active) {
             const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
             infoEventAlert(mensaje, '');
@@ -1562,8 +1527,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.cupon = new Cupon();
         return;
       }
-      console.log('this.typeDiscount: ', this.typeDiscount);
-      console.log('discountPorc: ', discountPorc);
       this.changeDiscount(discountPorc);
     }
   }
@@ -1793,7 +1756,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     charge.customer = customer;
 
-    console.log('charge: ', charge);
     const chargeResult = await this.chargeOpenpayService.createCharge(charge);
     if (chargeResult.status === false) {
       return { status: chargeResult.status, message: chargeResult.message };
@@ -1858,7 +1820,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         envioCva.codigoPostal = dir.d_codigo.padStart(5, '0'),
           envioCva.telefono = dir.phone;
         enviosCva.push(envioCva);
-        console.log('setOrder/enviosCva: ', enviosCva);
         const ProductosCva: ProductoCva[] = [];
         for (const idPS of Object.keys(warehouse.productShipments)) {
           const prod: ProductShipment = warehouse.productShipments[idPS];
@@ -1868,20 +1829,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           ProductosCva.push(productCva);
         }
         const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
-        console.log('ciudadesCVA: ', ciudadesCVA);
-        console.log('dir: ', dir);
         let estado;
         let ciudad;
-        console.log('this.quitarAcentos(dir.d_estado.toUpperCase()): ', this.quitarAcentos(dir.d_estado.toUpperCase()));
         if (ciudadesCVA.length > 0) {
           estado = ciudadesCVA.find(
             result => this.quitarAcentos(result.estado.toUpperCase()) === this.quitarAcentos(dir.d_estado.toUpperCase())
           ).id;
-          console.log('estado: ', estado);
           ciudad = ciudadesCVA.find(
             city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()
           ).clave;
-          console.log('estado: ', estado);
         }
         const orderCvaSupplier: OrderCva = {
           NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
@@ -1900,7 +1856,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Ciudad: ciudad,
           Atencion: this.removeAccents(user.name + ' ' + user.lastname)
         };
-        console.log('setOrder/orderCvaSupplier: ', orderCvaSupplier);
         return orderCvaSupplier;
       case 'ingram':
         return '';
@@ -1919,7 +1874,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     delivery.messageError = '';
     delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
     delivery.invoiceConfig = this.onSetInvoiceConfig(this.formDataInvoice);
-    console.log('delivery: ', delivery);
 
     delivery.warehouses = this.warehouses;
     const ordersCt: OrderCt[] = [];
@@ -1945,7 +1899,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const warehouse: Warehouse = this.warehouses[idWar];
       const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
       const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
-      console.log('order: ', order);
       switch (warehouse.suppliersProd.idProveedor) {
         case 'ct':
           // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
@@ -1962,7 +1915,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         .then(async (result) => {
           return await result;
         });
-      console.log('orderNew: ', orderNew);
       if (orderNew) {
         switch (warehouse.suppliersProd.idProveedor) {
           case 'ct':
@@ -2013,7 +1965,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     }
     // TODO::Confirmar Pedido
-    console.log('delivery: ', delivery);
     return await delivery;
   }
   //#endregion Enviar Ordenes
@@ -2066,7 +2017,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const pedidosCva = await this.externalAuthService.setOrderCva(order)
           .then(async resultPedido => {
             try {
-              console.log('EfectuarPedidos/resultPedido:', resultPedido);
               const { orderCva } = resultPedido.orderCva;
               const cvaResponse: OrderCvaResponse = {
                 agentemail: orderCva?.agentemail || '',
@@ -2081,7 +2031,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               throw await error;
             }
           });
-        console.log('EfectuarPedidos/pedidosCva: ', pedidosCva);
         return await pedidosCva;
       case 'ct':
         const pedidosCt = await this.externalAuthService.setOrderCt(
@@ -2095,9 +2044,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         )
           .then(async resultPedido => {
             try {
-              console.log('EfectuarPedidos/resultPedido: ', resultPedido);
               if (!resultPedido.orderCt) {                              // Hay error en el pedido.
-                console.log('error');
                 const ctResponse: OrderCtResponse = new OrderCtResponse();
                 ctResponse.estatus = 'Mal Pedido';
                 ctResponse.fecha = new Date(Date.now()).toString();
@@ -2124,7 +2071,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               throw await error;
             }
           });
-        console.log('pedidosCt: ', pedidosCt);
         return await pedidosCt;
     }
 
