@@ -1148,8 +1148,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           let supplier = new Supplier();
           supplier = suppliers[supId];
           const supplierProd = new SupplierProd();
-          const warehouseNacional = new Warehouse();
-          const productsNacional: ProductShipment[] = [];
           const apiShipment = await this.suppliersService                             // Set Api para Envios
             .getApiSupplier(supplier.slug, 'envios', 'paqueterias')
             .then(async result => {
@@ -1183,7 +1181,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const commonBranchOffices = branchOfficesTot;
               for (const commonBranch of commonBranchOffices) {
                 const carItemsWarehouse = [];
-                const shipmentsSupp = [];
                 // Filtrar los elementos que no han sido asignados
                 const carItemsWithoutAssignedBranch = cartItemsWithNull.filter((item) => item.assignedBranchId !== true);
                 // const carItemsWithoutAssignedBranch = arreglo.filter((item) => item.assignedBranchId !== true);
@@ -1240,13 +1237,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   for (const key of Object.keys(resultShip.data)) {
                     if (supplier.slug === 'ct') {
                       shipment.empresa = resultShip.data[key].empresa.toString();
-                      shipment.costo = resultShip.data[key].total;
+                      shipment.costo = resultShip.data[key].total * 1.16;
                       shipment.metodoShipping = resultShip.data[key].metodo;
                       shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
                       shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                     } else if (supplier.slug === 'cva') {
                       shipment.empresa = resultShip.data.empresa.toString();
-                      shipment.costo = resultShip.data.costo;
+                      shipment.costo = resultShip.data.costo * 1.16;
                       shipment.metodoShipping = resultShip.data.metodoShipping;
                       shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
                       shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
