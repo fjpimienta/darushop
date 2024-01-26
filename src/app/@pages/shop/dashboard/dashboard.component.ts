@@ -1,20 +1,18 @@
 import { Component, OnInit, ElementRef, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { IMeData } from '@core/interfaces/session.interface';
-import { ChargeInput } from '@core/models/charge.models';
 import { Codigopostal } from '@core/models/codigopostal.models';
 import { Country, Estado, Municipio } from '@core/models/country.models';
 import { Delivery } from '@core/models/delivery.models';
 import { OrderInput } from '@core/models/order.models';
-import { Product } from '@core/models/product.models';
-import { ProductShipment } from '@core/models/productShipment.models';
 import { UserInput } from '@core/models/user.models';
 import { AuthenticationService } from '@core/services/auth.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
 import { CountrysService } from '@core/services/countrys.service';
 import { DeliverysService } from '@core/services/deliverys.service';
-import { OrdersService } from '@core/services/orders.service';
+import { ExternalAuthService } from '@core/services/external-auth.service';
 import { ChargeService } from '@core/services/stripe/charge.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { infoEventAlert } from '@shared/alert/alerts';
@@ -68,6 +66,7 @@ export class DashboardComponent implements OnInit {
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   data: any;
+  guias: any;
   productos = [];
   totalProd = 0.0;
   totalEnvios = 0;
@@ -86,6 +85,8 @@ export class DashboardComponent implements OnInit {
     public codigopostalsService: CodigopostalsService,
     public countrysService: CountrysService,
     private modalService: NgbModal,
+    private externalAuthService: ExternalAuthService,
+    private sanitizer: DomSanitizer
   ) {
     combineLatest([
       this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
@@ -386,6 +387,11 @@ export class DashboardComponent implements OnInit {
     this.totalProd = 0.0;
     this.totalEnvios = 0;
     if (this.data) {
+      if (this.data.orderCtResponse) {
+        this.getStatusOrderCt(this.data.orderCtResponse.pedidoWeb).then(result => {
+          this.guias = result.statusOrdersCt;
+        });
+      }
       for (const idW of Object.keys(this.data.warehouses)) {
         const warehouse = this.data.warehouses[idW];
         for (const idP of Object.keys(warehouse.productShipments)) {
@@ -403,6 +409,22 @@ export class DashboardComponent implements OnInit {
 
       this.modalService.open(content, { size: 'lg', centered: true, windowClass: 'custom-modal' });
     }
+  }
+
+  async getStatusOrderCt(folio: string): Promise<any> {
+    const confirmarPedidoCt = await this.externalAuthService.statusOrdersCt(folio);
+    console.log('confirmarPedidoCt: ', confirmarPedidoCt);
+    return confirmarPedidoCt;
+  }
+
+  getArchivoSeguro(archivoBase64: string): SafeResourceUrl {
+    const url = `data:application/pdf;base64,${archivoBase64}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  abrirPDFEnOtraPagina(archivo: string): void {
+    const nuevaVentana = window.open();
+    nuevaVentana.document.write(`<embed src="data:application/pdf;base64,${archivo}" type="application/pdf" width="100%" height="100%">`);
   }
 
 }
