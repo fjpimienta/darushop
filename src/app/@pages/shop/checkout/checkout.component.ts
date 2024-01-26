@@ -446,7 +446,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           this.formData.controls.lastname.setValue(this.session.user?.lastname);
           this.formData.controls.phone.setValue(this.session.user?.phone);
           this.formData.controls.email.setValue(this.session.user?.email);
-          if (this.session.user?.addresses.length > 0) {
+          const nombres = this.session.user?.name.toUpperCase();
+          const apellidos = this.session.user?.lastname.toUpperCase();
+          const holderName = document.getElementById('holder_name') as HTMLInputElement;
+          if (holderName) {
+            holderName.value = nombres + ' ' + apellidos;
+            this.nameCard = nombres;
+            this.lastNameCard = apellidos;
+            this.formDataInvoice.controls.nombresInvoice.setValue(nombres);
+            this.formDataInvoice.controls.apellidos.setValue(apellidos);
+          }
+          if (this.session.user && this.session.user?.addresses && this.session.user?.addresses.length > 0) {
             this.countrysService.countrys$
               // tslint:disable-next-line: no-shadowed-variable
               .subscribe((result) => {
@@ -535,7 +545,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onAsignarNombres(event) {
-    const nombres = $(event.target).val();
+    const nombres = $(event.target).val().toUpperCase();
     const apellidos = this.formData.controls.lastname.value.toUpperCase();
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
@@ -549,7 +559,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   onAsignarApellidos(event) {
     const nombres = this.formData.controls.name.value.toUpperCase();
-    const apellidos = $(event.target).val();
+    const apellidos = $(event.target).val().toUpperCase();
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
       holderName.value = nombres + ' ' + apellidos;
@@ -561,7 +571,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onAsignarNombresCard(event) {
-    const nombres = $(event.target).val();
+    const nombres = $(event.target).val().toUpperCase();
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
       holderName.value = nombres + ' ' + this.lastNameCard;
@@ -571,7 +581,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onAsignarApellidosCard(event) {
-    const apellidos = $(event.target).val();
+    const apellidos = $(event.target).val().toUpperCase();
     const holderName = document.getElementById('holder_name') as HTMLInputElement;
     if (holderName) {
       holderName.value = this.nameCard + ' ' + apellidos;
