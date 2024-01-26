@@ -9,7 +9,7 @@ import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
-import { ADD_ORDER_CT, CONFIRM_ORDER_CT, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY } from '@graphql/operations/query/suppliers/ct';
+import { ADD_ORDER_CT, CONFIRM_ORDER_CT, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY, STATUS_ORDER_CT } from '@graphql/operations/query/suppliers/ct';
 import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
@@ -1370,6 +1370,20 @@ export class ExternalAuthService extends ApiService {
       }, {}).subscribe(
         (result: any) => {
           resolve(result.confirmOrderCt);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async statusOrdersCt(folio: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(STATUS_ORDER_CT, {
+        folio
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.statusOrdersCt);
         },
         (error: any) => {
           reject(error);
