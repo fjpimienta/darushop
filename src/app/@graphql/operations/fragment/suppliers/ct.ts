@@ -63,3 +63,16 @@ export const CONFIRM_ORDERCT_FRAGMENT = gql`
     okReference
   }
 `;
+
+export const STATUS_ORDERCT_FRAGMENT = gql`
+fragment StatusOrderCtObject on ResponseCtsStatus {
+  status
+  folio
+  guias {
+    guia
+    paqueteria
+    direccion
+    archivo
+  }
+}
+`;
