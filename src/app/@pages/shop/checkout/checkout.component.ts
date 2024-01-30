@@ -242,10 +242,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               let email = '';
               if (this.session.user) {
                 email = this.session.user.email;
-                stripeName = `${this.session.user.name} ${this.session.user.lastname}`;
+                stripeName = `${this.session.user.name.toUpperCase()} ${this.session.user.lastname.toUpperCase()}`;
               } else {
                 email = this.formData.controls.email.value;
-                stripeName = `${this.formData.controls.name.value} ${this.formData.controls.lastname.value}`;
+                stripeName = `${this.formData.controls.name.value.toUpperCase()} ${this.formData.controls.lastname.value.toUpperCase()}`;
               }
               this.customersService.add(
                 stripeName,
@@ -436,13 +436,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.session = result;
         this.access = this.session.status;
         this.role = this.session.user?.role;
-        this.userName = `${this.session.user?.name} ${this.session.user?.lastname}`;
+        this.userName = `${this.session.user?.name.toUpperCase()} ${this.session.user?.lastname.toUpperCase()}`;
         // Si es usario DARU (administrador o vendedor) para acceso al sistema
         this.sistema = (this.role === 'ADMIN' || 'SELLER') ? true : false;
         this.habilitacrearcuenta = true;
         if (this.session) {
           this.habilitacrearcuenta = false;
-          this.formData.controls.name.setValue(this.session.user?.name);
+          this.formData.controls.name.setValue(this.session.user?.name.toUpperCase());
           this.formData.controls.lastname.setValue(this.session.user?.lastname);
           this.formData.controls.phone.setValue(this.session.user?.phone);
           this.formData.controls.email.setValue(this.session.user?.email);
@@ -525,11 +525,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.onChangeUsoCFDI(null, 'G03');
       });
 
-
-
       this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
-      OpenPay.setId('mbhvpztgt3rqse7zvxrc');
-      OpenPay.setApiKey('pk_411efcdb08c148ceb97b36f146e42beb');
+      OpenPay.setId(environment.OPENPAY_MERCHANT_ID);
+      OpenPay.setApiKey(environment.OPENPAY_CLIENT_SECRET);
       OpenPay.setSandboxMode(true);
 
       // Observable para el cartItems
@@ -807,8 +805,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   //#region Metodos
   onSetDelivery(formData: FormGroup, delivery: Delivery) {
-    this.formData.controls.name.setValue(delivery.user.name);
-    this.formData.controls.lastname.setValue(delivery.user.lastname);
+    this.formData.controls.name.setValue(delivery.user.name.toUpperCase());
+    this.formData.controls.lastname.setValue(delivery.user.lastname.toUpperCase());
     this.formData.controls.phone.setValue(delivery.user.phone);
     this.formData.controls.email.setValue(delivery.user.email);
     this.formData.controls.codigoPostal.setValue(delivery.user.addresses[0].d_codigo);
@@ -858,8 +856,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (this.session.user) {
       register.id = this.session.user.id;
     }
-    register.name = formData.controls.name.value;
-    register.lastname = formData.controls.lastname.value;
+    register.name = formData.controls.name.value.toUpperCase();
+    register.lastname = formData.controls.lastname.value.toUpperCase();
     register.email = formData.controls.email.value;
     register.stripeCustomer = stripeCustomer;
     register.phone = formData.controls.phone.value;
@@ -1752,8 +1750,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     const customer: CustomerOpenpayInput = new CustomerOpenpayInput();
     customer.external_id = orderUniqueId;
-    customer.name = formData.controls.name.value;
-    customer.last_name = formData.controls.lastname.value;
+    customer.name = formData.controls.name.value.toUpperCase();
+    customer.last_name = formData.controls.lastname.value.toUpperCase();
     customer.email = formData.controls.email.value;
     customer.phone_number = formData.controls.phone.value;
     customer.clabe = "";
@@ -1831,7 +1829,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         guiaConnect.paqueteria = warehouse.shipments[0].empresa;
         const enviosCt: EnvioCt[] = [];
         const envioCt: EnvioCt = new EnvioCt();
-        envioCt.nombre = user.name + ' ' + user.lastname;
+        envioCt.nombre = user.name.toUpperCase() + ' ' + user.lastname.toUpperCase();
         envioCt.direccion = dir.directions;
         envioCt.entreCalles = dir.references;
         envioCt.colonia = dir.d_asenta;
@@ -1865,7 +1863,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       case 'cva':
         const enviosCva: EnvioCVA[] = [];
         const envioCva: EnvioCVA = new EnvioCVA();
-        envioCva.nombre = user.name + ' ' + user.lastname;
+        envioCva.nombre = user.name.toUpperCase() + ' ' + user.lastname.toUpperCase();
         envioCva.direccion = dir.directions;
         envioCva.entreCalles = dir.references !== '' ? dir.references : '.';
         envioCva.colonia = dir.d_asenta;
@@ -1910,7 +1908,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Colonia: this.removeAccents(dir.d_asenta),
           Estado: Math.round(estado).toString(),
           Ciudad: ciudad,
-          Atencion: this.removeAccents(user.name + ' ' + user.lastname)
+          Atencion: this.removeAccents(user.name.toUpperCase() + ' ' + user.lastname.toUpperCase())
         };
         return orderCvaSupplier;
       case 'ingram':
