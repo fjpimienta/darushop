@@ -443,7 +443,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         if (this.session) {
           this.habilitacrearcuenta = false;
           this.formData.controls.name.setValue(this.session.user?.name.toUpperCase());
-          this.formData.controls.lastname.setValue(this.session.user?.lastname);
+          this.formData.controls.lastname.setValue(this.session.user?.lastname.toUpperCase());
           this.formData.controls.phone.setValue(this.session.user?.phone);
           this.formData.controls.email.setValue(this.session.user?.email);
           const nombres = this.session.user?.name.toUpperCase();
