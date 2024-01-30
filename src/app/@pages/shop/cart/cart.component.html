@@ -22,7 +22,7 @@
         <div class="row" *ngIf="cartItems.length == 0 else cartBlock">
           <div class="col-12">
             <div class="cart-empty-page text-center">
-              <i class="cart-empty icon-shopping-cart" style="line-height: 1; font-size: 15rem"></i>
+              <i class="cart-empty icon-shopping-cart"></i>
               <p class="px-3 py-2 cart-empty mb-3">No hay productos agregados al carrito</p>
               <p class="return-to-shop mb-0">
                 <a routerLink="/products" class="btn btn-primary">REGRESAR A LA TIENDA</a>
@@ -70,8 +70,10 @@
                       </app-quantity-input>
                     </td>
                     <td class="total-col">{{ product.sum | currency }}</td>
-                    <td class="remove-col"><button class="btn-remove" (click)="cartService.removeFromCart( product )"><i
-                          class="icon-close"></i></button></td>
+                    <td class="remove-col">
+                      <button class="btn-remove" (click)="cartService.removeFromCart( product )" title="remove"><i
+                          class="icon-close"></i></button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -82,7 +84,7 @@
                     <div class="input-group">
                       <input type="text" class="form-control" required placeholder="código de cupón">
                       <div class="input-group-append">
-                        <button class="btn btn-outline-primary-2" type="submit"><i
+                        <button class="btn btn-outline-primary-2" type="submit" title="submit"><i
                             class="icon-long-arrow-right"></i></button>
                       </div>
                     </div>
