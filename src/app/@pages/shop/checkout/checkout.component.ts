@@ -15,7 +15,7 @@ import { TYPE_ALERT } from '@shared/alert/values.config';
 import { first } from 'rxjs/operators';
 import { CURRENCIES_SYMBOL, CURRENCY_LIST } from '@mugan86/ng-shop-ui';
 import { CURRENCY_CODE } from '@core/constants/config';
-import { infoEventAlert, loadData } from '@shared/alert/alerts';
+import { closeAlert, infoEventAlert, loadData } from '@shared/alert/alerts';
 import { CustomersService } from '@core/services/stripe/customers.service';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { ICustomer, IResultStripeCustomer } from '@core/interfaces/stripe/customer.interface';
@@ -902,6 +902,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onSetCps(event): Promise<void> {
     if (event) {
+      loadData('Consultando Codigo Postal', 'Esperar la carga de los envíos.');
       const cp = $(event.target).val();
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
@@ -953,58 +954,90 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         });
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
-          this.shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
-          if (this.shipments.length <= 0) {
-            infoEventAlert('Hay un problema con las paqueterias para el envio. Intentar más tarde.', '');
+          const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+          if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
+            this.shipments = _shipments.shipments.shipmentsEnd;
+            closeAlert();
+          } else {
+            this.reiniciarShipping(_shipments.message);
           }
         } else {
-          infoEventAlert('El código postal no es correcto.', '');
+          this.reiniciarShipping('El código postal no es correcto. Verificar CP');
         }
       } else {
-        infoEventAlert('No se ha especificado un código correcto.', '');
+        this.reiniciarShipping('No se ha especificado un código correcto.');
       }
     } else {
-
+      this.reiniciarShipping('Error en la asignacion del Codigo Postal.');
     }
+  }
+
+  async reiniciarShipping(msj: string) {
+    this.formData.controls.codigoPostal.setValue('');
+    this.totalEnvios = '';
+    this.changeShipping(0);
+    basicAlert(TYPE_ALERT.WARNING, msj);
   }
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    if (cotizacionEnvios[0].costo <= 0) {
-      const externos = await this.onCotizarEnviosExternos(cp, estado);
-      if (externos.length > 0) {
+    console.log('cotizacionEnvios: ', cotizacionEnvios);
+    if (cotizacionEnvios.status) {
+      //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
+      if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
         let costShips = 0;
-        for (const idS of Object.keys(cotizacionEnvios)) {
-          const ship = cotizacionEnvios[idS];
+        for (const idS of Object.keys(cotizacionEnvios.shipmentsEnd)) {
+          const ship = cotizacionEnvios.shipmentsEnd[idS];
           costShips += ship.costo;
         }
         this.totalEnvios = costShips.toFixed(2).toString();
         this.changeShipping(costShips);
-        return await externos;
+        return await {
+          status: true,
+          message: 'Cotizaciones de envios sin problemas.',
+          shipments: cotizacionEnvios
+        };
+        // // Habilitado para mostrar el mas economico.
+        // cotizacionEnvios.sort((a, b) => a.costo - b.costo);
+        // const objetoMinimo = cotizacionEnvios[0];
+        // return [objetoMinimo];
+      } else {
+        // TO DO
+        const externos = await this.onCotizarEnviosExternos(cp, estado);
+        if (externos.length > 0) {
+          let costShips = 0;
+          for (const idS of Object.keys(cotizacionEnvios)) {
+            const ship = cotizacionEnvios[idS];
+            costShips += ship.costo;
+          }
+          this.totalEnvios = costShips.toFixed(2).toString();
+          this.changeShipping(costShips);
+          return await {
+            status: true,
+            message: 'Cotizaciones de envios sin problemas.',
+            shipments: externos
+          };
+        }
+      }
+      // Verificar que todos los productos tengan su envio.
+      for (const idW of Object.keys(this.warehouses)) {
+        const warehouse = this.warehouses[idW];
+        if (warehouse.shipments.length === 0) {
+          // basicAlert(TYPE_ALERT.ERROR, 'Hay un problema con las paqueterias para el envio. Intentar mas tarde.');
+          return await {
+            status: false,
+            message: 'Hay un problema con las paqueterias para el envio. Intentar mas tarde.',
+            shipments: []
+          };
+        }
       }
     } else {
-      let costShips = 0;
-      for (const idS of Object.keys(cotizacionEnvios)) {
-        const ship = cotizacionEnvios[idS];
-        costShips += ship.costo;
-      }
-      this.totalEnvios = costShips.toFixed(2).toString();
-      this.changeShipping(costShips);
-      return await cotizacionEnvios;
-      // // Habilitado para mostrar el mas economico.
-      // cotizacionEnvios.sort((a, b) => a.costo - b.costo);
-      // const objetoMinimo = cotizacionEnvios[0];
-      // return [objetoMinimo];
+      return await {
+        status: false,
+        message: cotizacionEnvios.message,
+        shipments: []
+      };
     }
-    // Verificar que todos los productos tengan su envio.
-    for (const idW of Object.keys(this.warehouses)) {
-      const warehouse = this.warehouses[idW];
-      if (warehouse.shipments.length === 0) {
-        basicAlert(TYPE_ALERT.ERROR, 'Hay un problema con las paqueterias para el envio. Intentar mas tarde.');
-      }
-    }
-
-    return await [];
   }
 
   // Define una función para encontrar sucursales que puedan surtir productos
@@ -1239,11 +1272,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 const shipmentsCost = await this.externalAuthService.onShippingEstimate(
                   supplier, apiShipment, this.warehouse, true
                 ).then(async (resultShip) => {
-                  if (!resultShip.status) {
-                    console.log(`Error: ${resultShip.message}`);
-                    infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
-                  }
                   let shipment = new Shipment();
+                  if (!resultShip.status) {
+                    return await shipment;
+                  }
                   for (const key of Object.keys(resultShip.data)) {
                     if (supplier.slug === 'ct') {
                       shipment.empresa = resultShip.data[key].empresa.toString();
@@ -1261,21 +1293,37 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   }
                   return await shipment;
                 });
-                shipmentsEnd.push(shipmentsCost);
-                this.warehouse.shipments = shipmentsEnd;
-                supplierProd.idProveedor = supplier.slug;
-                this.warehouse.suppliersProd = supplierProd;
-                this.warehouse.products = carItemsWarehouse;
-                this.warehouses.push(this.warehouse);
+                if (shipmentsCost && shipmentsCost.costo > 0) {
+                  shipmentsEnd.push(shipmentsCost);
+                  this.warehouse.shipments = shipmentsEnd;
+                  supplierProd.idProveedor = supplier.slug;
+                  this.warehouse.suppliersProd = supplierProd;
+                  this.warehouse.products = carItemsWarehouse;
+                  this.warehouses.push(this.warehouse);
+                }
               }
+            }
+          } else {
+            return await {
+              status: false,
+              message: 'Error en servicios de envios.',
+              shipmentsEnd: null
             }
           }
         }
       }
-      return await shipmentsEnd;
+      return await {
+        status: shipmentsEnd.length > 0 ? true : false,
+        message: shipmentsEnd.length > 0 ? 'Se obtuvieron los envios de forma correcta.' : 'No se pudo generar costos de envios',
+        shipmentsEnd: shipmentsEnd.length > 0 ? shipmentsEnd : []
+      }
     } catch (error) {
       console.error('error: ', error);
-      return [];
+      return await {
+        status: false,
+        message: error.message,
+        shipmentsEnd: null
+      }
     }
   }
 

@@ -34,8 +34,8 @@
               <h2 class="checkout-title">Detalles del Recibo</h2>
               <div class="row">
                 <div class="col-sm-6 form-group">
-                  <label>Nombre(s) *</label>
-                  <input type="text" class="form-control" name="nombres" formControlName="name"
+                  <label for="nombres">Nombre(s) *</label>
+                  <input type="text" class="form-control" name="nombres" formControlName="name" title="Nombre(s)"
                     (input)="convertToUppercase($event)" (blur)="onAsignarNombres($event)" required>
                   <div class="alert alert-danger"
                     *ngIf="formData.get('name').invalid && (formData.get('name').dirty || formData.get('name').touched)">
@@ -44,8 +44,8 @@
                   </div>
                 </div>
                 <div class="col-sm-6 form-group">
-                  <label>Apellido(s) *</label>
-                  <input type="text" class="form-control" name="lastname" formControlName="lastname"
+                  <label for="lastname">Apellido(s) *</label>
+                  <input type="text" class="form-control" name="63" formControlName="lastname" title="Apellido(s)"
                     (input)="convertToUppercase($event)" (blur)="onAsignarApellidos($event)" required>
                   <div class="alert alert-danger"
                     *ngIf="formData.get('lastname').invalid && (formData.get('lastname').dirty || formData.get('lastname').touched)">
@@ -57,8 +57,8 @@
 
               <div class="row">
                 <div class="col-sm-6">
-                  <label>Teléfono *</label>
-                  <input type="phone" class="form-control" name="phone" formControlName="phone"
+                  <label for="phone">Teléfono *</label>
+                  <input type="phone" class="form-control" name="phone" formControlName="phone" title="Telefono(s)"
                     (input)="bloquearLetras($event)" maxlength='10' required>
                   <div class="alert alert-danger"
                     *ngIf="formData.get('phone').invalid && (formData.get('phone').dirty || formData.get('phone').touched)">
@@ -68,8 +68,8 @@
                   </div>
                 </div>
                 <div class="col-sm-6">
-                  <label>Correo Electrónico *</label>
-                  <input type="email" name="email" class="form-control" formControlName="email" required
+                  <label for="email">Correo Electrónico *</label>
+                  <input type="email" name="email" class="form-control" formControlName="email" title="Correo" required
                     (blur)="validateDiscountByEmail($event)">
                   <div class="alert alert-danger"
                     *ngIf="formData.get('email').invalid && (formData.get('email').dirty || formData.get('email').touched)">
@@ -91,14 +91,14 @@
                     </div>
                     <div class="col-sm-2 col-4 d-flex align-items-center">
                       <!-- Utilizamos d-flex y align-items-center para alinear verticalmente el checkbox -->
-                      <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
+                      <input type="checkbox" name="byCodigopostal" class="form-control form-check-input" title="CP"
                         (change)="onActiveCP()" formControlName="byCodigopostal" [checked]="isChecked">
                     </div>
                   </div>
                 </div>
                 <div class="col-sm-6 col-12 form-group">
-                  <label>Código Postal *</label>
-                  <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal"
+                  <label for="codigoPostal">Código Postal *</label>
+                  <input type="text" name="codigoPostal" class="form-control" formControlName="codigoPostal" title="CP"
                     (blur)="onSetCps($event)" autocomplete="off" (input)="bloquearLetras($event)" maxlength="5"
                     [attr.disabled]="!isChecked ? 'true' : null">
                   <div class="alert alert-danger"
@@ -113,14 +113,14 @@
               <div class="row">
                 <div class="col-sm-3 form-group">
                   <label>Pais *</label>
-                  <select *ngIf="!this.idDelivery" class="form-control" name="selectCountry" required
+                  <select *ngIf="!this.idDelivery" class="form-control" name="selectCountry" title="Pais" required
                     formControlName="selectCountry" (change)="onSetEstados($event.target)">
                     <option [ngValue]="''" [selected]="'' == selectCountry.c_pais">Elije un País</option>
                     <option *ngFor="let country of countrys" [ngValue]="country.c_pais">
                       {{country.d_pais}}
                     </option>
                   </select>
-                  <select *ngIf="this.idDelivery" class="form-control" name="selectCountry" required
+                  <select *ngIf="this.idDelivery" class="form-control" name="selectCountry" title="Pais" required
                     formControlName="selectCountry" [attr.disabled]="true">
                     <option [ngValue]="selectCountry.c_pais" [selected]="'' == selectCountry.c_pais">
                       {{selectCountry.d_pais}}
@@ -129,14 +129,14 @@
                 </div>
                 <div class="col-sm-3 form-group">
                   <label>Estado *</label>
-                  <select *ngIf="!this.idDelivery" class="form-control" name="selectEstado" required
+                  <select *ngIf="!this.idDelivery" class="form-control" name="selectEstado" title="Estado" required
                     formControlName="selectEstado" (change)="onSetMunicipios($event.target)">
                     <option [ngValue]="''" [selected]="'' == selectEstado.c_estado">Elije un Estado</option>
                     <option *ngFor="let estado of estados" [ngValue]="estado.c_estado">
                       {{estado.d_estado}}
                     </option>
                   </select>
-                  <select *ngIf="this.idDelivery" class="form-control" name="selectEstado" required
+                  <select *ngIf="this.idDelivery" class="form-control" name="selectEstado" title="Estado" required
                     formControlName="selectEstado" [attr.disabled]="true">
                     <option [ngValue]="selectEstado.c_estado" [selected]="'' == selectEstado.c_estado">
                       {{selectEstado.d_estado}}
@@ -145,14 +145,14 @@
                 </div>
                 <div class="col-sm-6 form-group">
                   <label>Municipio *</label>
-                  <select *ngIf="!this.idDelivery" class="form-control" name="selectMunicipio" required
-                    formControlName="selectMunicipio" (change)="onSetColonias($event.target)">
+                  <select *ngIf="!this.idDelivery" class="form-control" name="selectMunicipio" title="Municipio"
+                    required formControlName="selectMunicipio" (change)="onSetColonias($event.target)">
                     <option [ngValue]="''" [selected]="'' == selectMunicipio.c_mnpio">Elije un Municipio</option>
                     <option *ngFor="let municipio of municipios" [ngValue]="municipio.c_mnpio">
                       {{municipio.D_mnpio}}
                     </option>
                   </select>
-                  <select *ngIf="this.idDelivery" class="form-control" name="selectMunicipio" required
+                  <select *ngIf="this.idDelivery" class="form-control" name="selectMunicipio" title="Municipio" required
                     formControlName="selectMunicipio" [attr.disabled]="true">
                     <option [ngValue]="selectMunicipio.c_mnpio" [selected]="'' == selectMunicipio.c_mnpio">
                       {{selectMunicipio.D_mnpio}}
@@ -164,10 +164,10 @@
               <div class="row">
                 <div class="col-sm-6">
                   <label>Colonia *</label>
-                  <input *ngIf="!byCodigopostal" type="text" name="selectColonia" class="form-control"
+                  <input *ngIf="!byCodigopostal" type="text" name="selectColonia" class="form-control" title="Colonia"
                     formControlName="selectColonia" placeholder="" [attr.disabled]="idDelivery ? 'true' : null"
                     required>
-                  <select *ngIf="byCodigopostal" class="form-control" name="selectColonia"
+                  <select *ngIf="byCodigopostal" class="form-control" name="selectColonia" title="Colonia"
                     formControlName="selectColonia" required (change)="onSetCps(null)">
                     <option [ngValue]="''" [selected]="'' == selectColonia">Elije la Colonia</option>
                     <option *ngFor="let colonia of colonias" [ngValue]="colonia">
@@ -176,7 +176,7 @@
                   </select>
                 </div>
                 <div class="col-sm-6">
-                  <label>Dirección *</label>
+                  <label for="directions">Dirección *</label>
                   <input type="text" class="form-control" name="directions" formControlName="directions"
                     placeholder="Calle" [attr.disabled]="idDelivery ? 'true' : null" required>
                   <div class="alert alert-danger"
@@ -190,7 +190,7 @@
 
               <div class="row">
                 <div class="col-sm-6">
-                  <label>N&uacute;mero Exterior *</label>
+                  <label for="outdoorNumber">N&uacute;mero Exterior *</label>
                   <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
                     placeholder="N&uacute;mero Exterior" [attr.disabled]="idDelivery ? 'true' : null" maxlength="10"
                     required>
@@ -203,7 +203,7 @@
                   </div>
                 </div>
                 <div class="col-sm-6">
-                  <label>N&uacute;mero Interior</label>
+                  <label for="interiorNumber">N&uacute;mero Interior</label>
                   <input type="text" class="form-control" name="interiorNumber" formControlName="interiorNumber"
                     placeholder="N&uacute;mero Interior" [attr.disabled]="idDelivery ? 'true' : null" maxlength="10">
                 </div>
@@ -211,7 +211,7 @@
 
               <label>Referencias de Entrega *</label>
               <textarea class="form-control" cols="30" rows="4" name="references" formControlName="references"
-                [attr.disabled]="idDelivery ? 'true' : null" required></textarea>
+                title="Referencias" [attr.disabled]="idDelivery ? 'true' : null" required></textarea>
               <div class="alert alert-danger"
                 *ngIf="formData.get('references').invalid && (formData.get('references').dirty || formData.get('references').touched)">
                 <div *ngIf="formData.get('references').hasError('required')">La Referencia es requerida.</div>
@@ -241,11 +241,11 @@
                       <td>Subtotal:</td>
                       <td>{{ (cartService.priceTotal | async).toFixed(2) | currency }}</td>
                     </tr>
-                    <tr *ngIf="typeDiscount==='importe'" class="summary-subtotal">
+                    <tr *ngIf="typeDiscount==='discount'" class="summary-subtotal">
                       <td>Descuentos:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
-                    <tr *ngIf="typeDiscount!=='importe'" class="summary-subtotal">
+                    <tr *ngIf="typeDiscount!=='discount'" class="summary-subtotal">
                       <td>Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
@@ -285,7 +285,7 @@
                                 <div class="pymnt-cntnt">
                                   <div class="sctn-row">
                                     <div class="sctn-col l">
-                                      <label>Nombre de la tarjeta</label>
+                                      <label for="nameCard">Nombre de la tarjeta</label>
                                       <div class="sctn-col half l">
                                         <input type="text" placeholder="Nombre(s)" maxlength="20" [(ngModel)]="nameCard"
                                           name="nameCard" (input)="convertToUppercase($event)"
@@ -304,8 +304,8 @@
                                       <input type="hidden" name="card_number" id="card_number"
                                         data-openpay-card="card_number">
                                       <input type="text" autocomplete="off" [(ngModel)]="numeroTarjetaFormateado"
-                                        (input)="formatearNumeroTarjeta(numeroTarjetaFormateado)" maxlength="16"
-                                        (input)="bloquearLetras($event)">
+                                        title="Numero Tarjeta" (input)="formatearNumeroTarjeta(numeroTarjetaFormateado)"
+                                        maxlength="16" (input)="bloquearLetras($event)">
                                     </div>
                                   </div>
                                   <div class="sctn-row">
@@ -423,15 +423,16 @@
                     <div class="row">
                       <div class="col-12">
                         <label>Regimen Fiscal</label>
-                        <select *ngIf="!this.idDelivery" class="form-control" name="regimenFiscal" required
-                          formControlName="regimenFiscal" (change)="onChangeRegimenFiscal($event)">
+                        <select *ngIf="!this.idDelivery" class="form-control" name="regimenFiscal"
+                          title="Numero Regimen Fiscal" required formControlName="regimenFiscal"
+                          (change)="onChangeRegimenFiscal($event)">
                           <option [ngValue]="''" [selected]="'' == regimenFiscal.id">Elije el Regimen Fiscal</option>
                           <option *ngFor="let regimenFiscal of regimenFiscales" [ngValue]="regimenFiscal.id">
                             ({{regimenFiscal.id}})-{{regimenFiscal.descripcion}}
                           </option>
                         </select>
-                        <select *ngIf="this.idDelivery" class="form-control" name="regimenFiscal" required
-                          formControlName="regimenFiscal">
+                        <select *ngIf="this.idDelivery" class="form-control" name="regimenFiscal"
+                          title="Numero Regimen Fiscal" required formControlName="regimenFiscal">
                           <option [ngValue]="regimenFiscal.id" [selected]="'' == regimenFiscal.id">
                             ({{regimenFiscal.id}})-{{regimenFiscal.descripcion}}
                           </option>
@@ -440,8 +441,8 @@
                     </div>
                     <div class="row">
                       <div class="col-7">
-                        <label>RFC</label>
-                        <input type="text" class="form-control" name="rfc" formControlName="rfc" required
+                        <label for="rfc">RFC</label>
+                        <input type="text" class="form-control" name="rfc" formControlName="rfc" title="RFC" required
                           [maxlength]="rfcLength" (input)="convertToUppercaseRFC($event)">
                         <div class="alert alert-danger"
                           *ngIf="formDataInvoice.get('rfc').invalid && (formDataInvoice.get('rfc').dirty || formDataInvoice.get('rfc').touched)">
@@ -451,8 +452,8 @@
                         </div>
                       </div>
                       <div class="col-5">
-                        <label>CP</label>
-                        <input type="text" class="form-control" name="codigoPostalInvoice"
+                        <label for="codigoPostalInvoice">CP</label>
+                        <input type="text" class="form-control" name="codigoPostalInvoice" title="CP"
                           formControlName="codigoPostalInvoice" autocomplete="off" (input)="bloquearLetras($event)"
                           maxlength="5" required>
                         <div class="alert alert-danger"
@@ -467,9 +468,9 @@
                     </div>
                     <div *ngIf="!esPersonaMoral" class="row">
                       <div class="col-6">
-                        <label>Nombre(s)</label>
+                        <label for="nombresInvoice">Nombre(s)</label>
                         <input type="text" class="form-control" name="nombresInvoice" formControlName="nombresInvoice"
-                          (input)="convertToUppercase($event)" required>
+                          title="Nombre" (input)="convertToUppercase($event)" required>
                         <div class="alert alert-danger"
                           *ngIf="formDataInvoice.get('nombresInvoice').invalid && (formDataInvoice.get('nombresInvoice').dirty || formDataInvoice.get('nombresInvoice').touched)">
                           <div *ngIf="formDataInvoice.get('nombresInvoice').hasError('required')">El nombre es
@@ -480,9 +481,9 @@
                         </div>
                       </div>
                       <div class="col-6">
-                        <label>Apellidos</label>
+                        <label for="apellidos">Apellidos</label>
                         <input type="text" class="form-control" (input)="convertToUppercase($event)" name="apellidos"
-                          formControlName="apellidos" required>
+                          title="Apellidos" formControlName="apellidos" required>
                         <div class="alert alert-danger"
                           *ngIf="formDataInvoice.get('apellidos').invalid && (formDataInvoice.get('apellidos').dirty || formDataInvoice.get('apellidos').touched)">
                           <div *ngIf="formDataInvoice.get('apellidos').hasError('required')">Los apellidos son
@@ -494,9 +495,9 @@
                     </div>
                     <div *ngIf="esPersonaMoral" class="row">
                       <div class="col-12">
-                        <label>Nombre de la Empresa</label>
+                        <label for="nombreEmpresa">Nombre de la Empresa</label>
                         <input type="text" class="form-control" name="nombreEmpresa" formControlName="nombreEmpresa"
-                          required>
+                          title="Empresa" required>
                         <div class="alert alert-danger"
                           *ngIf="formDataInvoice.get('nombreEmpresa').invalid && (formDataInvoice.get('nombreEmpresa').dirty || formDataInvoice.get('nombreEmpresa').touched)">
                           <div *ngIf="formDataInvoice.get('nombreEmpresa').hasError('required')">El nombre es
@@ -510,15 +511,15 @@
                     <div class="row">
                       <div class="col-12">
                         <label>Forma de Pago</label>
-                        <select *ngIf="!this.idDelivery" class="form-control" name="formaPago" required
-                          formControlName="formaPago" (change)="onChangeFormaPago($event, null)">
+                        <select *ngIf="!this.idDelivery" class="form-control" name="formaPago" title="Forma Pago"
+                          required formControlName="formaPago" (change)="onChangeFormaPago($event, null)">
                           <option [ngValue]="''" [selected]="'' == regimenFiscal.id">Elije la forma de Pago</option>
                           <option *ngFor="let formaPago of formaPagos" [ngValue]="formaPago.id">
                             ({{formaPago.id}})-{{formaPago.descripcion}}
                           </option>
                         </select>
-                        <select *ngIf="this.idDelivery" class="form-control" name="formaPago" required
-                          formControlName="formaPago" [attr.disabled]="true">
+                        <select *ngIf="this.idDelivery" class="form-control" name="formaPago" title="Forma Pago"
+                          required formControlName="formaPago" [attr.disabled]="true">
                           <option [ngValue]="formaPago.id" [selected]="'' == formaPago.id">
                             ({{regimenFiscal.id}})-{{formaPago.descripcion}}
                           </option>
@@ -528,15 +529,15 @@
                     <div class="row">
                       <div class="col-12">
                         <label>Metodo de Pago</label>
-                        <select *ngIf="!this.idDelivery" class="form-control" name="metodoPago" required
-                          formControlName="metodoPago" (change)="onChangeMetodoPago($event, null)">
+                        <select *ngIf="!this.idDelivery" class="form-control" name="metodoPago" title="Metodo Pago"
+                          required formControlName="metodoPago" (change)="onChangeMetodoPago($event, null)">
                           <option [ngValue]="''" [selected]="'' == metodoPago.id">Elije el metodo de Pago</option>
                           <option *ngFor="let metodoPago of metodoPagos" [ngValue]="metodoPago.id">
                             ({{metodoPago.id}})-{{metodoPago.descripcion}}
                           </option>
                         </select>
-                        <select *ngIf="this.idDelivery" class="form-control" name="metodoPago" required
-                          formControlName="metodoPago" [attr.disabled]="true">
+                        <select *ngIf="this.idDelivery" class="form-control" name="metodoPago" title="Metodo Pago"
+                          required formControlName="metodoPago" [attr.disabled]="true">
                           <option [ngValue]="metodoPago.id" [selected]="'' == metodoPago.id">
                             ({{metodoPago.id}})-{{metodoPago.descripcion}}
                           </option>
@@ -546,14 +547,14 @@
                     <div class="row">
                       <div class="col-12">
                         <label>Uso de Factura *</label>
-                        <select *ngIf="!this.idDelivery" class="form-control" name="usoCFDI" required
+                        <select *ngIf="!this.idDelivery" class="form-control" name="usoCFDI" title="Uso CFDI" required
                           formControlName="usoCFDI" (change)="onChangeUsoCFDI($event, null)">
                           <option [ngValue]="''" [selected]="'' == usoCFDI.id">Elije el uso del CFDI</option>
                           <option *ngFor="let usoCFDI of usoCFDIs" [ngValue]="usoCFDI.id">
                             ({{usoCFDI.id}})-{{usoCFDI.descripcion}}
                           </option>
                         </select>
-                        <select *ngIf="this.idDelivery" class="form-control" name="usoCFDI" required
+                        <select *ngIf="this.idDelivery" class="form-control" name="usoCFDI" title="Uso CFDI" required
                           formControlName="usoCFDI" [attr.disabled]="true">
                           <option [ngValue]="usoCFDI.id" [selected]="'' == usoCFDI.id">
                             ({{usoCFDI.id}})-{{usoCFDI.descripcion}}
