@@ -965,8 +965,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       } else {
         this.reiniciarShipping('No se ha especificado un código correcto.');
       }
-    } else {
-      this.reiniciarShipping('Error en la asignacion del Codigo Postal.');
     }
   }
 
