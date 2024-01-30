@@ -959,25 +959,29 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
           } else {
-            this.formData.controls.codigoPostal.setValue('');
-            basicAlert(TYPE_ALERT.WARNING, _shipments.message);
+            this.reiniciarShipping(_shipments.message);
           }
         } else {
-          this.formData.controls.codigoPostal.setValue('');
-          basicAlert(TYPE_ALERT.WARNING, 'El código postal no es correcto. Verificar CP');
+          this.reiniciarShipping('El código postal no es correcto. Verificar CP');
         }
       } else {
-        this.formData.controls.codigoPostal.setValue('');
-        basicAlert(TYPE_ALERT.WARNING, 'No se ha especificado un código correcto.');
+        this.reiniciarShipping('No se ha especificado un código correcto.');
       }
     } else {
-      this.formData.controls.codigoPostal.setValue('');
-      basicAlert(TYPE_ALERT.WARNING, 'Error en la asignacion del Codigo Postal.');
+      this.reiniciarShipping('Error en la asignacion del Codigo Postal.');
     }
+  }
+
+  async reiniciarShipping(msj: string) {
+    this.formData.controls.codigoPostal.setValue('');
+    this.totalEnvios = '';
+    this.changeShipping(0);
+    basicAlert(TYPE_ALERT.WARNING, msj);
   }
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
+    console.log('cotizacionEnvios: ', cotizacionEnvios);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1268,11 +1272,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 const shipmentsCost = await this.externalAuthService.onShippingEstimate(
                   supplier, apiShipment, this.warehouse, true
                 ).then(async (resultShip) => {
-                  if (!resultShip.status) {
-                    console.log(`Error: ${resultShip.message}`);
-                    infoEventAlert('Hoy no es tu dia, tengo problemas con el envio. Intenta mas tarde', '', TYPE_ALERT.ERROR);
-                  }
                   let shipment = new Shipment();
+                  if (!resultShip.status) {
+                    return await shipment;
+                  }
                   for (const key of Object.keys(resultShip.data)) {
                     if (supplier.slug === 'ct') {
                       shipment.empresa = resultShip.data[key].empresa.toString();
@@ -1290,12 +1293,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   }
                   return await shipment;
                 });
-                shipmentsEnd.push(shipmentsCost);
-                this.warehouse.shipments = shipmentsEnd;
-                supplierProd.idProveedor = supplier.slug;
-                this.warehouse.suppliersProd = supplierProd;
-                this.warehouse.products = carItemsWarehouse;
-                this.warehouses.push(this.warehouse);
+                if (shipmentsCost && shipmentsCost.costo > 0) {
+                  shipmentsEnd.push(shipmentsCost);
+                  this.warehouse.shipments = shipmentsEnd;
+                  supplierProd.idProveedor = supplier.slug;
+                  this.warehouse.suppliersProd = supplierProd;
+                  this.warehouse.products = carItemsWarehouse;
+                  this.warehouses.push(this.warehouse);
+                }
               }
             }
           } else {
