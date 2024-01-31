@@ -128,6 +128,7 @@ export class NewsletterModalComponent implements OnInit {
       }
     }
     const respuesta = await this.welcomesService.add(welcome);
+    console.log('respuesta: ', respuesta);
     if (!respuesta.status) {
       infoEventAlert(respuesta.message, '', TYPE_ALERT.WARNING);
       this.formData.controls.email.setValue('');
@@ -135,7 +136,7 @@ export class NewsletterModalComponent implements OnInit {
     }
 
     this.onCleanForm();
-    infoEventAlert('Cuenta agregada correctamente. Esperar correo de bienvenida', '', TYPE_ALERT.SUCCESS);
+    infoEventAlert(respuesta.message, '', TYPE_ALERT.SUCCESS);
     // this.closeModal();
 
   }
