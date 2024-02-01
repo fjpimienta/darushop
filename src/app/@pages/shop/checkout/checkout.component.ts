@@ -647,11 +647,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.payStripe();
               break;
             case PAY_OPENPAY:
-              // Recuperar tokenCard
+              // Validar que exista el numero de la tarjeta
               if (this.numeroTarjetaFormateado === '') {
                 this.isSubmitting = false;
                 return await infoEventAlert('Verificar los datos de la Tarjeta de Credito.', '');
               }
+              // Recuperar tokenCard Openpay
               const tokenCard = await this.tokenCardOpenpay();
               if (!tokenCard) {
                 this.isSubmitting = false;
@@ -663,13 +664,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
                 this.isSubmitting = false;
                 return await infoEventAlert('Error en servicio interno (Next Id Delivery).', TYPE_ALERT.ERROR);
-              }
-              // Realizar Cargo con la Tarjeta
-              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
-              console.log('pagoOpenpay: ', pagoOpenpay);
-              if (pagoOpenpay.status === false) {
-                this.isSubmitting = false;
-                return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
               }
               // Generar Orden de Compra con Proveedores
               const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
@@ -688,6 +682,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.isSubmitting = false;
                 return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
               }
+              // Realizar Cargo con la Tarjeta
+              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
+              console.log('pagoOpenpay: ', pagoOpenpay);
+              if (pagoOpenpay.status === false) {
+                this.isSubmitting = false;
+                return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
+              }
+              // Si el pago es correcto proveniente del 3dSecure.
               if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
                 window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
               }
