@@ -1335,11 +1335,9 @@ export class ExternalAuthService extends ApiService {
   }
 
   async getExistenciaProductoCt(suppliersProd: ISupplierProd): Promise<any> {
-    console.log('suppliersProd: ', suppliersProd);
     const existenciaProducto = {
       "existenciaProducto" : suppliersProd
     }
-    console.log('existenciaProducto: ', existenciaProducto);
     return new Promise<any>((resolve, reject) => {
       this.get(EXISTENCIAPRODUCTOSCT_LIST_QUERY, existenciaProducto, {}).subscribe(
         (result: any) => {

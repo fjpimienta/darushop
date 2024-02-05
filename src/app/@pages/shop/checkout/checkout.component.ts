@@ -536,30 +536,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Se ha producido un cambio en myVariable
         this.cartItems = newValue;
         this.onActiveCP(true);
-        console.log('this.cartItems: ', this.cartItems);
         for (const idS of Object.keys(this.cartItems)) {
           const item = this.cartItems[idS];
-          console.log('item: ', this.cartItems);
           if (item.suppliersProd.idProveedor === 'ct') {
-            // Crear una copia del objeto suppliersProd antes de modificarlo
             const updatedSuppliersProd: ISupplierProd = {
               ...item.suppliersProd,
-              cantidad: item.qty, // Supongo que quieres asignar la cantidad de item.qty
+              cantidad: item.qty,
             };
-            // Crear una copia del objeto item antes de modificarlo
             const updatedItem = {
               ...item,
               suppliersProd: updatedSuppliersProd,
             };
-            // Actualizar el objeto dentro de cartItems
             this.cartItems[idS] = updatedItem;
-            console.log('this.cartItems[idS].suppliersProd: ', this.cartItems[idS].suppliersProd);
             this.externalAuthService.getExistenciaProductoCt(this.cartItems[idS].suppliersProd).then(result => {
-              console.log('this.externalAuthService/result: ', result);
               const updatedSuppliersProd: ISupplierProd = {
                 ...item.suppliersProd,
-                idProveedor: 'ct',
-                cantidad: 100, // Modifica según tus necesidades
+                branchOffices: result.existenciaProductoCt.branchOffices
               };
               const suppliersProd = {
                 ...item,
@@ -569,6 +561,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             });
           }
         }
+        console.log('this.cartItems: ', this.cartItems);
       });
     } catch (error) {
       console.log('error: ', error);
@@ -1249,7 +1242,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
-            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
