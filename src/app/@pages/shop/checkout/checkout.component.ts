@@ -55,6 +55,7 @@ import { WelcomesService } from '@core/services/welcomes.service';
 import { Cupon } from '@core/models/cupon.models';
 import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 import { CheckoutExitConfirmationService } from '@core/services/navigationConfirmation.service';
+import { ISupplierProd } from '@core/interfaces/product.interface';
 
 declare var $: any;
 declare var OpenPay: any
@@ -535,8 +536,40 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Se ha producido un cambio en myVariable
         this.cartItems = newValue;
         this.onActiveCP(true);
+        console.log('this.cartItems: ', this.cartItems);
+        for (const idS of Object.keys(this.cartItems)) {
+          const item = this.cartItems[idS];
+          console.log('item: ', this.cartItems);
+          if (item.suppliersProd.idProveedor === 'ct') {
+            // Crear una copia del objeto suppliersProd antes de modificarlo
+            const updatedSuppliersProd: ISupplierProd = {
+              ...item.suppliersProd,
+              cantidad: item.qty, // Supongo que quieres asignar la cantidad de item.qty
+            };
+            // Crear una copia del objeto item antes de modificarlo
+            const updatedItem = {
+              ...item,
+              suppliersProd: updatedSuppliersProd,
+            };
+            // Actualizar el objeto dentro de cartItems
+            this.cartItems[idS] = updatedItem;
+            console.log('this.cartItems[idS].suppliersProd: ', this.cartItems[idS].suppliersProd);
+            this.externalAuthService.getExistenciaProductoCt(this.cartItems[idS].suppliersProd).then(result => {
+              console.log('this.externalAuthService/result: ', result);
+              const updatedSuppliersProd: ISupplierProd = {
+                ...item.suppliersProd,
+                idProveedor: 'ct',
+                cantidad: 100, // Modifica según tus necesidades
+              };
+              const suppliersProd = {
+                ...item,
+                suppliersProd: updatedSuppliersProd,
+              };
+              this.cartItems[idS] = suppliersProd;
+            });
+          }
+        }
       });
-
     } catch (error) {
       console.log('error: ', error);
     }
@@ -655,45 +688,58 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Recuperar tokenCard Openpay
               const tokenCard = await this.tokenCardOpenpay();
+              console.log('tokenCard: ', tokenCard);
               if (!tokenCard) {
                 this.isSubmitting = false;
                 return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
               }
               // Recuperar siguiente id
-              const id = await this.deliverysService.next();
               const deliveryId = this.generarNumeroAleatorioEncriptado();
-              if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
-                this.isSubmitting = false;
-                return await infoEventAlert('Error en servicio interno (Next Id Delivery).', TYPE_ALERT.ERROR);
+              const chargeOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
+              console.log('deliveryId: ', deliveryId);
+              // // Generar Orden de Compra con Proveedores
+              // const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
+              // console.log('OrderSupplier: ', OrderSupplier);
+              // if (OrderSupplier.statusError) {
+              //   this.isSubmitting = false;
+              //   return await infoEventAlert(OrderSupplier.messageError, '', TYPE_ALERT.ERROR);
+              // }
+              // // Registrar Pedido en DARU.
+              // OrderSupplier.cliente = OrderSupplier.user.email;
+              // OrderSupplier.discount = parseFloat(this.discount);
+              // OrderSupplier.importe = parseFloat(this.totalPagar);
+              const user = await this.onSetUser(this.formData, this.stripeCustomer);
+              const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
+              const delivery: Delivery = {
+                deliveryId: deliveryId,
+                cliente: this.formData.controls.email.value,
+                discount: parseFloat(this.discount),
+                importe: parseFloat(this.totalPagar),
+                statusError: false,
+                messageError: '',
+                user,
+                invoiceConfig,
+                warehouses: this.warehouses,
+                chargeOpenpay
               }
-              // Generar Orden de Compra con Proveedores
-              const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-              console.log('OrderSupplier: ', OrderSupplier);
-              if (OrderSupplier.statusError) {
-                this.isSubmitting = false;
-                return await infoEventAlert(OrderSupplier.messageError, '', TYPE_ALERT.ERROR);
-              }
-              // Registrar Pedido en DARU.
-              OrderSupplier.cliente = OrderSupplier.user.email;
-              OrderSupplier.discount = parseFloat(this.discount);
-              OrderSupplier.importe = parseFloat(this.totalPagar);
-              const deliverySave = await this.deliverysService.add(OrderSupplier);
+              console.log('delivery: ', delivery);
+              const deliverySave = await this.deliverysService.add(delivery);
               console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
                 return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
               }
               // Realizar Cargo con la Tarjeta
-              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
-              console.log('pagoOpenpay: ', pagoOpenpay);
-              if (pagoOpenpay.status === false) {
-                this.isSubmitting = false;
-                return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
-              }
-              // Si el pago es correcto proveniente del 3dSecure.
-              if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
-                window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
-              }
+              // const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
+              // console.log('pagoOpenpay: ', pagoOpenpay);
+              // if (pagoOpenpay.status === false) {
+              //   this.isSubmitting = false;
+              //   return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
+              // }
+              // // Si el pago es correcto proveniente del 3dSecure.
+              // if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
+              //   window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
+              // }
               break;
             case PAY_TRANSFER:
               // Recuperar siguiente idT
@@ -1203,6 +1249,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
@@ -1743,7 +1790,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.source_id = token;
     charge.amount = totalCharge;
     charge.currency = "MXN";
-    charge.description = "Cargo de prueba";
+    charge.description = "Pedido-" + orderUniqueId + '-' + this.deviceDataId;
     charge.order_id = orderUniqueId;
     charge.device_session_id = this.deviceDataId;
     charge.capture = true;
@@ -1771,13 +1818,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.redirect_url = environment.checkoutUrl + orderUniqueId;
     charge.use_3d_secure = true;
     charge.confirm = true;
+    return charge;
 
-    const chargeResult = await this.chargeOpenpayService.createCharge(charge);
-    if (chargeResult.status === false) {
-      return { status: chargeResult.status, message: chargeResult.message };
-    }
+    // const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    // if (chargeResult.status === false) {
+    //   return { status: chargeResult.status, message: chargeResult.message };
+    // }
 
-    return await chargeResult;
+    // return await chargeResult;
   }
 
   async payOpenpaySpei(orderUniqueId: string): Promise<any> {
@@ -1919,7 +1967,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async sendOrderSupplier(id: string, deliveryId: string): Promise<any> {
     const delivery = new Delivery();
-    delivery.id = id;
     delivery.deliveryId = deliveryId;
     delivery.cliente = '';
     delivery.discount = 0;

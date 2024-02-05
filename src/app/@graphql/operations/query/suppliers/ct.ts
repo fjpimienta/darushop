@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { CONFIRM_ORDERCT_FRAGMENT, ORDERCT_FRAGMENT, PRODUCTOSCT_FRAGMENT, SHIPMENTS_CT_RATES_FRAGMENT, STATUS_ORDERCT_FRAGMENT, TOKENCT_FRAGMENT } from '@graphql/operations/fragment/suppliers/ct';
+import { CONFIRM_ORDERCT_FRAGMENT, EXISTENCIAPRODUCTOSCT_FRAGMENT, ORDERCT_FRAGMENT, PRODUCTOSCT_FRAGMENT, SHIPMENTS_CT_RATES_FRAGMENT, STATUS_ORDERCT_FRAGMENT } from '@graphql/operations/fragment/suppliers/ct';
 
 export const SHIPMENTS_CT_RATES_QUERY = gql`
   query shippingCtRates(
@@ -31,6 +31,19 @@ export const PRODUCTOSCT_LIST_QUERY = gql`
     }
   }
   ${PRODUCTOSCT_FRAGMENT}
+`;
+
+export const EXISTENCIAPRODUCTOSCT_LIST_QUERY = gql`
+  query existenciaProductoCt($existenciaProducto: SupplierProdInput) {
+    existenciaProductoCt(existenciaProducto: $existenciaProducto) {
+      status
+      message
+      existenciaProductoCt {
+        ...ExistenciaProductosCtObject
+      }
+    }
+  }
+  ${EXISTENCIAPRODUCTOSCT_FRAGMENT}
 `;
 
 export const ADD_ORDER_CT = gql`

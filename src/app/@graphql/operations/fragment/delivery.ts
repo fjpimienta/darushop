@@ -56,6 +56,8 @@ export const DELIVERY_FRAGMENT = gql`
           idProveedor
           codigo
           price
+          cantidad
+          sale_price
           moneda
           branchOffices {
             id
@@ -152,6 +154,8 @@ export const DELIVERY_FRAGMENT = gql`
             idProveedor
             codigo
             price
+            cantidad
+            sale_price
             moneda
             branchOffices {
               id
