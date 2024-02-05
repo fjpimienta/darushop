@@ -684,23 +684,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               console.log('tokenCard: ', tokenCard);
               if (!tokenCard) {
                 this.isSubmitting = false;
-                return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
+                return await infoEventAlert(tokenCard.message, TYPE_ALERT.ERROR);
               }
-              // Recuperar siguiente id
+              // Validar Cargo del Cliente
               const deliveryId = this.generarNumeroAleatorioEncriptado();
               const chargeOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
               console.log('deliveryId: ', deliveryId);
-              // // Generar Orden de Compra con Proveedores
-              // const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-              // console.log('OrderSupplier: ', OrderSupplier);
-              // if (OrderSupplier.statusError) {
-              //   this.isSubmitting = false;
-              //   return await infoEventAlert(OrderSupplier.messageError, '', TYPE_ALERT.ERROR);
-              // }
-              // // Registrar Pedido en DARU.
-              // OrderSupplier.cliente = OrderSupplier.user.email;
-              // OrderSupplier.discount = parseFloat(this.discount);
-              // OrderSupplier.importe = parseFloat(this.totalPagar);
               const user = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
               const delivery: Delivery = {
@@ -716,22 +705,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 chargeOpenpay
               }
               console.log('delivery: ', delivery);
-              const deliverySave = await this.deliverysService.add(delivery);
-              console.log('deliverySave: ', deliverySave);
-              if (deliverySave.error) {
-                this.isSubmitting = false;
-                return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
-              }
-              // Realizar Cargo con la Tarjeta
-              // const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
-              // console.log('pagoOpenpay: ', pagoOpenpay);
-              // if (pagoOpenpay.status === false) {
+              // const deliverySave = await this.deliverysService.add(delivery);
+              // console.log('deliverySave: ', deliverySave);
+              // if (deliverySave.error) {
               //   this.isSubmitting = false;
-              //   return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
+              //   return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
               // }
+
               // // Si el pago es correcto proveniente del 3dSecure.
-              // if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
-              //   window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
+              // if (deliverySave.chargeOpenpay.payment_method.url) {
+              //   window.location.href = deliverySave.createChargeOpenpay.payment_method.url;
               // }
               break;
             case PAY_TRANSFER:

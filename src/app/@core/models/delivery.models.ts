@@ -31,4 +31,6 @@ export class Delivery {
   invoiceConfig: InvoiceConfigInput;
   statusError: boolean;
   messageError: string;
+  status?: string;
+  lastUpdate?: string;
 }

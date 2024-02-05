@@ -312,5 +312,7 @@ export const DELIVERY_FRAGMENT = gql`
       }
       statusError
       messageError
+      status
+      lastUpdate
     }
 `;

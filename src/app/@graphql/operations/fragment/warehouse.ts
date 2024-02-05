@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 
 export const WAREHOUSE_FRAGMENT = gql`
   fragment WarehouseObject on Warehouse {
-    id
+      id
       deliveryId
       user {
         id
@@ -217,5 +217,7 @@ export const WAREHOUSE_FRAGMENT = gql`
       }
       statusError
       messageError
+      status
+      lastUpdate
   }
 `;
