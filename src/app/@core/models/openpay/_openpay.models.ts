@@ -38,6 +38,7 @@ export class ChargeOpenpayInput {
   capture: boolean;
   customer: CustomerOpenpayInput;
   payment_plan: PaymentPlanOpenpayInput;
+  payment_method: PaymentMethodOpenpayInput;
   use_card_points: string;
   send_email: boolean;
   redirect_url: string;
@@ -48,6 +49,15 @@ export class ChargeOpenpayInput {
 
 export class PaymentPlanOpenpayInput {
   payments: number;
+}
+
+export interface PaymentMethodOpenpayInput {
+  type?: string;
+  url?: string;
+  agreement?: string;
+  bank?: string;
+  clabe?: string;
+  name?: string;
 }
 
 export class CaptureChargeOpenpayInput {

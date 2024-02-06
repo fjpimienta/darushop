@@ -681,7 +681,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
               // Recuperar tokenCard Openpay
               const tokenCard = await this.tokenCardOpenpay();
-              console.log('tokenCard: ', tokenCard);
               if (!tokenCard) {
                 this.isSubmitting = false;
                 return await infoEventAlert(tokenCard.message, TYPE_ALERT.ERROR);
@@ -689,7 +688,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Validar Cargo del Cliente
               const deliveryId = this.generarNumeroAleatorioEncriptado();
               const chargeOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
-              console.log('deliveryId: ', deliveryId);
               const user = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
               const delivery: Delivery = {
@@ -704,16 +702,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 warehouses: this.warehouses,
                 chargeOpenpay
               }
-              console.log('delivery: ', delivery);
               const deliverySave = await this.deliverysService.add(delivery);
-              console.log('deliverySave: ', deliverySave);
               if (deliverySave.error) {
                 this.isSubmitting = false;
                 return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
               }
               // Si el pago es correcto proveniente del 3dSecure.
-              if (deliverySave.chargeOpenpay.payment_method.url) {
-                window.location.href = deliverySave.createChargeOpenpay.payment_method.url;
+              if (
+                deliverySave &&
+                deliverySave.delivery &&
+                deliverySave.delivery.chargeOpenpay &&
+                deliverySave.delivery.chargeOpenpay.payment_method &&
+                deliverySave.delivery.chargeOpenpay.payment_method.url
+              ) {
+                window.location.href = deliverySave.delivery.chargeOpenpay.payment_method.url;
               }
               break;
             case PAY_TRANSFER:
