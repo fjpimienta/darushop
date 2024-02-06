@@ -705,17 +705,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 chargeOpenpay
               }
               console.log('delivery: ', delivery);
-              // const deliverySave = await this.deliverysService.add(delivery);
-              // console.log('deliverySave: ', deliverySave);
-              // if (deliverySave.error) {
-              //   this.isSubmitting = false;
-              //   return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
-              // }
-
-              // // Si el pago es correcto proveniente del 3dSecure.
-              // if (deliverySave.chargeOpenpay.payment_method.url) {
-              //   window.location.href = deliverySave.createChargeOpenpay.payment_method.url;
-              // }
+              const deliverySave = await this.deliverysService.add(delivery);
+              console.log('deliverySave: ', deliverySave);
+              if (deliverySave.error) {
+                this.isSubmitting = false;
+                return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
+              }
+              // Si el pago es correcto proveniente del 3dSecure.
+              if (deliverySave.chargeOpenpay.payment_method.url) {
+                window.location.href = deliverySave.createChargeOpenpay.payment_method.url;
+              }
               break;
             case PAY_TRANSFER:
               // Recuperar siguiente idT
