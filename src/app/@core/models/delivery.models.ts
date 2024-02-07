@@ -25,9 +25,6 @@ export class Delivery {
   warehouses: Warehouse[];
   ordersCt?: OrderCt[];
   ordersCva?: OrderCva[];
-  orderCtResponse?: OrderCtResponse;
-  orderCtConfirmResponse?: OrderCtConfirmResponse;
-  orderCvaResponse?: OrderCvaResponse;
   invoiceConfig: InvoiceConfigInput;
   statusError: boolean;
   messageError: string;
