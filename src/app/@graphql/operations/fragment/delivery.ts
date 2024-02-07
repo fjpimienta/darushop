@@ -17,6 +17,7 @@ export const DELIVERY_FRAGMENT = gql`
       discount
       importe
       registerDate
+      lastUpdate
       user {
         id
         name
@@ -83,6 +84,10 @@ export const DELIVERY_FRAGMENT = gql`
         payment_method {
           type
           url
+          agreement
+          bank
+          clabe
+          name
         }
         conciliated
         customer {
@@ -289,7 +294,7 @@ export const DELIVERY_FRAGMENT = gql`
           moneda
         }
         cfdi
-        respuestaCT {
+        orderCtResponse {
           pedidoWeb
           fecha
           tipoDeCambio
@@ -299,6 +304,11 @@ export const DELIVERY_FRAGMENT = gql`
             errorMessage
             errorReference
           }
+        }
+        orderCtConfirmResponse {
+          okCode
+          okMessage
+          okReference
         }
       }
       ordersCva {
@@ -320,30 +330,14 @@ export const DELIVERY_FRAGMENT = gql`
         Estado
         Ciudad
         Atencion
-      }
-      orderCtResponse {
-        pedidoWeb
-        fecha
-        tipoDeCambio
-        estatus
-        errores {
-          errorCode
-          errorMessage
-          errorReference
+        orderCvaResponse {
+          error
+          estado
+          pedido
+          total
+          agentemail
+          almacenmail
         }
-      }
-      orderCtConfirmResponse {
-        okCode
-        okMessage
-        okReference
-      }
-      orderCvaResponse {
-        error
-        estado
-        pedido
-        total
-        agentemail
-        almacenmail
       }
       invoiceConfig {
         factura
