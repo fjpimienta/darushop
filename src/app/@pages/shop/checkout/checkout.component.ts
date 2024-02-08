@@ -821,7 +821,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       console.log('delivery: ', delivery);
       const deliverySave = await this.deliverysService.update(delivery);
       console.log('deliverySave: ', deliverySave);
-      if (deliverySave && deliverySave.delivery && deliverySave.delivery.error) {
+      if (deliverySave && deliverySave.delivery && deliverySave.delivery.statusError) {
         this.isSubmitting = false;
         // Enviar correo de error.
         const NewProperty = 'receipt_email';
@@ -830,7 +830,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         let messageDelivery = 'Hay un problema con el envio';
         deliverySave[NewProperty] = sendEmail;
         this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
-        return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
+        return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.ERROR);
       }
 
       // Limpiar carrito de compras.
@@ -844,8 +844,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       let messageDelivery = 'El Pedido se ha realizado correctamente';
 
       // Si compra es OK, continua.
-      deliverySave[NewProperty] = sendEmail;
-      this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+      deliverySave.delivery[NewProperty] = sendEmail;
+      this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
       this.router.navigate(['/dashboard']);
 
       await infoEventAlert(messageDelivery, '', typeAlert);
