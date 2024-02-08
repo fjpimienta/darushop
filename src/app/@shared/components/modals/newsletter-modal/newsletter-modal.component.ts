@@ -5,13 +5,16 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { environment } from 'src/environments/environment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MailService } from '@core/services/mail.service';
 import { infoEventAlert } from '@shared/alert/alerts';
-import { IMail } from '@core/interfaces/mail.interface';
 import { TYPE_ALERT } from '@shared/alert/values.config';
 import { WelcomesService } from '@core/services/welcomes.service';
 import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 import { IIcommktContact } from '@core/interfaces/suppliers/icommkt.interface';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
+import { of } from 'rxjs';
+
+const HUNTER_API_KEY = '550e992043c66925659ef73486f16a7db842cadb';
 
 @Component({
   selector: 'app-newsletter-modal',
@@ -23,47 +26,58 @@ export class NewsletterModalComponent implements OnInit {
 
   checkState = false;
   formData: FormGroup;
+  emailValid = false;
 
   constructor(
     private modalService: NgbActiveModal,
     private formBuilder: FormBuilder,
     private welcomesService: WelcomesService,
-    private icommktsService: IcommktsService
+    private icommktsService: IcommktsService,
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
     this.formData = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
+      email: ['', [Validators.required, Validators.email]],
       nombre: ['', [Validators.required]],
       apellido: ['', [Validators.required]],
       sexo: [''],
       fecha_de_nacimiento: ['', this.fechaValida]
     });
+
+    this.formData.get('email').valueChanges.subscribe((value) => {
+      if (this.formData.get('email').valid) {
+        this.checkEmailValidity(value);
+      }
+    });
+  }
+
+  checkEmailValidity(email: string): void {
+    const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${HUNTER_API_KEY}`;
+    this.http.get(url).pipe(
+      map((response: any) => {
+        return response.data.result === 'deliverable';
+      }),
+      catchError(error => {
+        console.error('Error al verificar el dominio:', error);
+        return of(false);
+      })
+    ).subscribe((isValid: boolean) => {
+      this.emailValid = isValid;
+    });
   }
 
   fechaValida(control) {
     const inputValue = control.value;
-    // Validar el formato y longitud según tus requisitos
     if (!/^\d{4}-\d{2}-\d{2}$/.test(inputValue)) {
       return { formatoInvalido: true };
     }
     const year = Number(inputValue.split('-')[0]);
-    // Validar la longitud del año (puedes ajustar la longitud según tus necesidades)
     if (year.toString().length !== 4) {
       return { longitudInvalida: true };
     }
-    return null; // La validación es exitosa
+    return null;
   }
-
-  customEmailValidator(control) {
-    const email = control.value;
-    if (!email) {
-      return null;
-    }
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    return regex.test(email) ? null : { invalidEmail: true };
-  }
-
 
   changeCheck() {
     this.checkState = !this.checkState;
@@ -75,8 +89,8 @@ export class NewsletterModalComponent implements OnInit {
   }
 
   async onSubmit() {
-    if (!this.formData.valid) {
-      infoEventAlert('Revisar los campos requeridos.', '');
+    if (!this.formData.valid || !this.emailValid) {
+      infoEventAlert('Revisar los campos requeridos o el correo electrónico.', '');
       return;
     }
 
@@ -137,8 +151,6 @@ export class NewsletterModalComponent implements OnInit {
 
     this.onCleanForm();
     infoEventAlert(respuesta.message, '', TYPE_ALERT.SUCCESS);
-    // this.closeModal();
-
   }
 
   onCleanForm() {

@@ -61,7 +61,7 @@
                 placeholder="Correo Electr&oacute;nico" autocomplete="off" required>
             </div>
             <div class="col-md-6 form-group text-center">
-              <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid">
+              <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid || !emailValid">
                 <span>¡Suscríbete!</span>
                 <i class="icon-long-arrow-right"></i>
               </button>
