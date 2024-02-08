@@ -829,7 +829,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         let sendEmail = "francisco.pimienta@daru.mx; ventas@daru.mx";
         let messageDelivery = 'Hay un problema con el envio';
         deliverySave[NewProperty] = sendEmail;
-        this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+        this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
         return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.ERROR);
       }
 
