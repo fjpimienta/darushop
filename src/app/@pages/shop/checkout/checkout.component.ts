@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ElementRef, HostListener } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CartService } from '@core/services/cart.service';
 import { CountrysService } from '@core/services/countrys.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
@@ -17,7 +17,7 @@ import { CURRENCIES_SYMBOL, CURRENCY_LIST } from '@mugan86/ng-shop-ui';
 import { CURRENCY_CODE } from '@core/constants/config';
 import { closeAlert, infoEventAlert, loadData } from '@shared/alert/alerts';
 import { CustomersService } from '@core/services/stripe/customers.service';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ICustomer, IResultStripeCustomer } from '@core/interfaces/stripe/customer.interface';
 import { ChargeService } from '@core/services/stripe/charge.service';
 import { IPayment } from '@core/interfaces/stripe/payment.interface';
@@ -37,9 +37,8 @@ import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
-import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
-import { EnvioCt, GuiaConnect, OrderCt, OrderCtConfirm, ProductoCt } from '@core/models/suppliers/orderct.models';
-import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
+import { PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
+import { OrderCtConfirm } from '@core/models/suppliers/orderct.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
@@ -113,6 +112,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   key = environment.stripePublicKey;
   token: string;
   totalPagar: string;
+  subTotal: string;
   totalEnvios: string;
   discountPorc: string = '0';
   discount: string = '0';
@@ -226,6 +226,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.countrys = result.countrys;
       });
       this.cartService.priceTotal.subscribe(total => {
+        this.subTotal = total.toFixed(2).toString();
         this.totalPagar = total.toFixed(2).toString();
       });
       // Observable para obtener el token
@@ -354,13 +355,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       console.clear();
       if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
-          if (result.delivery.delivery) {
-            this.delivery = result.delivery.delivery;
-            this.onSetDelivery(this.formData, result.delivery.delivery);
-            const discount = parseFloat(result.delivery.delivery.discount);
+          if (result && result.delivery && result.delivery.delivery) {
+            const delivery = result.delivery.delivery;
+            this.delivery = delivery;
+            console.log('delivery: ', delivery);
+            this.onSetDelivery(this.formData, delivery);
+            const discount = parseFloat(delivery.discount);
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
+              console.log('total: ', total);
+              if (total === 0) {
+                total = delivery.importe;
+                console.log('delivery.importe: ', delivery.importe);
+              }
+              this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
+              console.log('total: ', total);
             });
           }
           return result.delivery.delivery;
@@ -789,6 +799,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onSubmitCapture(): Promise<any> {
     if (!this.isSubmittingCapture) {
       this.isSubmittingCapture = true;
+      if (!this.delivery) {
+        this.isSubmitting = false;
+        return await infoEventAlert('No se encuentra la informacion completa del pedido.', '');
+      }
       if (!this.idDelivery) {
         this.isSubmitting = false;
         return await infoEventAlert('No se encuentra el parametro: idOrder.', '');
@@ -797,8 +811,27 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         return await infoEventAlert('No se encuentra el parametro: id.', '');
       }
-
-      const deliverySave = this.delivery;
+      const delivery: Delivery = {
+        id: this.delivery.id,
+        deliveryId: this.delivery.deliveryId,
+        chargeOpenpay: this.delivery.chargeOpenpay,
+        user: this.delivery.user,
+        warehouses: this.delivery.warehouses
+      }
+      console.log('delivery: ', delivery);
+      const deliverySave = await this.deliverysService.update(delivery);
+      console.log('deliverySave: ', deliverySave);
+      if (deliverySave && deliverySave.delivery && deliverySave.delivery.error) {
+        this.isSubmitting = false;
+        // Enviar correo de error.
+        const NewProperty = 'receipt_email';
+        let internalEmail = true;
+        let sendEmail = "francisco.pimienta@daru.mx; ventas@daru.mx";
+        let messageDelivery = 'Hay un problema con el envio';
+        deliverySave[NewProperty] = sendEmail;
+        this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+        return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
+      }
 
       // Limpiar carrito de compras.
       this.cartService.clearCart(false);

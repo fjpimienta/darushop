@@ -11,20 +11,20 @@ import { Warehouse } from './warehouse.models';
  */
 export class Delivery {
   id?: string;
-  deliveryId: string;
-  cliente: string;
+  deliveryId?: string;
+  cliente?: string;
   cupon?: Cupon;
-  discount: number;
-  importe: number;
+  discount?: number;
+  importe?: number;
   registerDate?: string;
-  user: UserInput;
-  chargeOpenpay: ChargeOpenpayInput;
-  warehouses: Warehouse[];
+  user?: UserInput;
+  chargeOpenpay?: ChargeOpenpayInput;
+  warehouses?: Warehouse[];
   ordersCt?: OrderCt[];
   ordersCva?: OrderCva[];
-  invoiceConfig: InvoiceConfigInput;
-  statusError: boolean;
-  messageError: string;
+  invoiceConfig?: InvoiceConfigInput;
+  statusError?: boolean;
+  messageError?: string;
   status?: string;
   lastUpdate?: string;
 }

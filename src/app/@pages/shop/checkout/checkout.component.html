@@ -239,7 +239,7 @@
                     </tr>
                     <tr class="summary-subtotal">
                       <td>Subtotal:</td>
-                      <td>{{ (cartService.priceTotal | async).toFixed(2) | currency }}</td>
+                      <td>{{ subTotal | currency }}</td>
                     </tr>
                     <tr *ngIf="typeDiscount==='discount'" class="summary-subtotal">
                       <td>Descuentos:</td>
