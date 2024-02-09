@@ -10,7 +10,7 @@ import { Shipment } from '@core/models/shipment.models';
 import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { ADD_ORDER_CT, CONFIRM_ORDER_CT, EXISTENCIAPRODUCTOSCT_LIST_QUERY, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY, STATUS_ORDER_CT } from '@graphql/operations/query/suppliers/ct';
-import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
+import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, EXISTENCIAPRODUCTOSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
 import { IOrderCva } from '@core/interfaces/suppliers/ordercva.interface';
@@ -1270,6 +1270,21 @@ export class ExternalAuthService extends ApiService {
     });
   }
 
+  async getPricesCvaProduct(suppliersProd: ISupplierProd): Promise<any> {
+    const existenciaProducto = {
+      "existenciaProducto": suppliersProd
+    }
+    return new Promise<any>((resolve, reject) => {
+      this.get(EXISTENCIAPRODUCTOSCVA_LIST_QUERY, existenciaProducto, {}).subscribe(
+        (result: any) => {
+          resolve(result.existenciaProductoCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
   async getProductsCva(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.get(PRODUCTOSCVA_LIST_QUERY, {}, {}).subscribe(
@@ -1336,7 +1351,7 @@ export class ExternalAuthService extends ApiService {
 
   async getExistenciaProductoCt(suppliersProd: ISupplierProd): Promise<any> {
     const existenciaProducto = {
-      "existenciaProducto" : suppliersProd
+      "existenciaProducto": suppliersProd
     }
     return new Promise<any>((resolve, reject) => {
       this.get(EXISTENCIAPRODUCTOSCT_LIST_QUERY, existenciaProducto, {}).subscribe(

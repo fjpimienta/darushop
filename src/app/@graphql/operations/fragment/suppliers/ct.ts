@@ -42,8 +42,8 @@ export const PRODUCTOSCT_FRAGMENT = gql`
   }
 `;
 
-export const EXISTENCIAPRODUCTOSCT_FRAGMENT = gql`
-  fragment ExistenciaProductosCtObject on ResponseCtsSupplierProd {
+export const EXISTENCIAPRODUCTOS_FRAGMENT = gql`
+  fragment ExistenciaProductosObject on ResponseSupplierProd {
     idProveedor
     codigo
     price

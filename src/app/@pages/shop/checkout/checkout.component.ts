@@ -358,19 +358,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (result && result.delivery && result.delivery.delivery) {
             const delivery = result.delivery.delivery;
             this.delivery = delivery;
-            console.log('delivery: ', delivery);
             this.onSetDelivery(this.formData, delivery);
             const discount = parseFloat(delivery.discount);
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
-              console.log('total: ', total);
               if (total === 0) {
                 total = delivery.importe;
-                console.log('delivery.importe: ', delivery.importe);
               }
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
-              console.log('total: ', total);
             });
           }
           return result.delivery.delivery;
@@ -548,17 +544,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.onActiveCP(true);
         for (const idS of Object.keys(this.cartItems)) {
           const item = this.cartItems[idS];
+          const updatedSuppliersProd: ISupplierProd = {
+            ...item.suppliersProd,
+            cantidad: item.qty,
+          };
+          const updatedItem = {
+            ...item,
+            suppliersProd: updatedSuppliersProd,
+          };
+          this.cartItems[idS] = updatedItem;
           if (item.suppliersProd.idProveedor === 'ct') {
-            const updatedSuppliersProd: ISupplierProd = {
-              ...item.suppliersProd,
-              cantidad: item.qty,
-            };
-            const updatedItem = {
-              ...item,
-              suppliersProd: updatedSuppliersProd,
-            };
-            this.cartItems[idS] = updatedItem;
-            this.externalAuthService.getExistenciaProductoCt(this.cartItems[idS].suppliersProd).then(result => {
+            this.externalAuthService.getExistenciaProductoCt(
+              this.cartItems[idS].suppliersProd
+            ).then(result => {
               const updatedSuppliersProd: ISupplierProd = {
                 ...item.suppliersProd,
                 branchOffices: result.existenciaProductoCt.branchOffices
@@ -569,9 +567,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               };
               this.cartItems[idS] = suppliersProd;
             });
+          } else if (item.suppliersProd.idProveedor === 'cva') {
+            this.externalAuthService.getPricesCvaProduct(
+              this.cartItems[idS].suppliersProd
+            ).then(result => {
+              const updatedSuppliersProd: ISupplierProd = {
+                ...item.suppliersProd,
+                branchOffices: result.existenciaProductoCva.branchOffices
+              };
+              const suppliersProd = {
+                ...item,
+                suppliersProd: updatedSuppliersProd,
+              };
+              this.cartItems[idS] = suppliersProd;
+            });
+
           }
         }
-        console.log('this.cartItems: ', this.cartItems);
       });
     } catch (error) {
       console.log('error: ', error);
@@ -818,9 +830,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         user: this.delivery.user,
         warehouses: this.delivery.warehouses
       }
-      console.log('delivery: ', delivery);
       const deliverySave = await this.deliverysService.update(delivery);
-      console.log('deliverySave: ', deliverySave);
       if (deliverySave && deliverySave.delivery && deliverySave.delivery.statusError) {
         this.isSubmitting = false;
         // Enviar correo de error.
@@ -1035,7 +1045,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    console.log('cotizacionEnvios: ', cotizacionEnvios);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1295,7 +1304,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     // Cambia el valor de 'assignedBranchId' para el elemento encontrado
                     elementoEncontrado.assignedBranchId = true;
                   }
-
                   const productShipment = new ProductShipment();
                   productShipment.producto = cartItem.sku;
                   productShipment.cantidad = cartItem.qty;
@@ -1783,7 +1791,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async payOpenpayCapture(idChargeOpenpay: string, amount: number): Promise<any> {
     const captureTransactionOpenpay = { amount }
-    console.log(`idChargeOpenpay: ${idChargeOpenpay}, amount: ${amount}`)
     const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
     if (createResult.status === false) {
       return { status: createResult.status, message: createResult.message };
