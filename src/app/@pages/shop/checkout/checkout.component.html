@@ -241,11 +241,11 @@
                       <td>Subtotal:</td>
                       <td>{{ subTotal | currency }}</td>
                     </tr>
-                    <tr *ngIf="typeDiscount==='discount'" class="summary-subtotal">
+                    <tr *ngIf="typeDiscount==='importe'" class="summary-subtotal">
                       <td>Descuentos:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
-                    <tr *ngIf="typeDiscount!=='discount'" class="summary-subtotal">
+                    <tr *ngIf="typeDiscount!=='importe'" class="summary-subtotal">
                       <td>Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>

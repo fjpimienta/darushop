@@ -118,7 +118,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   discount: string = '0';
   discountImporte: string = '0';
   resultCustomer: IResultStripeCustomer;
-  typeDiscount = '';
+  typeDiscount = 'importe';
 
   myCurrency = CURRENCIES_SYMBOL[CURRENCY_LIST.MEXICAN_PESO];
 
