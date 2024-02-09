@@ -544,6 +544,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.onActiveCP(true);
         for (const idS of Object.keys(this.cartItems)) {
           const item = this.cartItems[idS];
+          console.log('item: ', item);
           const updatedSuppliersProd: ISupplierProd = {
             ...item.suppliersProd,
             cantidad: item.qty,
@@ -553,6 +554,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             suppliersProd: updatedSuppliersProd,
           };
           this.cartItems[idS] = updatedItem;
+          console.log('this.cartItems[idS]: ', this.cartItems[idS]);
           if (item.suppliersProd.idProveedor === 'ct') {
             this.externalAuthService.getExistenciaProductoCt(
               this.cartItems[idS].suppliersProd
@@ -566,6 +568,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 suppliersProd: updatedSuppliersProd,
               };
               this.cartItems[idS] = suppliersProd;
+              console.log('update.this.cartItems[idS]: ', this.cartItems[idS]);
             });
           } else if (item.suppliersProd.idProveedor === 'cva') {
             this.externalAuthService.getPricesCvaProduct(
@@ -580,8 +583,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 suppliersProd: updatedSuppliersProd,
               };
               this.cartItems[idS] = suppliersProd;
+              console.log('update.this.cartItems[idS]: ', this.cartItems[idS]);
             });
-
           }
         }
       });
