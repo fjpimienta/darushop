@@ -831,6 +831,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         warehouses: this.delivery.warehouses
       }
       const deliverySave = await this.deliverysService.update(delivery);
+      console.log('deliverySave: ', deliverySave);
       if (deliverySave && deliverySave.delivery && deliverySave.delivery.statusError) {
         this.isSubmitting = false;
         // Enviar correo de error.
@@ -839,6 +840,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         let sendEmail = "francisco.pimienta@daru.mx; ventas@daru.mx";
         let messageDelivery = 'Hay un problema con el envio';
         deliverySave[NewProperty] = sendEmail;
+        console.log('messageDelivery: ', messageDelivery);
+        console.log('this.totalEnvios: ', this.totalEnvios);
         this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
         return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.ERROR);
       }
@@ -855,10 +858,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
       // Si compra es OK, continua.
       deliverySave.delivery[NewProperty] = sendEmail;
+      console.log('messageDelivery: ', messageDelivery);
+      console.log('this.totalEnvios: ', this.totalEnvios);
       this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+      await infoEventAlert(messageDelivery, '', typeAlert);
       this.router.navigate(['/dashboard']);
 
-      await infoEventAlert(messageDelivery, '', typeAlert);
     } else {
       console.log('onSubmitCapture/this.isSubmittingCapture');
     }
