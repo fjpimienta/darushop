@@ -1245,6 +1245,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.warehouse = new Warehouse();
       this.warehouse.shipments = [];
       let shipmentsEnd = [];
+      let mensajeError = 'No se pudo generar costos de envios';
       // Verificar productos por proveedor.
       const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
         .then(async result => {
@@ -1338,7 +1339,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 ).then(async (resultShip) => {
                   let shipment = new Shipment();
                   if (!resultShip.status) {
-                    return await shipment;
+                    mensajeError = resultShip.message;
+                    return await resultShip
                   }
                   for (const key of Object.keys(resultShip.data)) {
                     if (supplier.slug === 'ct') {
@@ -1376,10 +1378,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         }
       }
-      console.log('this.warehouse', this.warehouse);
       return await {
         status: shipmentsEnd.length > 0 ? true : false,
-        message: shipmentsEnd.length > 0 ? 'Se obtuvieron los envios de forma correcta.' : 'No se pudo generar costos de envios',
+        message: shipmentsEnd.length > 0 ? 'Se obtuvieron los envios de forma correcta.' : mensajeError,
         shipmentsEnd: shipmentsEnd.length > 0 ? shipmentsEnd : []
       }
     } catch (error) {

@@ -715,8 +715,8 @@ export class ExternalAuthService extends ApiService {
             resultCva.data = shipmentCva;
             return await resultCva;
           }
-          resultCva.status = false;
-          resultCva.message = 'Error en el servicio de envio.';
+          resultCva.status = shippmentsCva.status;
+          resultCva.message = shippmentsCva.message;
           return await resultCva;
         case '99minutos':
           break;
