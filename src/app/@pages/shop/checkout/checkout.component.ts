@@ -184,6 +184,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   cuponInput: string = '';
 
+  checkoutUrl: string = '';
+
   constructor(
     private router: Router,
     private el: ElementRef,
@@ -368,6 +370,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
             });
+            this.checkoutUrl = delivery.charge.redirect_url;
           }
           return result.delivery.delivery;
         });

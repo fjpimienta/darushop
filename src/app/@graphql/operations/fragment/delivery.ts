@@ -61,6 +61,7 @@ export const DELIVERY_FRAGMENT = gql`
         error_message
         customer_id
         currency
+        redirect_url
         bank_account {
           clabe
           holder_name
