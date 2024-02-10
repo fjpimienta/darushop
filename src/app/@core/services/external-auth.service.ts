@@ -7,15 +7,14 @@ import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
-import { ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
+import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
-import { ADD_ORDER_CT, CONFIRM_ORDER_CT, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY, STATUS_ORDER_CT } from '@graphql/operations/query/suppliers/ct';
-import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
+import { ADD_ORDER_CT, CONFIRM_ORDER_CT, EXISTENCIAPRODUCTOSCT_LIST_QUERY, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY, STATUS_ORDER_CT } from '@graphql/operations/query/suppliers/ct';
+import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, EXISTENCIAPRODUCTOSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
 import { IOrderCva } from '@core/interfaces/suppliers/ordercva.interface';
-import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from '@core/interfaces/suppliers/orderct.interface';
-import { EnvioCt, GuiaConnect } from '@core/models/suppliers/orderct.models';
+import { IEnvioCt, IGuiaConnect, IProductoCt } from '@core/interfaces/suppliers/orderct.interface';
 import { IOrderCvaResponse } from '@core/interfaces/suppliers/ordercvaresponse.interface';
 import { Result } from '@core/models/result.models';
 
@@ -716,8 +715,8 @@ export class ExternalAuthService extends ApiService {
             resultCva.data = shipmentCva;
             return await resultCva;
           }
-          resultCva.status = false;
-          resultCva.message = 'Error en el servicio de envio.';
+          resultCva.status = shippmentsCva.status;
+          resultCva.message = shippmentsCva.message;
           return await resultCva;
         case '99minutos':
           break;
@@ -1271,6 +1270,21 @@ export class ExternalAuthService extends ApiService {
     });
   }
 
+  async getPricesCvaProduct(suppliersProd: ISupplierProd): Promise<any> {
+    const existenciaProducto = {
+      "existenciaProducto": suppliersProd
+    }
+    return new Promise<any>((resolve, reject) => {
+      this.get(EXISTENCIAPRODUCTOSCVA_LIST_QUERY, existenciaProducto, {}).subscribe(
+        (result: any) => {
+          resolve(result.existenciaProductoCva);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
   async getProductsCva(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.get(PRODUCTOSCVA_LIST_QUERY, {}, {}).subscribe(
@@ -1328,6 +1342,21 @@ export class ExternalAuthService extends ApiService {
       this.get(PRODUCTOSCT_LIST_QUERY, {}, {}).subscribe(
         (result: any) => {
           resolve(result.stockProductsCt);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+
+  async getExistenciaProductoCt(suppliersProd: ISupplierProd): Promise<any> {
+    const existenciaProducto = {
+      "existenciaProducto": suppliersProd
+    }
+    return new Promise<any>((resolve, reject) => {
+      this.get(EXISTENCIAPRODUCTOSCT_LIST_QUERY, existenciaProducto, {}).subscribe(
+        (result: any) => {
+          resolve(result.existenciaProductoCt);
         },
         (error: any) => {
           reject(error);

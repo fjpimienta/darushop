@@ -16,6 +16,7 @@ export const CHARGE_OPENPAY_FRAGMENT_OBJECT = gql`
     error_message
     customer_id
     currency
+    redirect_url
     bank_account {
       clabe
       holder_name

@@ -52,7 +52,10 @@ export class MailService extends ApiService {
                       </tr>
                     `
     }
-    const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? 0 : parseFloat(discount));
+    console.log('Number.isNaN(discount): ', Number.isNaN(discount));
+    console.log('parseFloat(discount): ', parseFloat(discount));
+    const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? parseFloat(discount) : 0);
+
     let datosFactura = ''
     if (esFacturable) {
       const nombre = charge.invoiceConfig.nombreEmpresa !== '' ? charge.invoiceConfig.nombreEmpresa : charge.invoiceConfig.nombres + ' ' + charge.invoiceConfig.apellidos;
@@ -207,8 +210,6 @@ export class MailService extends ApiService {
       </body>
       </html>
       `;
-    console.log('charge.invoceConfigInput: ', charge.invoceConfigInput);
-    console.log('receiptEmail: ', receiptEmail);
     // const subject
     const mail: IMail = {
       to: receiptEmail,
