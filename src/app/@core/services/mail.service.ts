@@ -52,7 +52,13 @@ export class MailService extends ApiService {
                       </tr>
                     `
     }
+    console.log('totalProd: ', totalProd);
+    console.log('totalEnvios: ', totalEnvios);
+    console.log('parseFloat(totalEnvios): ', parseFloat(totalEnvios));
+    console.log('Number.isNaN(discount): ', Number.isNaN(discount));
+    console.log('parseFloat(discount): ', parseFloat(discount));
     const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? 0 : parseFloat(discount));
+
     let datosFactura = ''
     if (esFacturable) {
       const nombre = charge.invoiceConfig.nombreEmpresa !== '' ? charge.invoiceConfig.nombreEmpresa : charge.invoiceConfig.nombres + ' ' + charge.invoiceConfig.apellidos;
