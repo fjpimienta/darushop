@@ -370,7 +370,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
             });
-            this.checkoutUrl = delivery.charge.redirect_url;
+            this.checkoutUrl = delivery.charge.redirect_url ? delivery.charge.redirect_url : '';
           }
           return result.delivery.delivery;
         });
