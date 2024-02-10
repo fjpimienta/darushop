@@ -1021,6 +1021,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+          console.log('_shipments', _shipments);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
@@ -1045,6 +1046,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
+    console.log('cotizacionEnvios: ', cotizacionEnvios);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1374,6 +1376,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         }
       }
+      console.log('this.warehouse', this.warehouse);
       return await {
         status: shipmentsEnd.length > 0 ? true : false,
         message: shipmentsEnd.length > 0 ? 'Se obtuvieron los envios de forma correcta.' : 'No se pudo generar costos de envios',
