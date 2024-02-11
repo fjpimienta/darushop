@@ -42,6 +42,25 @@ export const PRODUCTOSCT_FRAGMENT = gql`
   }
 `;
 
+export const EXISTENCIAPRODUCTOS_FRAGMENT = gql`
+  fragment ExistenciaProductosObject on ResponseSupplierProd {
+    idProveedor
+    codigo
+    price
+    cantidad
+    sale_price
+    branchOffices {
+      id
+      name
+      estado
+      cantidad
+      cp
+      latitud
+      longitud
+    }
+  }
+`;
+
 export const ORDERCT_FRAGMENT = gql`
   fragment OrderCtObject on ResponseCtOrder {
     pedidoWeb

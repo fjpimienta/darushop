@@ -94,6 +94,8 @@ export const PRODUCT_FRAGMENT = gql`
       idProveedor
       codigo
       price
+      cantidad
+      sale_price
       moneda
       branchOffices {
         id

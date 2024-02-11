@@ -47,6 +47,7 @@ export const ORDER_FRAGMENT = gql`
       created
       description
       customer
+      redirect_url
     }
     cartitems {
       id

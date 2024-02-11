@@ -1,3 +1,5 @@
+import { OrderCtConfirmResponse, OrderCtResponse } from './orderctresponse.models';
+
 /**
  * Clase de Ordenes para CT
  */
@@ -9,6 +11,8 @@ export class OrderCt {
   envio: EnvioCt[];
   productoCt: ProductoCt[];
   cfdi: string;
+  orderCtResponse?: OrderCtResponse;
+  orderCtConfirmResponse?: OrderCtConfirmResponse;
 }
 
 export class GuiaConnect {

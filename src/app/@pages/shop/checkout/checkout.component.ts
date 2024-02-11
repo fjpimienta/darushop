@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ElementRef, HostListener } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CartService } from '@core/services/cart.service';
 import { CountrysService } from '@core/services/countrys.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
@@ -17,7 +17,7 @@ import { CURRENCIES_SYMBOL, CURRENCY_LIST } from '@mugan86/ng-shop-ui';
 import { CURRENCY_CODE } from '@core/constants/config';
 import { closeAlert, infoEventAlert, loadData } from '@shared/alert/alerts';
 import { CustomersService } from '@core/services/stripe/customers.service';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ICustomer, IResultStripeCustomer } from '@core/interfaces/stripe/customer.interface';
 import { ChargeService } from '@core/services/stripe/charge.service';
 import { IPayment } from '@core/interfaces/stripe/payment.interface';
@@ -37,9 +37,8 @@ import { ProductShipment } from '@core/models/productShipment.models';
 import { Shipment } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
-import { FF, PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
-import { EnvioCt, GuiaConnect, OrderCt, OrderCtConfirm, ProductoCt } from '@core/models/suppliers/orderct.models';
-import { EnvioCVA, OrderCva, ProductoCva } from '@core/models/suppliers/ordercva.models';
+import { PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
+import { OrderCtConfirm } from '@core/models/suppliers/orderct.models';
 import { Apis, Supplier } from '@core/models/suppliers/supplier';
 import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
@@ -55,6 +54,7 @@ import { WelcomesService } from '@core/services/welcomes.service';
 import { Cupon } from '@core/models/cupon.models';
 import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 import { CheckoutExitConfirmationService } from '@core/services/navigationConfirmation.service';
+import { ISupplierProd } from '@core/interfaces/product.interface';
 
 declare var $: any;
 declare var OpenPay: any
@@ -112,12 +112,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   key = environment.stripePublicKey;
   token: string;
   totalPagar: string;
+  subTotal: string;
   totalEnvios: string;
   discountPorc: string = '0';
   discount: string = '0';
   discountImporte: string = '0';
   resultCustomer: IResultStripeCustomer;
-  typeDiscount = '';
+  typeDiscount = 'importe';
 
   myCurrency = CURRENCIES_SYMBOL[CURRENCY_LIST.MEXICAN_PESO];
 
@@ -183,6 +184,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   cuponInput: string = '';
 
+  checkoutUrl: string = '';
+
   constructor(
     private router: Router,
     private el: ElementRef,
@@ -225,6 +228,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.countrys = result.countrys;
       });
       this.cartService.priceTotal.subscribe(total => {
+        this.subTotal = total.toFixed(2).toString();
         this.totalPagar = total.toFixed(2).toString();
       });
       // Observable para obtener el token
@@ -294,32 +298,32 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     // Recuperar siguiente id
                     const id = await this.deliverysService.next();
                     const deliveryId = this.generarNumeroAleatorioEncriptado();
-                    // Generar Orden de Compra con Proveedores
-                    const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-                    // Registrar Pedido en DARU.
-                    OrderSupplier.cliente = OrderSupplier.user.email;
-                    OrderSupplier.discount = parseFloat(this.discount);
-                    OrderSupplier.importe = parseFloat(this.totalPagar);
-                    const deliverySave = await this.deliverysService.add(OrderSupplier);
-                    const NewProperty = 'receipt_email';
-                    let internalEmail = false;
-                    let typeAlert = TYPE_ALERT.SUCCESS;
-                    let sendEmail = OrderSupplier.user.email;
-                    let messageDelivery = 'El Pedido se ha realizado correctamente';
-                    if (OrderSupplier.statusError) {
-                      internalEmail = true;
-                      this.isSubmitting = false;
-                      typeAlert = TYPE_ALERT.WARNING;
-                      sendEmail = 'marketing@daru.mx';
-                      messageDelivery = OrderSupplier.messageError;
-                    } else {
-                      this.cartService.clearCart(false);
-                      this.router.navigate(['/ofertas/list']);
-                    }
-                    // Si compra es OK, continua.
-                    OrderSupplier[NewProperty] = sendEmail;
-                    this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
-                    await infoEventAlert(messageDelivery, '', typeAlert);
+                    // // Generar Orden de Compra con Proveedores
+                    // const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
+                    // // Registrar Pedido en DARU.
+                    // OrderSupplier.cliente = OrderSupplier.user.email;
+                    // OrderSupplier.discount = parseFloat(this.discount);
+                    // OrderSupplier.importe = parseFloat(this.totalPagar);
+                    // const deliverySave = await this.deliverysService.add(OrderSupplier);
+                    // const NewProperty = 'receipt_email';
+                    // let internalEmail = false;
+                    // let typeAlert = TYPE_ALERT.SUCCESS;
+                    // let sendEmail = OrderSupplier.user.email;
+                    // let messageDelivery = 'El Pedido se ha realizado correctamente';
+                    // if (OrderSupplier.statusError) {
+                    //   internalEmail = true;
+                    //   this.isSubmitting = false;
+                    //   typeAlert = TYPE_ALERT.WARNING;
+                    //   sendEmail = 'marketing@daru.mx';
+                    //   messageDelivery = OrderSupplier.messageError;
+                    // } else {
+                    //   this.cartService.clearCart(false);
+                    //   this.router.navigate(['/ofertas/list']);
+                    // }
+                    // // Si compra es OK, continua.
+                    // OrderSupplier[NewProperty] = sendEmail;
+                    // this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+                    // await infoEventAlert(messageDelivery, '', typeAlert);
                   } else {
                     await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
                     this.router.navigate(['/cart']);
@@ -353,14 +357,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       console.clear();
       if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
-          if (result.delivery.delivery) {
-            this.delivery = result.delivery.delivery;
-            this.onSetDelivery(this.formData, result.delivery.delivery);
-            const discount = parseFloat(result.delivery.delivery.discount);
+          if (result && result.delivery && result.delivery.delivery) {
+            const delivery = result.delivery.delivery;
+            this.delivery = delivery;
+            this.onSetDelivery(this.formData, delivery);
+            const discount = parseFloat(delivery.discount);
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
+              if (total === 0) {
+                total = delivery.importe;
+              }
+              this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
             });
+            this.checkoutUrl = delivery.charge.redirect_url ? delivery.charge.redirect_url : '';
           }
           return result.delivery.delivery;
         });
@@ -528,14 +538,56 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
       OpenPay.setId(environment.OPENPAY_MERCHANT_ID);
       OpenPay.setApiKey(environment.OPENPAY_CLIENT_SECRET);
+      OpenPay.setSandboxMode(true);
 
       // Observable para el cartItems
       this.cartService.cartItemsChanges$.subscribe((newValue) => {
         // Se ha producido un cambio en myVariable
         this.cartItems = newValue;
         this.onActiveCP(true);
+        for (const idS of Object.keys(this.cartItems)) {
+          const item = this.cartItems[idS];
+          const updatedSuppliersProd: ISupplierProd = {
+            ...item.suppliersProd,
+            cantidad: item.qty,
+          };
+          const updatedItem = {
+            ...item,
+            suppliersProd: updatedSuppliersProd,
+          };
+          this.cartItems[idS] = updatedItem;
+          if (item.suppliersProd.idProveedor === 'ct') {
+            this.externalAuthService.getExistenciaProductoCt(
+              this.cartItems[idS].suppliersProd
+            ).then(result => {
+              const updatedSuppliersProd: ISupplierProd = {
+                ...item.suppliersProd,
+                branchOffices: result.existenciaProductoCt.branchOffices
+              };
+              const suppliersProd = {
+                ...item,
+                suppliersProd: updatedSuppliersProd,
+              };
+              this.cartItems[idS] = suppliersProd;
+            });
+          } else if (item.suppliersProd.idProveedor === 'cva') {
+            this.externalAuthService.getPricesCvaProduct(
+              this.cartItems[idS].suppliersProd
+            ).then(result => {
+              const updatedSuppliersProd: ISupplierProd = {
+                ...item.suppliersProd,
+                branchOffices: result.existenciaProductoCva.branchOffices
+              };
+              const suppliersProd = {
+                ...item,
+                suppliersProd: updatedSuppliersProd,
+              };
+              this.cartItems[idS] = suppliersProd;
+              console.log('update.this.cartItems[idS]: ', this.cartItems[idS]);
+            });
+          }
+        }
       });
-
     } catch (error) {
       console.log('error: ', error);
     }
@@ -656,42 +708,39 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const tokenCard = await this.tokenCardOpenpay();
               if (!tokenCard) {
                 this.isSubmitting = false;
-                return await infoEventAlert('Error en la validacion de la Tarjeta. Intente mas tarde.', TYPE_ALERT.ERROR);
+                return await infoEventAlert(tokenCard.message, TYPE_ALERT.ERROR);
               }
-              // Recuperar siguiente id
-              const id = await this.deliverysService.next();
+              // Validar Cargo del Cliente
               const deliveryId = this.generarNumeroAleatorioEncriptado();
-              if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
-                this.isSubmitting = false;
-                return await infoEventAlert('Error en servicio interno (Next Id Delivery).', TYPE_ALERT.ERROR);
+              const chargeOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
+              const user = await this.onSetUser(this.formData, this.stripeCustomer);
+              const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
+              const delivery: Delivery = {
+                deliveryId: deliveryId,
+                cliente: this.formData.controls.email.value,
+                discount: parseFloat(this.discount),
+                importe: parseFloat(this.totalPagar),
+                statusError: false,
+                messageError: '',
+                user,
+                invoiceConfig,
+                warehouses: this.warehouses,
+                chargeOpenpay
               }
-              // Generar Orden de Compra con Proveedores
-              const OrderSupplier = await this.sendOrderSupplier(id, deliveryId);
-              console.log('OrderSupplier: ', OrderSupplier);
-              if (OrderSupplier.statusError) {
-                this.isSubmitting = false;
-                return await infoEventAlert(OrderSupplier.messageError, '', TYPE_ALERT.ERROR);
-              }
-              // Registrar Pedido en DARU.
-              OrderSupplier.cliente = OrderSupplier.user.email;
-              OrderSupplier.discount = parseFloat(this.discount);
-              OrderSupplier.importe = parseFloat(this.totalPagar);
-              const deliverySave = await this.deliverysService.add(OrderSupplier);
-              console.log('deliverySave: ', deliverySave);
-              if (deliverySave.error) {
+              const deliverySave = await this.deliverysService.add(delivery);
+              if (!deliverySave.status) {
                 this.isSubmitting = false;
                 return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
               }
-              // Realizar Cargo con la Tarjeta
-              const pagoOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
-              console.log('pagoOpenpay: ', pagoOpenpay);
-              if (pagoOpenpay.status === false) {
-                this.isSubmitting = false;
-                return await infoEventAlert(pagoOpenpay.message, '', TYPE_ALERT.ERROR);
-              }
               // Si el pago es correcto proveniente del 3dSecure.
-              if (pagoOpenpay.createChargeOpenpay.payment_method.url) {
-                window.location.href = pagoOpenpay.createChargeOpenpay.payment_method.url;
+              if (
+                deliverySave &&
+                deliverySave.delivery &&
+                deliverySave.delivery.chargeOpenpay &&
+                deliverySave.delivery.chargeOpenpay.payment_method &&
+                deliverySave.delivery.chargeOpenpay.payment_method.url
+              ) {
+                window.location.href = deliverySave.delivery.chargeOpenpay.payment_method.url;
               }
               break;
             case PAY_TRANSFER:
@@ -708,40 +757,40 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.isSubmitting = false;
                 return await infoEventAlert(pagoOpenpayT.message, '', TYPE_ALERT.ERROR);
               }
-              // Generar Orden de Compra con Proveedores
-              const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
-              if (OrderSupplierT.error) {
-                this.isSubmitting = false;
-                return await infoEventAlert(OrderSupplierT.messageError, '', TYPE_ALERT.ERROR);
-              }
-              // Registrar Pedido en DARU.
-              OrderSupplierT.cliente = OrderSupplierT.user.email;
-              OrderSupplierT.discount = parseFloat(this.discount);
-              OrderSupplierT.importe = parseFloat(this.totalPagar);
-              const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
-              if (deliverySaveT.error) {
-                this.isSubmitting = false;
-                return await infoEventAlert(deliverySaveT.messageError, '', TYPE_ALERT.ERROR);
-              }
-              const NewPropertyT = 'receipt_email';
-              let internalEmailT = false;
-              let typeAlertT = TYPE_ALERT.SUCCESS;
-              let sendEmailT = OrderSupplierT.user.email;
-              let messageDeliveryT = 'El Pedido se ha realizado correctamente';
-              if (OrderSupplierT.statusError) {
-                internalEmailT = true;
-                this.isSubmitting = false;
-                typeAlertT = TYPE_ALERT.WARNING;
-                sendEmailT = 'marketing@daru.mx';
-                messageDeliveryT = OrderSupplierT.messageError;
-              } else {
-                this.cartService.clearCart(false);
-                this.router.navigate(['/ofertas/list']);
-              }
-              // Si compra es OK, continua.
-              OrderSupplierT[NewPropertyT] = sendEmailT;
-              this.mailService.sendEmailSpei(OrderSupplierT, messageDeliveryT, '', internalEmailT, this.totalEnvios);
-              await infoEventAlert(messageDeliveryT, '', typeAlertT);
+              // // Generar Orden de Compra con Proveedores
+              // const OrderSupplierT = await this.sendOrderSupplier(idT, deliveryIdT);
+              // if (OrderSupplierT.error) {
+              //   this.isSubmitting = false;
+              //   return await infoEventAlert(OrderSupplierT.messageError, '', TYPE_ALERT.ERROR);
+              // }
+              // // Registrar Pedido en DARU.
+              // OrderSupplierT.cliente = OrderSupplierT.user.email;
+              // OrderSupplierT.discount = parseFloat(this.discount);
+              // OrderSupplierT.importe = parseFloat(this.totalPagar);
+              // const deliverySaveT = await this.deliverysService.add(OrderSupplierT);
+              // if (deliverySaveT.error) {
+              //   this.isSubmitting = false;
+              //   return await infoEventAlert(deliverySaveT.messageError, '', TYPE_ALERT.ERROR);
+              // }
+              // const NewPropertyT = 'receipt_email';
+              // let internalEmailT = false;
+              // let typeAlertT = TYPE_ALERT.SUCCESS;
+              // let sendEmailT = OrderSupplierT.user.email;
+              // let messageDeliveryT = 'El Pedido se ha realizado correctamente';
+              // if (OrderSupplierT.statusError) {
+              //   internalEmailT = true;
+              //   this.isSubmitting = false;
+              //   typeAlertT = TYPE_ALERT.WARNING;
+              //   sendEmailT = 'marketing@daru.mx';
+              //   messageDeliveryT = OrderSupplierT.messageError;
+              // } else {
+              //   this.cartService.clearCart(false);
+              //   this.router.navigate(['/ofertas/list']);
+              // }
+              // // Si compra es OK, continua.
+              // OrderSupplierT[NewPropertyT] = sendEmailT;
+              // this.mailService.sendEmailSpei(OrderSupplierT, messageDeliveryT, '', internalEmailT, this.totalEnvios);
+              // await infoEventAlert(messageDeliveryT, '', typeAlertT);
               break;
             case PAY_DEPOSIT:
               break;
@@ -765,6 +814,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onSubmitCapture(): Promise<any> {
     if (!this.isSubmittingCapture) {
       this.isSubmittingCapture = true;
+      if (!this.delivery) {
+        this.isSubmitting = false;
+        return await infoEventAlert('No se encuentra la informacion completa del pedido.', '');
+      }
       if (!this.idDelivery) {
         this.isSubmitting = false;
         return await infoEventAlert('No se encuentra el parametro: idOrder.', '');
@@ -773,8 +826,28 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         return await infoEventAlert('No se encuentra el parametro: id.', '');
       }
-
-      const deliverySave = this.delivery;
+      const delivery: Delivery = {
+        id: this.delivery.id,
+        deliveryId: this.delivery.deliveryId,
+        chargeOpenpay: this.delivery.chargeOpenpay,
+        user: this.delivery.user,
+        warehouses: this.delivery.warehouses
+      }
+      const deliverySave = await this.deliverysService.update(delivery);
+      console.log('deliverySave: ', deliverySave);
+      if (deliverySave && deliverySave.delivery && deliverySave.delivery.statusError) {
+        this.isSubmitting = false;
+        // Enviar correo de error.
+        const NewProperty = 'receipt_email';
+        let internalEmail = true;
+        let sendEmail = "francisco.pimienta@daru.mx; ventas@daru.mx";
+        let messageDelivery = 'Hay un problema con el envio';
+        deliverySave[NewProperty] = sendEmail;
+        console.log('messageDelivery: ', messageDelivery);
+        console.log('this.totalEnvios: ', this.totalEnvios);
+        this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+        return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.ERROR);
+      }
 
       // Limpiar carrito de compras.
       this.cartService.clearCart(false);
@@ -787,11 +860,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       let messageDelivery = 'El Pedido se ha realizado correctamente';
 
       // Si compra es OK, continua.
-      deliverySave[NewProperty] = sendEmail;
-      this.mailService.sendEmail(deliverySave, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+      deliverySave.delivery[NewProperty] = sendEmail;
+      console.log('messageDelivery: ', messageDelivery);
+      console.log('this.totalEnvios: ', this.totalEnvios);
+      this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
+      await infoEventAlert(messageDelivery, '', typeAlert);
       this.router.navigate(['/dashboard']);
 
-      await infoEventAlert(messageDelivery, '', typeAlert);
     } else {
       console.log('onSubmitCapture/this.isSubmittingCapture');
     }
@@ -954,6 +1029,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+          console.log('_shipments', _shipments);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
@@ -1177,6 +1253,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.warehouse = new Warehouse();
       this.warehouse.shipments = [];
       let shipmentsEnd = [];
+      let mensajeError = 'No se pudo generar costos de envios';
       // Verificar productos por proveedor.
       const suppliers = await this.suppliersService.getSuppliers()                    // Recuperar la lista de Proveedores
         .then(async result => {
@@ -1238,7 +1315,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     // Cambia el valor de 'assignedBranchId' para el elemento encontrado
                     elementoEncontrado.assignedBranchId = true;
                   }
-
                   const productShipment = new ProductShipment();
                   productShipment.producto = cartItem.sku;
                   productShipment.cantidad = cartItem.qty;
@@ -1271,7 +1347,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 ).then(async (resultShip) => {
                   let shipment = new Shipment();
                   if (!resultShip.status) {
-                    return await shipment;
+                    mensajeError = resultShip.message;
+                    return await resultShip
                   }
                   for (const key of Object.keys(resultShip.data)) {
                     if (supplier.slug === 'ct') {
@@ -1311,7 +1388,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
       return await {
         status: shipmentsEnd.length > 0 ? true : false,
-        message: shipmentsEnd.length > 0 ? 'Se obtuvieron los envios de forma correcta.' : 'No se pudo generar costos de envios',
+        message: shipmentsEnd.length > 0 ? 'Se obtuvieron los envios de forma correcta.' : mensajeError,
         shipmentsEnd: shipmentsEnd.length > 0 ? shipmentsEnd : []
       }
     } catch (error) {
@@ -1726,7 +1803,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async payOpenpayCapture(idChargeOpenpay: string, amount: number): Promise<any> {
     const captureTransactionOpenpay = { amount }
-    console.log(`idChargeOpenpay: ${idChargeOpenpay}, amount: ${amount}`)
     const createResult = await this.chargeOpenpayService.captureCharge(idChargeOpenpay, captureTransactionOpenpay);
     if (createResult.status === false) {
       return { status: createResult.status, message: createResult.message };
@@ -1742,7 +1818,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.source_id = token;
     charge.amount = totalCharge;
     charge.currency = "MXN";
-    charge.description = "Cargo de prueba";
+    charge.description = "Pedido-" + orderUniqueId + '-' + this.deviceDataId;
     charge.order_id = orderUniqueId;
     charge.device_session_id = this.deviceDataId;
     charge.capture = true;
@@ -1770,13 +1846,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     charge.redirect_url = environment.checkoutUrl + orderUniqueId;
     charge.use_3d_secure = true;
     charge.confirm = true;
+    return charge;
 
-    const chargeResult = await this.chargeOpenpayService.createCharge(charge);
-    if (chargeResult.status === false) {
-      return { status: chargeResult.status, message: chargeResult.message };
-    }
+    // const chargeResult = await this.chargeOpenpayService.createCharge(charge);
+    // if (chargeResult.status === false) {
+    //   return { status: chargeResult.status, message: chargeResult.message };
+    // }
 
-    return await chargeResult;
+    // return await chargeResult;
   }
 
   async payOpenpaySpei(orderUniqueId: string): Promise<any> {
@@ -1818,208 +1895,207 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#endregion Cobros
 
   //#region Enviar Ordenes
-  async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
-    const user = delivery.user;
-    const dir = delivery.user.addresses[0];
-    switch (supplier.slug) {
-      case 'ct':
-        const guiaConnect: GuiaConnect = new GuiaConnect();
-        guiaConnect.generarGuia = true;
-        guiaConnect.paqueteria = warehouse.shipments[0].empresa;
-        const enviosCt: EnvioCt[] = [];
-        const envioCt: EnvioCt = new EnvioCt();
-        envioCt.nombre = user.name.toUpperCase() + ' ' + user.lastname.toUpperCase();
-        envioCt.direccion = dir.directions;
-        envioCt.entreCalles = dir.references;
-        envioCt.colonia = dir.d_asenta;
-        envioCt.estado = dir.d_estado;
-        envioCt.ciudad = dir.d_mnpio;
-        envioCt.noExterior = dir.outdoorNumber;
-        envioCt.noInterior = dir.interiorNumber;
-        envioCt.codigoPostal = dir.d_codigo.padStart(5, '0');
-        envioCt.telefono = parseInt(dir.phone, 10);
-        enviosCt.push(envioCt);
-        const ProductosCt: ProductoCt[] = [];
-        for (const idPS of Object.keys(warehouse.productShipments)) {
-          const prod: ProductShipment = warehouse.productShipments[idPS];
-          const productCt: ProductoCt = new ProductoCt();
-          productCt.cantidad = prod.cantidad;
-          productCt.clave = prod.producto;
-          productCt.moneda = prod.moneda;
-          productCt.precio = prod.priceSupplier;
-          ProductosCt.push(productCt);
-        }
-        const orderCtSupplier: OrderCt = {
-          idPedido: pedido,
-          almacen: warehouse.productShipments[0].almacen,
-          tipoPago: '99',
-          guiaConnect: guiaConnect,
-          envio: enviosCt,
-          productoCt: ProductosCt,
-          cfdi: 'G01'
-        };
-        return orderCtSupplier;
-      case 'cva':
-        const enviosCva: EnvioCVA[] = [];
-        const envioCva: EnvioCVA = new EnvioCVA();
-        envioCva.nombre = user.name.toUpperCase() + ' ' + user.lastname.toUpperCase();
-        envioCva.direccion = dir.directions;
-        envioCva.entreCalles = dir.references !== '' ? dir.references : '.';
-        envioCva.colonia = dir.d_asenta;
-        envioCva.estado = dir.d_estado;
-        envioCva.ciudad = dir.d_mnpio;
-        envioCva.noExterior = dir.outdoorNumber;
-        envioCva.noInterior = dir.interiorNumber !== '' ? dir.interiorNumber : '0';
-        envioCva.codigoPostal = dir.d_codigo.padStart(5, '0'),
-          envioCva.telefono = dir.phone;
-        enviosCva.push(envioCva);
-        const ProductosCva: ProductoCva[] = [];
-        for (const idPS of Object.keys(warehouse.productShipments)) {
-          const prod: ProductShipment = warehouse.productShipments[idPS];
-          const productCva: ProductoCva = new ProductoCva();
-          productCva.clave = prod.producto;
-          productCva.cantidad = prod.cantidad;
-          ProductosCva.push(productCva);
-        }
-        const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
-        let estado;
-        let ciudad;
-        if (ciudadesCVA.length > 0) {
-          estado = ciudadesCVA.find(
-            result => this.quitarAcentos(result.estado.toUpperCase()) === this.quitarAcentos(dir.d_estado.toUpperCase())
-          ).id;
-          ciudad = ciudadesCVA.find(
-            city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()
-          ).clave;
-        }
-        const orderCvaSupplier: OrderCva = {
-          NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
-          Paqueteria: '4',
-          CodigoSucursal: warehouse.productShipments[0].almacen,
-          PedidoBO: 'N',
-          Observaciones: 'Pedido de Prueba',
-          productos: ProductosCva,
-          TipoFlete: FF,
-          Calle: this.removeAccents(dir.directions),
-          Numero: dir.outdoorNumber,
-          NumeroInt: dir.interiorNumber,
-          CP: warehouse.productShipments[0].cp,
-          Colonia: this.removeAccents(dir.d_asenta),
-          Estado: Math.round(estado).toString(),
-          Ciudad: ciudad,
-          Atencion: this.removeAccents(user.name.toUpperCase() + ' ' + user.lastname.toUpperCase())
-        };
-        return orderCvaSupplier;
-      case 'ingram':
-        return '';
-    }
-    return '';
-  }
+  // async setOrder(supplier: ISupplier, delivery: Delivery, warehouse: Warehouse, pedido: number): Promise<any> {
+  //   const user = delivery.user;
+  //   const dir = delivery.user.addresses[0];
+  //   switch (supplier.slug) {
+  //     case 'ct':
+  //       const guiaConnect: GuiaConnect = new GuiaConnect();
+  //       guiaConnect.generarGuia = true;
+  //       guiaConnect.paqueteria = warehouse.shipments[0].empresa;
+  //       const enviosCt: EnvioCt[] = [];
+  //       const envioCt: EnvioCt = new EnvioCt();
+  //       envioCt.nombre = user.name.toUpperCase() + ' ' + user.lastname.toUpperCase();
+  //       envioCt.direccion = dir.directions;
+  //       envioCt.entreCalles = dir.references;
+  //       envioCt.colonia = dir.d_asenta;
+  //       envioCt.estado = dir.d_estado;
+  //       envioCt.ciudad = dir.d_mnpio;
+  //       envioCt.noExterior = dir.outdoorNumber;
+  //       envioCt.noInterior = dir.interiorNumber;
+  //       envioCt.codigoPostal = dir.d_codigo.padStart(5, '0');
+  //       envioCt.telefono = parseInt(dir.phone, 10);
+  //       enviosCt.push(envioCt);
+  //       const ProductosCt: ProductoCt[] = [];
+  //       for (const idPS of Object.keys(warehouse.productShipments)) {
+  //         const prod: ProductShipment = warehouse.productShipments[idPS];
+  //         const productCt: ProductoCt = new ProductoCt();
+  //         productCt.cantidad = prod.cantidad;
+  //         productCt.clave = prod.producto;
+  //         productCt.moneda = prod.moneda;
+  //         productCt.precio = prod.priceSupplier;
+  //         ProductosCt.push(productCt);
+  //       }
+  //       const orderCtSupplier: OrderCt = {
+  //         idPedido: pedido,
+  //         almacen: warehouse.productShipments[0].almacen,
+  //         tipoPago: '99',
+  //         guiaConnect: guiaConnect,
+  //         envio: enviosCt,
+  //         productoCt: ProductosCt,
+  //         cfdi: 'G01'
+  //       };
+  //       return orderCtSupplier;
+  //     case 'cva':
+  //       const enviosCva: EnvioCVA[] = [];
+  //       const envioCva: EnvioCVA = new EnvioCVA();
+  //       envioCva.nombre = user.name.toUpperCase() + ' ' + user.lastname.toUpperCase();
+  //       envioCva.direccion = dir.directions;
+  //       envioCva.entreCalles = dir.references !== '' ? dir.references : '.';
+  //       envioCva.colonia = dir.d_asenta;
+  //       envioCva.estado = dir.d_estado;
+  //       envioCva.ciudad = dir.d_mnpio;
+  //       envioCva.noExterior = dir.outdoorNumber;
+  //       envioCva.noInterior = dir.interiorNumber !== '' ? dir.interiorNumber : '0';
+  //       envioCva.codigoPostal = dir.d_codigo.padStart(5, '0'),
+  //         envioCva.telefono = dir.phone;
+  //       enviosCva.push(envioCva);
+  //       const ProductosCva: ProductoCva[] = [];
+  //       for (const idPS of Object.keys(warehouse.productShipments)) {
+  //         const prod: ProductShipment = warehouse.productShipments[idPS];
+  //         const productCva: ProductoCva = new ProductoCva();
+  //         productCva.clave = prod.producto;
+  //         productCva.cantidad = prod.cantidad;
+  //         ProductosCva.push(productCva);
+  //       }
+  //       const ciudadesCVA = await this.externalAuthService.getCiudadesCva();
+  //       let estado;
+  //       let ciudad;
+  //       if (ciudadesCVA.length > 0) {
+  //         estado = ciudadesCVA.find(
+  //           result => this.quitarAcentos(result.estado.toUpperCase()) === this.quitarAcentos(dir.d_estado.toUpperCase())
+  //         ).id;
+  //         ciudad = ciudadesCVA.find(
+  //           city => city.ciudad.toUpperCase() === dir.d_mnpio.toUpperCase()
+  //         ).clave;
+  //       }
+  //       const orderCvaSupplier: OrderCva = {
+  //         NumOC: 'DARU-' + pedido.toString().padStart(6, '0'),
+  //         Paqueteria: '4',
+  //         CodigoSucursal: warehouse.productShipments[0].almacen,
+  //         PedidoBO: 'N',
+  //         Observaciones: 'Pedido de Prueba',
+  //         productos: ProductosCva,
+  //         TipoFlete: FF,
+  //         Calle: this.removeAccents(dir.directions),
+  //         Numero: dir.outdoorNumber,
+  //         NumeroInt: dir.interiorNumber,
+  //         CP: warehouse.productShipments[0].cp,
+  //         Colonia: this.removeAccents(dir.d_asenta),
+  //         Estado: Math.round(estado).toString(),
+  //         Ciudad: ciudad,
+  //         Atencion: this.removeAccents(user.name.toUpperCase() + ' ' + user.lastname.toUpperCase())
+  //       };
+  //       return orderCvaSupplier;
+  //     case 'ingram':
+  //       return '';
+  //   }
+  //   return '';
+  // }
 
-  async sendOrderSupplier(id: string, deliveryId: string): Promise<any> {
-    const delivery = new Delivery();
-    delivery.id = id;
-    delivery.deliveryId = deliveryId;
-    delivery.cliente = '';
-    delivery.discount = 0;
-    delivery.importe = 0;
-    delivery.statusError = false;
-    delivery.messageError = '';
-    delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
-    delivery.invoiceConfig = this.onSetInvoiceConfig(this.formDataInvoice);
+  // async sendOrderSupplier(id: string, deliveryId: string): Promise<any> {
+  //   const delivery = new Delivery();
+  //   delivery.deliveryId = deliveryId;
+  //   delivery.cliente = '';
+  //   delivery.discount = 0;
+  //   delivery.importe = 0;
+  //   delivery.statusError = false;
+  //   delivery.messageError = '';
+  //   delivery.user = this.onSetUser(this.formData, this.stripeCustomer);
+  //   delivery.invoiceConfig = this.onSetInvoiceConfig(this.formDataInvoice);
 
-    delivery.warehouses = this.warehouses;
-    const ordersCt: OrderCt[] = [];
-    let orderCtResponse: OrderCtResponse = new OrderCtResponse();
-    orderCtResponse.pedidoWeb = 'DARU-' + id;
-    orderCtResponse.fecha = '';
-    orderCtResponse.tipoDeCambio = 0;
-    orderCtResponse.estatus = '';
-    orderCtResponse.errores = [];
-    const ordersCva: OrderCva[] = [];
-    let orderCvaResponse: OrderCvaResponse = new OrderCvaResponse();
-    orderCvaResponse.pedido = 'DARU-' + id;
-    orderCvaResponse.estado = '';
-    orderCvaResponse.total = '';
-    orderCvaResponse.error = '';
-    orderCvaResponse.agentemail = '';
-    orderCvaResponse.almacenmail = '';
-    if (this.cupon) {
-      delivery.cupon = this.cupon;
-    }
-    // Generar modelo de cada proveedor
-    for (const idWar of Object.keys(this.warehouses)) {
-      const warehouse: Warehouse = this.warehouses[idWar];
-      const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
-      const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
-      switch (warehouse.suppliersProd.idProveedor) {
-        case 'ct':
-          // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
-          ordersCt.push(order);
-          break;
-        case 'cva':
-          order.NumOC = 'DARU-' + id.toString().padStart(6, '0');
-          ordersCva.push(order);
-          break;
-        case 'ingram':
-          break;
-      }
-      const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
-        .then(async (result) => {
-          return await result;
-        });
-      if (orderNew) {
-        switch (warehouse.suppliersProd.idProveedor) {
-          case 'ct':
-            if (orderNew.estatus === 'Mal Pedido') {
-              orderCtResponse = orderNew;
-              delivery.ordersCt = [];
-              delivery.orderCtResponse = orderCtResponse;
-              const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
-              orderCtConfirm.folio = 'NA';
-              break;
-            }
-            orderCtResponse = orderNew;
-            delivery.ordersCt = ordersCt;
-            delivery.orderCtResponse = orderCtResponse;
-            const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
-            orderCtConfirm.folio = orderNew.pedidoWeb;
-            const confirmarPedidoCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio);
-            const ctConfirmResponse: OrderCtConfirmResponse = {
-              okCode: confirmarPedidoCt.confirmOrderCt.okCode.toString(),
-              okMessage: confirmarPedidoCt.confirmOrderCt.okMessage,
-              okReference: confirmarPedidoCt.confirmOrderCt.okReference
-            };
-            delivery.orderCtConfirmResponse = ctConfirmResponse;
-            break;
-          case 'cva':
-            if (orderNew.estado === 'ERROR') {
-              delivery.statusError = true;
-              delivery.messageError = orderNew.error;
-              return await delivery;
-            }
-            orderCvaResponse = orderNew;
-            delivery.ordersCva = ordersCva;
-            delivery.orderCvaResponse = orderCvaResponse;
-            const confirmarPedidoCva = [];
-            break;
-        }
-        // Agregar datos de facturas
-        if (orderCtResponse.errores) {
-          if (orderCtResponse.errores.length > 0) {
-            delivery.statusError = true;
-            delivery.messageError = orderCtResponse.errores[0].errorMessage;
-          }
-        }
-        if (orderCvaResponse.error !== '') {
-          delivery.statusError = true;
-          delivery.messageError = orderCvaResponse.error;
-        }
-      }
-    }
-    // TODO::Confirmar Pedido
-    return await delivery;
-  }
+  //   delivery.warehouses = this.warehouses;
+  //   const ordersCt: OrderCt[] = [];
+  //   let orderCtResponse: OrderCtResponse = new OrderCtResponse();
+  //   orderCtResponse.pedidoWeb = 'DARU-' + id;
+  //   orderCtResponse.fecha = '';
+  //   orderCtResponse.tipoDeCambio = 0;
+  //   orderCtResponse.estatus = '';
+  //   orderCtResponse.errores = [];
+  //   const ordersCva: OrderCva[] = [];
+  //   let orderCvaResponse: OrderCvaResponse = new OrderCvaResponse();
+  //   orderCvaResponse.pedido = 'DARU-' + id;
+  //   orderCvaResponse.estado = '';
+  //   orderCvaResponse.total = '';
+  //   orderCvaResponse.error = '';
+  //   orderCvaResponse.agentemail = '';
+  //   orderCvaResponse.almacenmail = '';
+  //   if (this.cupon) {
+  //     delivery.cupon = this.cupon;
+  //   }
+  //   // Generar modelo de cada proveedor
+  //   for (const idWar of Object.keys(this.warehouses)) {
+  //     const warehouse: Warehouse = this.warehouses[idWar];
+  //     const supplier = this.suppliers.find((item) => item.slug === warehouse.suppliersProd.idProveedor);
+  //     const order = await this.setOrder(supplier, delivery, warehouse, parseInt(id, 10));
+  //     switch (warehouse.suppliersProd.idProveedor) {
+  //       case 'ct':
+  //         // order.pedido = 'DARU-' + id.toString().padStart(6, '0');
+  //         ordersCt.push(order);
+  //         break;
+  //       case 'cva':
+  //         order.NumOC = 'DARU-' + id.toString().padStart(6, '0');
+  //         ordersCva.push(order);
+  //         break;
+  //       case 'ingram':
+  //         break;
+  //     }
+  //     const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order)
+  //       .then(async (result) => {
+  //         return await result;
+  //       });
+  //     if (orderNew) {
+  //       switch (warehouse.suppliersProd.idProveedor) {
+  //         case 'ct':
+  //           if (orderNew.estatus === 'Mal Pedido') {
+  //             orderCtResponse = orderNew;
+  //             delivery.ordersCt = [];
+  //             delivery.orderCtResponse = orderCtResponse;
+  //             const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
+  //             orderCtConfirm.folio = 'NA';
+  //             break;
+  //           }
+  //           orderCtResponse = orderNew;
+  //           delivery.ordersCt = ordersCt;
+  //           delivery.orderCtResponse = orderCtResponse;
+  //           const orderCtConfirm: OrderCtConfirm = new OrderCtConfirm();
+  //           orderCtConfirm.folio = orderNew.pedidoWeb;
+  //           const confirmarPedidoCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio);
+  //           const ctConfirmResponse: OrderCtConfirmResponse = {
+  //             okCode: confirmarPedidoCt.confirmOrderCt.okCode.toString(),
+  //             okMessage: confirmarPedidoCt.confirmOrderCt.okMessage,
+  //             okReference: confirmarPedidoCt.confirmOrderCt.okReference
+  //           };
+  //           delivery.orderCtConfirmResponse = ctConfirmResponse;
+  //           break;
+  //         case 'cva':
+  //           if (orderNew.estado === 'ERROR') {
+  //             delivery.statusError = true;
+  //             delivery.messageError = orderNew.error;
+  //             return await delivery;
+  //           }
+  //           orderCvaResponse = orderNew;
+  //           delivery.ordersCva = ordersCva;
+  //           delivery.orderCvaResponse = orderCvaResponse;
+  //           const confirmarPedidoCva = [];
+  //           break;
+  //       }
+  //       // Agregar datos de facturas
+  //       if (orderCtResponse.errores) {
+  //         if (orderCtResponse.errores.length > 0) {
+  //           delivery.statusError = true;
+  //           delivery.messageError = orderCtResponse.errores[0].errorMessage;
+  //         }
+  //       }
+  //       if (orderCvaResponse.error !== '') {
+  //         delivery.statusError = true;
+  //         delivery.messageError = orderCvaResponse.error;
+  //       }
+  //     }
+  //   }
+  //   // TODO::Confirmar Pedido
+  //   return await delivery;
+  // }
   //#endregion Enviar Ordenes
 
   //#region Direccion
