@@ -370,7 +370,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
             });
-            this.checkoutUrl = delivery.charge.redirect_url ? delivery.charge.redirect_url : '';
+            if (delivery.chargeOpenpay && delivery.chargeOpenpay.id && delivery.chargeOpenpay.order_id) {
+              this.checkoutUrl = environment.checkoutUrl + delivery.chargeOpenpay.order_id + '&id=' + delivery.chargeOpenpay.id;
+              delivery.chargeOpenpay.redirect_url = this.checkoutUrl;
+            }
           }
           return result.delivery.delivery;
         });
@@ -814,6 +817,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onSubmitCapture(): Promise<any> {
     if (!this.isSubmittingCapture) {
       this.isSubmittingCapture = true;
+      loadData('Realizando la orden', 'Esperar el procesamiento de la orden.');
       if (!this.delivery) {
         this.isSubmitting = false;
         return await infoEventAlert('No se encuentra la informacion completa del pedido.', '');
