@@ -2,8 +2,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": ["node", "date-fns"]
+    "types": [
+      "node",
+      "date-fns"
+    ]
   },
   "files": [
     "src/main.ts",
