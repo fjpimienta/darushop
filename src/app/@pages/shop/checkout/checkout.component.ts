@@ -1280,11 +1280,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             });
           if (apiShipment) {                                                          // Si hay Api para el Proveedor.
             const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
+            console.log('this.cartItems: ', this.cartItems);
             const cartItemsWithNull = arreglo.map(item => ({
               ...item,
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
@@ -1294,6 +1296,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               let branchOfficesTot: BranchOffices[] = [];
               let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
               for (const cart of this.cartItems) {
+                console.log('cart.suppliersProd.branchOffices: ', cart.suppliersProd.branchOffices);
                 for (const bran of cart.suppliersProd.branchOffices) {
                   if (this.commonBranchOffices.has(bran.id) && !addedBranchOffices.has(bran.id)) {
                     branchOfficesTot.push(bran);
