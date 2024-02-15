@@ -2122,6 +2122,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.interiorNumber.setValue('');
       }
     }
+    this.reiniciarShipping('Se requiere restablecer el CP.');
   }
 
   onSetMunicipios(event): void {
@@ -2137,9 +2138,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.selectMunicipio.setValue('');
       }
     }
+    this.reiniciarShipping('Se requiere restablecer el CP.');
   }
 
   onSetColonias(event): void {
+    this.reiniciarShipping('Se requiere restablecer el CP.');
   }
   //#endregion Direccion
 
