@@ -586,7 +586,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 suppliersProd: updatedSuppliersProd,
               };
               this.cartItems[idS] = suppliersProd;
-              console.log('update.this.cartItems[idS]: ', this.cartItems[idS]);
             });
           }
         }
@@ -1033,7 +1032,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
-          console.log('_shipments', _shipments);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
@@ -1060,7 +1058,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    console.log('cotizacionEnvios: ', cotizacionEnvios);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1280,13 +1277,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             });
           if (apiShipment) {                                                          // Si hay Api para el Proveedor.
             const arreglo = this.cartItems;                                           // Agrupar Productos Por Proveedor
-            console.log('this.cartItems: ', this.cartItems);
             const cartItemsWithNull = arreglo.map(item => ({
               ...item,
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
-            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
@@ -1296,7 +1291,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               let branchOfficesTot: BranchOffices[] = [];
               let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
               for (const cart of this.cartItems) {
-                console.log('cart.suppliersProd.branchOffices: ', cart.suppliersProd.branchOffices);
                 if (cart.suppliersProd.branchOffices && cart.suppliersProd.branchOffices.length === 0) {
                   return {
                     status: false,
@@ -1357,13 +1351,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
                 this.warehouse.cp = cpDestino;
                 this.warehouse.productShipments = productsNacional;
-                console.log('supplier: ', supplier);
-                console.log('apiShipment: ', apiShipment);
-                console.log('this.warehouse: ', this.warehouse);
                 const shipmentsCost = await this.externalAuthService.onShippingEstimate(
                   supplier, apiShipment, this.warehouse, true
                 ).then(async (resultShip) => {
-                  console.log('resultShip: ', resultShip);
                   let shipment = new Shipment();
                   if (!resultShip.status) {
                     mensajeError = resultShip.message;
@@ -1384,7 +1374,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                     }
                   }
-                  console.log('shipment: ', shipment);
                   return await shipment;
                 });
                 if (shipmentsCost && shipmentsCost.costo > 0) {
