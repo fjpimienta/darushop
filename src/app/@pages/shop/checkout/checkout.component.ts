@@ -1348,6 +1348,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
                 this.warehouse.cp = cpDestino;
                 this.warehouse.productShipments = productsNacional;
+                console.log('supplier: ', supplier);
+                console.log('apiShipment: ', apiShipment);
+                console.log('this.warehouse: ', this.warehouse);
                 const shipmentsCost = await this.externalAuthService.onShippingEstimate(
                   supplier, apiShipment, this.warehouse, true
                 ).then(async (resultShip) => {

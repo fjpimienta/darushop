@@ -704,6 +704,7 @@ export class ExternalAuthService extends ApiService {
           const productosCva = productShipmentCVA;
           const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
           const resultCva: Result = new Result();
+          console.log('shippmentsCva: ', shippmentsCva);
           if (shippmentsCva && shippmentsCva.shippingCvaRates && shippmentsCva.shippingCvaRates.result !== 'failed') {
             const shipmentCva = new Shipment();
             shipmentCva.empresa = 'PAQUETEXPRESS';
@@ -1264,9 +1265,11 @@ export class ExternalAuthService extends ApiService {
         productosCva
       }, {}).subscribe(
         (result: any) => {
+          console.log('async.getShippingCvaRates.result: ', result);
           resolve(result.shippingCvaRates);
         },
         (error: any) => {
+          console.log('async.getShippingCvaRates.error: ', error);
           reject(error);
         });
     });
