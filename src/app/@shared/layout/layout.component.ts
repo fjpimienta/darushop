@@ -93,6 +93,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   closeTopNotice(): void {
     this.showTopNotice = false;
-    Cookie.set('closeTopNotice-' + environment.demo, true, { expires: 7 });
+    Cookie.set('closeTopNotice-' + environment.demo, 'true', { expires: 7 });
   }
 }
