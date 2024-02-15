@@ -1053,7 +1053,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.formData.controls.codigoPostal.setValue('');
     this.totalEnvios = '';
     this.changeShipping(0);
-    basicAlert(TYPE_ALERT.WARNING, msj);
+    if (msj !== '') {
+      basicAlert(TYPE_ALERT.WARNING, msj);
+    }
   }
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
@@ -2122,7 +2124,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.interiorNumber.setValue('');
       }
     }
-    this.reiniciarShipping('Se requiere restablecer el CP.');
+    this.reiniciarShipping('');
   }
 
   onSetMunicipios(event): void {
@@ -2138,11 +2140,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.selectMunicipio.setValue('');
       }
     }
-    this.reiniciarShipping('Se requiere restablecer el CP.');
+    this.reiniciarShipping('');
   }
 
   onSetColonias(event): void {
-    this.reiniciarShipping('Se requiere restablecer el CP.');
+    this.reiniciarShipping('');
   }
   //#endregion Direccion
 
