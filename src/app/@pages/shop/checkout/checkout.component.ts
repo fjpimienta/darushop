@@ -586,7 +586,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 suppliersProd: updatedSuppliersProd,
               };
               this.cartItems[idS] = suppliersProd;
-              console.log('update.this.cartItems[idS]: ', this.cartItems[idS]);
             });
           }
         }
@@ -1033,7 +1032,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
-          console.log('_shipments', _shipments);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
@@ -1053,12 +1051,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.formData.controls.codigoPostal.setValue('');
     this.totalEnvios = '';
     this.changeShipping(0);
-    basicAlert(TYPE_ALERT.WARNING, msj);
+    if (msj !== '') {
+      basicAlert(TYPE_ALERT.WARNING, msj);
+    }
   }
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    console.log('cotizacionEnvios: ', cotizacionEnvios);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1292,6 +1291,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               let branchOfficesTot: BranchOffices[] = [];
               let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
               for (const cart of this.cartItems) {
+                if (cart.suppliersProd.branchOffices && cart.suppliersProd.branchOffices.length === 0) {
+                  return {
+                    status: false,
+                    message: `Mala suerte, el producto ${cart.name} se ha quedado sin disponibilidad`
+                  }
+                }
                 for (const bran of cart.suppliersProd.branchOffices) {
                   if (this.commonBranchOffices.has(bran.id) && !addedBranchOffices.has(bran.id)) {
                     branchOfficesTot.push(bran);
@@ -2122,6 +2127,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.interiorNumber.setValue('');
       }
     }
+    this.reiniciarShipping('');
   }
 
   onSetMunicipios(event): void {
@@ -2137,9 +2143,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.formData.controls.selectMunicipio.setValue('');
       }
     }
+    this.reiniciarShipping('');
   }
 
   onSetColonias(event): void {
+    this.reiniciarShipping('');
   }
   //#endregion Direccion
 
