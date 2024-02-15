@@ -1351,6 +1351,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 const shipmentsCost = await this.externalAuthService.onShippingEstimate(
                   supplier, apiShipment, this.warehouse, true
                 ).then(async (resultShip) => {
+                  console.log('resultShip: ', resultShip);
                   let shipment = new Shipment();
                   if (!resultShip.status) {
                     mensajeError = resultShip.message;
@@ -1371,6 +1372,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                     }
                   }
+                  console.log('shipment: ', shipment);
                   return await shipment;
                 });
                 if (shipmentsCost && shipmentsCost.costo > 0) {

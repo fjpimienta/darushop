@@ -713,10 +713,12 @@ export class ExternalAuthService extends ApiService {
             resultCva.status = shippmentsCva.status;
             resultCva.message = shippmentsCva.message;
             resultCva.data = shipmentCva;
+            console.log('resultCva.Ok: ', resultCva);
             return await resultCva;
           }
           resultCva.status = shippmentsCva.status;
           resultCva.message = shippmentsCva.message;
+          console.log('resultCva.Error: ', resultCva);
           return await resultCva;
         case '99minutos':
           break;
