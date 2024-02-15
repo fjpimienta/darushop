@@ -1297,6 +1297,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
               for (const cart of this.cartItems) {
                 console.log('cart.suppliersProd.branchOffices: ', cart.suppliersProd.branchOffices);
+                if (cart.suppliersProd.branchOffices && cart.suppliersProd.branchOffices.length === 0) {
+                  return {
+                    status: false,
+                    message: `Mala suerte, el producto ${cart.name} se ha quedado sin disponibilidad`
+                  }
+                }
                 for (const bran of cart.suppliersProd.branchOffices) {
                   if (this.commonBranchOffices.has(bran.id) && !addedBranchOffices.has(bran.id)) {
                     branchOfficesTot.push(bran);
