@@ -44,19 +44,23 @@ export class NewsletterModalComponent implements OnInit {
       sexo: [''],
       fecha_de_nacimiento: ['', this.fechaValida]
     });
-    if (this.formData) {
-      const emailControl = this.formData.get('email');
-      if (emailControl) {
-        console.log('emailControl: ', emailControl);
-        console.log('this.formData.get(email): ', this.formData.get('email'));
-        if (emailControl.valid) {
-          this.checkEmailValidity(emailControl.value);
-        }
-      } else {
-        console.error('Control de correo electrónico no encontrado en el formulario.');
+
+    const emailControl = this.formData.get('email');
+    if (emailControl) {
+      emailControl.valueChanges.subscribe(newValue => {
+        console.log('Nuevo valor del correo electrónico:', newValue);
+        this.checkEmailValidity(newValue);
+      });
+
+      // Verificar la validez del correo electrónico inicialmente
+      if (emailControl.valid) {
+        this.checkEmailValidity(emailControl.value);
       }
+    } else {
+      console.error('Control de correo electrónico no encontrado en el formulario.');
     }
   }
+
 
   checkEmailValidity(email: string): void {
     const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${HUNTER_API_KEY}`;
