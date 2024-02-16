@@ -46,6 +46,8 @@ export class NewsletterModalComponent implements OnInit {
     });
     if (this.formData) {
       const emailControl = this.formData.get('email');
+      console.log('emailControl: ', emailControl);
+      console.log('this.formData.get(email): ', this.formData.get('email'));
       if (emailControl && emailControl.valid) {
         this.checkEmailValidity(emailControl.value);
       }
@@ -54,8 +56,10 @@ export class NewsletterModalComponent implements OnInit {
 
   checkEmailValidity(email: string): void {
     const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${HUNTER_API_KEY}`;
+    console.log('url: ', url);
     this.http.get(url).pipe(
       map((response: any) => {
+        console.log('responseL: ', response);
         return response.data.result === 'deliverable';
       }),
       catchError(error => {
