@@ -541,6 +541,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.deviceDataId = OpenPay.deviceData.setup("formData", "token_id");
       OpenPay.setId(environment.OPENPAY_MERCHANT_ID);
       OpenPay.setApiKey(environment.OPENPAY_CLIENT_SECRET);
+      OpenPay.setSandboxMode(false);
 
       // Observable para el cartItems
       this.cartService.cartItemsChanges$.subscribe((newValue) => {
