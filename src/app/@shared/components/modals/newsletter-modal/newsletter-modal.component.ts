@@ -56,6 +56,7 @@ export class NewsletterModalComponent implements OnInit {
     const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${HUNTER_API_KEY}`;
     this.http.get(url).pipe(
       map((response: any) => {
+        console.log('response: ', response);
         return response.data.result === 'deliverable';
       }),
       catchError(error => {
