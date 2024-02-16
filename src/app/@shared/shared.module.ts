@@ -130,6 +130,7 @@ import { DatePickerLegalAgeModule } from './calendar/date-picker-legal-age/date-
     PostTwoComponent,
     PostThreeComponent,
     PostFourComponent,
+    CountDownComponent,
     CountToComponent
   ],
   imports: [
