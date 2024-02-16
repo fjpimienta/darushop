@@ -46,10 +46,14 @@ export class NewsletterModalComponent implements OnInit {
     });
     if (this.formData) {
       const emailControl = this.formData.get('email');
-      console.log('emailControl: ', emailControl);
-      console.log('this.formData.get(email): ', this.formData.get('email'));
-      if (emailControl && emailControl.valid) {
-        this.checkEmailValidity(emailControl.value);
+      if (emailControl) {
+        console.log('emailControl: ', emailControl);
+        console.log('this.formData.get(email): ', this.formData.get('email'));
+        if (emailControl.valid) {
+          this.checkEmailValidity(emailControl.value);
+        }
+      } else {
+        console.error('Control de correo electrónico no encontrado en el formulario.');
       }
     }
   }
