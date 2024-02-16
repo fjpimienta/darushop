@@ -705,7 +705,7 @@ export class ExternalAuthService extends ApiService {
           const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
           const resultCva: Result = new Result();
           console.log('shippmentsCva: ', shippmentsCva);
-          if (shippmentsCva && shippmentsCva.shippingCvaRates && shippmentsCva.shippingCvaRates.result !== 'failed') {
+          if (shippmentsCva && shippmentsCva.shippingCvaRates && shippmentsCva.shippingCvaRates.status) {
             const shipmentCva = new Shipment();
             shipmentCva.empresa = 'PAQUETEXPRESS';
             shipmentCva.costo = shippmentsCva.shippingCvaRates.cotizacion.montoTotal;
