@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import { BRANDSCVA_FRAGMENT, GROUPSCVA_FRAGMENT, ORDERCVA_FRAGMENT, PAQUETERIASCVA_FRAGMENT, PRODUCTOSCVA_FRAGMENT, SHIPMENTS_CVA_RATES_FRAGMENT, SOLUCIONESCVA_FRAGMENT, SUCURSALESCVA_FRAGMENT } from '../../fragment/suppliers/cva';
+import { EXISTENCIAPRODUCTOS_FRAGMENT } from '@graphql/operations/fragment/suppliers/ct';
 
 export const BRANDSCVA_LIST_QUERY = gql`
   query listBrandsCva {
@@ -100,6 +101,19 @@ export const PRODUCTOSCVA_LIST_QUERY = gql`
     }
   }
   ${PRODUCTOSCVA_FRAGMENT}
+`;
+
+export const EXISTENCIAPRODUCTOSCVA_LIST_QUERY = gql`
+  query existenciaProductoCva($existenciaProducto: SupplierProdInput) {
+    existenciaProductoCva(existenciaProducto: $existenciaProducto) {
+      status
+      message
+      existenciaProductoCva {
+        ...ExistenciaProductosObject
+      }
+    }
+  }
+  ${EXISTENCIAPRODUCTOS_FRAGMENT}
 `;
 
 export const ADD_ORDER_CVA = gql`

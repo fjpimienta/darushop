@@ -24,3 +24,25 @@ export class ProductShipment extends ProductShipmentCVA {
   name: string;
   total: number;
 }
+
+export class ISupplierProd {
+  idProveedor: string;
+  codigo: string;
+  price: number;
+  cantidad: number;
+  sale_price: number;
+  moneda: string;
+  branchOffices: IBranchOffices[];
+  // category: ICategorys
+  // subCategory: ICategorys
+}
+
+export class IBranchOffices {
+  id: string;
+  name: string;
+  estado: string;
+  cantidad: number;
+  cp: string;
+  latitud: string;
+  longitud: string;
+}

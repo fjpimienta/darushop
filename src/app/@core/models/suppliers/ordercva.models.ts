@@ -1,3 +1,5 @@
+import { OrderCvaResponse } from './ordercvaresponse.models';
+
 /**
  * Clase para pedidos CVA
  */
@@ -17,6 +19,7 @@ export class OrderCva {
   Estado: string;
   Ciudad: string;
   Atencion: string;
+  orderCvaResponse?: OrderCvaResponse;
 }
 
 /**

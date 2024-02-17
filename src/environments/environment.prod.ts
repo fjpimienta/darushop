@@ -6,6 +6,8 @@ export const environment = {
   upload: 'https://apidev.daru.mx:3002/uploads',
   uploadsUrl: 'https://apidev.daru.mx:3002/uploads',
   checkoutUrl: 'https://dev.daru.mx/checkout?idOrder=',
+  OPENPAY_MERCHANT_ID: "mbhvpztgt3rqse7zvxrc",
+  OPENPAY_CLIENT_SECRET: "pk_411efcdb08c148ceb97b36f146e42beb",
   demo: 'demo30',
   SERVER_URL: '',
   KEY_SECRET: 'DARU2023##!!..'
