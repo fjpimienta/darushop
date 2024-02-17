@@ -732,7 +732,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const deliverySave = await this.deliverysService.add(delivery);
               if (!deliverySave.status) {
                 this.isSubmitting = false;
-                return await infoEventAlert(deliverySave.messageError, '', TYPE_ALERT.ERROR);
+                return await infoEventAlert(deliverySave.message, '', TYPE_ALERT.ERROR);
               }
               // Si el pago es correcto proveniente del 3dSecure.
               if (
