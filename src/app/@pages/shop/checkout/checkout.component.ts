@@ -2147,7 +2147,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onSetColonias(event): void {
-    this.reiniciarShipping('');
+
   }
   //#endregion Direccion
 
