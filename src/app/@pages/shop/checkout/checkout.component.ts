@@ -563,29 +563,33 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.externalAuthService.getExistenciaProductoCt(
               this.cartItems[idS].suppliersProd
             ).then(result => {
-              const updatedSuppliersProd: ISupplierProd = {
-                ...item.suppliersProd,
-                branchOffices: result.existenciaProductoCt.branchOffices
-              };
-              const suppliersProd = {
-                ...item,
-                suppliersProd: updatedSuppliersProd,
-              };
-              this.cartItems[idS] = suppliersProd;
+              if (result && result.existenciaProductoCt) {
+                const updatedSuppliersProd: ISupplierProd = {
+                  ...item.suppliersProd,
+                  branchOffices: result.existenciaProductoCt.branchOffices
+                };
+                const suppliersProd = {
+                  ...item,
+                  suppliersProd: updatedSuppliersProd,
+                };
+                this.cartItems[idS] = suppliersProd;
+              }
             });
           } else if (item.suppliersProd.idProveedor === 'cva') {
             this.externalAuthService.getPricesCvaProduct(
               this.cartItems[idS].suppliersProd
             ).then(result => {
-              const updatedSuppliersProd: ISupplierProd = {
-                ...item.suppliersProd,
-                branchOffices: result.existenciaProductoCva.branchOffices
-              };
-              const suppliersProd = {
-                ...item,
-                suppliersProd: updatedSuppliersProd,
-              };
-              this.cartItems[idS] = suppliersProd;
+              if (result && result.existenciaProductoCva) {
+                const updatedSuppliersProd: ISupplierProd = {
+                  ...item.suppliersProd,
+                  branchOffices: result.existenciaProductoCva.branchOffices
+                };
+                const suppliersProd = {
+                  ...item,
+                  suppliersProd: updatedSuppliersProd,
+                };
+                this.cartItems[idS] = suppliersProd;
+              }
             });
           }
         }
