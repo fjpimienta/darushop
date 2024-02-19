@@ -161,7 +161,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   commonBranchOffices: Set<string> = new Set<string>();
 
-  isChecked: boolean = false; // Inicialmente desactivado
+  isPagado: boolean = false;
+  isChecked: boolean = false;
 
   showFacturacion: boolean = false;
   invoiceConfigs: InvoiceConfig[] = [];
@@ -359,6 +360,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
           if (result && result.delivery && result.delivery.delivery) {
             const delivery = result.delivery.delivery;
+            console.log('delivery: ', delivery);
             this.delivery = delivery;
             this.onSetDelivery(this.formData, delivery);
             const discount = parseFloat(delivery.discount);
@@ -373,6 +375,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             if (delivery.chargeOpenpay && delivery.chargeOpenpay.id && delivery.chargeOpenpay.order_id) {
               this.checkoutUrl = environment.checkoutUrl + delivery.chargeOpenpay.order_id + '&id=' + delivery.chargeOpenpay.id;
               delivery.chargeOpenpay.redirect_url = this.checkoutUrl;
+            }
+            if (delivery.chargeOpenpay.method === 'bank_account' && delivery.chargeOpenpay.status !== 'completed') {
+              infoEventAlert('No se ha reflejado el pago del pedido.', '');
+              this.isPagado = false;
+            } else {
+              this.isPagado = true;
             }
           }
           return result.delivery.delivery;
@@ -1836,7 +1844,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const address: AddressOpenpayInput = new AddressOpenpayInput();
     address.line1 = formData.controls.directions.value + ' ' + formData.controls.outdoorNumber.value;
     address.line2 = formData.controls.selectColonia.value;
-    address.line3 = formData.controls.references.value;
+    let line3: string = formData.controls.references.value;
+    line3 = line3.substring(0, 50);
+    address.line3 = line3;
     address.postal_code = formData.controls.codigoPostal.value.padStart(5, '0');
     address.city = this.selectMunicipio.D_mnpio;
     address.state = this.selectEstado.d_estado;
@@ -1872,7 +1882,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const address: AddressOpenpayInput = new AddressOpenpayInput();
     address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
     address.line2 = this.formData.controls.selectColonia.value;
-    address.line3 = this.formData.controls.references.value;
+    let line3: string = this.formData.controls.references.value;
+    line3 = line3.substring(0, 50);
+    address.line3 = line3;
     address.postal_code = this.formData.controls.codigoPostal.value.padStart(5, '0');
     address.city = this.selectMunicipio.D_mnpio;
     address.state = this.selectEstado.d_estado;
