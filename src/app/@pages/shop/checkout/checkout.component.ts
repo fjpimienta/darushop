@@ -161,7 +161,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   commonBranchOffices: Set<string> = new Set<string>();
 
-  isChecked: boolean = false; // Inicialmente desactivado
+  isPagado: boolean = false;
+  isChecked: boolean = false;
 
   showFacturacion: boolean = false;
   invoiceConfigs: InvoiceConfig[] = [];
@@ -359,6 +360,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
           if (result && result.delivery && result.delivery.delivery) {
             const delivery = result.delivery.delivery;
+            console.log('delivery: ', delivery);
             this.delivery = delivery;
             this.onSetDelivery(this.formData, delivery);
             const discount = parseFloat(delivery.discount);
@@ -373,6 +375,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             if (delivery.chargeOpenpay && delivery.chargeOpenpay.id && delivery.chargeOpenpay.order_id) {
               this.checkoutUrl = environment.checkoutUrl + delivery.chargeOpenpay.order_id + '&id=' + delivery.chargeOpenpay.id;
               delivery.chargeOpenpay.redirect_url = this.checkoutUrl;
+            }
+            if (delivery.chargeOpenpay.method === 'bank_account' && delivery.chargeOpenpay.status !== 'completed') {
+              infoEventAlert('No se ha reflejado el pago del pedido.', '');
+              this.isPagado = false;
+            } else {
+              this.isPagado = true;
             }
           }
           return result.delivery.delivery;

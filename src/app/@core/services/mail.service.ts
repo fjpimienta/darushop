@@ -53,8 +53,6 @@ export class MailService extends ApiService {
                       </tr>
                     `
     }
-    console.log('Number.isNaN(discount): ', Number.isNaN(discount));
-    console.log('parseFloat(discount): ', parseFloat(discount));
     const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? parseFloat(discount) : 0);
 
     let datosFactura = ''
@@ -241,7 +239,7 @@ export class MailService extends ApiService {
 
   sendEmailSpei(charge: any, issue: string = '', message: string = '', internal: boolean = false, totalEnvios: string = '0'): void {
     const emailFrom = 'DARU Shop <marketplace@daru.mx>';
-    const redirect_url = charge.redirect_url ? charge.redirect_url : environment.checkoutUrl + charge.order_id + '&id=' + charge.chargeOpenpay.id;
+    const redirect_url = charge.redirect_url ? charge.redirect_url : environment.checkoutUrl + charge.deliveryId + '&id=' + charge.chargeOpenpay.id;
     const receiptEmail = charge.receipt_email + '; marketplace@daru.mx; ventas@daru.mx';
     const subject = issue !== '' ? issue : 'Confirmación del pedido';
     const productos: ProductShipment[] = [];
@@ -367,30 +365,28 @@ export class MailService extends ApiService {
                 <td colspan="8"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
               </tr>
               <tr>
-                <td colspan="4">&nbsp;</td>
-                <td colspan="4">Datos de la Cuenta a Transferir</td>
+                <td colspan="8">Datos de la Cuenta a Transferir</td>
               </tr>
               <tr>
-                <td colspan="2">&nbsp;</td>
                 <td colspan="2">Banco</td>
-                <td colspan="4">BBVA Mexico (Pesos Mexicanos)</td>
+                <td colspan="6">BBVA Mexico (Pesos Mexicanos)</td>
               </tr>
               <tr>
-                <td colspan="2">&nbsp;</td>
                 <td colspan="2">Nombre</td>
-                <td colspan="4">Daru Innovacion S de RL de CV</td>
+                <td colspan="6">Daru Innovacion S de RL de CV</td>
               </tr>
               <tr>
-                <td colspan="2">&nbsp;</td>
                 <td colspan="2">Clabe</td>
-                <td colspan="4">0121 80001201 4699 46</td>
+                <td colspan="6">0121 80001201 4699 46</td>
               </tr>
               <tr>
-                <td colspan="8">&nbsp;</td>
+                <td colspan="8">
+                  Una vez realizado el pago, dirigirse a:
+                  <p><a href="${redirect_url}">${redirect_url}</a></p>
+                </td>
               </tr>
             </tfoot>
           </table>
-          <p>Una vez realizado el pago, dirigirse a: ${redirect_url}</p>
           <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
           <p>Saludos cordiales.</p>
           <p>DARU Innovación</p>
