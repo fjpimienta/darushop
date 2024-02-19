@@ -1844,7 +1844,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const address: AddressOpenpayInput = new AddressOpenpayInput();
     address.line1 = formData.controls.directions.value + ' ' + formData.controls.outdoorNumber.value;
     address.line2 = formData.controls.selectColonia.value;
-    address.line3 = formData.controls.references.value;
+    let line3: string = formData.controls.references.value;
+    line3 = line3.substring(0, 50);
+    address.line3 = line3;
     address.postal_code = formData.controls.codigoPostal.value.padStart(5, '0');
     address.city = this.selectMunicipio.D_mnpio;
     address.state = this.selectEstado.d_estado;
@@ -1880,7 +1882,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const address: AddressOpenpayInput = new AddressOpenpayInput();
     address.line1 = this.formData.controls.directions.value + ' ' + this.formData.controls.outdoorNumber.value;
     address.line2 = this.formData.controls.selectColonia.value;
-    address.line3 = this.formData.controls.references.value;
+    let line3: string = this.formData.controls.references.value;
+    line3 = line3.substring(0, 50);
+    address.line3 = line3;
     address.postal_code = this.formData.controls.codigoPostal.value.padStart(5, '0');
     address.city = this.selectMunicipio.D_mnpio;
     address.state = this.selectEstado.d_estado;
