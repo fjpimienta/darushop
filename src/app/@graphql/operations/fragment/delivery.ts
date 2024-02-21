@@ -89,6 +89,7 @@ export const DELIVERY_FRAGMENT = gql`
           bank
           clabe
           name
+          url_spei
         }
         conciliated
         customer {
