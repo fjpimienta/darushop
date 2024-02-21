@@ -380,6 +380,14 @@ export class MailService extends ApiService {
                 <td colspan="6">0121 80001201 4699 46</td>
               </tr>
               <tr>
+                <td colspan="2">Referencia</td>
+                <td colspan="6">${charge.chargeOpenpay.payment_method.name}</td>
+              </tr>
+              <tr>
+                <td colspan="2">Convenio</td>
+                <td colspan="6">${charge.chargeOpenpay.payment_method.agreement}</td>
+              </tr>
+              <tr>
                 <td colspan="8">
                   Una vez realizado el pago, dirigirse a:
                   <p><a href="${redirect_url}">${redirect_url}</a></p>

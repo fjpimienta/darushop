@@ -372,16 +372,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
             });
-            if (delivery.chargeOpenpay && delivery.chargeOpenpay.id && delivery.chargeOpenpay.order_id) {
-              this.checkoutUrl = environment.checkoutUrl + delivery.chargeOpenpay.order_id + '&id=' + delivery.chargeOpenpay.id;
-              delivery.chargeOpenpay.redirect_url = this.checkoutUrl;
-            }
-            if (delivery.chargeOpenpay.method === 'bank_account' && delivery.chargeOpenpay.status !== 'completed') {
-              infoEventAlert('No se ha reflejado el pago del pedido.', '');
-              this.isPagado = false;
-            } else {
-              this.isPagado = true;
-            }
+            // Recuperar status del cargo.
+            this.chargeOpenpayService.oneCharge(delivery.chargeOpenpay.id).then(charge => {
+              if (charge && charge.id && charge.order_id) {
+                this.checkoutUrl = environment.checkoutUrl + charge.order_id + '&id=' + charge.id;
+                charge.redirect_url = this.checkoutUrl;
+              }
+              if (charge.method === 'bank_account' && charge.status !== 'completed') {
+                infoEventAlert('No se ha reflejado el pago del pedido.', '');
+                this.isPagado = false;
+              } else {
+                this.isPagado = true;
+              }
+            });
           }
           return result.delivery.delivery;
         });
