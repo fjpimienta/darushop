@@ -44,6 +44,7 @@ export const CHARGE_OPENPAY_FRAGMENT_OBJECT = gql`
       bank
       clabe
       name
+      url_spei
     }
     conciliated
     customer {

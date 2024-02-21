@@ -84,6 +84,7 @@ export interface PaymentMethodOpenpayInput {
   bank?: string;
   clabe?: string;
   name?: string;
+  url_spei?: string;
 }
 
 export class CaptureChargeOpenpayInput {
