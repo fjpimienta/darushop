@@ -357,7 +357,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     try {
       console.clear();
       if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
+        console.log('this.idDelivery: ', this.idDelivery);
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
+          console.log('result: ', result);
           if (result && result.delivery && result.delivery.delivery) {
             const delivery = result.delivery.delivery;
             console.log('delivery: ', delivery);
@@ -2002,6 +2004,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#region Catalogos Generales
   quitarAcentos(cadena: string): string {
     return cadena.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  capitalizeFirstLetter(text: string): string {
+    const maxLength = 60;
+    let truncatedText = text;
+    if (text.length > maxLength) {
+      truncatedText = text.substring(0, maxLength) + '...';
+    }
+    return truncatedText.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
   }
   //#endregion
 }

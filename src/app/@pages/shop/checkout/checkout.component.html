@@ -226,35 +226,38 @@
                 <table class="table table-summary">
                   <thead>
                     <tr>
+                      <th>Cant</th>
                       <th>Producto(s)</th>
+                      <th>PU</th>
                       <th>Total</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     <tr *ngFor="let product of cartItems">
-                      <td><a [routerLink]="['/product/default/'+ product.id]">{{ product.name }}</a>
-                      </td>
+                      <td>{{ product.qty }}</td>
+                      <td><a [routerLink]="['/product/default/'+ product.id]">{{ capitalizeFirstLetter(product.name) }}</a></td>
+                      <td>{{ product.price.toFixed( 2 ) | currency }}</td>
                       <td>{{ product.sum.toFixed( 2 ) | currency }}</td>
                     </tr>
                     <tr class="summary-subtotal">
-                      <td>Subtotal:</td>
+                      <td colspan="3">Subtotal:</td>
                       <td>{{ subTotal | currency }}</td>
                     </tr>
                     <tr *ngIf="typeDiscount==='importe'" class="summary-subtotal">
-                      <td>Descuentos:</td>
+                      <td colspan="3">Descuentos:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
                     <tr *ngIf="typeDiscount!=='importe'" class="summary-subtotal">
-                      <td>Descuentos {{discountPorc}}%:</td>
+                      <td colspan="3">Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
                     <tr class="summary-subtotal">
-                      <td>Costo del Env&iacute;o:</td>
+                      <td colspan="3">Costo del Env&iacute;o:</td>
                       <td>{{totalEnvios | currency}}</td>
                     </tr>
                     <tr class="summary-total">
-                      <td>Total:</td>
+                      <td colspan="3">Total:</td>
                       <td>{{ totalPagar | currency }}</td>
                     </tr>
                   </tbody>
