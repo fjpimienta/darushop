@@ -704,7 +704,6 @@ export class ExternalAuthService extends ApiService {
           const productosCva = productShipmentCVA;
           const shippmentsCva = await this.getShippingCvaRates(paqueteria, cp, cp_sucursal, productosCva);
           const resultCva: Result = new Result();
-          console.log('shippmentsCva: ', shippmentsCva);
           if (shippmentsCva && shippmentsCva.status && shippmentsCva.shippingCvaRates) {
             const shipmentCva = new Shipment();
             shipmentCva.empresa = 'PAQUETEXPRESS';
@@ -714,7 +713,6 @@ export class ExternalAuthService extends ApiService {
             resultCva.status = shippmentsCva.status;
             resultCva.message = shippmentsCva.message;
             resultCva.data = shipmentCva;
-            console.log('resultCva.Ok: ', resultCva);
             return await resultCva;
           }
           resultCva.status = shippmentsCva.status;
@@ -1265,7 +1263,6 @@ export class ExternalAuthService extends ApiService {
         productosCva
       }, {}).subscribe(
         (result: any) => {
-          console.log('async.getShippingCvaRates.result: ', result);
           resolve(result.shippingCvaRates);
         },
         (error: any) => {
