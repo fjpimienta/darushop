@@ -927,9 +927,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     }
     let totalShips = 0.0;
-    for (const idS of Object.keys(this.shipments)) {
-      const ships: Shipment = this.shipments[idS];
-      totalShips += ships.costo;
+    for (const idW of Object.keys(delivery.warehouses)) {
+      const warehouse: Warehouse = delivery.warehouses[idW];
+      for (const idS of Object.keys(warehouse.shipments)) {
+        const shipment: Shipment = warehouse.shipments[idS];
+        if (!isNaN(shipment.costo)) {
+          totalShips += shipment.costo;
+        }
+      }
     }
     this.totalEnvios = totalShips.toFixed(2).toString();
     this.discount = delivery.discount.toString();
@@ -1041,6 +1046,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
+            console.log('this.shipments: ', this.shipments);
             closeAlert();
           } else {
             this.reiniciarShipping(_shipments.message);
@@ -1312,6 +1318,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
               const commonBranchOffices = branchOfficesTot;
+              console.log('commonBranchOffices: ', commonBranchOffices);
               for (const commonBranch of commonBranchOffices) {
                 const carItemsWarehouse = [];
                 // Filtrar los elementos que no han sido asignados
@@ -1383,6 +1390,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   }
                   return await shipment;
                 });
+                shipmentsEnd = [];
                 if (shipmentsCost && shipmentsCost.costo > 0) {
                   shipmentsEnd.push(shipmentsCost);
                   this.warehouse.shipments = shipmentsEnd;
