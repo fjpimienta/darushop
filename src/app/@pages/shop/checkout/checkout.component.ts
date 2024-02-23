@@ -1075,9 +1075,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
         let costShips = 0;
-        for (const idS of Object.keys(cotizacionEnvios.shipmentsEnd)) {
-          const ship = cotizacionEnvios.shipmentsEnd[idS];
-          costShips += ship.costo;
+        for (const idW of Object.keys(this.warehouses)) {
+          const warehouse: Warehouse = this.warehouses[idW];
+          for (const idS of Object.keys(warehouse.shipments)) {
+            const shipment: Shipment = warehouse.shipments[idS];
+            if (!isNaN(shipment.costo)) {
+              costShips += shipment.costo;
+            }
+          }
         }
         this.totalEnvios = costShips.toFixed(2).toString();
         this.changeShipping(costShips);
