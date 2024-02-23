@@ -1046,7 +1046,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
-            console.log('this.shipments: ', this.shipments);
             closeAlert();
           } else {
             this.reiniciarShipping(_shipments.message);
@@ -1071,6 +1070,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
+    console.log('this.warehouses: ', this.warehouses);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1365,39 +1365,41 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
                 this.warehouse.cp = cpDestino;
                 this.warehouse.productShipments = productsNacional;
-                const shipmentsCost = await this.externalAuthService.onShippingEstimate(
-                  supplier, apiShipment, this.warehouse, true
-                ).then(async (resultShip) => {
-                  let shipment = new Shipment();
-                  if (!resultShip.status) {
-                    mensajeError = resultShip.message;
-                    return await resultShip
-                  }
-                  for (const key of Object.keys(resultShip.data)) {
-                    if (supplier.slug === 'ct') {
-                      shipment.empresa = resultShip.data[key].empresa.toString();
-                      shipment.costo = resultShip.data[key].total * 1.16;
-                      shipment.metodoShipping = resultShip.data[key].metodo;
-                      shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
-                      shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
-                    } else if (supplier.slug === 'cva') {
-                      shipment.empresa = resultShip.data.empresa.toString();
-                      shipment.costo = resultShip.data.costo * 1.16;
-                      shipment.metodoShipping = resultShip.data.metodoShipping;
-                      shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
-                      shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                if (this.warehouse.productShipments && this.warehouse.productShipments.length > 0) {
+                  const shipmentsCost = await this.externalAuthService.onShippingEstimate(
+                    supplier, apiShipment, this.warehouse, true
+                  ).then(async (resultShip) => {
+                    let shipment = new Shipment();
+                    if (!resultShip.status) {
+                      mensajeError = resultShip.message;
+                      return await resultShip
                     }
+                    for (const key of Object.keys(resultShip.data)) {
+                      if (supplier.slug === 'ct') {
+                        shipment.empresa = resultShip.data[key].empresa.toString();
+                        shipment.costo = resultShip.data[key].total * 1.16;
+                        shipment.metodoShipping = resultShip.data[key].metodo;
+                        shipment.lugarEnvio = resultShip.data[key].lugarEnvio.toLocaleUpperCase();
+                        shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                      } else if (supplier.slug === 'cva') {
+                        shipment.empresa = resultShip.data.empresa.toString();
+                        shipment.costo = resultShip.data.costo * 1.16;
+                        shipment.metodoShipping = resultShip.data.metodoShipping;
+                        shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
+                        shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                      }
+                    }
+                    return await shipment;
+                  });
+                  shipmentsEnd = [];
+                  if (shipmentsCost && shipmentsCost.costo > 0) {
+                    shipmentsEnd.push(shipmentsCost);
+                    this.warehouse.shipments = shipmentsEnd;
+                    supplierProd.idProveedor = supplier.slug;
+                    this.warehouse.suppliersProd = supplierProd;
+                    this.warehouse.products = carItemsWarehouse;
+                    this.warehouses.push(this.warehouse);
                   }
-                  return await shipment;
-                });
-                shipmentsEnd = [];
-                if (shipmentsCost && shipmentsCost.costo > 0) {
-                  shipmentsEnd.push(shipmentsCost);
-                  this.warehouse.shipments = shipmentsEnd;
-                  supplierProd.idProveedor = supplier.slug;
-                  this.warehouse.suppliersProd = supplierProd;
-                  this.warehouse.products = carItemsWarehouse;
-                  this.warehouses.push(this.warehouse);
                 }
               }
             }
