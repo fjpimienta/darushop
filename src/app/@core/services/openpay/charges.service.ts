@@ -192,7 +192,7 @@ export class ChargeOpenpayService extends ApiService {
       case 1011:
         return 'Se solicita un recurso que esta marcado como eliminado.';
       case 1012:
-        return 'El monto transacción esta fuera de los limites permitidos.';
+        return 'El monto de la transacción esta fuera de los limites permitidos.';
       case 1013:
         return 'La operación no esta permitida para el recurso.';
       case 1014:
