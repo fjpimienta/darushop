@@ -2022,7 +2022,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   capitalizeFirstLetter(text: string): string {
-    const maxLength = 60;
+    const maxLength = 50;
     let truncatedText = text;
     if (text.length > maxLength) {
       truncatedText = text.substring(0, maxLength) + '...';

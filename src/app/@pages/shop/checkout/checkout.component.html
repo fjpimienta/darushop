@@ -221,7 +221,7 @@
             <aside class="col-lg-5">
               <div class="row">&nbsp;</div>
               <div class="summary">
-                <h3 class="summary-title">Tu orden</h3>
+                <h3 class="summary-title">Listado de tus productos</h3>
 
                 <table class="table table-summary">
                   <thead>
@@ -234,29 +234,38 @@
                   </thead>
 
                   <tbody>
-                    <tr *ngFor="let product of cartItems">
+                    <tr class="trThin" *ngFor="let product of cartItems">
                       <td>{{ product.qty }}</td>
-                      <td><a [routerLink]="['/product/default/'+ product.id]">{{ capitalizeFirstLetter(product.name) }}</a></td>
+                      <td><a [routerLink]="['/product/default/'+ product.id]">{{ capitalizeFirstLetter(product.name)
+                          }}</a></td>
                       <td>{{ product.price.toFixed( 2 ) | currency }}</td>
                       <td>{{ product.sum.toFixed( 2 ) | currency }}</td>
                     </tr>
-                    <tr class="summary-subtotal">
+                    <tr class="summary-subtotal trThin">
                       <td colspan="3">Subtotal:</td>
                       <td>{{ subTotal | currency }}</td>
                     </tr>
-                    <tr *ngIf="typeDiscount==='importe'" class="summary-subtotal">
+                    <tr *ngIf="typeDiscount==='importe'" class="summary-subtotal trThin">
                       <td colspan="3">Descuentos:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
-                    <tr *ngIf="typeDiscount!=='importe'" class="summary-subtotal">
+                    <tr *ngIf="typeDiscount!=='importe'" class="summary-subtotal trThin">
                       <td colspan="3">Descuentos {{discountPorc}}%:</td>
                       <td>{{discount | currency}}</td>
                     </tr>
-                    <tr class="summary-subtotal">
+                    <tr class="trThin" *ngFor="let warehouse of warehouses">
+                      <td colspan="3">{{ warehouse.name }}</td>
+                      <td>
+                        <ng-container *ngFor="let shipment of warehouse.shipments">
+                          {{ shipment.costo| currency }}
+                        </ng-container>
+                      </td>
+                    </tr>
+                    <tr class="summary-subtotal trThin">
                       <td colspan="3">Costo del Env&iacute;o:</td>
                       <td>{{totalEnvios | currency}}</td>
                     </tr>
-                    <tr class="summary-total">
+                    <tr class="summary-total trThin">
                       <td colspan="3">Total:</td>
                       <td>{{ totalPagar | currency }}</td>
                     </tr>
