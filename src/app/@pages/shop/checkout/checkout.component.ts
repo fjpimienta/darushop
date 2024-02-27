@@ -862,7 +862,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         let messageDelivery = 'Hay un problema con el envio';
         deliverySave[NewProperty] = sendEmail;
         this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
-        return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.ERROR);
+        return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.SUCCESS);
       }
 
       // Limpiar carrito de compras.
