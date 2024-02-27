@@ -585,7 +585,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   ...item,
                   suppliersProd: updatedSuppliersProd,
                 };
+                // Accede a branchOffices después de resolver la promesa
                 this.cartItems[idS] = suppliersProd;
+                console.log('branchOffices ct:', result.existenciaProductoCt.branchOffices);
               }
             });
           } else if (item.suppliersProd.idProveedor === 'cva') {
@@ -601,7 +603,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   ...item,
                   suppliersProd: updatedSuppliersProd,
                 };
+                // Accede a branchOffices después de resolver la promesa
                 this.cartItems[idS] = suppliersProd;
+                console.log('branchOffices cva:', result.existenciaProductoCva.branchOffices);
               }
             });
           }
@@ -1300,15 +1304,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
+              console.log('branchOfficesCom: ', branchOfficesCom);
               this.commonBranchOffices.clear();
               branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
               // Se guardan las sucursales comunes para los envios.
               let branchOfficesTot: BranchOffices[] = [];
               let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
               for (const cart of this.cartItems) {
+                console.log('cart.suppliersProd.branchOffices: ', cart.suppliersProd.branchOffices);
                 if (cart.suppliersProd.branchOffices && cart.suppliersProd.branchOffices.length === 0) {
                   return {
                     status: false,
