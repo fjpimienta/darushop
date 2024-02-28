@@ -369,7 +369,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
               if (total === 0) {
-                total = delivery.importe;
+                total = delivery.importe - totalEnvios;
               }
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
@@ -585,7 +585,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   ...item,
                   suppliersProd: updatedSuppliersProd,
                 };
+                // Accede a branchOffices después de resolver la promesa
                 this.cartItems[idS] = suppliersProd;
+                console.log('branchOffices ct:', result.existenciaProductoCt.branchOffices);
               }
             });
           } else if (item.suppliersProd.idProveedor === 'cva') {
@@ -601,7 +603,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   ...item,
                   suppliersProd: updatedSuppliersProd,
                 };
+                // Accede a branchOffices después de resolver la promesa
                 this.cartItems[idS] = suppliersProd;
+                console.log('branchOffices cva:', result.existenciaProductoCva.branchOffices);
               }
             });
           }
@@ -858,7 +862,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         let messageDelivery = 'Hay un problema con el envio';
         deliverySave[NewProperty] = sendEmail;
         this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
-        return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.ERROR);
+        return await infoEventAlert(deliverySave.delivery.messageError, '', TYPE_ALERT.SUCCESS);
       }
 
       // Limpiar carrito de compras.
@@ -1300,15 +1304,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
+            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
+              console.log('branchOfficesCom: ', branchOfficesCom);
               this.commonBranchOffices.clear();
               branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
               // Se guardan las sucursales comunes para los envios.
               let branchOfficesTot: BranchOffices[] = [];
               let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
               for (const cart of this.cartItems) {
+                console.log('cart.suppliersProd.branchOffices: ', cart.suppliersProd.branchOffices);
                 if (cart.suppliersProd.branchOffices && cart.suppliersProd.branchOffices.length === 0) {
                   return {
                     status: false,
@@ -2022,7 +2029,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   capitalizeFirstLetter(text: string): string {
-    const maxLength = 60;
+    const maxLength = 50;
     let truncatedText = text;
     if (text.length > maxLength) {
       truncatedText = text.substring(0, maxLength) + '...';

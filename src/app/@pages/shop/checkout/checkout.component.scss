@@ -68,9 +68,11 @@ a {
 }
 
 a.button {
-  border-radius: 5px 5px 5px 5px;
   -webkit-border-radius: 5px 5px 5px 5px;
+  /* Prefijo para Safari y Chrome */
   -moz-border-radius: 5px 5px 5px 5px;
+  /* Prefijo para Firefox */
+  border-radius: 5px 5px 5px 5px;
   text-align: center;
   font-size: 21px;
   font-weight: 400;
@@ -261,7 +263,7 @@ a.button.disabled {
   width: 180px;
 }
 
-.pymnt-cntnt div.sctn-row div.sctn-col.quart input{
+.pymnt-cntnt div.sctn-row div.sctn-col.quart input {
   width: 113px;
 }
 

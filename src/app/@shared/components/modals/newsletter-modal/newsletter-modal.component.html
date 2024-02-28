@@ -1,11 +1,14 @@
 <div class="modal-dialog modal-dialog-centered modal-lg soon" role="document">
   <div class="modal-content">
     <div class="d-flex align-items-center justify-content-center">
-      <h3 class="text-center logo bottom">NOS ESTAMOS PREPARANDO</h3>
+      <h3 class="text-center logo bottom">NOS ESTAMOS PREPARANDO
+        <a href="javascript:;" (click)="closeModal()"><i class="icon-close"></i></a>
+        <span class="mobile-menu-close" (click)="closeModal()"><i class="icon-close"></i></span>
+      </h3>
     </div>
     <div class="modal-header justify-content-center">
       <!-- Encabezado del modal -->
-      <app-count-down until="2024-02-29" format="DHMS" wrap="coming-countdown countdown-separator text-center">
+      <app-count-down until="2024-03-15" format="DHMS" wrap="coming-countdown countdown-separator text-center">
       </app-count-down>
     </div>
     <div class="modal-body">
@@ -15,7 +18,7 @@
           <div class="row">
             <div class="col-md-6 form-group text-center">
               <label class="text-secondary strong" for="nombre">NOMBRE(S) *</label>
-              <input type="text" class="form-control rounded" name="nombre" formControlName="nombre"
+              <input type="text" class="form-control rounded" name="nombre" formControlName="nombre" id="nombre"
                 placeholder="Obligatorio" (input)="convertToUppercase($event)" required>
               <div class="alert alert-danger rounded"
                 *ngIf="formData.get('nombre').invalid && (formData.get('nombre').dirty || formData.get('nombre').touched)">
@@ -24,7 +27,7 @@
             </div>
             <div class="col-md-6 form-group text-center">
               <label class="text-secondary strong" for="apellido">APELLIDOS(S) *</label>
-              <input type="text" class="form-control rounded" name="apellido" formControlName="apellido"
+              <input type="text" class="form-control rounded" name="apellido" formControlName="apellido" id="apellido"
                 placeholder="Obligatorio" (input)="convertToUppercase($event)" required>
               <div class="alert alert-danger rounded"
                 *ngIf="formData.get('apellido').invalid && (formData.get('apellido').dirty || formData.get('apellido').touched)">
