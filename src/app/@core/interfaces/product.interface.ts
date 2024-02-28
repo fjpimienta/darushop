@@ -111,7 +111,7 @@ export interface ISupplierProd {
 export interface IBranchOffices {
   id: string;
   name: string;
-  slug: string;
+  estado: string;
   cantidad: number;
   cp: string;
   latitud: string;
