@@ -369,7 +369,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
               if (total === 0) {
-                total = delivery.importe;
+                total = delivery.importe - totalEnvios;
               }
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
