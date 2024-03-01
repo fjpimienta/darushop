@@ -46,31 +46,15 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
   private loadCategoriesAndBrands(): void {
     this.categorysgroupService.getCategorysGroup().subscribe(result => {
-      if (result && result.categorysgroups && result.categorysgroups.length > 0) {
-        this.categories = result.categorysgroups.map(category => {
-          if (category && category.id) {
-            this.mapCatalog(category)
-          }
-        });
-        if (this.categories && this.categories.length > 0) {
-          this.sortCatalogs(this.categories);
-          this.categoriesTmp = [...this.categories]; // Copiar datos originales
-        }
-      }
+      this.categories = result.categorysgroups.map(category => this.mapCatalog(category));
+      this.sortCatalogs(this.categories);
+      this.categoriesTmp = [...this.categories]; // Copiar datos originales
     });
 
     this.brandsGroupsService.getBrandsGroup().subscribe(result => {
-      if (result && result.brandsgroups && result.brandsgroups.length > 0) {
-        this.brands = result.brandsgroups.map(group => {
-          if (group.id) {
-            this.mapCatalog(group)
-          }
-        });
-        if (this.brands && this.brands.length > 0) {
-          this.sortCatalogsByTotal(this.brands);
-          this.brandsTmp = [...this.brands]; // Copiar datos originales
-        }
-      }
+      this.brands = result.brandsgroups.map(group => this.mapCatalog(group));
+      this.sortCatalogsByTotal(this.brands);
+      this.brandsTmp = [...this.brands]; // Copiar datos originales
     });
   }
 
@@ -80,12 +64,10 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
   private mapCatalog(data: any): Catalog {
     const catalog = new Catalog();
-    if (data && data._id) {
-      catalog.id = data._id[0].slug;
-      catalog.slug = data._id[0].slug;
-      catalog.description = data._id[0].name.toUpperCase().slice(0, 32);
-      catalog.total = data.total;
-    }
+    catalog.id = data._id[0].slug;
+    catalog.slug = data._id[0].slug;
+    catalog.description = data._id[0].name.toUpperCase().slice(0, 32);
+    catalog.total = data.total;
     return catalog;
   }
 
