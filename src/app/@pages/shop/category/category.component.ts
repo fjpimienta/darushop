@@ -111,59 +111,61 @@ export class CategoryComponent implements OnInit {
         this.categories,
         this.subCategories
       ).subscribe(result => {
-        this.products = result.products;
-        let brands: string[] = [];
-        if (params.brand) {
-          brands = params.brand.split(',');
-          this.products = utilsService.braFilter(this.products, brands);
-        }
-        if (params.brands) {
-          brands.push(params.brands);
-          this.products = utilsService.braFilter(this.products, brands);
-        }
-        if (this.orderBy) {
-          switch (this.orderBy) {
-            case 'name':
-              this.products.sort((a, b) => {
-                const nameA = a.name.toUpperCase();
-                const nameB = b.name.toUpperCase();
-                if (nameA < nameB) {
-                  return -1;
-                } else if (nameA > nameB) {
-                  return 1;
-                } else {
-                  return 0;
-                }
-              });
-              break;
-            case 'price':
-              this.products.sort((a, b) => {
-                return a.price - b.price;
-              });
-              break;
-            default:
-              this.products.sort((a, b) => {
-                const nameA = a.name.toUpperCase();
-                const nameB = b.name.toUpperCase();
-                if (nameA < nameB) {
-                  return -1;
-                } else if (nameA > nameB) {
-                  return 1;
-                } else {
-                  return 0;
-                }
-              });
+        if (result && result.products && result.products.length > 0) {
+          this.products = result.products;
+          let brands: string[] = [];
+          if (params.brand) {
+            brands = params.brand.split(',');
+            this.products = utilsService.braFilter(this.products, brands);
           }
+          if (params.brands) {
+            brands.push(params.brands);
+            this.products = utilsService.braFilter(this.products, brands);
+          }
+          if (this.orderBy) {
+            switch (this.orderBy) {
+              case 'name':
+                this.products.sort((a, b) => {
+                  const nameA = a.name.toUpperCase();
+                  const nameB = b.name.toUpperCase();
+                  if (nameA < nameB) {
+                    return -1;
+                  } else if (nameA > nameB) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
+                });
+                break;
+              case 'price':
+                this.products.sort((a, b) => {
+                  return a.price - b.price;
+                });
+                break;
+              default:
+                this.products.sort((a, b) => {
+                  const nameA = a.name.toUpperCase();
+                  const nameB = b.name.toUpperCase();
+                  if (nameA < nameB) {
+                    return -1;
+                  } else if (nameA > nameB) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
+                });
+            }
+          }
+          this.loaded = true;
+          this.totalCount = result.info.total;
+          if (this.perPage >= this.totalCount) {
+            this.perPage = this.totalCount;
+          }
+          if (!this.firstLoad) {
+            this.firstLoad = true;
+          }
+          this.utilsService.scrollToPageContent();
         }
-        this.loaded = true;
-        this.totalCount = result.info.total;
-        if (this.perPage >= this.totalCount) {
-          this.perPage = this.totalCount;
-        }
-        if (!this.firstLoad) {
-          this.firstLoad = true;
-        }
-        this.utilsService.scrollToPageContent();
       });
     });
   }

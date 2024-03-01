@@ -149,36 +149,40 @@ export class IndexComponent implements OnInit {
 
   initializeProducts(): void {
     this.productService.getProducts(1, -1).subscribe(result => {
-      this.products = result.products;
-      this.products.forEach(p => {
-        p.category.forEach(c => {
-          // this.renameKey(c.pivot, 'product_category_id', 'product-category-id');
-        });
-      });
-      this.topProducts = this.utilsService.attrFilter(result.products, 'top');
-      this.newProducts = this.utilsService.attrFilter(result.products, 'new');
-      this.saleProducts = this.utilsService.attrFilter(result.products, 'sale');
-      let i = 0;
-      let j = 0;
-      this.saleProducts.forEach(sale => {
-        if (sale.top) {
-          j += 1;
-          if (j <= 2) {                                                     // Ofertas Top Exclusivas 2
-            this.saleProductsExclusive.push(sale);
-          }
-        } else {
-          i += 1;
-          if (i <= 3) {                                                     // Ofertas de Inicio 3
-            this.saleProducts3.push(sale);
-          }
+      if (result && result.products && result.products.length > 0) {
+        this.products = result.products;
+        if (result.products.category) {
+          this.products.forEach(p => {
+            p.category.forEach(c => {
+              // this.renameKey(c.pivot, 'product_category_id', 'product-category-id');
+            });
+          });
         }
+        this.topProducts = this.utilsService.attrFilter(result.products, 'top');
+        this.newProducts = this.utilsService.attrFilter(result.products, 'new');
+        this.saleProducts = this.utilsService.attrFilter(result.products, 'sale');
+        let i = 0;
+        let j = 0;
+        this.saleProducts.forEach(sale => {
+          if (sale.top) {
+            j += 1;
+            if (j <= 2) {                                                     // Ofertas Top Exclusivas 2
+              this.saleProductsExclusive.push(sale);
+            }
+          } else {
+            i += 1;
+            if (i <= 3) {                                                     // Ofertas de Inicio 3
+              this.saleProducts3.push(sale);
+            }
+          }
 
-        if (sale.until === this.today()) {                                  // Oferta del día
-          this.existSaleToday = true;
-          this.saleToday = sale;
-        }
-      });
-      this.loaded = true;
+          if (sale.until === this.today()) {                                  // Oferta del día
+            this.existSaleToday = true;
+            this.saleToday = sale;
+          }
+        });
+        this.loaded = true;
+      }
     });
   }
 

@@ -119,36 +119,38 @@ export class SidebarPageComponent implements OnInit {
         this.categories,
         this.subCategories
       ).subscribe(result => {
-        this.products = result.products;
-        const category = [[]];
-        const subCategory = [[]];
-        let brands: string[] = [];
-        if (params.brand) {
-          brands = params.brand.split(',');
-          this.products = utilsService.braFilter(this.products, brands);
+        if (result && result.products && result.products.length > 0) {
+          this.products = result.products;
+          const category = [[]];
+          const subCategory = [[]];
+          let brands: string[] = [];
+          if (params.brand) {
+            brands = params.brand.split(',');
+            this.products = utilsService.braFilter(this.products, brands);
+          }
+          if (params.brands) {
+            brands.push(params.brands);
+            this.products = utilsService.braFilter(this.products, brands);
+          }
+          if (params.category) {
+            category.push(params.category);
+            this.products = utilsService.catFilter(this.products, category);
+          }
+          if (params.subCategory) {
+            subCategory.push(params.subCategory);
+            this.products = utilsService.subCatFilter(this.products, subCategory);
+          }
+          this.loaded = true;
+          this.totalCount = result.info.total;
+          this.perPage = 48;
+          if (this.perPage >= this.totalCount) {
+            this.perPage = this.totalCount;
+          }
+          if (!this.firstLoad) {
+            this.firstLoad = true;
+          }
+          this.utilsService.scrollToPageContent();
         }
-        if (params.brands) {
-          brands.push(params.brands);
-          this.products = utilsService.braFilter(this.products, brands);
-        }
-        if (params.category) {
-          category.push(params.category);
-          this.products = utilsService.catFilter(this.products, category);
-        }
-        if (params.subCategory) {
-          subCategory.push(params.subCategory);
-          this.products = utilsService.subCatFilter(this.products, subCategory);
-        }
-        this.loaded = true;
-        this.totalCount = result.info.total;
-        this.perPage = 48;
-        if (this.perPage >= this.totalCount) {
-          this.perPage = this.totalCount;
-        }
-        if (!this.firstLoad) {
-          this.firstLoad = true;
-        }
-        this.utilsService.scrollToPageContent();
       });
     });
   }
