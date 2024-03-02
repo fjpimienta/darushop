@@ -373,8 +373,9 @@ export class MailService extends ApiService {
                 <td colspan="2"><strong>Total:</strong></td>
                 <td colspan="2" class="number">$ ${total.toFixed(2).toString()}</td>
               </tr>
-              <tr>
-                <td colspan="8"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
+              <tr class="tr-strong">
+              <td colspan="8">Los precios ya incluyen IVA.</td>
+              <td colspan="8">Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</td>
               </tr>
               <tr class="tr-strong">
                 <td colspan="4">Desde BBVA</td>

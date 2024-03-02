@@ -119,8 +119,11 @@ export class ChargeOpenpayService extends ApiService {
   }
 
   async oneCharge(idChargeOpenpay: String): Promise<any> {
+    const idTransactionOpenpay = {
+      "idTransactionOpenpay": idChargeOpenpay
+    }
     return new Promise<any>((resolve, reject) => {
-      this.get(ONE_CHARGE_OPENPAY, { idChargeOpenpay }).subscribe(
+      this.get(ONE_CHARGE_OPENPAY, idTransactionOpenpay).subscribe(
         (result: any) => {
           resolve(result.chargeOpenpay);
         },
