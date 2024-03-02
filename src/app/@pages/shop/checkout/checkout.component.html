@@ -257,8 +257,10 @@
                       <td colspan="3">Env&iacute;os:</td>
                       <td></td>
                     </tr>
-                    <tr *ngFor="let warehouse of warehouses">
-                      <td colspan="3">{{ warehouse.name }}</td>
+                    <tr *ngFor="let warehouse of warehouses; let i = index">
+                      <td colspan="3">
+                        {{ warehouses.length > 1 ? 'Envío ' + (i + 1) : 'Envío' }}
+                      </td>
                       <td>
                         <ng-container *ngFor="let shipment of warehouse.shipments">
                           {{ shipment.costo| currency }}

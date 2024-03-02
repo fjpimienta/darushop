@@ -256,20 +256,21 @@ export class MailService extends ApiService {
     let rowDiscount = '';
     if (Number.isInteger(discount) && discount > 0) {
       rowDiscount = `
-                      <tr>
+                      <tr class="tr-right-align">
+                        <td colspan="2">&nbsp;</td>
                         <td colspan="2">&nbsp;</td>
                         <td colspan="2"><strong>Descuento:</strong></td>
-                        <td colspan="4" class="number">$ ${discount.toFixed(2).toString()}</td>
+                        <td colspan="2" class="number">$ ${discount.toFixed(2).toString()}</td>
                       </tr>
                     `
     }
     const total = totalProd + parseFloat(totalEnvios) - (Number.isNaN(discount) ? 0 : parseFloat(discount));
     const productRows = productos.map((producto: any) => `
         <tr>
-          <td>${producto.name}</td>
+          <td colspan='4'>${producto.name}</td>
           <td class="number">${producto.cantidad}</td>
           <td class="number">${producto.precio.toFixed(2).toString()}</td>
-          <td class="number">${producto.total.toFixed(2).toString()}</td>
+          <td colspan='2' class="number">${producto.total.toFixed(2).toString()}</td>
         </tr>
       `).join('');
     const html = message !== '' ? message : `
@@ -318,12 +319,20 @@ export class MailService extends ApiService {
             font-weight: bold;
           }
           tfoot td {
-            text-align: right;
-            font-weight: bold;
+            text-align: left;
           }
           foot {
             color: #666666;
             font-size: 8px; /* Tamaño de letra de los párrafos */
+          }
+          tr {
+            text-align: left;
+          }
+          .tr-right-align {
+            text-align: right;
+          }
+          .tr-strong {
+            font-weight: bold;
           }
         </style>
       </head>
@@ -345,47 +354,60 @@ export class MailService extends ApiService {
               ${productRows}
             </tbody>
             <tfoot>
-              <tr>
+              <tr class="tr-right-align">
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Subtotal:</strong></td>
-                <td colspan="4" class="number">$ ${totalProd.toFixed(2).toString()}</td>
+                <td colspan="2" class="number">$ ${totalProd.toFixed(2).toString()}</td>
               </tr>
-              <tr>
+              <tr class="tr-right-align">
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Costo Envio:</strong></td>
-                <td colspan="4" class="number">$ ${totalEnvios}</td>
+                <td colspan="2" class="number">$ ${totalEnvios}</td>
               </tr>
               ${rowDiscount}
-              <tr>
+              <tr class="tr-right-align">
+                <td colspan="2">&nbsp;</td>
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2"><strong>Total:</strong></td>
-                <td colspan="4" class="number">$ ${total.toFixed(2).toString()}</td>
+                <td colspan="2" class="number">$ ${total.toFixed(2).toString()}</td>
+              </tr>
+              <tr class="tr-strong">
+              <td colspan="8">Los precios ya incluyen IVA.</td>
+              <td colspan="8">Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</td>
+              </tr>
+              <tr class="tr-strong">
+                <td colspan="4">Desde BBVA</td>
+                <td colspan="4">Desde cualquier otro banco</td>
               </tr>
               <tr>
-                <td colspan="8"><strong>Realiza tu pago directamente en nuestra cuenta bancaria. Su pedido no se enviará hasta que los fondos se hayan liquidado en nuestra cuenta.</strong></td>
+                <td colspan="4">1. Dentro del menú de "Pagar" seleccione la opción "De Servicios" e ingrese el siguiente "Número de convenio CIE"</td>
+                <td colspan="4">1. Ingresa a la sección de transferencias y pagos o pagos a otros bancos y proporciona los datos de la transferencia:</td>
               </tr>
               <tr>
-                <td colspan="8">Datos de la Cuenta a Transferir</td>
+                <td colspan="4">Número de convenio CIE: ${charge.chargeOpenpay.payment_method.agreement}</td>
+                <td colspan="4">Beneficiario: DaRu</td>
               </tr>
               <tr>
-                <td colspan="2">Banco</td>
-                <td colspan="6">BBVA Mexico (Pesos Mexicanos)</td>
+                <td colspan="4">2. Ingrese los datos de registro para concluir con la operación.</td>
+                <td colspan="4">Banco destino: BBVA Bancomer</td>
               </tr>
               <tr>
-                <td colspan="2">Nombre</td>
-                <td colspan="6">Daru Innovacion S de RL de CV</td>
+                <td colspan="4">Referencia: ${charge.chargeOpenpay.payment_method.name}</td>
+                <td colspan="4">Clabe: 012914002014222862</td>
               </tr>
               <tr>
-                <td colspan="2">Clabe</td>
-                <td colspan="6">0121 80001201 4699 46</td>
+                <td colspan="4">Concepto: Pedido-${charge.deliveryId}</td>
+                <td colspan="4">Concepto de pago: ${charge.chargeOpenpay.payment_method.name}</td>
               </tr>
               <tr>
-                <td colspan="2">Referencia</td>
-                <td colspan="6">${charge.chargeOpenpay.payment_method.name}</td>
+                <td colspan="4">&nbsp;</td>
+                <td colspan="4">Referencia/Convenio: ${charge.chargeOpenpay.payment_method.agreement}</td>
               </tr>
               <tr>
-                <td colspan="2">Convenio</td>
-                <td colspan="6">${charge.chargeOpenpay.payment_method.agreement}</td>
+                <td colspan="4">Importe: $ ${total.toFixed(2).toString()}</td>
+                <td colspan="4">Importe: $ ${total.toFixed(2).toString()}</td>
               </tr>
               <tr>
                 <td colspan="8">

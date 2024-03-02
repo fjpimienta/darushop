@@ -15,7 +15,7 @@
       <div class="autocomplete-suggestions" *ngIf="suggestions.length > 0" (click)="goProductPage()">
         <a [routerLink]="'/product/default/' + product.slug" class="autocomplete-suggestion"
           *ngFor="let product of suggestions">
-          <figure class="mb-0 mr-3" style="width: 40px; height: 40px;">
+          <figure class="mb-0 mr-3 figure-wrapper">
             <app-image [src]="SERVER_URL + product.sm_pictures[0].url" width="40" height="40" alt="Product"
               class="bg-transparent">
             </app-image>
