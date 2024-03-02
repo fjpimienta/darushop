@@ -43,41 +43,6 @@ export class HeaderSearchComponent implements OnInit, OnDestroy {
       if (this.timer) {
         window.clearTimeout(this.timer);
       }
-
-      // this.timer = setTimeout(() => {
-      //   this.apiService.fetchHeaderSearchData(this.searchTerm).subscribe(result => {
-      //     this.suggestions = result.products.reduce(
-      //       (acc, cur) => {
-      //         let max = 0;
-      //         let min = 99999;
-      //         cur.variants.map(item => {
-      //           if (min > item.price) {
-      //             min = item.price;
-      //           }
-      //           if (max < item.price) {
-      //             max = item.price;
-      //           }
-      //         }, []);
-
-      //         if (cur.variants.length === 0) {
-      //           min = cur.sale_price
-      //             ? cur.sale_price
-      //             : cur.price;
-      //           max = cur.price;
-      //         }
-      //         return [
-      //           ...acc,
-      //           {
-      //             ...cur,
-      //             minPrice: min,
-      //             maxPrice: max
-      //           }
-      //         ];
-      //       },
-      //       []
-      //     );
-      //   });
-      // }, 500);
     } else {
       window.clearTimeout(this.timer);
       this.suggestions = [];
@@ -101,8 +66,16 @@ export class HeaderSearchComponent implements OnInit, OnDestroy {
   }
 
   searchToggle(e: Event): void {
-    document.querySelector('.header-search .header-search-wrapper').classList.toggle('show');
-    document.querySelector('.header-search').classList.toggle('show');
+    const headerSearchWrapper = document.querySelector('.header-search .header-search-wrapper');
+    const headerSearch = document.querySelector('.header-search');
+    const formControl = document.querySelector('.header-search .form-control') as HTMLInputElement; // Aserción de tipo
+    if (headerSearchWrapper && headerSearch) {
+      headerSearchWrapper.classList.toggle('show');
+      headerSearch.classList.toggle('show');
+      if (formControl) {
+        formControl.focus();
+      }
+    }
     e.stopPropagation();
   }
 
@@ -136,9 +109,9 @@ export class HeaderSearchComponent implements OnInit, OnDestroy {
     }
   }
 
-
   onCatSelect(event: any): void {
     this.cat = event.currentTarget.value;
     this.searchProducts(this.cat);
   }
+
 }

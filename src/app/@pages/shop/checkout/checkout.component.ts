@@ -345,7 +345,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   canDeactivate(): boolean {
     if (this.idDelivery !== undefined) {
-      this.onSubmitCapture();
+      // this.onSubmitCapture();
       return true;
     }
     this.confirmationService.setConfirmationStatus(true);
@@ -362,7 +362,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           console.log('result: ', result);
           if (result && result.delivery && result.delivery.delivery) {
             const delivery = result.delivery.delivery;
-            console.log('delivery: ', delivery);
             this.delivery = delivery;
             this.onSetDelivery(this.formData, delivery);
             const discount = parseFloat(delivery.discount);
@@ -376,15 +375,24 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             });
             // Recuperar status del cargo.
             this.chargeOpenpayService.oneCharge(delivery.chargeOpenpay.id).then(charge => {
-              if (charge && charge.id && charge.order_id) {
+              if (charge && charge.chargeOpenpay.id && charge.chargeOpenpay.order_id) {
+                this.isPagado = true;
+                switch (charge.chargeOpenpay.method) {
+                  case 'card':
+                    if (charge.chargeOpenpay.status !== 'completed') {
+                      infoEventAlert('No se ha reflejado el pago del pedido.', 'Comunicarse con DaRu.');
+                      this.isPagado = false;
+                    }
+                    break;
+                  case 'bank_account':
+                    if (charge.chargeOpenpay.status !== 'completed') {
+                      infoEventAlert('No se ha reflejado el pago del pedido.', 'Intentar mas tarde. En ocasiones tarda 60 minutos en reflejarse el movimiento');
+                      this.isPagado = false;
+                    }
+                    break;
+                }
                 this.checkoutUrl = environment.checkoutUrl + charge.order_id + '&id=' + charge.id;
                 charge.redirect_url = this.checkoutUrl;
-              }
-              if (charge.method === 'bank_account' && charge.status !== 'completed') {
-                infoEventAlert('No se ha reflejado el pago del pedido.', '');
-                this.isPagado = false;
-              } else {
-                this.isPagado = true;
               }
             });
           }

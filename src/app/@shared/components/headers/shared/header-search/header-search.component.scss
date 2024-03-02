@@ -3,5 +3,12 @@
 .search-toggle.active {
   color: white !important;
   font-weight: 100 !important;
-  zoom: 1.0 !important;
+  transform: scale(1.1) !important;
+}
+
+.figure-wrapper {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 0;
+  margin-right: 3px;
 }
