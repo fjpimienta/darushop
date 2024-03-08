@@ -7,15 +7,18 @@ import { Codigopostal } from '@core/models/codigopostal.models';
 import { Country, Estado, Municipio } from '@core/models/country.models';
 import { Delivery } from '@core/models/delivery.models';
 import { OrderInput } from '@core/models/order.models';
-import { UserInput } from '@core/models/user.models';
+import { AddressInput, UserInput } from '@core/models/user.models';
 import { AuthenticationService } from '@core/services/auth.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
 import { CountrysService } from '@core/services/countrys.service';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { ExternalAuthService } from '@core/services/external-auth.service';
 import { ChargeService } from '@core/services/stripe/charge.service';
+import { UsersService } from '@core/services/users.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { infoEventAlert } from '@shared/alert/alerts';
+import { closeAlert, infoEventAlert, loadData } from '@shared/alert/alerts';
+import { basicAlert } from '@shared/alert/toasts';
+import { TYPE_ALERT } from '@shared/alert/values.config';
 import jwtDecode from 'jwt-decode';
 import { Subject, combineLatest } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -86,6 +89,7 @@ export class DashboardComponent implements OnInit {
     public countrysService: CountrysService,
     private modalService: NgbModal,
     private externalAuthService: ExternalAuthService,
+    private usersService: UsersService,
     private sanitizer: DomSanitizer
   ) {
     combineLatest([
@@ -162,7 +166,9 @@ export class DashboardComponent implements OnInit {
       selectMunicipio: ['', [Validators.required]],
       selectColonia: ['', Validators.required],
       directions: ['', Validators.required],
-      references: [''],
+      outdoorNumber: ['', Validators.required],
+      interiorNumber: [''],
+      references: ['', Validators.required],
     });
     if (this.authService.getSession() !== null) {
       if (this.verificarUsuario()) {
@@ -200,6 +206,10 @@ export class DashboardComponent implements OnInit {
               this.formDataAddress.controls.codigoPostal.setValue(direction.d_codigo);
               this.formDataAddress.controls.selectColonia.setValue(direction.d_asenta);
               this.formDataAddress.controls.directions.setValue(direction.directions);
+              this.formDataAddress.controls.outdoorNumber.setValue(direction.outdoorNumber);
+              this.formDataAddress.controls.interiorNumber.setValue(direction.interiorNumber);
+              this.formDataAddress.controls.outdoorNumber.setValue(direction.outdoorNumber);
+              this.formDataAddress.controls.interiorNumber.setValue(direction.interiorNumber);
               this.formDataAddress.controls.references.setValue(direction.references);
               if (this.countrys.length > 0) {
                 this.countrys.forEach(country => {
@@ -278,10 +288,36 @@ export class DashboardComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.log('onSubmit');
+    const email = this.formDataMain.controls.email.value;
+    let address: AddressInput = new AddressInput();
+    const addresses: AddressInput[] = [];
+    if (email !== '') {
+      address = this.setAddress(this.user.addresses, this.formDataAddress);
+      addresses.push(address);
+      console.log('this.user: ', this.user);
+      // this.user.addresses = addresses;
+      this.usersService.update(this.user).subscribe(
+        (res: any) => {
+          if (res.status) {
+            basicAlert(TYPE_ALERT.SUCCESS, res.message);
+          } else {
+            basicAlert(TYPE_ALERT.WARNING, res.message);
+          }
+        }
+      );
+    }
   }
 
   //#region Direcciones
+  setAddress(addresses: AddressInput[], formDataAddress: FormGroup): AddressInput {
+    console.log('addresses: ', addresses);
+    console.log('formDataAddress: ', formDataAddress);
+    console.log('formDataAddress.controls: ', formDataAddress.controls);
+    const userAddresses: AddressInput[] = addresses;
+    const userAddress: AddressInput = userAddresses[0];
+    return userAddress;
+  }
+
   onActiveCP(): void {
     this.byCodigopostal = !this.byCodigopostal;
     this.selectCountry = new Country();
@@ -297,6 +333,7 @@ export class DashboardComponent implements OnInit {
     if (event) {
       const cp = $(event.target).val();
       if (cp !== '') {
+        loadData('Consultando Codigo Postal', 'Esperar la carga de los envíos.');
         // Recuperar pais, estado y municipio con el CP
         const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;
@@ -335,6 +372,7 @@ export class DashboardComponent implements OnInit {
               });
             }
           }
+          closeAlert();
           return await this.colonias;
         });
       } else {
@@ -359,6 +397,8 @@ export class DashboardComponent implements OnInit {
         this.formDataAddress.controls.selectMunicipio.setValue('');
         this.formDataAddress.controls.selectColonia.setValue('');
         this.formDataAddress.controls.directions.setValue('');
+        this.formDataAddress.controls.outdoorNumber.setValue('');
+        this.formDataAddress.controls.interiorNumber.setValue('');
       }
     });
   }

@@ -580,42 +580,64 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             suppliersProd: updatedSuppliersProd,
           };
           this.cartItems[idS] = updatedItem;
-          if (item.suppliersProd.idProveedor === 'ct') {
-            this.externalAuthService.getExistenciaProductoCt(
-              this.cartItems[idS].suppliersProd
-            ).then(result => {
-              if (result && result.existenciaProductoCt) {
-                const updatedSuppliersProd: ISupplierProd = {
-                  ...item.suppliersProd,
-                  branchOffices: result.existenciaProductoCt.branchOffices
-                };
-                const suppliersProd = {
-                  ...item,
-                  suppliersProd: updatedSuppliersProd,
-                };
-                // Accede a branchOffices después de resolver la promesa
-                this.cartItems[idS] = suppliersProd;
-                console.log('branchOffices ct:', result.existenciaProductoCt.branchOffices);
-              }
-            });
-          } else if (item.suppliersProd.idProveedor === 'cva') {
-            this.externalAuthService.getPricesCvaProduct(
-              this.cartItems[idS].suppliersProd
-            ).then(result => {
-              if (result && result.existenciaProductoCva) {
-                const updatedSuppliersProd: ISupplierProd = {
-                  ...item.suppliersProd,
-                  branchOffices: result.existenciaProductoCva.branchOffices
-                };
-                const suppliersProd = {
-                  ...item,
-                  suppliersProd: updatedSuppliersProd,
-                };
-                // Accede a branchOffices después de resolver la promesa
-                this.cartItems[idS] = suppliersProd;
-                console.log('branchOffices cva:', result.existenciaProductoCva.branchOffices);
-              }
-            });
+          switch (item.suppliersProd.idProveedor) {
+            case 'ct':
+              this.externalAuthService.getExistenciaProductoCt(
+                this.cartItems[idS].suppliersProd
+              ).then(result => {
+                if (result && result.existenciaProductoCt) {
+                  const updatedSuppliersProd: ISupplierProd = {
+                    ...item.suppliersProd,
+                    branchOffices: result.existenciaProductoCt.branchOffices
+                  };
+                  const suppliersProd = {
+                    ...item,
+                    suppliersProd: updatedSuppliersProd,
+                  };
+                  // Accede a branchOffices después de resolver la promesa
+                  this.cartItems[idS] = suppliersProd;
+                  console.log('branchOffices ct:', result.existenciaProductoCt.branchOffices);
+                }
+              });
+              break;
+            case 'cva':
+              this.externalAuthService.getPricesCvaProduct(
+                this.cartItems[idS].suppliersProd
+              ).then(result => {
+                if (result && result.existenciaProductoCva) {
+                  const updatedSuppliersProd: ISupplierProd = {
+                    ...item.suppliersProd,
+                    branchOffices: result.existenciaProductoCva.branchOffices
+                  };
+                  const suppliersProd = {
+                    ...item,
+                    suppliersProd: updatedSuppliersProd,
+                  };
+                  // Accede a branchOffices después de resolver la promesa
+                  this.cartItems[idS] = suppliersProd;
+                  console.log('branchOffices cva:', result.existenciaProductoCva.branchOffices);
+                }
+              });
+              break;
+            case 'ingram':
+              this.externalAuthService.getExistenciaProductoIngram(
+                this.cartItems[idS].suppliersProd
+              ).then(result => {
+                if (result && result.existenciaProductoIngram) {
+                  const updatedSuppliersProd: ISupplierProd = {
+                    ...item.suppliersProd,
+                    branchOffices: result.existenciaProductoIngram.branchOffices
+                  };
+                  const suppliersProd = {
+                    ...item,
+                    suppliersProd: updatedSuppliersProd,
+                  };
+                  // Accede a branchOffices después de resolver la promesa
+                  this.cartItems[idS] = suppliersProd;
+                  console.log('branchOffices ingram:', result.existenciaProductoIngram.branchOffices);
+                }
+              });
+              break;
           }
         }
       });
