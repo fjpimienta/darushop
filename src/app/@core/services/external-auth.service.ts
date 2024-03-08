@@ -17,6 +17,7 @@ import { IOrderCva } from '@core/interfaces/suppliers/ordercva.interface';
 import { IEnvioCt, IGuiaConnect, IProductoCt } from '@core/interfaces/suppliers/orderct.interface';
 import { IOrderCvaResponse } from '@core/interfaces/suppliers/ordercvaresponse.interface';
 import { Result } from '@core/models/result.models';
+import { EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY } from '@graphql/operations/query/suppliers/ingram';
 
 declare const require;
 const axios = require('axios');
@@ -1415,6 +1416,23 @@ export class ExternalAuthService extends ApiService {
       }, {}).subscribe(
         (result: any) => {
           resolve(result.statusOrdersCt);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+  //#endregion
+
+  //#region Ingram
+  async getExistenciaProductoIngram(suppliersProd: ISupplierProd): Promise<any> {
+    const existenciaProducto = {
+      "existenciaProducto": suppliersProd
+    }
+    return new Promise<any>((resolve, reject) => {
+      this.get(EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY, existenciaProducto, {}).subscribe(
+        (result: any) => {
+          resolve(result.existenciaProductoIngram);
         },
         (error: any) => {
           reject(error);

@@ -109,26 +109,26 @@
                         <div class="col-sm-6 form-group">
                           <label>Nombre(s) *</label>
                           <input type="text" class="form-control" name="name" formControlName="name"
-                            [attr.disabled]="'true'" required>
+                            [attr.disabled]="'true'" required title="Nombre">
                         </div>
 
                         <div class="col-sm-6 form-group">
                           <label>Apellido(s) *</label>
                           <input type="text" class="form-control" name="lastname" formControlName="lastname"
-                            [attr.disabled]="'true'" required>
+                            [attr.disabled]="'true'" required title="Apellido">
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-sm-6">
                           <label>Tel&eacute;fono *</label>
                           <input type="text" class="form-control" name="phone" formControlName="phone"
-                            [attr.disabled]="'true'" required>
+                            [attr.disabled]="'true'" required title="Telefono">
                         </div>
 
                         <div class="col-sm-6">
                           <label>Correo Electr&oacute;nico *</label>
                           <input type="text" class="form-control" name="email" formControlName="email"
-                            [attr.disabled]="'true'" required>
+                            [attr.disabled]="'true'" required title="Correo">
                         </div>
                       </div>
 
@@ -182,14 +182,24 @@
                       </div> -->
                       </div>
                       <div class="row">
-                        <div class="col-sm-6 form-check">
-                          <label>¿Conoces el Código Postal? Activar/Desactivar captura</label>
-                          <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
-                            (change)="onActiveCP()" formControlName="byCodigopostal">
-                        </div>
                         <div class="col-sm-6 form-group">
+                          <div class="row codigo_postal align-items-center">
+                            <div class="col-sm-10 col-8">
+                              <label class="align-middle">¿Conoces el Código Postal?</label>
+                            </div>
+                            <div class="col-sm-2 col-4 d-flex align-items-center">
+                              <input type="checkbox" name="byCodigopostal" class="form-control form-check-input"
+                                title="CP" (change)="onActiveCP()" formControlName="byCodigopostal">
+                            </div>
+                          </div>
+                        </div>
+                        <!-- </div>
+                      <div class="row"> -->
+                        <div class="col-sm-3 form-group">
                           <label>Código Postal *</label>
-                          <input type="text" name="codigoPostal" class="form-control" required
+                        </div>
+                        <div class="col-sm-3 form-group">
+                          <input type="text" name="codigoPostal" class="form-control" required title="Código Postal"
                             formControlName="codigoPostal" (blur)="onSetCps($event)"
                             [attr.disabled]="!byCodigopostal ? 'true' : null">
                         </div>
@@ -197,8 +207,8 @@
                       <div class="row">
                         <div class="col-sm-3 form-group">
                           <label>Pais *</label>
-                          <select class="form-control" name="selectCountry" required formControlName="selectCountry"
-                            (change)="onSetEstados($event.target)">
+                          <select class="form-control" name="selectCountry" required title="Pais"
+                            formControlName="selectCountry" (change)="onSetEstados($event.target)">
                             <option [ngValue]="''" [selected]="'' == selectCountry.c_pais">Elije un País</option>
                             <option *ngFor="let country of countrys" [ngValue]="country.c_pais">
                               {{country.d_pais}}
@@ -207,8 +217,8 @@
                         </div>
                         <div class="col-sm-3 form-group">
                           <label>Estado *</label>
-                          <select class="form-control" name="selectEstado" required formControlName="selectEstado"
-                            (change)="onSetMunicipios($event.target)">
+                          <select class="form-control" name="selectEstado" required title="Estado"
+                            formControlName="selectEstado" (change)="onSetMunicipios($event.target)">
                             <option [ngValue]="''" [selected]="'' == selectEstado.c_estado">Elije un Estado</option>
                             <option *ngFor="let estado of estados" [ngValue]="estado.c_estado">
                               {{estado.d_estado}}
@@ -217,8 +227,8 @@
                         </div>
                         <div class="col-sm-6 form-group">
                           <label>Municipio *</label>
-                          <select class="form-control" name="selectMunicipio" required formControlName="selectMunicipio"
-                            (change)="onSetColonias($event.target)">
+                          <select class="form-control" name="selectMunicipio" title="Municipio" required
+                            formControlName="selectMunicipio" (change)="onSetColonias($event.target)">
                             <option [ngValue]="''" [selected]="'' == selectMunicipio.c_mnpio">Elije un Municipio
                             </option>
                             <option *ngFor="let municipio of municipios" [ngValue]="municipio.c_mnpio">
@@ -231,9 +241,9 @@
                         <div class="col-sm-6">
                           <label>Colonia *</label>
                           <input *ngIf="!byCodigopostal" type="text" name="selectColonia" class="form-control"
-                            formControlName="selectColonia" placeholder="" required>
+                            formControlName="selectColonia" placeholder="" required title="Coloni">
                           <select *ngIf="byCodigopostal" class="form-control" name="selectColonia"
-                            formControlName="selectColonia" required (change)="onSetCps(null)">
+                            formControlName="selectColonia" required title="Colonia" (change)="onSetCps(null)">
                             <option [ngValue]="''" [selected]="'' == selectColonia">Elije la Colonia</option>
                             <option *ngFor="let colonia of colonias" [ngValue]="colonia">
                               {{colonia}}
@@ -247,17 +257,37 @@
                         </div>
                       </div>
                       <div class="row">
-                        <label>Referencias</label>
-                        <textarea class="form-control" cols="30" rows="4" name="references" formControlName="references"
-                          placeholder="Referencias de entrega"></textarea>
+                        <div class="col-sm-6">
+                          <label for="outdoorNumber">N&uacute;mero Exterior *</label>
+                          <input type="text" class="form-control" name="outdoorNumber" formControlName="outdoorNumber"
+                            placeholder="N&uacute;mero Exterior" maxlength="10" required>
+                          <div class="alert alert-danger"
+                            *ngIf="formDataAddress.get('outdoorNumber').invalid && (formDataAddress.get('outdoorNumber').dirty || formDataAddress.get('outdoorNumber').touched)">
+                            <div *ngIf="formDataAddress.get('outdoorNumber').hasError('required')">El N&uacute;mero
+                              Exterior
+                              requerida.</div>
+                            <div *ngIf="formDataAddress.get('outdoorNumber').hasError('outdoorNumber')">Teclear el
+                              N&uacute;mero
+                              Exterior.</div>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <label for="interiorNumber">N&uacute;mero Interior</label>
+                          <input type="text" class="form-control" name="interiorNumber" formControlName="interiorNumber"
+                            placeholder="N&uacute;mero Interior" maxlength="10">
+                        </div>
                       </div>
-
-
-                      <!-- <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
-                        [disabled]="!formDataAddress.valid">
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <label>Referencias</label>
+                          <textarea class="form-control" cols="30" rows="4" name="references"
+                            formControlName="references" placeholder="Referencias de entrega"></textarea>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" [disabled]="!formDataAddress.valid">
                         <span class="btn-text">Guarda la Direcci&oacute;n</span>
                         <span class="btn-hover-text" (click)="onSubmit()">Guardar</span>
-                      </button> -->
+                      </button>
                     </form>
                   </ng-template>
                 </li>
