@@ -352,13 +352,17 @@ export class DashboardComponent implements OnInit {
                       this.formDataAddress.controls.selectEstado.setValue(estado.c_estado);
                       this.selectEstado.c_estado = estado.c_estado;
                       this.selectEstado.d_estado = estado.d_estado;
-                      estado.municipios.forEach(municipio => {
-                        if (municipio.c_mnpio === this.cps[0].c_mnpio) {
+                      for (const idM of Object.keys(estado.municipios)) {
+                        const municipio: Municipio = estado.municipios[idM];
+                        // Igualar municipios eliminando acentos y convirtiendo a minúsculas
+                        const municipio1 = this.removeAccents(municipio.D_mnpio).toLowerCase();
+                        const municipio2 = this.removeAccents(this.cps[0].D_mnpio).toLowerCase();
+                        if (municipio1 === municipio2) {
                           this.formDataAddress.controls.selectMunicipio.setValue(municipio.c_mnpio);
                           this.selectMunicipio.c_mnpio = municipio.c_mnpio;
                           this.selectMunicipio.D_mnpio = municipio.D_mnpio;
                         }
-                      });
+                      }
                     }
                   });
                 }
@@ -449,6 +453,19 @@ export class DashboardComponent implements OnInit {
 
       this.modalService.open(content, { size: 'lg', centered: true, windowClass: 'custom-modal' });
     }
+  }
+
+  removeAccents(text: string): string {
+    const accents = 'ÁÉÍÓÚáéíóú';
+    const accentsOut = 'AEIOUaeiou';
+    const mapAccents: { [key: string]: string } = {};
+    const textArray = text.split('');
+    accents.split('').forEach((accent, index) => {
+      mapAccents[accent] = accentsOut[index];
+    });
+    return textArray
+      .map((char) => mapAccents[char] || char)
+      .join('');
   }
 
   async getStatusOrderCt(folio: string): Promise<any> {
