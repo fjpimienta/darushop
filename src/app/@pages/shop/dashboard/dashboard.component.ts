@@ -198,20 +198,19 @@ export class DashboardComponent implements OnInit {
         this.formDataMain.controls.email.setValue(this.user.email);
 
         // Direccion de Entrega
-        if (this.session.user?.addresses.length > 0) {
+        if (this.session.user && this.session.user.addresses && this.session.user.addresses.length > 0) {
           this.countrysService.countrys$.subscribe((result) => {
             this.countrys = result;
-            this.session.user?.addresses.forEach(direction => {
+            this.session.user.addresses.forEach(direction => {
               // if (direction.dir_delivery_main === true) {
               this.formDataAddress.controls.codigoPostal.setValue(direction.d_codigo);
               this.formDataAddress.controls.selectColonia.setValue(direction.d_asenta);
               this.formDataAddress.controls.directions.setValue(direction.directions);
-              this.formDataAddress.controls.outdoorNumber.setValue(direction.outdoorNumber);
               this.formDataAddress.controls.interiorNumber.setValue(direction.interiorNumber);
               this.formDataAddress.controls.outdoorNumber.setValue(direction.outdoorNumber);
-              this.formDataAddress.controls.interiorNumber.setValue(direction.interiorNumber);
               this.formDataAddress.controls.references.setValue(direction.references);
               if (this.countrys.length > 0) {
+                this.codigoPostal = direction.d_codigo;
                 this.countrys.forEach(country => {
                   if (country.c_pais === direction.c_pais) {
                     this.estados = country.estados;
@@ -275,7 +274,7 @@ export class DashboardComponent implements OnInit {
 
   logout(): void {
     this.authService.resetSession();
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 
   decodeToken() {
@@ -294,12 +293,12 @@ export class DashboardComponent implements OnInit {
     if (email !== '') {
       address = this.setAddress(this.user.addresses, this.formDataAddress);
       addresses.push(address);
-      console.log('this.user: ', this.user);
-      // this.user.addresses = addresses;
+      this.user.addresses = addresses;
       this.usersService.update(this.user).subscribe(
         (res: any) => {
           if (res.status) {
             basicAlert(TYPE_ALERT.SUCCESS, res.message);
+            this.logout();
           } else {
             basicAlert(TYPE_ALERT.WARNING, res.message);
           }
@@ -310,11 +309,12 @@ export class DashboardComponent implements OnInit {
 
   //#region Direcciones
   setAddress(addresses: AddressInput[], formDataAddress: FormGroup): AddressInput {
-    console.log('addresses: ', addresses);
-    console.log('formDataAddress: ', formDataAddress);
-    console.log('formDataAddress.controls: ', formDataAddress.controls);
-    const userAddresses: AddressInput[] = addresses;
-    const userAddress: AddressInput = userAddresses[0];
+    let userAddress: AddressInput = new AddressInput;
+    userAddress = addresses[0];
+    userAddress.directions = formDataAddress.controls.directions.value;
+    userAddress.interiorNumber = formDataAddress.controls.interiorNumber.value || '';
+    userAddress.outdoorNumber = formDataAddress.controls.outdoorNumber.value || '';
+    userAddress.references = formDataAddress.controls.references.value || '';
     return userAddress;
   }
 
@@ -327,12 +327,18 @@ export class DashboardComponent implements OnInit {
     this.formDataAddress.controls.selectCountry.setValue('');
     this.formDataAddress.controls.selectEstado.setValue('');
     this.formDataAddress.controls.selectMunicipio.setValue('');
+    this.formDataAddress.controls.selectColonia.setValue('');
+    this.formDataAddress.controls.directions.setValue('');
+    this.formDataAddress.controls.interiorNumber.setValue('');
+    this.formDataAddress.controls.outdoorNumber.setValue('');
+    this.formDataAddress.controls.references.setValue('');
   }
 
   async onSetCps(event): Promise<void> {
     if (event) {
       const cp = $(event.target).val();
       if (cp !== '') {
+        this.codigoPostal = cp;
         loadData('Consultando Codigo Postal', 'Esperar la carga de los envíos.');
         // Recuperar pais, estado y municipio con el CP
         const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
@@ -422,6 +428,11 @@ export class DashboardComponent implements OnInit {
   }
 
   onSetColonias(event): void {
+    if (event) {
+      const objColonia = event.value.split(':', 2);
+      const colonia = objColonia[1];
+      this.selectCp = this.cps.find(cp => cp.d_asenta.trim().toLowerCase() === colonia.trim().toLowerCase());
+    }
   }
   //#endregion
 
@@ -470,7 +481,6 @@ export class DashboardComponent implements OnInit {
 
   async getStatusOrderCt(folio: string): Promise<any> {
     const confirmarPedidoCt = await this.externalAuthService.statusOrdersCt(folio);
-    console.log('confirmarPedidoCt: ', confirmarPedidoCt);
     return confirmarPedidoCt;
   }
 
