@@ -1050,7 +1050,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                       this.selectEstado.d_estado = estado.d_estado;
                       for (const idM of Object.keys(estado.municipios)) {
                         const municipio: Municipio = estado.municipios[idM];
-                        if (municipio.c_mnpio === this.cps[0].c_mnpio) {
+                        // Igualar municipios eliminando acentos y convirtiendo a minúsculas
+                        const municipio1 = this.removeAccents(municipio.D_mnpio).toLowerCase();
+                        const municipio2 = this.removeAccents(this.cps[0].D_mnpio).toLowerCase();
+                        if (municipio1 === municipio2) {
                           this.formData.controls.selectMunicipio.setValue(municipio.c_mnpio);
                           this.selectMunicipio.c_mnpio = municipio.c_mnpio;
                           this.selectMunicipio.D_mnpio = municipio.D_mnpio;
