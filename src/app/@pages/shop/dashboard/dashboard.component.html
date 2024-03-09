@@ -1,5 +1,5 @@
 <main class="main">
-  <div class="page-header text-center" style="background-image: url('assets/images/banners/banner-dashboard.jpg')">
+  <div class="page-header text-center">
     <div class="container">
       <h1 class="page-title text-white">Mi Cuenta<span class="text-white"></span></h1>
     </div>
@@ -23,25 +23,25 @@
       <div class="container">
         <div class="row">
           <aside class="col-md-4 col-lg-3">
-            <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist" tabClick>
-              <li class="nav-item">
-                <a class="nav-link active" href="javascript:;" role="tab" (click)="nav.select('tab-1')">Tablero</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="javascript:;" role="tab" (click)="nav.select('tab-2')">Ordenes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="javascript:;" role="tab" (click)="nav.select('tab-3')">Detalles de la
-                  Cuenta</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="javascript:;" role="tab" (click)="nav.select('tab-4')">Direcci&oacute;n de
-                  Env&iacute;o</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" (click)="logout()">Cerrar Sesión</a>
-              </li>
-            </ul>
+            <nav class="nav nav-dashboard flex-column mb-3 mb-md-0" role="navigation">
+              <ul class="list-unstyled">
+                <li>
+                  <a class="nav-link active" href="javascript:;" (click)="nav.select('tab-1')">Tablero</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="javascript:;" (click)="nav.select('tab-2')">Ordenes</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="javascript:;" (click)="nav.select('tab-3')">Detalles de la Cuenta</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="javascript:;" (click)="nav.select('tab-4')">Dirección de Envío</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="javascript:;" (click)="logout()">Cerrar Sesión</a>
+                </li>
+              </ul>
+            </nav>
           </aside>
 
           <div class="col-md-8 col-lg-9">
@@ -243,7 +243,8 @@
                           <input *ngIf="!byCodigopostal" type="text" name="selectColonia" class="form-control"
                             formControlName="selectColonia" placeholder="" required title="Coloni">
                           <select *ngIf="byCodigopostal" class="form-control" name="selectColonia"
-                            formControlName="selectColonia" required title="Colonia" (change)="onSetCps(null)">
+                            formControlName="selectColonia" required title="Colonia"
+                            (change)="onSetColonias($event.target)">
                             <option [ngValue]="''" [selected]="'' == selectColonia">Elije la Colonia</option>
                             <option *ngFor="let colonia of colonias" [ngValue]="colonia">
                               {{colonia}}
@@ -284,7 +285,8 @@
                             formControlName="references" placeholder="Referencias de entrega"></textarea>
                         </div>
                       </div>
-                      <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" [disabled]="!formDataAddress.valid">
+                      <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"
+                        [disabled]="!formDataAddress.valid">
                         <span class="btn-text">Guarda la Direcci&oacute;n</span>
                         <span class="btn-hover-text" (click)="onSubmit()">Guardar</span>
                       </button>
@@ -565,7 +567,8 @@
         </ul>
         <div [ngbNavOutlet]="nav"></div>
       </div>
-      <button type="button" class="btn btn-info" (click)="modal.close('Close click')">Cerrar</button>
+      <button type="button" class="btn btn-info" (click)="modal.close('Close click')"
+        [disabled]="!formDataMain.valid">Cerrar</button>
     </div>
   </div>
   <div class="modal-footer">
