@@ -1997,7 +1997,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onSetColonias(event): void {
-
+    if (event) {
+      const objColonia = event.value.split(':', 2);
+      const colonia = objColonia[1];
+      this.selectCp = this.cps.find(cp => cp.d_asenta.trim().toLowerCase() === colonia.trim().toLowerCase());
+    }
   }
   //#endregion Direccion
 
