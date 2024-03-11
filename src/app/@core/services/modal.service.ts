@@ -23,7 +23,8 @@ export class ModalService {
   timer: any;
 
   private modalOption1: NgbModalOptions = {
-    centered: true,
+    backdrop: 'static', // Evita que se cierre al hacer clic fuera del modal
+    keyboard: false,    // Evita que se cierre al presionar la tecla Escape    centered: true,
     size: 'xl',
     windowClass: 'newsletter-modal',
     beforeDismiss: async () => {

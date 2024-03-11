@@ -96,8 +96,9 @@ export class NewsletterModalComponent implements OnInit {
   }
 
   closeModal() {
-    this.modalService.dismiss();
-    this.checkState && Cookie.set(`hideNewsletter-${environment.demo}`, "true", { expires: 7 });
+    // TO DO - Descomentar para poder ocultarlo.
+    // this.modalService.dismiss();
+    // this.checkState && Cookie.set(`hideNewsletter-${environment.demo}`, "true", { expires: 7 });
   }
 
   async onSubmit() {
