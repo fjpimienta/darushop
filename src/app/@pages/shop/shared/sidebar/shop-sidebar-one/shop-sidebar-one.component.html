@@ -12,7 +12,7 @@
           <div class="filter-items">
             <div class="filter-item" *ngFor="let item of brands; let index = index;">
               <div *ngIf="item.slug!=''" class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" [id]="item.slug"
+                <input type="checkbox" class="custom-control-input" [id]="item.slug" title="Marca"
                   [checked]="containsAttrInUrl('brand', item.slug)" (change)="onAttrClick('brand', item.slug)">
                 <label class="custom-control-label" [for]="item.slug">{{ item.description }}</label>
               </div>
@@ -29,7 +29,8 @@
           <div class="filter-items filter-items-count">
             <div class="filter-item">
               <ul>
-                <li *ngIf="totalComputadoras>0 || totalLaptops>0 || totalDesktops>0 || totalWorkStations>0 || totalTablets>0">
+                <li
+                  *ngIf="totalComputadoras>0 || totalLaptops>0 || totalDesktops>0 || totalWorkStations>0 || totalTablets>0">
                   <a [routerLink]="[]" [queryParams]="{category: 'computadoras'}" queryParamsHandling="merge"
                     routerLinkActive="active">Computadoras</a>
                   <ul class="detail-ul">
@@ -71,7 +72,8 @@
                     </li>
                   </ul>
                 </li>
-                <li *ngIf="totalImpresion>0 || totalImpresoras>0 || totalEscaners>0 || totalConsumibles>0 || totalRefacciones>0">
+                <li
+                  *ngIf="totalImpresion>0 || totalImpresoras>0 || totalEscaners>0 || totalConsumibles>0 || totalRefacciones>0">
                   <a [routerLink]="[]" [queryParams]="{category: 'impresion'}" queryParamsHandling="merge"
                     routerLinkActive="active">Impresión</a>
                   <ul class="detail-ul">
@@ -93,7 +95,8 @@
                     </li>
                   </ul>
                 </li>
-                <li *ngIf="totalEnergia>0 || totalNoBreakYUps>0 || totalReguladores>0 || totalMulticontacto>0 || totalBateriasParaUps>0">
+                <li
+                  *ngIf="totalEnergia>0 || totalNoBreakYUps>0 || totalReguladores>0 || totalMulticontacto>0 || totalBateriasParaUps>0">
                   <a [routerLink]="[]" [queryParams]="{category: 'energia'}" queryParamsHandling="merge"
                     routerLinkActive="active">Energia</a>
                   <ul class="detail-ul">
@@ -138,7 +141,8 @@
                     </li>
                   </ul>
                 </li>
-                <li *ngIf="totalRedes>0 || totalAccessPoint>0 || totalSwitches>0 || totalAdaptadoresDeRed>0 || totalTarjetasDeRed>0">
+                <li
+                  *ngIf="totalRedes>0 || totalAccessPoint>0 || totalSwitches>0 || totalAdaptadoresDeRed>0 || totalTarjetasDeRed>0">
                   <a [routerLink]="[]" [queryParams]="{category: 'redes'}" queryParamsHandling="merge"
                     routerLinkActive="active">Redes</a>
                   <ul class="detail-ul">
@@ -162,7 +166,8 @@
                     </li>
                   </ul>
                 </li>
-                <li *ngIf="totalComponentes>0 || totalMemoriasRam>0 || totalDiscosDuros>0 || totalProcesadores>0 || totalFuentesDePoder>0 || totalPlacasMadres>0 || totalGabinetes>0">
+                <li
+                  *ngIf="totalComponentes>0 || totalMemoriasRam>0 || totalDiscosDuros>0 || totalProcesadores>0 || totalFuentesDePoder>0 || totalPlacasMadres>0 || totalGabinetes>0">
                   <a [routerLink]="[]" [queryParams]="{category: 'componentes'}" queryParamsHandling="merge"
                     routerLinkActive="active">Componentes</a>
                   <ul class="detail-ul">
@@ -194,7 +199,8 @@
                     </li>
                   </ul>
                 </li>
-                <li *ngIf="totalAlmacenamiento>0 || totalDiscosDurosMecanicos>0 || totalDiscosDurosSolidos>0 || totalMemoriasUsb>0 || totalDiscosDurosExternos>0 || totalLectoresDeMemorias>0 || totalGabineteParaDiscoDuro>0">
+                <li
+                  *ngIf="totalAlmacenamiento>0 || totalDiscosDurosMecanicos>0 || totalDiscosDurosSolidos>0 || totalMemoriasUsb>0 || totalDiscosDurosExternos>0 || totalLectoresDeMemorias>0 || totalGabineteParaDiscoDuro>0">
                   <a [routerLink]="[]" [queryParams]="{category: 'almacenamiento'}" queryParamsHandling="merge"
                     routerLinkActive="active">Almacenamiento</a>
                   <ul class="detail-ul">
@@ -234,9 +240,9 @@
                     </li>
                   </ul>
                 </li>
-                <li *ngIf="totalAccesorios>0 || totalTeclados>0 || totalMouses>0 || totalAudifonos>0 || totalBocinas>0 || totalMochilas>0 || totalHubs>0 || totalMousepads>0">
-                  <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}" queryParamsHandling="merge"
-                    routerLinkActive="active">Accesorios</a>
+                <li *ngIf="totalAccesorios>0 || totalTeclados>0 || totalMouses>0 || totalAudifonos>0 || totalBocinas>0 || totalMochilas>0 || totalHubs>0 || totalMousepads>0 || totalDiscosDurosA>0">
+                  <a [routerLink]=" []" [queryParams]="{category: 'accesorios'}" queryParamsHandling="merge"
+                  routerLinkActive="active">Accesorios</a>
                   <ul class="detail-ul">
                     <li *ngIf="totalTeclados>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'teclados'}"
@@ -265,6 +271,10 @@
                     <li *ngIf="totalMousepads>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'mousepads'}"
                         queryParamsHandling="merge" routerLinkActive="active">Mousepads</a>
+                    </li>
+                    <li *ngIf="totalDiscosDurosA>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'discosduros'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Discos Duros</a>
                     </li>
                   </ul>
                 </li>

@@ -4,8 +4,8 @@
 
     <form action="#" method="get" class="mobile-search" (submit)="submitSearchForm($event)">
       <label for="mobile-search" class="sr-only">Buscar</label>
-      <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="¿Qué producto buscas?"
-        required>
+      <input type="search" class="form-control" name="mobile-search" id="mobile-search"
+        placeholder="¿Qué producto buscas?" required>
       <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
     </form>
     <nav class="mobile-nav">
@@ -263,7 +263,11 @@
                 </li>
                 <li>
                   <a [routerLink]="['categoria']"
-                    [queryParams]="{category: 'accesorios', subCategory: 'Mousepads'}">Mousepads</a>
+                    [queryParams]="{category: 'accesorios', subCategory: 'mousepads'}">Mousepads</a>
+                </li>
+                <li>
+                  <a [routerLink]="['categoria']"
+                    [queryParams]="{category: 'accesorios', subCategory: 'discosduros'}">Discos Duros</a>
                 </li>
               </ul>
             </li>
