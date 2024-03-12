@@ -76,6 +76,7 @@ export class ShopSidebarOneComponent implements OnInit, OnChanges {
   totalMochilas = 0;
   totalHubs = 0;
   totalMousepads = 0;
+  totalDiscosDurosA = 0;
 
   constructor(
     public activeRoute: ActivatedRoute,
