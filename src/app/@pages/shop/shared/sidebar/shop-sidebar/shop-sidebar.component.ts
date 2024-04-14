@@ -192,7 +192,7 @@ export class ShopSidebarComponent implements OnInit, OnChanges {
     this.totalHubs = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'hubs');
     this.totalMousepads = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'mousepads');
     this.totalDiscosDurosA = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'discosduros');
-    this.totalMousepads = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'audio-y-video');
+    this.totalAudioyVideo = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'audio-y-video');
   }
 
   private sortCatalogs(catalogs: Catalog[]): void {
