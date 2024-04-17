@@ -18,6 +18,7 @@ import { IEnvioCt, IGuiaConnect, IProductoCt } from '@core/interfaces/suppliers/
 import { IOrderCvaResponse } from '@core/interfaces/suppliers/ordercvaresponse.interface';
 import { Result } from '@core/models/result.models';
 import { EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY } from '@graphql/operations/query/suppliers/ingram';
+import { EXISTENCIAPRODUCTOSSYSCOM_LIST_QUERY } from '@graphql/operations/query/suppliers/syscom';
 
 declare const require;
 const axios = require('axios');
@@ -1433,6 +1434,23 @@ export class ExternalAuthService extends ApiService {
       this.get(EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY, existenciaProducto, {}).subscribe(
         (result: any) => {
           resolve(result.existenciaProductoIngram);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+  //#endregion
+
+   //#region Syscom
+   async getExistenciaProductoSyscom(suppliersProd: ISupplierProd): Promise<any> {
+    const existenciaProducto = {
+      "existenciaProducto": suppliersProd
+    }
+    return new Promise<any>((resolve, reject) => {
+      this.get(EXISTENCIAPRODUCTOSSYSCOM_LIST_QUERY, existenciaProducto, {}).subscribe(
+        (result: any) => {
+          resolve(result.existenciaProductoSyscom);
         },
         (error: any) => {
           reject(error);

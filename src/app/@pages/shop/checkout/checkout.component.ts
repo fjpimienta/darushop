@@ -55,6 +55,7 @@ import { Cupon } from '@core/models/cupon.models';
 import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 import { CheckoutExitConfirmationService } from '@core/services/navigationConfirmation.service';
 import { ISupplierProd } from '@core/interfaces/product.interface';
+import { OrderSyscomService } from '@core/services/suppliers/syscom.service';
 
 declare var $: any;
 declare var OpenPay: any
@@ -210,7 +211,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public invoiceConfigsService: InvoiceConfigsService,
     public welcomesService: WelcomesService,
     private icommktsService: IcommktsService,
-    private confirmationService: CheckoutExitConfirmationService
+    private confirmationService: CheckoutExitConfirmationService,
+    private orderSyscomService: OrderSyscomService
   ) {
     try {
       this.activeRoute.queryParams.subscribe(params => {
@@ -635,6 +637,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   // Accede a branchOffices después de resolver la promesa
                   this.cartItems[idS] = suppliersProd;
                   console.log('branchOffices ingram:', result.existenciaProductoIngram.branchOffices);
+                }
+              });
+              break;
+            case 'syscom':
+              this.externalAuthService.getExistenciaProductoSyscom(
+                this.cartItems[idS].suppliersProd
+              ).then(result => {
+                if (result && result.existenciaProductoSyscom) {
+                  const updatedSuppliersProd: ISupplierProd = {
+                    ...item.suppliersProd,
+                    branchOffices: result.existenciaProductoSyscom.branchOffices
+                  };
+                  const suppliersProd = {
+                    ...item,
+                    suppliersProd: updatedSuppliersProd,
+                  };
+                  // Accede a branchOffices después de resolver la promesa
+                  this.cartItems[idS] = suppliersProd;
+                  console.log('branchOffices syscom:', result.existenciaProductoSyscom.branchOffices);
                 }
               });
               break;
