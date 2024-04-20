@@ -7,7 +7,7 @@ import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment } from '@core/models/shipment.models';
-import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
+import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA, ProductShipmentSyscom } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { ADD_ORDER_CT, CONFIRM_ORDER_CT, EXISTENCIAPRODUCTOSCT_LIST_QUERY, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY, STATUS_ORDER_CT } from '@graphql/operations/query/suppliers/ct';
 import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, EXISTENCIAPRODUCTOSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
@@ -19,6 +19,9 @@ import { IOrderCvaResponse } from '@core/interfaces/suppliers/ordercvaresponse.i
 import { Result } from '@core/models/result.models';
 import { EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY } from '@graphql/operations/query/suppliers/ingram';
 import { EXISTENCIAPRODUCTOSSYSCOM_LIST_QUERY } from '@graphql/operations/query/suppliers/syscom';
+import { IDireccionSyscom, IOrderSyscom } from '@core/models/suppliers/syscom.models';
+import { ADD_ORDER_SYSCOM } from '@graphql/operations/mutation/suppliers/syscom';
+import { FormGroup } from '@angular/forms';
 
 declare const require;
 const axios = require('axios');
@@ -642,7 +645,12 @@ export class ExternalAuthService extends ApiService {
     supplier: ISupplier,
     apiSelect: IApis,
     warehouse: Warehouse,
-    tokenJson: boolean
+    tokenJson: boolean,
+    formData: FormGroup,
+    pais: string,
+    estado: string,
+    ciudad: string,
+    colonia: string
   ): Promise<any> {
     try {
       let token: string;
@@ -674,7 +682,6 @@ export class ExternalAuthService extends ApiService {
             result.data = shippmentsCt.shippingCtRates
             return await result;
           }
-
           let envioMasEconomico = null;
           let costoMasBajo = shippmentsCt.shippingCtRates.respuesta.cotizaciones[0].total;
           for (const envio of shippmentsCt.shippingCtRates.respuesta.cotizaciones) {            // Recuperar el envio mas economico
@@ -721,6 +728,65 @@ export class ExternalAuthService extends ApiService {
           resultCva.message = shippmentsCva.message;
           console.log('resultCva.Error: ', resultCva);
           return await resultCva;
+        case 'syscom':
+          const productosSyscom: ProductShipmentSyscom[] = [];
+          for (const id of Object.keys(warehouse.productShipments)) {
+            const pS: ProductShipment = warehouse.productShipments[id];
+            const newPSS: ProductShipmentSyscom = new ProductShipmentSyscom();
+            newPSS.id = parseInt(pS.producto);
+            newPSS.tipo = 'nuevo';
+            newPSS.cantidad = pS.cantidad;
+            productosSyscom.push(newPSS);
+          }
+          console.log('productosSyscom: ', productosSyscom);
+          const direccionSyscom: IDireccionSyscom = new IDireccionSyscom();
+          direccionSyscom.atencion_a = formData && formData.controls.name.value !== '' ? formData.controls.name.value + ' ' + formData.controls.lastname.value : 'Cotizacion DARU';
+          direccionSyscom.calle = formData && formData.controls.directions ? formData.controls.directions.value : '';
+          direccionSyscom.num_ext = formData && formData.controls.outdoorNumber.value !== '' ? formData.controls.outdoorNumber.value : '';
+          direccionSyscom.num_int = formData && formData.controls.interiorNumber.value !== '' ? formData.controls.interiorNumber.value : '';
+          direccionSyscom.colonia = formData && formData.controls.selectColonia ? formData.controls.selectColonia.value : '';
+          direccionSyscom.codigo_postal = parseInt(warehouse.cp);
+          direccionSyscom.pais = pais;
+          direccionSyscom.estado = estado;
+          direccionSyscom.ciudad = ciudad;
+          direccionSyscom.telefono = formData && formData.controls.phone.value !== '' ? formData.controls.phone.value : '';
+          const orderSyscomInput: IOrderSyscom = new IOrderSyscom();
+          orderSyscomInput.tipo_entrega = 'domicilio';
+          orderSyscomInput.direccion = direccionSyscom;
+          orderSyscomInput.metodo_pago = 'transferencia';
+          orderSyscomInput.fletera = 'estafeta';
+          orderSyscomInput.productos = productosSyscom;
+          orderSyscomInput.moneda = 'mxn';
+          orderSyscomInput.uso_cfdi = 'G03';
+          orderSyscomInput.tipo_pago = 'pue';
+          orderSyscomInput.orden_compra = 'DARU-1002';
+          orderSyscomInput.ordenar = false;
+          orderSyscomInput.iva_frontera = false;
+          orderSyscomInput.forzar = false;
+          orderSyscomInput.testmode = true;
+          console.log('orderSyscomInput: ', orderSyscomInput);
+          const orderSyscom = await this.getOrderSyscom(orderSyscomInput);
+          console.log('orderSyscom: ', orderSyscom);
+          const resultSyscom: Result = new Result();
+          if (orderSyscom && orderSyscom.status && orderSyscom.saveOrderSyscom) {
+            const shipmentSyscom = new Shipment();
+            shipmentSyscom.empresa = 'estafeta';
+            shipmentSyscom.costo = orderSyscom.saveOrderSyscom.totales.flete;
+            shipmentSyscom.metodoShipping = '';
+            shipmentSyscom.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+            shipmentSyscom.orderSyscom.push(orderSyscom.saveOrderSyscom);
+            resultSyscom.status = orderSyscom.status;
+            resultSyscom.message = orderSyscom.message;
+            resultSyscom.data = shipmentSyscom;
+            console.log('resultSyscom: ', resultSyscom);
+            return await resultSyscom;
+          }
+          resultSyscom.status = orderSyscom.status;
+          resultSyscom.message = orderSyscom.message;
+          console.log('resultSyscom.Error: ', resultSyscom);
+          return await resultSyscom;
+
+          break;
         case '99minutos':
           break;
         default:
@@ -1274,6 +1340,23 @@ export class ExternalAuthService extends ApiService {
     });
   }
 
+  async getOrderSyscom(
+    orderSyscomInput: IOrderSyscom
+  ): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(ADD_ORDER_SYSCOM, {
+        orderSyscomInput
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.saveOrderSyscom);
+        },
+        (error: any) => {
+          console.log('async.getShippingSyscomRates.error: ', error);
+          reject(error);
+        });
+    });
+  }
+
   async getPricesCvaProduct(suppliersProd: ISupplierProd): Promise<any> {
     const existenciaProducto = {
       "existenciaProducto": suppliersProd
@@ -1442,8 +1525,8 @@ export class ExternalAuthService extends ApiService {
   }
   //#endregion
 
-   //#region Syscom
-   async getExistenciaProductoSyscom(suppliersProd: ISupplierProd): Promise<any> {
+  //#region Syscom
+  async getExistenciaProductoSyscom(suppliersProd: ISupplierProd): Promise<any> {
     const existenciaProducto = {
       "existenciaProducto": suppliersProd
     }

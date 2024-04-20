@@ -3,6 +3,7 @@ import { InvoiceConfigInput } from './invoiceConfig.models';
 import { ChargeOpenpayInput } from './openpay/_openpay.models';
 import { OrderCt } from './suppliers/orderct.models';
 import { OrderCva } from './suppliers/ordercva.models';
+import { OrderSyscom } from './suppliers/ordersyscom.models';
 import { UserInput } from './user.models';
 import { Warehouse } from './warehouse.models';
 
@@ -22,6 +23,7 @@ export class Delivery {
   warehouses?: Warehouse[];
   ordersCt?: OrderCt[];
   ordersCva?: OrderCva[];
+  ordersSyscom?: OrderSyscom[];
   invoiceConfig?: InvoiceConfigInput;
   statusError?: boolean;
   messageError?: string;

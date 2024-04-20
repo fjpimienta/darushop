@@ -56,6 +56,7 @@ import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 import { CheckoutExitConfirmationService } from '@core/services/navigationConfirmation.service';
 import { ISupplierProd } from '@core/interfaces/product.interface';
 import { OrderSyscomService } from '@core/services/suppliers/syscom.service';
+import { DatosEntregaSyscom, OrderSyscom } from '@core/models/suppliers/ordersyscom.models';
 
 declare var $: any;
 declare var OpenPay: any
@@ -761,6 +762,30 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
+  async updateWarehouses(warehouses: Warehouse[], formData: FormGroup) {
+    console.log('warehouses: ', warehouses);
+    for (const idW of Object.keys(warehouses)) {
+      const warehouse: Warehouse = warehouses[idW];
+      for (const idS of Object.keys(warehouse.ordersSyscom)) {
+        const orderSyscom: OrderSyscom = warehouse.ordersSyscom[idS];
+        if (formData.controls.name.value !== '') {
+          const datosEntrega: DatosEntregaSyscom = {
+            calle: formData.controls.directions.value,
+            num_exterior: formData.controls.outdoorNumber.value,
+            num_interior: formData.controls.interiorNumber.value,
+            colonia: formData.controls.selectColonia.value,
+            ciudad: this.selectMunicipio.D_mnpio,
+            estado: this.selectEstado.d_estado,
+            pais: this.selectCountry.d_pais
+          }
+          orderSyscom.datos_entrega = datosEntrega;
+        }
+        warehouse.ordersSyscom = orderSyscom;
+      }
+    }
+    return await warehouses;
+  }
+
   async onSubmit(): Promise<any> {
     if (!this.isSubmitting) {
       this.isSubmitting = true;
@@ -789,6 +814,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const chargeOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
               const user = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
+              // Validar Si hay pedidos Syscom
+              this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
+              console.log('this.warehouses: ', this.warehouses);
               const delivery: Delivery = {
                 deliveryId: deliveryId,
                 cliente: this.formData.controls.email.value,
@@ -1127,6 +1155,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
+    console.log('this.cps: ', this.cps);
+    console.log('this.formaPago: ', this.formaPago);
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
     console.log('this.warehouses: ', this.warehouses);
     if (cotizacionEnvios.status) {
@@ -1358,7 +1388,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
-            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
@@ -1432,9 +1461,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.warehouse.cp = cpDestino;
                 this.warehouse.productShipments = productsNacional;
                 if (this.warehouse.productShipments && this.warehouse.productShipments.length > 0) {
+                  // Generar la cotizacion
                   const shipmentsCost = await this.externalAuthService.onShippingEstimate(
-                    supplier, apiShipment, this.warehouse, true
+                    supplier, apiShipment, this.warehouse, true, this.formData,
+                    this.selectCountry.d_pais,
+                    this.selectEstado.d_estado,
+                    this.selectMunicipio.D_mnpio,
+                    this.colonias[0]
                   ).then(async (resultShip) => {
+                    console.log('resultShip: ', resultShip);
                     let shipment = new Shipment();
                     if (!resultShip.status) {
                       mensajeError = resultShip.message;
@@ -1453,6 +1488,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         shipment.metodoShipping = resultShip.data.metodoShipping;
                         shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
                         shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                      } else if (supplier.slug === 'syscom') {
+                        shipment.empresa = resultShip.data.empresa.toString();
+                        shipment.costo = resultShip.data.costo * 1.16;
+                        shipment.metodoShipping = resultShip.data.metodoShipping;
+                        shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
+                        shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                        if (resultShip.data.orderSyscom && resultShip.data.orderSyscom.length > 0) {
+                          shipment.orderSyscom = resultShip.data.orderSyscom;
+                          this.warehouse.ordersSyscom = resultShip.data.orderSyscom;
+                        }
                       }
                     }
                     return await shipment;
@@ -1520,7 +1565,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               shipping = result.shippings[supId];
               const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
               const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
-                shipping, apiSelectShip, this.warehouse, false)
+                shipping, apiSelectShip, this.warehouse, false, this.formData,
+                this.selectCountry.d_pais,
+                this.selectEstado.d_estado,
+                this.selectMunicipio.D_mnpio,
+                this.colonias[0]
+              )
                 .then(async (resultShipment) => {
                   const shipments: Shipment[] = [];
                   for (const key of Object.keys(resultShipment)) {

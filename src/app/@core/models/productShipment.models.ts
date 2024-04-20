@@ -14,6 +14,12 @@ export class ProductShipmentCT {
   almacen: string;
 }
 
+export class ProductShipmentSyscom {
+  id: number;
+  tipo: string;
+  cantidad: number;
+}
+
 export class ProductShipment extends ProductShipmentCVA {
   producto: string;
   precio: number;

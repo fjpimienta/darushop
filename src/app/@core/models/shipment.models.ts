@@ -1,3 +1,5 @@
+import { OrderSyscom } from './suppliers/ordersyscom.models';
+
 /**
  * Clase de Paqueterias.
  */
@@ -7,4 +9,5 @@ export class Shipment {
   costo: number;
   lugarEnvio: string;
   lugarRecepcion: string;
+  orderSyscom: OrderSyscom[] = [];
 }
