@@ -1,3 +1,4 @@
+import { IOrderSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
 import { CartItem } from './cartitem.models';
 import { SupplierProd } from './product.models';
 import { ProductShipment } from './productShipment.models';

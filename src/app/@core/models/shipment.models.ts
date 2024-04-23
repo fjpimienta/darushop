@@ -1,13 +1,18 @@
-import { OrderSyscom } from './suppliers/ordersyscom.models';
+import { IOrderSyscomResponse } from '@core/interfaces/suppliers/orderSyscom.interface';
 
-/**
- * Clase de Paqueterias.
- */
 export class Shipment {
   empresa: string;
   metodoShipping: string;
   costo: number;
   lugarEnvio: string;
   lugarRecepcion: string;
-  orderSyscom: OrderSyscom[] = [];
+}
+
+export class ShipmentSyscom {
+  empresa: string;
+  metodoShipping: string;
+  costo: number;
+  lugarEnvio: string;
+  lugarRecepcion: string;
+  orderSyscom: IOrderSyscomResponse;
 }

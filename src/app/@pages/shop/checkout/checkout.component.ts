@@ -34,14 +34,11 @@ import { ExternalAuthService } from '@core/services/external-auth.service';
 import { SuppliersService } from '@core/services/suppliers/supplier.service';
 import { ISupplier } from '@core/interfaces/supplier.interface';
 import { ProductShipment } from '@core/models/productShipment.models';
-import { Shipment } from '@core/models/shipment.models';
+import { Shipment, ShipmentSyscom } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
 import { PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
-import { OrderCtConfirm } from '@core/models/suppliers/orderct.models';
-import { Apis, Supplier } from '@core/models/suppliers/supplier';
-import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
-import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { Supplier } from '@core/models/suppliers/supplier';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
 import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
@@ -56,7 +53,8 @@ import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 import { CheckoutExitConfirmationService } from '@core/services/navigationConfirmation.service';
 import { ISupplierProd } from '@core/interfaces/product.interface';
 import { OrderSyscomService } from '@core/services/suppliers/syscom.service';
-import { DatosEntregaSyscom, OrderSyscom } from '@core/models/suppliers/ordersyscom.models';
+import { IDireccionSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
+import { OrderSyscom } from '@core/models/suppliers/ordersyscom.models';
 
 declare var $: any;
 declare var OpenPay: any
@@ -763,35 +761,73 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async updateWarehouses(warehouses: Warehouse[], formData: FormGroup) {
-    console.log('warehouses: ', warehouses);
     for (const idW of Object.keys(warehouses)) {
       const warehouse: Warehouse = warehouses[idW];
-      for (const idS of Object.keys(warehouse.ordersSyscom)) {
-        const orderSyscom: OrderSyscom = warehouse.ordersSyscom[idS];
-        if (formData.controls.name.value !== '') {
-          const datosEntrega: DatosEntregaSyscom = {
-            calle: formData.controls.directions.value,
-            num_exterior: formData.controls.outdoorNumber.value,
-            num_interior: formData.controls.interiorNumber.value,
-            colonia: formData.controls.selectColonia.value,
-            ciudad: this.selectMunicipio.D_mnpio,
-            estado: this.selectEstado.d_estado,
-            pais: this.selectCountry.d_pais
-          }
-          orderSyscom.datos_entrega = datosEntrega;
+      let orderSyscom: OrderSyscom = {
+        ...warehouse.ordersSyscom
+      };
+      if (warehouse.suppliersProd.idProveedor === 'syscom' && formData.controls.name.value !== '') {
+        const atencionA = formData.controls.name.value + ' ' + formData.controls.lastname.value;
+        const direccionUpdate: IDireccionSyscom = {
+          atencion_a: atencionA,
+          calle: formData.controls.directions.value,
+          num_ext: formData.controls.outdoorNumber.value,
+          num_int: formData.controls.interiorNumber.value,
+          colonia: formData.controls.selectColonia.value,
+          codigo_postal: parseInt(formData.controls.codigoPostal.value),
+          pais: this.selectCountry.d_pais,
+          estado: this.selectEstado.d_estado,
+          ciudad: this.selectMunicipio.D_mnpio,
+          telefono: formData.controls.phone.value
         }
+        orderSyscom.direccion = direccionUpdate
         warehouse.ordersSyscom = orderSyscom;
+        if (warehouse.shipments && warehouse.shipments.length > 0) {
+          warehouse.shipments.forEach((shipment: ShipmentSyscom) => {
+            delete shipment.orderSyscom;
+          });
+        }
       }
     }
     return await warehouses;
+  }
+
+  async onConfirmShippments(): Promise<boolean> {
+    try {
+      const cpValue = this.formData.controls.codigoPostal.value;
+      if (cpValue !== '') {
+        console.log('onSetCps cpValue: ', cpValue);
+        const result = await this.onSetCps(undefined, cpValue);
+        console.log('onSetCps result: ', result);
+        // Verifica si result es un booleano y devuélvelo, de lo contrario, devuelve false
+        return await result;
+      } else {
+        return await false;
+      }
+    } catch (error) {
+      console.error('Error en onConfirmShippments: ', error);
+      return false;
+    }
   }
 
   async onSubmit(): Promise<any> {
     if (!this.isSubmitting) {
       this.isSubmitting = true;
       if (this.formData.valid) {
+        // Confirmar el envio del pedido.
+        loadData('Confirmando cobertura de envio', 'Esperar ajustes de envios.');
+        console.log('Confirmando cobertura de envio');
+        console.log('onSubmit.this.warehouses: ', this.warehouses);
+        const confirmarEnvios = await this.onConfirmShippments();
+        console.log('onSubmit.confirmarEnvios: ', confirmarEnvios);
+        if (!confirmarEnvios) {
+          this.isSubmitting = false;
+          return await infoEventAlert('No se pudo confirmar el envio de tus productos.', '');
+        }
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
+        infoEventAlert('Si hay cobertura en tu direccion.', '', TYPE_ALERT.SUCCESS);
         loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
+        // this.existeMetodoPago = false;
         if (this.existeMetodoPago) {
           switch (this.typePay) {
             case PAY_STRIPE:
@@ -815,8 +851,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const user = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
               // Validar Si hay pedidos Syscom
+              console.log('this.warehouses.in: ', this.warehouses);
               this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
-              console.log('this.warehouses: ', this.warehouses);
+              console.log('this.warehouses.out: ', this.warehouses);
               const delivery: Delivery = {
                 deliveryId: deliveryId,
                 cliente: this.formData.controls.email.value,
@@ -857,6 +894,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const chargeOpenpayT = await this.payOpenpaySpei(deliveryIdT);
               const userT = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfigT = await this.onSetInvoiceConfig(this.formDataInvoice);
+              // Validar Si hay pedidos Syscom
+              this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
+              console.log('this.warehouses: ', this.warehouses);
+              const ordersSyscom: OrderSyscom[] = [];
+              ordersSyscom.push(this.warehouse.ordersSyscom);
               const deliveryT: Delivery = {
                 deliveryId: deliveryIdT,
                 cliente: this.formData.controls.email.value,
@@ -867,7 +909,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 user: userT,
                 invoiceConfig: invoiceConfigT,
                 warehouses: this.warehouses,
-                chargeOpenpay: chargeOpenpayT
+                chargeOpenpay: chargeOpenpayT,
+                ordersSyscom: ordersSyscom
               }
               const deliverySaveT = await this.deliverysService.add(deliveryT);
               console.log('deliverySaveT: ', deliverySaveT);
@@ -1072,10 +1115,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return invoice;
   }
 
-  async onSetCps(event): Promise<void> {
+  async onSetCps(event: Event, codigo: string = ''): Promise<boolean> {
     if (event) {
       loadData('Consultando Codigo Postal', 'Esperar la carga de los envíos.');
-      const cp = $(event.target).val();
+      const cp = codigo === '' ? $(event.target).val() : codigo;
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
         const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
@@ -1130,19 +1173,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+          console.log('_shipments: ', _shipments);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
+            return await true;
           } else {
             this.reiniciarShipping(_shipments.message);
+            return await false;
           }
         } else {
           this.reiniciarShipping('El código postal no es correcto. Verificar CP');
+          return await false;
         }
       } else {
         this.reiniciarShipping('No se ha especificado un código correcto.');
+        return await false;
       }
     }
+    return await true;
   }
 
   async reiniciarShipping(msj: string) {
@@ -1155,10 +1204,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
-    console.log('this.cps: ', this.cps);
-    console.log('this.formaPago: ', this.formaPago);
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    console.log('this.warehouses: ', this.warehouses);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1469,8 +1515,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     this.selectMunicipio.D_mnpio,
                     this.colonias[0]
                   ).then(async (resultShip) => {
-                    console.log('resultShip: ', resultShip);
-                    let shipment = new Shipment();
+                    let shipment = new ShipmentSyscom();
+                    // let shipmentSyscom = new ShipmentSyscom();
                     if (!resultShip.status) {
                       mensajeError = resultShip.message;
                       return await resultShip
@@ -1494,10 +1540,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         shipment.metodoShipping = resultShip.data.metodoShipping;
                         shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
                         shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
-                        if (resultShip.data.orderSyscom && resultShip.data.orderSyscom.length > 0) {
-                          shipment.orderSyscom = resultShip.data.orderSyscom;
-                          this.warehouse.ordersSyscom = resultShip.data.orderSyscom;
-                        }
+                        shipment.orderSyscom = resultShip.data.orderSyscom;
                       }
                     }
                     return await shipment;

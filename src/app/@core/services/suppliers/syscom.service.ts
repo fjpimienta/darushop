@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IOrderSyscom } from '@core/models/suppliers/syscom.models';
+import { IOrderSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
 import { ADD_ORDER_SYSCOM, UPDATE_ORDER_SYSCOM } from '@graphql/operations/mutation/suppliers/syscom';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';

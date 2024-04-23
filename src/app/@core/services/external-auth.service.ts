@@ -6,8 +6,8 @@ import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { Product } from '@core/models/product.models';
 import { map } from 'rxjs/operators';
 import { Warehouse } from '@core/models/warehouse.models';
-import { Shipment } from '@core/models/shipment.models';
-import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA, ProductShipmentSyscom } from '@core/models/productShipment.models';
+import { Shipment, ShipmentSyscom } from '@core/models/shipment.models';
+import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { ADD_ORDER_CT, CONFIRM_ORDER_CT, EXISTENCIAPRODUCTOSCT_LIST_QUERY, PRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY, STATUS_ORDER_CT } from '@graphql/operations/query/suppliers/ct';
 import { ADD_ORDER_CVA, BRANDSCVA_LIST_QUERY, EXISTENCIAPRODUCTOSCVA_LIST_QUERY, GROUPSCVA_LIST_QUERY, PAQUETERIASCVA_LIST_QUERY, PRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY, SOLUCIONESCVA_LIST_QUERY, SUCURSALESCVA_LIST_QUERY } from '@graphql/operations/query/suppliers/cva';
@@ -19,9 +19,10 @@ import { IOrderCvaResponse } from '@core/interfaces/suppliers/ordercvaresponse.i
 import { Result } from '@core/models/result.models';
 import { EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY } from '@graphql/operations/query/suppliers/ingram';
 import { EXISTENCIAPRODUCTOSSYSCOM_LIST_QUERY } from '@graphql/operations/query/suppliers/syscom';
-import { IDireccionSyscom, IOrderSyscom } from '@core/models/suppliers/syscom.models';
+import { IDireccionSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
 import { ADD_ORDER_SYSCOM } from '@graphql/operations/mutation/suppliers/syscom';
 import { FormGroup } from '@angular/forms';
+import { OrderSyscom, ProductoSyscom } from '@core/models/suppliers/ordersyscom.models';
 
 declare const require;
 const axios = require('axios');
@@ -729,16 +730,15 @@ export class ExternalAuthService extends ApiService {
           console.log('resultCva.Error: ', resultCva);
           return await resultCva;
         case 'syscom':
-          const productosSyscom: ProductShipmentSyscom[] = [];
+          const productosSyscom: ProductoSyscom[] = [];
           for (const id of Object.keys(warehouse.productShipments)) {
             const pS: ProductShipment = warehouse.productShipments[id];
-            const newPSS: ProductShipmentSyscom = new ProductShipmentSyscom();
+            const newPSS: ProductoSyscom = new ProductoSyscom();
             newPSS.id = parseInt(pS.producto);
             newPSS.tipo = 'nuevo';
             newPSS.cantidad = pS.cantidad;
             productosSyscom.push(newPSS);
           }
-          console.log('productosSyscom: ', productosSyscom);
           const direccionSyscom: IDireccionSyscom = new IDireccionSyscom();
           direccionSyscom.atencion_a = formData && formData.controls.name.value !== '' ? formData.controls.name.value + ' ' + formData.controls.lastname.value : 'Cotizacion DARU';
           direccionSyscom.calle = formData && formData.controls.directions ? formData.controls.directions.value : '';
@@ -750,7 +750,7 @@ export class ExternalAuthService extends ApiService {
           direccionSyscom.estado = estado;
           direccionSyscom.ciudad = ciudad;
           direccionSyscom.telefono = formData && formData.controls.phone.value !== '' ? formData.controls.phone.value : '';
-          const orderSyscomInput: IOrderSyscom = new IOrderSyscom();
+          const orderSyscomInput: OrderSyscom = new OrderSyscom();
           orderSyscomInput.tipo_entrega = 'domicilio';
           orderSyscomInput.direccion = direccionSyscom;
           orderSyscomInput.metodo_pago = 'transferencia';
@@ -764,29 +764,25 @@ export class ExternalAuthService extends ApiService {
           orderSyscomInput.iva_frontera = false;
           orderSyscomInput.forzar = false;
           orderSyscomInput.testmode = true;
-          console.log('orderSyscomInput: ', orderSyscomInput);
           const orderSyscom = await this.getOrderSyscom(orderSyscomInput);
-          console.log('orderSyscom: ', orderSyscom);
+          orderSyscomInput.orderResponseSyscom = orderSyscom.saveOrderSyscom;
           const resultSyscom: Result = new Result();
           if (orderSyscom && orderSyscom.status && orderSyscom.saveOrderSyscom) {
-            const shipmentSyscom = new Shipment();
+            const shipmentSyscom = new ShipmentSyscom();
             shipmentSyscom.empresa = 'estafeta';
             shipmentSyscom.costo = orderSyscom.saveOrderSyscom.totales.flete;
             shipmentSyscom.metodoShipping = '';
             shipmentSyscom.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
-            shipmentSyscom.orderSyscom.push(orderSyscom.saveOrderSyscom);
+            shipmentSyscom.orderSyscom = orderSyscom.saveOrderSyscom;
             resultSyscom.status = orderSyscom.status;
             resultSyscom.message = orderSyscom.message;
             resultSyscom.data = shipmentSyscom;
-            console.log('resultSyscom: ', resultSyscom);
+            warehouse.ordersSyscom = orderSyscomInput;
             return await resultSyscom;
           }
           resultSyscom.status = orderSyscom.status;
           resultSyscom.message = orderSyscom.message;
-          console.log('resultSyscom.Error: ', resultSyscom);
           return await resultSyscom;
-
-          break;
         case '99minutos':
           break;
         default:
@@ -1341,7 +1337,7 @@ export class ExternalAuthService extends ApiService {
   }
 
   async getOrderSyscom(
-    orderSyscomInput: IOrderSyscom
+    orderSyscomInput: OrderSyscom
   ): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.get(ADD_ORDER_SYSCOM, {

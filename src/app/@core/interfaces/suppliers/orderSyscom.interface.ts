@@ -1,9 +1,9 @@
-export class OrderSyscom {
+export class IOrderSyscom {
   tipo_entrega: string;
-  direccion: DireccionSyscom;
+  direccion: IDireccionSyscom;
   metodo_pago: string;
   fletera: string;
-  productos: ProductoSyscom[];
+  productos: IProductoSyscom[];
   moneda: string;
   uso_cfdi: string;
   tipo_pago: string;
@@ -12,10 +12,10 @@ export class OrderSyscom {
   iva_frontera: boolean;
   forzar: boolean;
   testmode: boolean;
-  orderResponseSyscom: OrderResponseSyscom;
+  orderResponseSyscom: IOrderSyscomResponse;
 }
 
-export class DireccionSyscom {
+export class IDireccionSyscom {
   atencion_a: string;
   calle: string;
   num_ext: string;
@@ -28,43 +28,31 @@ export class DireccionSyscom {
   telefono: string;
 }
 
-export class ProductoSyscom{
+export class IProductoSyscom {
   id: number;
-  cantidad: number;
   tipo: string;
+  cantidad: number;
 }
 
-export class OrderResponseSyscom {
+export class IOrderSyscomResponse {
   error: string;
-  cliente: ClienteSyscom;
-  resumen: ResumenSyscom;
-  datos_entrega: DatosEntregaSyscom;
-  productos: ProductoResponseSyscom[];
-  totales: TotalesSyscom;
+  cliente: IClienteSyscom;
+  resumen: IResumenSyscom;
+  datos_entrega: IDireccionResponseSyscom;
+  productos: [IProductoResponseSyscom];
+  totales: ITotalesSyscom;
 }
 
-
-export class ClienteSyscom {
+export class IClienteSyscom {
   num_cliente: string;
   rfc: string;
   whatsapp: string;
   email: string;
   telefono: string;
-  direccion: DireccionSyscom
+  direccion: IDireccionResponseSyscom;
 }
 
-export class DireccionResponseSyscom {
-  calle: string;
-  num_exterior: string;
-  num_interior: string;
-  colonia: string;
-  ciudad: string;
-  estado: string;
-  pais: string;
-  telefono: string;
-}
-
-export class ResumenSyscom {
+export class IResumenSyscom {
   peso_total: number;
   peso_vol_total: number;
   moneda: string;
@@ -78,17 +66,7 @@ export class ResumenSyscom {
   iva_aplicado: number;
 }
 
-export class DatosEntregaSyscom {
-  calle: string;
-  num_exterior: string;
-  num_interior: string;
-  colonia: string;
-  ciudad: string;
-  estado: string;
-  pais: string;
-}
-
-export class ProductoResponseSyscom{
+export class IProductoResponseSyscom {
   id: number;
   cantidad: number;
   tipo: string;
@@ -101,19 +79,29 @@ export class ProductoResponseSyscom{
   precio_oferta: string;
   precio_unitario: string;
   importe: number;
-  descuentos: DescuentosSyscom
+  descuentos: IDescuentosSyscom;
 }
 
-export class DescuentosSyscom {
-  distribucion: number;
-  clasificacion: string;
-  volumen: number;
-  financiero: number;
-}
-
-export class TotalesSyscom{
+export class ITotalesSyscom {
   subtotal: number;
   flete: number;
   iva: number;
   total: number;
+}
+
+export class IDireccionResponseSyscom {
+  calle: string;
+  num_exterior: string;
+  num_interior: string;
+  colonia: string;
+  ciudad: string;
+  estado: string;
+  pais: string;
+}
+
+export class IDescuentosSyscom {
+  distribucion: number;
+  clasificacion: string;
+  volumen: number;
+  financiero: number;
 }

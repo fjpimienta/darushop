@@ -1,3 +1,4 @@
+import { IOrderSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
 import { Cupon } from './cupon.models';
 import { InvoiceConfigInput } from './invoiceConfig.models';
 import { ChargeOpenpayInput } from './openpay/_openpay.models';
