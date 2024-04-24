@@ -1538,12 +1538,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.warehouse.productShipments = productsNacional;
                 if (this.warehouse.productShipments && this.warehouse.productShipments.length > 0) {
                   // Generar la cotizacion
+                  const colonia = this.formData.controls.selectColonia.value;
                   const shipmentsCost = await this.externalAuthService.onShippingEstimate(
                     supplier, apiShipment, this.warehouse, true, this.formData,
                     this.selectCountry.d_pais,
                     this.selectEstado.d_estado,
                     this.selectMunicipio.D_mnpio,
-                    this.colonias[0]
+                    colonia
                   ).then(async (resultShip) => {
                     let shipment = new ShipmentSyscom();
                     // let shipmentSyscom = new ShipmentSyscom();
@@ -1638,12 +1639,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               let shipping = new Supplier();
               shipping = result.shippings[supId];
               const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
+              const colonia = this.formData.controls.selectColonia.value;
               const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
                 shipping, apiSelectShip, this.warehouse, false, this.formData,
                 this.selectCountry.d_pais,
                 this.selectEstado.d_estado,
                 this.selectMunicipio.D_mnpio,
-                this.colonias[0]
+                colonia
               )
                 .then(async (resultShipment) => {
                   const shipments: Shipment[] = [];

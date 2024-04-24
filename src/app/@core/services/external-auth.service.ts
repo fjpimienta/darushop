@@ -651,7 +651,7 @@ export class ExternalAuthService extends ApiService {
     pais: string,
     estado: string,
     ciudad: string,
-    colonia: string
+    colonia: string = ''
   ): Promise<any> {
     try {
       let token: string;
@@ -763,7 +763,7 @@ export class ExternalAuthService extends ApiService {
           orderSyscomInput.ordenar = false;
           orderSyscomInput.iva_frontera = false;
           orderSyscomInput.forzar = false;
-          orderSyscomInput.testmode = true;
+          orderSyscomInput.testmode = colonia === '' ? true : false;
           const orderSyscom = await this.getOrderSyscom(orderSyscomInput);
           orderSyscomInput.orderResponseSyscom = orderSyscom.saveOrderSyscom;
           const resultSyscom: Result = new Result();
