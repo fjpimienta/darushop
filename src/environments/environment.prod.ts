@@ -11,5 +11,5 @@ export const environment = {
   demo: 'demo30',
   SERVER_URL: '',
   KEY_SECRET: 'DARU2023##!!..',
-  SENDMAIL: 'francisco.pimienta@daru.mx'
+  SENDMAIL: 'francisco.pimienta@daru.mx; ventas@daru.mx'
 };
