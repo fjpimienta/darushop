@@ -362,20 +362,36 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
           console.log('result: ', result);
           if (result && result.delivery && result.delivery.delivery) {
-            const delivery = result.delivery.delivery;
-            this.delivery = delivery;
-            this.onSetDelivery(this.formData, delivery);
-            const discount = parseFloat(delivery.discount);
+            let deliveryTmp = result.delivery.delivery;
+            console.log('deliveryTmp.IN: ', deliveryTmp);
+            // Si es syscom, asignar la generacion de la orden en warehouses
+            let warehousesTmp = deliveryTmp.warehouses;
+            for (const warehouseTmp of warehousesTmp) {
+              if (warehouseTmp.suppliersProd && warehouseTmp.suppliersProd.idProveedor === 'syscom') {
+                warehouseTmp.ordersSyscom = deliveryTmp.ordersSyscom[0];
+                // delete warehouseTmp.ordersSyscom.orderResponseSyscom;
+              }
+            }
+            const deliveryNew = {
+              ...deliveryTmp,
+              warehouses: warehousesTmp
+            };
+            // Fin asignar la generacion de la orden en warehouses
+            deliveryTmp = deliveryNew;
+            console.log('deliveryTmp.OUT: ', deliveryTmp);
+            this.delivery = deliveryTmp;
+            this.onSetDelivery(this.formData, deliveryTmp);
+            const discount = parseFloat(deliveryTmp.discount);
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
               if (total === 0) {
-                total = delivery.importe - totalEnvios;
+                total = deliveryTmp.importe - totalEnvios;
               }
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
             });
             // Recuperar status del cargo.
-            this.chargeOpenpayService.oneCharge(delivery.chargeOpenpay.id).then(charge => {
+            this.chargeOpenpayService.oneCharge(deliveryTmp.chargeOpenpay.id).then(charge => {
               if (charge && charge.chargeOpenpay.id && charge.chargeOpenpay.order_id) {
                 this.isPagado = true;
                 switch (charge.chargeOpenpay.method) {
@@ -397,8 +413,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
             });
           }
-          return result.delivery.delivery;
+          return this.delivery;
         });
+        console.log('this.deliverysService.getDelivery/delivery: ', delivery);
       }
       this.countrys = [];
       this.selectCountry = new Country();
@@ -980,7 +997,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Enviar correo de error.
         const NewProperty = 'receipt_email';
         let internalEmail = true;
-        let sendEmail = "francisco.pimienta@daru.mx; ventas@daru.mx";
+        let sendEmail = environment.SENDMAIL;
         let messageDelivery = 'Hay un problema con el envio';
         deliverySave[NewProperty] = sendEmail;
         this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
@@ -1557,6 +1574,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
             }
+            console.log('onCotizarEnvios/this.warehouses: ', this.warehouses);
           } else {
             return await {
               status: false,

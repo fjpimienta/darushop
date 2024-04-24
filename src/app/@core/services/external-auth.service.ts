@@ -759,7 +759,7 @@ export class ExternalAuthService extends ApiService {
           orderSyscomInput.moneda = 'mxn';
           orderSyscomInput.uso_cfdi = 'G03';
           orderSyscomInput.tipo_pago = 'pue';
-          orderSyscomInput.orden_compra = 'DARU-1002';
+          orderSyscomInput.orden_compra = 'DARU-COTIZACION';
           orderSyscomInput.ordenar = false;
           orderSyscomInput.iva_frontera = false;
           orderSyscomInput.forzar = false;
