@@ -10,5 +10,6 @@ export const environment = {
   OPENPAY_CLIENT_SECRET: "pk_g4vkppxzgckpe1kg0g6f0ei3ix89qqa8",
   demo: 'demo30',
   SERVER_URL: '',
-  KEY_SECRET: 'DARU2023##!!..'
+  KEY_SECRET: 'DARU2023##!!..',
+  SENDMAIL: 'francisco.pimienta@daru.mx; ventas@daru.mx'
 };

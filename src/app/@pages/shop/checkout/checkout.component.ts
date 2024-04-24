@@ -34,14 +34,11 @@ import { ExternalAuthService } from '@core/services/external-auth.service';
 import { SuppliersService } from '@core/services/suppliers/supplier.service';
 import { ISupplier } from '@core/interfaces/supplier.interface';
 import { ProductShipment } from '@core/models/productShipment.models';
-import { Shipment } from '@core/models/shipment.models';
+import { Shipment, ShipmentSyscom } from '@core/models/shipment.models';
 import { ShippingsService } from '@core/services/shipping.service';
 import { IShipping } from '@core/interfaces/shipping.interface';
 import { PAY_DEPOSIT, PAY_FREE, PAY_MERCADO_PAGO, PAY_OPENPAY, PAY_PAYPAL, PAY_PAYU, PAY_STRIPE, PAY_TRANSFER } from '@core/constants/constants';
-import { OrderCtConfirm } from '@core/models/suppliers/orderct.models';
-import { Apis, Supplier } from '@core/models/suppliers/supplier';
-import { OrderCvaResponse } from '@core/models/suppliers/ordercvaresponse.models';
-import { ErroresCT, OrderCtConfirmResponse, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
+import { Supplier } from '@core/models/suppliers/supplier';
 import { DeliverysService } from '@core/services/deliverys.service';
 import { IAddress } from '@core/interfaces/user.interface';
 import { ChargeOpenpayService } from '@core/services/openpay/charges.service';
@@ -55,6 +52,9 @@ import { Cupon } from '@core/models/cupon.models';
 import { IcommktsService } from '@core/services/suppliers/icommkts.service';
 import { CheckoutExitConfirmationService } from '@core/services/navigationConfirmation.service';
 import { ISupplierProd } from '@core/interfaces/product.interface';
+import { OrderSyscomService } from '@core/services/suppliers/syscom.service';
+import { IDireccionSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
+import { OrderSyscom } from '@core/models/suppliers/ordersyscom.models';
 
 declare var $: any;
 declare var OpenPay: any
@@ -210,7 +210,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public invoiceConfigsService: InvoiceConfigsService,
     public welcomesService: WelcomesService,
     private icommktsService: IcommktsService,
-    private confirmationService: CheckoutExitConfirmationService
+    private confirmationService: CheckoutExitConfirmationService,
+    private orderSyscomService: OrderSyscomService
   ) {
     try {
       this.activeRoute.queryParams.subscribe(params => {
@@ -361,20 +362,36 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
           console.log('result: ', result);
           if (result && result.delivery && result.delivery.delivery) {
-            const delivery = result.delivery.delivery;
-            this.delivery = delivery;
-            this.onSetDelivery(this.formData, delivery);
-            const discount = parseFloat(delivery.discount);
+            let deliveryTmp = result.delivery.delivery;
+            console.log('deliveryTmp.IN: ', deliveryTmp);
+            // Si es syscom, asignar la generacion de la orden en warehouses
+            let warehousesTmp = deliveryTmp.warehouses;
+            for (const warehouseTmp of warehousesTmp) {
+              if (warehouseTmp.suppliersProd && warehouseTmp.suppliersProd.idProveedor === 'syscom') {
+                warehouseTmp.ordersSyscom = deliveryTmp.ordersSyscom[0];
+                // delete warehouseTmp.ordersSyscom.orderResponseSyscom;
+              }
+            }
+            const deliveryNew = {
+              ...deliveryTmp,
+              warehouses: warehousesTmp
+            };
+            // Fin asignar la generacion de la orden en warehouses
+            deliveryTmp = deliveryNew;
+            console.log('deliveryTmp.OUT: ', deliveryTmp);
+            this.delivery = deliveryTmp;
+            this.onSetDelivery(this.formData, deliveryTmp);
+            const discount = parseFloat(deliveryTmp.discount);
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
               if (total === 0) {
-                total = delivery.importe - totalEnvios;
+                total = deliveryTmp.importe - totalEnvios;
               }
               this.subTotal = total.toFixed(2).toString();;
               this.totalPagar = (total - discount + totalEnvios).toFixed(2).toString();
             });
             // Recuperar status del cargo.
-            this.chargeOpenpayService.oneCharge(delivery.chargeOpenpay.id).then(charge => {
+            this.chargeOpenpayService.oneCharge(deliveryTmp.chargeOpenpay.id).then(charge => {
               if (charge && charge.chargeOpenpay.id && charge.chargeOpenpay.order_id) {
                 this.isPagado = true;
                 switch (charge.chargeOpenpay.method) {
@@ -396,8 +413,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               }
             });
           }
-          return result.delivery.delivery;
+          return this.delivery;
         });
+        console.log('this.deliverysService.getDelivery/delivery: ', delivery);
       }
       this.countrys = [];
       this.selectCountry = new Country();
@@ -638,6 +656,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               });
               break;
+            case 'syscom':
+              this.externalAuthService.getExistenciaProductoSyscom(
+                this.cartItems[idS].suppliersProd
+              ).then(result => {
+                if (result && result.existenciaProductoSyscom) {
+                  const updatedSuppliersProd: ISupplierProd = {
+                    ...item.suppliersProd,
+                    branchOffices: result.existenciaProductoSyscom.branchOffices
+                  };
+                  const suppliersProd = {
+                    ...item,
+                    suppliersProd: updatedSuppliersProd,
+                  };
+                  // Accede a branchOffices después de resolver la promesa
+                  this.cartItems[idS] = suppliersProd;
+                  console.log('branchOffices syscom:', result.existenciaProductoSyscom.branchOffices);
+                }
+              });
+              break;
           }
         }
       });
@@ -740,12 +777,74 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
+  async updateWarehouses(warehouses: Warehouse[], formData: FormGroup) {
+    for (const idW of Object.keys(warehouses)) {
+      const warehouse: Warehouse = warehouses[idW];
+      let orderSyscom: OrderSyscom = {
+        ...warehouse.ordersSyscom
+      };
+      if (warehouse.suppliersProd.idProveedor === 'syscom' && formData.controls.name.value !== '') {
+        const atencionA = formData.controls.name.value + ' ' + formData.controls.lastname.value;
+        const direccionUpdate: IDireccionSyscom = {
+          atencion_a: atencionA,
+          calle: formData.controls.directions.value,
+          num_ext: formData.controls.outdoorNumber.value,
+          num_int: formData.controls.interiorNumber.value,
+          colonia: formData.controls.selectColonia.value,
+          codigo_postal: parseInt(formData.controls.codigoPostal.value),
+          pais: this.selectCountry.d_pais,
+          estado: this.selectEstado.d_estado,
+          ciudad: this.selectMunicipio.D_mnpio,
+          telefono: formData.controls.phone.value
+        }
+        orderSyscom.direccion = direccionUpdate
+        warehouse.ordersSyscom = orderSyscom;
+        if (warehouse.shipments && warehouse.shipments.length > 0) {
+          warehouse.shipments.forEach((shipment: ShipmentSyscom) => {
+            delete shipment.orderSyscom;
+          });
+        }
+      }
+    }
+    return await warehouses;
+  }
+
+  async onConfirmShippments(): Promise<boolean> {
+    try {
+      const cpValue = this.formData.controls.codigoPostal.value;
+      if (cpValue !== '') {
+        console.log('onSetCps cpValue: ', cpValue);
+        const result = await this.onSetCps(undefined, cpValue);
+        console.log('onSetCps result: ', result);
+        // Verifica si result es un booleano y devuélvelo, de lo contrario, devuelve false
+        return await result;
+      } else {
+        return await false;
+      }
+    } catch (error) {
+      console.error('Error en onConfirmShippments: ', error);
+      return false;
+    }
+  }
+
   async onSubmit(): Promise<any> {
     if (!this.isSubmitting) {
       this.isSubmitting = true;
       if (this.formData.valid) {
+        // Confirmar el envio del pedido.
+        loadData('Confirmando cobertura de envio', 'Esperar ajustes de envios.');
+        console.log('Confirmando cobertura de envio');
+        console.log('onSubmit.this.warehouses: ', this.warehouses);
+        const confirmarEnvios = await this.onConfirmShippments();
+        console.log('onSubmit.confirmarEnvios: ', confirmarEnvios);
+        if (!confirmarEnvios) {
+          this.isSubmitting = false;
+          return await infoEventAlert('No se pudo confirmar el envio de tus productos.', '');
+        }
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
+        infoEventAlert('Si hay cobertura en tu direccion.', '', TYPE_ALERT.SUCCESS);
         loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
+        // this.existeMetodoPago = false;
         if (this.existeMetodoPago) {
           switch (this.typePay) {
             case PAY_STRIPE:
@@ -768,6 +867,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const chargeOpenpay = await this.payOpenpay(tokenCard.data.id, deliveryId, this.formData);
               const user = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
+              // Validar Si hay pedidos Syscom
+              console.log('this.warehouses.in: ', this.warehouses);
+              this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
+              console.log('this.warehouses.out: ', this.warehouses);
               const delivery: Delivery = {
                 deliveryId: deliveryId,
                 cliente: this.formData.controls.email.value,
@@ -808,6 +911,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const chargeOpenpayT = await this.payOpenpaySpei(deliveryIdT);
               const userT = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfigT = await this.onSetInvoiceConfig(this.formDataInvoice);
+              // Validar Si hay pedidos Syscom
+              this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
+              console.log('this.warehouses: ', this.warehouses);
+              const ordersSyscom: OrderSyscom[] = [];
+              ordersSyscom.push(this.warehouse.ordersSyscom);
               const deliveryT: Delivery = {
                 deliveryId: deliveryIdT,
                 cliente: this.formData.controls.email.value,
@@ -818,7 +926,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 user: userT,
                 invoiceConfig: invoiceConfigT,
                 warehouses: this.warehouses,
-                chargeOpenpay: chargeOpenpayT
+                chargeOpenpay: chargeOpenpayT,
+                ordersSyscom: ordersSyscom
               }
               const deliverySaveT = await this.deliverysService.add(deliveryT);
               console.log('deliverySaveT: ', deliverySaveT);
@@ -888,7 +997,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Enviar correo de error.
         const NewProperty = 'receipt_email';
         let internalEmail = true;
-        let sendEmail = "francisco.pimienta@daru.mx; ventas@daru.mx";
+        let sendEmail = environment.SENDMAIL;
         let messageDelivery = 'Hay un problema con el envio';
         deliverySave[NewProperty] = sendEmail;
         this.mailService.sendEmail(deliverySave.delivery, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
@@ -1023,10 +1132,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return invoice;
   }
 
-  async onSetCps(event): Promise<void> {
+  async onSetCps(event: Event, codigo: string = ''): Promise<boolean> {
     if (event) {
       loadData('Consultando Codigo Postal', 'Esperar la carga de los envíos.');
-      const cp = $(event.target).val();
+      const cp = codigo === '' ? $(event.target).val() : codigo;
       if (cp !== '') {
         // Recuperar pais, estado y municipio con el CP
         const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
@@ -1081,19 +1190,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+          console.log('_shipments: ', _shipments);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
+            return await true;
           } else {
             this.reiniciarShipping(_shipments.message);
+            return await false;
           }
         } else {
           this.reiniciarShipping('El código postal no es correcto. Verificar CP');
+          return await false;
         }
       } else {
         this.reiniciarShipping('No se ha especificado un código correcto.');
+        return await false;
       }
     }
+    return await true;
   }
 
   async reiniciarShipping(msj: string) {
@@ -1107,7 +1222,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    console.log('this.warehouses: ', this.warehouses);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1337,7 +1451,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               assignedBranchId: null
             }));
             const carItemsSupplier = cartItemsWithNull.filter((item) => item.suppliersProd.idProveedor === supplier.slug);
-            console.log('carItemsSupplier: ', carItemsSupplier);
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
@@ -1411,10 +1524,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 this.warehouse.cp = cpDestino;
                 this.warehouse.productShipments = productsNacional;
                 if (this.warehouse.productShipments && this.warehouse.productShipments.length > 0) {
+                  // Generar la cotizacion
                   const shipmentsCost = await this.externalAuthService.onShippingEstimate(
-                    supplier, apiShipment, this.warehouse, true
+                    supplier, apiShipment, this.warehouse, true, this.formData,
+                    this.selectCountry.d_pais,
+                    this.selectEstado.d_estado,
+                    this.selectMunicipio.D_mnpio,
+                    this.colonias[0]
                   ).then(async (resultShip) => {
-                    let shipment = new Shipment();
+                    let shipment = new ShipmentSyscom();
+                    // let shipmentSyscom = new ShipmentSyscom();
                     if (!resultShip.status) {
                       mensajeError = resultShip.message;
                       return await resultShip
@@ -1432,6 +1551,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         shipment.metodoShipping = resultShip.data.metodoShipping;
                         shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
                         shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                      } else if (supplier.slug === 'syscom') {
+                        shipment.empresa = resultShip.data.empresa.toString();
+                        shipment.costo = resultShip.data.costo * 1.16;
+                        shipment.metodoShipping = resultShip.data.metodoShipping;
+                        shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
+                        shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                        shipment.orderSyscom = resultShip.data.orderSyscom;
                       }
                     }
                     return await shipment;
@@ -1448,6 +1574,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
             }
+            console.log('onCotizarEnvios/this.warehouses: ', this.warehouses);
           } else {
             return await {
               status: false,
@@ -1499,7 +1626,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               shipping = result.shippings[supId];
               const apiSelectShip = shipping.apis.filter(api => api.operation === 'pricing')[0];
               const shippingsEstimate = await this.externalAuthService.onShippingEstimate(
-                shipping, apiSelectShip, this.warehouse, false)
+                shipping, apiSelectShip, this.warehouse, false, this.formData,
+                this.selectCountry.d_pais,
+                this.selectEstado.d_estado,
+                this.selectMunicipio.D_mnpio,
+                this.colonias[0]
+              )
                 .then(async (resultShipment) => {
                   const shipments: Shipment[] = [];
                   for (const key of Object.keys(resultShipment)) {

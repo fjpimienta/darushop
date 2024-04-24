@@ -77,6 +77,7 @@ export class ShopSidebarOneComponent implements OnInit, OnChanges {
   totalHubs = 0;
   totalMousepads = 0;
   totalDiscosDurosA = 0;
+  totalAudioyVideo = 0;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -191,6 +192,8 @@ export class ShopSidebarOneComponent implements OnInit, OnChanges {
     this.totalMochilas = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'mochilas');
     this.totalHubs = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'hubs');
     this.totalMousepads = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'mousepads');
+    this.totalDiscosDurosA = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'discosduros');
+    this.totalAudioyVideo = this.contarProductosPorCategoriaYSubcategoria('accesorios', 'audio-y-video');
   }
 
   containsAttrInUrl(type: string, value: string): any {

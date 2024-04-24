@@ -121,6 +121,10 @@
                       <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
                         queryParamsHandling="merge" routerLinkActive="active">Proyectores</a>
                     </li>
+                    <li *ngIf="totalProyectores>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'monitores-y-video', subCategory: 'proyectores'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Proyectores</a>
+                    </li>
                   </ul>
                 </li>
                 <li
@@ -223,7 +227,7 @@
                   </ul>
                 </li>
                 <li
-                  *ngIf="totalAccesorios>0 || totalTeclados>0 || totalMouses>0 || totalAudifonos>0 || totalBocinas>0 || totalMochilas>0 || totalHubs>0 || totalMousepads>0 || totalDiscosDurosA>0">
+                  *ngIf="totalAccesorios>0 || totalTeclados>0 || totalMouses>0 || totalAudifonos>0 || totalBocinas>0 || totalMochilas>0 || totalHubs>0 || totalMousepads>0 || totalDiscosDurosA>0 || totalAudioyVideo>0">
                   <a [routerLink]="[]" [queryParams]="{category: 'accesorios'}" queryParamsHandling="merge"
                     routerLinkActive="active">Accesorios</a>
                   <ul class="detail-ul">
@@ -258,6 +262,10 @@
                     <li *ngIf="totalDiscosDurosA>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'discosduros'}"
                         queryParamsHandling="merge" routerLinkActive="active">Discos Duros</a>
+                    </li>
+                    <li *ngIf="totalAudioyVideo>0">
+                      <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'audio-y-video'}"
+                        queryParamsHandling="merge" routerLinkActive="active">Audio y Video</a>
                     </li>
                   </ul>
                 </li>
