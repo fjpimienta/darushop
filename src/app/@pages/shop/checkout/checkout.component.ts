@@ -797,7 +797,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           ciudad: this.selectMunicipio.D_mnpio,
           telefono: formData.controls.phone.value
         }
-        orderSyscom.direccion = direccionUpdate
+        orderSyscom.ordenar = false;
+        orderSyscom.testmode = false;
+        orderSyscom.direccion = direccionUpdate;
         warehouse.ordersSyscom = orderSyscom;
         if (warehouse.shipments && warehouse.shipments.length > 0) {
           warehouse.shipments.forEach((shipment: ShipmentSyscom) => {
