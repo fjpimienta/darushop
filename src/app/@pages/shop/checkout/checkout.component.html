@@ -168,7 +168,7 @@
                     formControlName="selectColonia" placeholder="" [attr.disabled]="idDelivery ? 'true' : null"
                     required>
                   <select *ngIf="byCodigopostal" class="form-control" name="selectColonia" title="Colonia"
-                    formControlName="selectColonia" required (change)="onSetCps(null)">
+                    formControlName="selectColonia" required (change)="onSetCps($event)">
                     <option [ngValue]="''" [selected]="'' == selectColonia">Elije la Colonia</option>
                     <option *ngFor="let colonia of colonias" [ngValue]="colonia">
                       {{colonia}}

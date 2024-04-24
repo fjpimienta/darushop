@@ -1135,10 +1135,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async onSetCps(event: Event, codigo: string = ''): Promise<boolean> {
+    let colonia = '';
+    let codigoPostal = '';
     if (event) {
-      loadData('Consultando Codigo Postal', 'Esperar la carga de los envíos.');
-      const cp = codigo === '' ? $(event.target).val() : codigo;
-      if (cp !== '') {
+      const inputElement = event.target as HTMLInputElement;
+      const valor = inputElement.value;
+      const objColonia = valor.split(':', 2);
+      if (objColonia.length >= 2) {
+        colonia = objColonia[1];
+        codigoPostal = this.codigoPostal;
+      } else {
+        codigoPostal = valor;
+      }
+      const cp = codigo === '' ? codigoPostal : codigo;
+      if (cp !== '' && valor !== '0') {
+        this.codigoPostal = cp;
         // Recuperar pais, estado y municipio con el CP
         const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;
