@@ -779,10 +779,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async updateWarehouses(warehouses: Warehouse[], formData: FormGroup) {
     for (const idW of Object.keys(warehouses)) {
       const warehouse: Warehouse = warehouses[idW];
-      let orderSyscom: OrderSyscom = {
-        ...warehouse.ordersSyscom
-      };
       if (warehouse.suppliersProd.idProveedor === 'syscom' && formData.controls.name.value !== '') {
+        let orderSyscom: OrderSyscom = {
+          ...warehouse.ordersSyscom
+        };
         const atencionA = formData.controls.name.value + ' ' + formData.controls.lastname.value;
         const direccionUpdate: IDireccionSyscom = {
           atencion_a: atencionA,
@@ -807,6 +807,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     }
+    console.log('updateWarehouses/warehouses: ', warehouses)
     return await warehouses;
   }
 
@@ -1135,7 +1136,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onSetCps(event: Event, codigo: string = ''): Promise<boolean> {
     let codigoPostal = '';
     if (event) {
-      loadData('Consultando disponibilidad de envios', '');
+      loadData('Consultando información sobre este codigo postal', '');
       const inputElement = event.target as HTMLInputElement;
       const valor = inputElement.value;
       const objColonia = valor.split(':', 2);
@@ -1186,27 +1187,44 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   this.colonias.push(codigo.d_asenta);
                 }
               }
+              closeAlert();
               return await this.colonias;
-              // Cotizar con los proveedores el costo de envio de acuerdo al producto.
+            } else {
+              this.reiniciarShipping('No se ha encontrado informacion de este codigo postal.');
+              return await false;
             }
-            return await [];
-          }
-          return await [];
-        });
-        // Cotizar con los proveedores el costo de envio de acuerdo al producto.
-        if (codigoPostal.length > 0) {
-          const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
-          if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
-            this.shipments = _shipments.shipments.shipmentsEnd;
-            closeAlert();
-            return await true;
           } else {
-            this.reiniciarShipping(_shipments.message);
+            this.reiniciarShipping('No se ha encontrado informacion de este codigo postal.');
             return await false;
           }
+        });
+      } else {
+        this.reiniciarShipping('No se ha especificado un código correcto.');
+        this.formData.controls.codigoPostal.setValue('');
+        return await false;
+      }
+    }
+    return await true;
+  }
+
+  async onSetShippments(event: Event, codigo: string = ''): Promise<boolean> {
+    let codigoPostal = '';
+    if (event) {
+      loadData('Consultando disponibilidad costo previo del envío.', '');
+      const inputElement = event.target as HTMLInputElement;
+      const valor = inputElement.value;
+      const objColonia = valor.split(':', 2);
+      codigoPostal = objColonia.length >= 2 ? this.codigoPostal : valor;
+      const cp = codigo === '' ? codigoPostal : codigo;
+      if (cp !== '' && valor !== '0') {
+        const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
+        if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
+          this.shipments = _shipments.shipments.shipmentsEnd;
+          closeAlert();
+          return await true;
         } else {
-          this.reiniciarShipping('El código postal no es correcto. Verificar CP');
-          this.formData.controls.codigoPostal.setValue('');
+          this.reiniciarShipping(_shipments.message);
+          this.formData.controls.selectColonia.setValue('');
           return await false;
         }
       } else {
