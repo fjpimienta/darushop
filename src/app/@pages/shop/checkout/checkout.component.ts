@@ -367,9 +367,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             // Si es syscom, asignar la generacion de la orden en warehouses
             let warehousesTmp = deliveryTmp.warehouses;
             for (const warehouseTmp of warehousesTmp) {
-              if (warehouseTmp.suppliersProd && warehouseTmp.suppliersProd.idProveedor === 'syscom') {
+              if (warehouseTmp.suppliersProd && warehouseTmp.suppliersProd.idProveedor === 'syscom'
+                && deliveryTmp.ordersSyscom && deliveryTmp.ordersSyscom.length > 0) {
                 warehouseTmp.ordersSyscom = deliveryTmp.ordersSyscom[0];
-                // delete warehouseTmp.ordersSyscom.orderResponseSyscom;
               }
             }
             const deliveryNew = {
@@ -671,7 +671,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   };
                   // Accede a branchOffices después de resolver la promesa
                   this.cartItems[idS] = suppliersProd;
-                  console.log('branchOffices syscom:', result.existenciaProductoSyscom.branchOffices);
                 }
               });
               break;
@@ -835,10 +834,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.formData.valid) {
         // Confirmar el envio del pedido.
         loadData('Confirmando cobertura de envio', 'Esperar ajustes de envios.');
-        console.log('Confirmando cobertura de envio');
-        console.log('onSubmit.this.warehouses: ', this.warehouses);
         const confirmarEnvios = await this.onConfirmShippments();
-        console.log('onSubmit.confirmarEnvios: ', confirmarEnvios);
         if (!confirmarEnvios) {
           this.isSubmitting = false;
           return await infoEventAlert('No se pudo confirmar el envio de tus productos.', '');
@@ -870,9 +866,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const user = await this.onSetUser(this.formData, this.stripeCustomer);
               const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
               // Validar Si hay pedidos Syscom
-              console.log('this.warehouses.in: ', this.warehouses);
               this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
-              console.log('this.warehouses.out: ', this.warehouses);
+              console.log('this.warehouses: ', this.warehouses);
+              const ordersSyscom: OrderSyscom[] = [];
+              ordersSyscom.push(this.warehouse.ordersSyscom);
               const delivery: Delivery = {
                 deliveryId: deliveryId,
                 cliente: this.formData.controls.email.value,
@@ -883,7 +880,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 user,
                 invoiceConfig,
                 warehouses: this.warehouses,
-                chargeOpenpay
+                chargeOpenpay,
+                ordersSyscom: ordersSyscom
               }
               const deliverySave = await this.deliverysService.add(delivery);
               if (!deliverySave.status) {
@@ -916,8 +914,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Validar Si hay pedidos Syscom
               this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
               console.log('this.warehouses: ', this.warehouses);
-              const ordersSyscom: OrderSyscom[] = [];
-              ordersSyscom.push(this.warehouse.ordersSyscom);
+              const ordersSyscomT: OrderSyscom[] = [];
+              ordersSyscomT.push(this.warehouse.ordersSyscom);
               const deliveryT: Delivery = {
                 deliveryId: deliveryIdT,
                 cliente: this.formData.controls.email.value,
@@ -929,7 +927,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 invoiceConfig: invoiceConfigT,
                 warehouses: this.warehouses,
                 chargeOpenpay: chargeOpenpayT,
-                ordersSyscom: ordersSyscom
+                ordersSyscom: ordersSyscomT
               }
               const deliverySaveT = await this.deliverysService.add(deliveryT);
               console.log('deliverySaveT: ', deliverySaveT);
@@ -1135,18 +1133,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async onSetCps(event: Event, codigo: string = ''): Promise<boolean> {
-    let colonia = '';
     let codigoPostal = '';
     if (event) {
+      loadData('Consultando disponibilidad de envios', '');
       const inputElement = event.target as HTMLInputElement;
       const valor = inputElement.value;
       const objColonia = valor.split(':', 2);
-      if (objColonia.length >= 2) {
-        colonia = objColonia[1];
-        codigoPostal = this.codigoPostal;
-      } else {
-        codigoPostal = valor;
-      }
+      codigoPostal = objColonia.length >= 2 ? this.codigoPostal : valor;
       const cp = codigo === '' ? codigoPostal : codigo;
       if (cp !== '' && valor !== '0') {
         this.codigoPostal = cp;
@@ -1203,7 +1196,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         // Cotizar con los proveedores el costo de envio de acuerdo al producto.
         if (codigoPostal.length > 0) {
           const _shipments = await this.getCotizacionEnvios(cp, this.selectEstado.d_estado);
-          console.log('_shipments: ', _shipments);
           if (_shipments.status && _shipments.shipments && _shipments.shipments.shipmentsEnd) {
             this.shipments = _shipments.shipments.shipmentsEnd;
             closeAlert();
@@ -1214,10 +1206,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         } else {
           this.reiniciarShipping('El código postal no es correcto. Verificar CP');
+          this.formData.controls.codigoPostal.setValue('');
           return await false;
         }
       } else {
         this.reiniciarShipping('No se ha especificado un código correcto.');
+        this.formData.controls.codigoPostal.setValue('');
         return await false;
       }
     }
@@ -1225,7 +1219,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async reiniciarShipping(msj: string) {
-    this.formData.controls.codigoPostal.setValue('');
     this.totalEnvios = '';
     this.changeShipping(0);
     if (msj !== '') {
@@ -1235,6 +1228,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
+    console.log('cotizacionEnvios: ', cotizacionEnvios);
+    console.log('this.warehouses: ', this.warehouses);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -1467,14 +1462,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             if (carItemsSupplier.length > 0) {
               // Buscar todos los branchOffice de los productos.
               const branchOfficesCom = this.findBranchOfficesForProducts(carItemsSupplier);
-              console.log('branchOfficesCom: ', branchOfficesCom);
               this.commonBranchOffices.clear();
               branchOfficesCom.forEach((sucursal) => this.commonBranchOffices.add(sucursal));
               // Se guardan las sucursales comunes para los envios.
               let branchOfficesTot: BranchOffices[] = [];
               let addedBranchOffices = new Set<string>(); // Conjunto para rastrear branchOffices agregados
               for (const cart of this.cartItems) {
-                console.log('cart.suppliersProd.branchOffices: ', cart.suppliersProd.branchOffices);
                 if (cart.suppliersProd.branchOffices && cart.suppliersProd.branchOffices.length === 0) {
                   return {
                     status: false,
@@ -1489,7 +1482,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
               const commonBranchOffices = branchOfficesTot;
-              console.log('commonBranchOffices: ', commonBranchOffices);
               for (const commonBranch of commonBranchOffices) {
                 const carItemsWarehouse = [];
                 // Filtrar los elementos que no han sido asignados
@@ -1588,7 +1580,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               }
             }
-            console.log('onCotizarEnvios/this.warehouses: ', this.warehouses);
           } else {
             return await {
               status: false,
@@ -1669,6 +1660,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
           return await [];
         });
+      return await shipmentsExt;
     }
     return await shipmentsEnd;
     // Elaborar Pedido Previo a facturacion.
