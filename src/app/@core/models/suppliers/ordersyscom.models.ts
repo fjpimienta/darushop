@@ -21,7 +21,7 @@ export class DireccionSyscom {
   num_ext: string;
   num_int: string;
   colonia: string;
-  codigo_postal: number;
+  codigo_postal: string;
   pais: string;
   estado: string;
   ciudad: string;
