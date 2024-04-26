@@ -339,7 +339,7 @@ export class DashboardComponent implements OnInit {
       const cp = $(event.target).val();
       if (cp !== '') {
         this.codigoPostal = cp;
-        loadData('Consultando Codigo Postal', 'Esperar la carga de los envíos.');
+        loadData('Consultando código postal, por favor espera un momento.', '');
         // Recuperar pais, estado y municipio con el CP
         const codigoPostal = await this.codigopostalsService.getCps(1, -1, cp).then(async result => {
           this.cps = result.codigopostals;

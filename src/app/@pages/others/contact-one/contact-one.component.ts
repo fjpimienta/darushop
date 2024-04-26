@@ -92,7 +92,7 @@ export class ContactOnePageComponent implements OnInit {
 
   async onSubmit(): Promise<any> {
     if (this.formData.valid) {
-      loadData('Enviando el correo', 'Esperar el envio del correo.');
+      loadData('Enviando correo electrónico, por favor espera hasta que éste se haya enviado.', '');
       const contact = {
         cname: this.formData.controls.cname.value,
         cmail: this.formData.controls.cmail.value,
@@ -105,7 +105,7 @@ export class ContactOnePageComponent implements OnInit {
       this.router.navigate(['/ofertas']);
     } else {
       this.isSubmitting = false;
-      return await infoEventAlert('Los datos enviados no son correctos! Verificar.', '');
+      return await infoEventAlert('Lo sentimos, los datos que estas proporcionando no son correctos, por favor verifica la información a detalle.', '');
     }
   }
 
@@ -179,7 +179,7 @@ export class ContactOnePageComponent implements OnInit {
     };
     this.mailService.send(mailInt).pipe(first()).subscribe();
 
-    await infoEventAlert('El correo se ha enviado. Muy pronto te contactaremos.', '', TYPE_ALERT.SUCCESS);
+    await infoEventAlert('Hemos recibido el correo de contacto. Muy pronto recibiras noticias del TEAM DARU.', '', TYPE_ALERT.SUCCESS);
   }
   //#endregion Emails
 }

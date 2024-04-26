@@ -243,7 +243,7 @@ export class IndexComponent implements OnInit {
 
   onSubmit() {
     if (!this.formData.valid) {
-      infoEventAlert('Es necesario un correo electrónico.', '');
+      infoEventAlert('Para poder continuar es necesario que ingreses un correo electrónico.', '');
       return;
     }
 
@@ -281,11 +281,11 @@ export class IndexComponent implements OnInit {
 
     this.mailService.send(mail).subscribe(
       (response) => {
-        infoEventAlert('Correo electrónico enviado con éxito:', '', TYPE_ALERT.SUCCESS);
+        infoEventAlert(`Gracias por contactarnos, para ser agregado a la lista de contactos correos, Pronto te contactaremos a tu correo: ${email}`, '', TYPE_ALERT.SUCCESS);
         this.formData.controls.email.setValue('');
       },
       (error) => {
-        infoEventAlert('Error al enviar el correo electrónico:', '', TYPE_ALERT.ERROR);
+        infoEventAlert('Lo sentimos hubo un error en el correo enviado para ser agregado a la lista de contactos. Por favor contacta con marketplace@daru.mx', '', TYPE_ALERT.ERROR);
       }
     );
   }

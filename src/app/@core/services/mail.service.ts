@@ -163,8 +163,8 @@ export class MailService extends ApiService {
       <body>
         <div class="container">
           <h1>Nota de Compra</h1>
-          <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
-          <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
+          <h2>Estimado/a ${charge.user.name} ${charge.user.lastname},</h2>
+          <p>Gracias por tu compra, el pedido se ha realizado correctamente, a continuación adjuntamos la nota de compra correspondiente: ${charge.deliveryId}</p>
           <table>
             <thead>
               <tr>
@@ -197,9 +197,9 @@ export class MailService extends ApiService {
               ${datosFactura}
             </tfoot>
           </table>
-          <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
+          <p>Si tienes alguna duda, pregunta o comentario, no dudes en ponerse en contacto con nuestro equipo de atención al cliente.</p>
           <p>Saludos cordiales,</p>
-          <p>DARU</p>
+          <h3>DARU Innovación</h3>
           <hr>
           <hr>
           <p class="foot">
@@ -338,10 +338,10 @@ export class MailService extends ApiService {
       </head>
       <body>
         <div class="container">
-          <h1>Nota de Compra</h1>
-          <p>Estimado/a ${charge.user.name} ${charge.user.lastname},</p>
-          <p>A continuación, adjuntamos la nota de compra correspondiente a su pedido:</p>
-          <table>
+        <h1>Nota de Compra</h1>
+        <h2>Estimado/a ${charge.user.name} ${charge.user.lastname},</h2>
+        <p>Gracias por tu compra, el pedido se ha realizado correctamente, a continuación adjuntamos la nota de compra correspondiente: ${charge.deliveryId}</p>
+        <table>
             <thead>
               <tr>
                 <th colspan="2">Producto</th>
@@ -419,9 +419,9 @@ export class MailService extends ApiService {
               </tr>
             </tfoot>
           </table>
-          <p>Gracias por su compra. Si tiene alguna pregunta o necesita ayuda adicional, no dude en ponerse en contacto con nuestro equipo de atención al cliente.</p>
-          <p>Saludos cordiales.</p>
-          <p>DARU Innovación</p>
+          <p>Si tienes alguna duda, pregunta o comentario, no dudes en ponerse en contacto con nuestro equipo de atención al cliente.</p>
+          <p>Saludos cordiales,</p>
+          <h3>DARU Innovación</h3>
           <hr>
           <hr>
           <p class="foot">
