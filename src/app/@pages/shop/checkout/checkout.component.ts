@@ -787,7 +787,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           num_ext: formData.controls.outdoorNumber.value,
           num_int: formData.controls.interiorNumber.value,
           colonia: formData.controls.selectColonia.value,
-          codigo_postal: parseInt(formData.controls.codigoPostal.value),
+          codigo_postal: formData.controls.codigoPostal.value.padStart(5, '0'),
           pais: this.selectCountry.d_pais,
           estado: this.selectEstado.d_estado,
           ciudad: this.selectMunicipio.D_mnpio,
