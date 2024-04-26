@@ -38,7 +38,7 @@ export class ComingSoonPageComponent implements OnInit {
 
   onSubmit() {
     if (!this.formData.valid) {
-      infoEventAlert('Es necesario un correo electrónico.', '');
+      infoEventAlert('Para poder continuar es necesario que ingreses un correo electrónico.', '');
       return;
     }
 

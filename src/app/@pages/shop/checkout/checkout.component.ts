@@ -236,7 +236,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // Observable para obtener el token
       this.stripePaymentService.cardTokenVar$.pipe(first()).subscribe((token: string) => {
         if (token.indexOf('tok_') > -1) {
-          loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
+          loadData('Realizando el pago, por favor espera hasta que el pago sea procesado.','');
           // Enviar los datos.
           this.token = token;
           // Buscar el usuario por el correo en el stripe
@@ -327,7 +327,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     // this.mailService.sendEmail(OrderSupplier, messageDelivery, '', internalEmail, this.totalEnvios, this.showFacturacion);
                     // await infoEventAlert(messageDelivery, '', typeAlert);
                   } else {
-                    await infoEventAlert('El Pedido no se ha realizado', result.message, TYPE_ALERT.WARNING);
+                    await infoEventAlert('Lo sentimos por el momento no se ha generado el pedido. Favor de contactar con marketplace@daru.mx', result.message, TYPE_ALERT.WARNING);
                     this.router.navigate(['/cart']);
                   }
                 });
@@ -397,13 +397,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 switch (charge.chargeOpenpay.method) {
                   case 'card':
                     if (charge.chargeOpenpay.status !== 'completed') {
-                      infoEventAlert('No se ha reflejado el pago del pedido.', 'Comunicarse con DaRu.');
+                      infoEventAlert('Lo sentimos, no se ha reflejado el pago de tu pedido, favor de contactarnos a marketplace@daru.mx para dar seguimiento', '');
                       this.isPagado = false;
                     }
                     break;
                   case 'bank_account':
                     if (charge.chargeOpenpay.status !== 'completed') {
-                      infoEventAlert('No se ha reflejado el pago del pedido.', 'Intentar mas tarde. En ocasiones tarda 60 minutos en reflejarse el movimiento');
+                      infoEventAlert('Lo sentimos, no se ha reflejado el pago de tu pedido, en ocasiones tarda aproximadamente una hora en verse reflejado el movimiento, de no ser así intenta de nuevo más tarde o comunícate con nosotros a marketplace@daru.mx para brindarte apoyo.','');
                       this.isPagado = false;
                     }
                     break;
@@ -750,10 +750,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async notAvailableProducts(withMessage: boolean = true): Promise<void> {
     if (withMessage) {
-      await infoEventAlert(
-        'Accion no disponible',
-        'No puedes realizar el pago sin productos en el carritto de compras'
-      );
+      await infoEventAlert('Lo sentimos, no puedes realizar un pago sin tener agregados productos en tu carrito.','');
     }
     this.router.navigate(['/']);
   }
@@ -769,7 +766,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         (error: any) => {
           this.isSubmitting = false;
           const description = this.chargeOpenpayService.decodeError(error.data)
-          infoEventAlert('No se puedo procesar el cargo.', description, TYPE_ALERT.ERROR);
+          infoEventAlert('Lo sentimos, no se pudo procesar el cargo a tu tarjeta, por favor revisa a detalle la información o ponte en contacto con el banco.', description, TYPE_ALERT.ERROR);
           reject(error);
         }
       );
@@ -842,7 +839,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
         infoEventAlert('Si hay cobertura en tu direccion.', '', TYPE_ALERT.SUCCESS);
-        loadData('Realizando el pago', 'Esperar el procesamiento de pago.');
+        loadData('Realizando el pago, por favor espera hasta que el pago sea procesado.','');
         // this.existeMetodoPago = false;
         if (this.existeMetodoPago) {
           switch (this.typePay) {
@@ -853,7 +850,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               // Validar que exista el numero de la tarjeta
               if (this.numeroTarjetaFormateado === '') {
                 this.isSubmitting = false;
-                return await infoEventAlert('Verificar los datos de la Tarjeta de Credito.', '');
+                return await infoEventAlert('Por favor verifica los datos de la tarjeta de crédito o debido que estás ingresando.', '');
               }
               // Recuperar tokenCard Openpay
               const tokenCard = await this.tokenCardOpenpay();
@@ -905,7 +902,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const idT = await this.deliverysService.next();
               if (!Number.isInteger(Number(idT)) || Number(idT) <= 0) {
                 this.isSubmitting = false;
-                return await infoEventAlert('Error en servicio interno (Next Id Delivery).', TYPE_ALERT.ERROR);
+                return await infoEventAlert('Lo sentimos, ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible. Por favor contacta a marketplace@daru.mx', TYPE_ALERT.ERROR);
               }
               const deliveryIdT = this.generarNumeroAleatorioEncriptado();
               // Realizar Cargo con la Tarjeta
@@ -959,11 +956,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         } else {
           this.isSubmitting = false;
-          return await infoEventAlert('Se requiere definir un Metodo de Pago.', '');
+          return await infoEventAlert('Para poder continuar es necesario definir un método de pago.', '');
         }
       } else {
         this.isSubmitting = false;
-        return await infoEventAlert('Verificar los campos requeridos.', '');
+        return await infoEventAlert('Por favor verifica que los campos requeridos estén completos.', '');
       }
     }
   }
@@ -971,18 +968,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onSubmitCapture(): Promise<any> {
     if (!this.isSubmittingCapture) {
       this.isSubmittingCapture = true;
-      loadData('Realizando la orden', 'Esperar el procesamiento de la orden.');
+      loadData('Estamos realizando tu pedido, por favor espera hasta que se haya procesado.', '');
       if (!this.delivery) {
         this.isSubmitting = false;
-        return await infoEventAlert('No se encuentra la informacion completa del pedido.', '');
+        return await infoEventAlert('Favor de verificar que todos los campos obligatorios se encuentren llenos.', '');
       }
       if (!this.idDelivery) {
         this.isSubmitting = false;
-        return await infoEventAlert('No se encuentra el parametro: idOrder.', '');
+        return await infoEventAlert('Hay un problema con el identificador del pedido. Favor de comunicarse a marketplace@daru.mx.', '');
       }
       if (!this.idTransaction) {
         this.isSubmitting = false;
-        return await infoEventAlert('No se encuentra el parametro: id.', '');
+        return await infoEventAlert('Hay un problema con el identificador del cobro. Favor de comunicarse a marketplace@daru.mx', '');
       }
       const delivery: Delivery = {
         id: this.delivery.id,
@@ -1199,7 +1196,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         });
       } else {
-        this.reiniciarShipping('No se ha especificado un código correcto.');
+        this.reiniciarShipping('Lo sentimos, no has agregado un código postal correcto.');
         this.formData.controls.codigoPostal.setValue('');
         return await false;
       }
@@ -1776,7 +1773,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return;
       }
       if (email === '') {
-        infoEventAlert('Para que utilices tu cupon se requiere el correo electronico donde llego.', '');
+        infoEventAlert('Para que puedas utilizar el cupón es necesario que agregues el correo electrónico donde te llegó.', '');
         return;
       }
       const icommktContact = await this.icommktsService.getIcommktContact(email);
@@ -1792,7 +1789,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           return;
         }
         if (welcome && welcome.welcome && !welcome.welcome.active) {
-          const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+          const mensaje = `Lo sentimos, este cupón: ${this.cupon.cupon} ya ha sido ocupado.`
           infoEventAlert(mensaje, '');
           this.discount = '';
           this.cuponInput = '';
@@ -1805,7 +1802,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         discountPorc = discountPorc ? this.cupon.amountDiscount : 0;
         this.discountPorc = discountPorc.toString();
       } else {
-        infoEventAlert('Lo siento este cupon ligado a este email no lo reconozco.', '');
+        infoEventAlert('Lo sentimos, este cupón no está ligado al correo electrónico proporcionado.', '');
         this.discount = '';
         this.cuponInput = '';
         this.cartService.priceTotal.subscribe(total => {
@@ -1816,7 +1813,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     } else {
       if (inputValue !== '') {
-        infoEventAlert('Lo siento este código no lo reconozco.', '');
+        infoEventAlert('Lo sentimos, el código postal que estas agregando no es conocido, por favor revisa que el código sea correcto.', '');
         event.target.value = '';
         this.discount = '';
         this.cuponInput = '';
@@ -1852,7 +1849,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           // Buscar si ya se ocupo el cupon.
           const welcome = await this.welcomesService.getWelcome(email);
           if (welcome && welcome.status && !welcome.welcome.active) {
-            const mensaje = `El cupon: ${this.cupon.cupon} ya ha sido ocupado.`
+            const mensaje = `Lo sentimos, este cupón: ${this.cupon.cupon} ya ha sido ocupado.`
             infoEventAlert(mensaje, '');
             this.discount = '';
             this.cuponInput = '';
