@@ -236,7 +236,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // Observable para obtener el token
       this.stripePaymentService.cardTokenVar$.pipe(first()).subscribe((token: string) => {
         if (token.indexOf('tok_') > -1) {
-          loadData('Realizando el pago, por favor espera hasta que el pago sea procesado.','');
+          loadData('Realizando el pago, por favor espera hasta que el pago sea procesado.', '');
           // Enviar los datos.
           this.token = token;
           // Buscar el usuario por el correo en el stripe
@@ -403,7 +403,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                     break;
                   case 'bank_account':
                     if (charge.chargeOpenpay.status !== 'completed') {
-                      infoEventAlert('Lo sentimos, no se ha reflejado el pago de tu pedido, en ocasiones tarda aproximadamente una hora en verse reflejado el movimiento, de no ser así intenta de nuevo más tarde o comunícate con nosotros a marketplace@daru.mx para brindarte apoyo.','');
+                      infoEventAlert('Lo sentimos, no se ha reflejado el pago de tu pedido, en ocasiones tarda aproximadamente una hora en verse reflejado el movimiento, de no ser así intenta de nuevo más tarde o comunícate con nosotros a marketplace@daru.mx para brindarte apoyo.', '');
                       this.isPagado = false;
                     }
                     break;
@@ -750,7 +750,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async notAvailableProducts(withMessage: boolean = true): Promise<void> {
     if (withMessage) {
-      await infoEventAlert('Lo sentimos, no puedes realizar un pago sin tener agregados productos en tu carrito.','');
+      await infoEventAlert('Lo sentimos, no puedes realizar un pago sin tener agregados productos en tu carrito.', '');
     }
     this.router.navigate(['/']);
   }
@@ -839,7 +839,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
         // Enviar par obtener token de la tarjeta, para hacer uso de ese valor para el proceso del pago
         infoEventAlert('Si hay cobertura en tu direccion.', '', TYPE_ALERT.SUCCESS);
-        loadData('Realizando el pago, por favor espera hasta que el pago sea procesado.','');
+        loadData('Realizando el pago, por favor espera hasta que el pago sea procesado.', '');
         // this.existeMetodoPago = false;
         if (this.existeMetodoPago) {
           switch (this.typePay) {

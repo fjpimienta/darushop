@@ -10,7 +10,7 @@
         <li class="breadcrumb-item">
           <a routerLink="/dashboard">Dashboard</a>
         </li>
-        <li class="breadcrumb-item active">Importe {{ (cartService.priceTotal | async).toFixed(2) | currency}}
+        <li class="breadcrumb-item active">Importe {{ totalPagar | currency}}
         </li>
       </ol>
     </div>
