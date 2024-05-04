@@ -358,30 +358,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     try {
       console.clear();
       if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
-        console.log('this.idDelivery: ', this.idDelivery);
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
           console.log('result: ', result);
           if (result && result.delivery && result.delivery.delivery) {
             let deliveryTmp = result.delivery.delivery;
-            console.log('deliveryTmp.IN: ', deliveryTmp);
-            // Si es syscom, asignar la generacion de la orden en warehouses
-            let warehousesTmp = deliveryTmp.warehouses;
-            for (const warehouseTmp of warehousesTmp) {
-              if (warehouseTmp.suppliersProd && warehouseTmp.suppliersProd.idProveedor === 'syscom'
-                && deliveryTmp.ordersSyscom && deliveryTmp.ordersSyscom.length > 0) {
-                warehouseTmp.ordersSyscom = deliveryTmp.ordersSyscom[0];
-              }
-            }
-            const deliveryNew = {
-              ...deliveryTmp,
-              warehouses: warehousesTmp
-            };
-            // Fin asignar la generacion de la orden en warehouses
-            deliveryTmp = deliveryNew;
-            console.log('deliveryTmp.OUT: ', deliveryTmp);
             this.delivery = deliveryTmp;
             this.onSetDelivery(this.formData, deliveryTmp);
-            const discount = parseFloat(deliveryTmp.discount);
+            const discount = deliveryTmp.discount;
             const totalEnvios = parseFloat(this.totalEnvios);
             this.cartService.priceTotal.subscribe(total => {
               if (total === 0) {
@@ -415,7 +398,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
           return this.delivery;
         });
-        console.log('this.deliverysService.getDelivery/delivery: ', delivery);
       }
       this.countrys = [];
       this.selectCountry = new Country();
@@ -671,6 +653,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   };
                   // Accede a branchOffices después de resolver la promesa
                   this.cartItems[idS] = suppliersProd;
+                  console.log('branchOffices syscom:', result.existenciaProductoSyscom.branchOffices);
                 }
               });
               break;
@@ -981,12 +964,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         return await infoEventAlert('Hay un problema con el identificador del cobro. Favor de comunicarse a marketplace@daru.mx', '');
       }
+      // Validar Si hay pedidos Syscom
+      this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
+      console.log('this.warehouses: ', this.warehouses);
+      const ordersSyscomT: OrderSyscom[] = [];
+      ordersSyscomT.push(this.warehouse.ordersSyscom);
       const delivery: Delivery = {
         id: this.delivery.id,
         deliveryId: this.delivery.deliveryId,
         chargeOpenpay: this.delivery.chargeOpenpay,
         user: this.delivery.user,
-        warehouses: this.delivery.warehouses
+        warehouses: this.delivery.warehouses,
+        ordersSyscom: ordersSyscomT
       }
       const deliverySave = await this.deliverysService.update(delivery);
       console.log('deliverySave: ', deliverySave);
@@ -1052,29 +1041,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.formData.controls.outdoorNumber.setValue(delivery.user.addresses[0].outdoorNumber);
     this.formData.controls.interiorNumber.setValue(delivery.user.addresses[0].interiorNumber);
     this.formData.controls.references.setValue(delivery.user.addresses[0].references);
-    if (!this.shipments || this.shipments.length <= 0) {
-      this.shipments = [];
-      for (const idS of Object.keys(delivery.warehouses[0].shipments)) {
-        const ship: Shipment = delivery.warehouses[0].shipments[idS];
-        ship.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
-        this.shipments.push(ship);
-      }
-    }
-    if (!this.cartItems || this.cartItems.length <= 0) {
-      this.cartItems = [];
-      for (const idC of Object.keys(delivery.warehouses[0].products)) {
-        const cartItem: CartItem = delivery.warehouses[0].products[idC];
-        this.cartItems.push(cartItem);
-      }
-    }
     let totalShips = 0.0;
+    this.shipments = [];
+    this.cartItems = [];
     for (const idW of Object.keys(delivery.warehouses)) {
       const warehouse: Warehouse = delivery.warehouses[idW];
+      for (const idC of Object.keys(warehouse.products)) {
+        const cartItem: CartItem = warehouse.products[idC];
+        this.cartItems.push(cartItem);
+      }
       for (const idS of Object.keys(warehouse.shipments)) {
         const shipment: Shipment = warehouse.shipments[idS];
         if (!isNaN(shipment.costo)) {
           totalShips += shipment.costo;
         }
+        this.shipments.push(shipment);
       }
     }
     this.totalEnvios = totalShips.toFixed(2).toString();
