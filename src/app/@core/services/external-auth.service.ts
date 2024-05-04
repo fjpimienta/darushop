@@ -757,7 +757,7 @@ export class ExternalAuthService extends ApiService {
           orderSyscomInput.fletera = 'estafeta';
           orderSyscomInput.productos = productosSyscom;
           orderSyscomInput.moneda = 'mxn';
-          orderSyscomInput.uso_cfdi = 'G03';
+          orderSyscomInput.uso_cfdi = 'G01';
           orderSyscomInput.tipo_pago = 'pue';
           orderSyscomInput.orden_compra = 'DARU-COTIZACION';
           orderSyscomInput.ordenar = false;
