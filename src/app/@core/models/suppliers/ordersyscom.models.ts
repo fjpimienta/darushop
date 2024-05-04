@@ -1,3 +1,5 @@
+import { IDireccionSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
+
 export class OrderSyscom {
   tipo_entrega: string;
   direccion: DireccionSyscom;
@@ -38,11 +40,10 @@ export class OrderResponseSyscom {
   error: string;
   cliente: ClienteSyscom;
   resumen: ResumenSyscom;
-  datos_entrega: DatosEntregaSyscom;
+  datos_entrega: IDireccionSyscom;
   productos: ProductoResponseSyscom[];
   totales: TotalesSyscom;
 }
-
 
 export class ClienteSyscom {
   num_cliente: string;
@@ -51,17 +52,6 @@ export class ClienteSyscom {
   email: string;
   telefono: string;
   direccion: DireccionSyscom
-}
-
-export class DireccionResponseSyscom {
-  calle: string;
-  num_exterior: string;
-  num_interior: string;
-  colonia: string;
-  ciudad: string;
-  estado: string;
-  pais: string;
-  telefono: string;
 }
 
 export class ResumenSyscom {
@@ -76,16 +66,6 @@ export class ResumenSyscom {
   folio_pedido: string;
   fecha_creacion: string;
   iva_aplicado: number;
-}
-
-export class DatosEntregaSyscom {
-  calle: string;
-  num_exterior: string;
-  num_interior: string;
-  colonia: string;
-  ciudad: string;
-  estado: string;
-  pais: string;
 }
 
 export class ProductoResponseSyscom{
