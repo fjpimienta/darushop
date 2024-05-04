@@ -38,7 +38,7 @@ export class IOrderSyscomResponse {
   error: string;
   cliente: IClienteSyscom;
   resumen: IResumenSyscom;
-  datos_entrega: IDireccionResponseSyscom;
+  datos_entrega: IDatosEntregaSyscom;
   productos: [IProductoResponseSyscom];
   totales: ITotalesSyscom;
 }
@@ -64,6 +64,16 @@ export class IResumenSyscom {
   folio_pedido: string;
   fecha_creacion: string;
   iva_aplicado: number;
+}
+
+export interface IDatosEntregaSyscom {
+  calle: string;
+  num_exterior: string;
+  num_interior: string;
+  colonia: string;
+  ciudad: string;
+  estado: string;
+  pais: string;
 }
 
 export class IProductoResponseSyscom {
