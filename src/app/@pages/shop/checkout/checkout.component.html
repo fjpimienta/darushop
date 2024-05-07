@@ -588,7 +588,7 @@
                   <div class="col-2"></div>
                   <div class="col-8 text-center">
                     <!-- [disabled]="!formData.valid" -->
-                    <button *ngIf="!idDelivery" type="submit" class="btn btn-primary btn-round btn-shadow"
+                    <button *ngIf="!idDelivery || !emailValid" type="submit" class="btn btn-primary btn-round btn-shadow"
                       (click)="onSubmit()">
                       <span class="btn-text btn-primary">Realizar Pedido</span>
                       <span class="btn-hover-text">Realizando Pedido</span>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, of } from 'rxjs';
 import { CartService } from '@core/services/cart.service';
 import { CountrysService } from '@core/services/countrys.service';
 import { CodigopostalsService } from '@core/services/codigopostals.service';
@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 import { StripePaymentService } from '@mugan86/stripe-payment-form';
 import { basicAlert } from '@shared/alert/toasts';
 import { TYPE_ALERT } from '@shared/alert/values.config';
-import { first } from 'rxjs/operators';
+import { catchError, first, map } from 'rxjs/operators';
 import { CURRENCIES_SYMBOL, CURRENCY_LIST } from '@mugan86/ng-shop-ui';
 import { CURRENCY_CODE } from '@core/constants/config';
 import { closeAlert, infoEventAlert, loadData } from '@shared/alert/alerts';
@@ -55,9 +55,11 @@ import { ISupplierProd } from '@core/interfaces/product.interface';
 import { OrderSyscomService } from '@core/services/suppliers/syscom.service';
 import { IDireccionSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
 import { OrderSyscom } from '@core/models/suppliers/ordersyscom.models';
+import { HttpClient } from '@angular/common/http';
 
 declare var $: any;
 declare var OpenPay: any
+const HUNTER_API_KEY = '550e992043c66925659ef73486f16a7db842cadb';
 
 @Component({
   selector: 'app-checkout-page',
@@ -186,6 +188,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   cuponInput: string = '';
 
   checkoutUrl: string = '';
+  emailValid = false;
 
   constructor(
     private router: Router,
@@ -211,7 +214,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     public welcomesService: WelcomesService,
     private icommktsService: IcommktsService,
     private confirmationService: CheckoutExitConfirmationService,
-    private orderSyscomService: OrderSyscomService
+    private http: HttpClient
   ) {
     try {
       this.activeRoute.queryParams.subscribe(params => {
@@ -660,6 +663,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+      // Validar Correo
+      const emailControl = this.formData.get('email');
+      if (emailControl) {
+        emailControl.valueChanges.subscribe(newValue => {
+          console.log('Nuevo valor del correo electrónico:', newValue);
+          this.checkEmailValidity(newValue);
+        });
+
+        // Verificar la validez del correo electrónico inicialmente
+        if (emailControl.valid) {
+          this.checkEmailValidity(emailControl.value);
+        }
+      } else {
+        console.error('Control de correo electrónico no encontrado en el formulario.');
+      }
     } catch (error) {
       console.log('error: ', error);
     }
@@ -811,6 +830,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onSubmit(): Promise<any> {
     if (!this.isSubmitting) {
+      if (!this.formData.valid || !this.emailValid) {
+        infoEventAlert('Revisar los campos requeridos o el correo electrónico.', '');
+        return;
+      }
       this.isSubmitting = true;
       if (this.formData.valid) {
         // Confirmar el envio del pedido.
@@ -2207,6 +2230,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       truncatedText = text.substring(0, maxLength) + '...';
     }
     return truncatedText.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+  }
+  //#endregion
+
+  //#region Emails
+  checkEmailValidity(email: string): void {
+    const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${HUNTER_API_KEY}`;
+    console.log('url: ', url);
+    this.http.get(url).pipe(
+      map((response: any) => {
+        console.log('responseL: ', response);
+        return response.data.result === 'deliverable';
+      }),
+      catchError(error => {
+        console.error('Error al verificar el dominio:', error);
+        return of(false);
+      })
+    ).subscribe((isValid: boolean) => {
+      this.emailValid = isValid;
+    });
   }
   //#endregion
 }
