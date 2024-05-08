@@ -36,7 +36,7 @@
       <span>Marca:</span>
       <span *ngIf="imageLoaded">
         <a [routerLink]="['/marca']" [queryParams]="{ brand: product.brand }">
-          <img [src]="'assets/images/brands/' + product.brand + '.jpg'" width="75" height="75" [alt]="product.brand"
+          <img [src]="'assets/images/brands/' + product.brand + '.jpg'" width="75" height="75" alt="{{ product.brand }}"
             (error)="handleImageError()">
         </a>
       </span>
@@ -70,7 +70,7 @@
     </div>
   </div>
 
-  <div class="variation-price" style="display: none;">
+  <div class="variation-price hidden">
     <div class="product-price">
       ${{ selectedVariant.price ? selectedVariant.price.toFixed( 2 ) : 0 }}
     </div>
