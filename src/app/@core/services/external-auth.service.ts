@@ -23,6 +23,7 @@ import { IDireccionSyscom } from '@core/interfaces/suppliers/orderSyscom.interfa
 import { ADD_ORDER_SYSCOM } from '@graphql/operations/mutation/suppliers/syscom';
 import { FormGroup } from '@angular/forms';
 import { OrderSyscom, ProductoSyscom } from '@core/models/suppliers/ordersyscom.models';
+import { EXISTENCIAPRODUCTOSDAISYTEK_LIST_QUERY } from '@graphql/operations/query/suppliers/daisytek';
 
 declare const require;
 const axios = require('axios');
@@ -825,6 +826,9 @@ export class ExternalAuthService extends ApiService {
                 case 'syscom':
                   token = result.access_token;
                   break;
+                case 'daisytek':
+                  token = result.token;
+                  break;
                 case '99minutos':
                   token = result.access_token;
                   break;
@@ -856,6 +860,8 @@ export class ExternalAuthService extends ApiService {
                             return await [];
                           }
                         case 'syscom':
+                          return await [];
+                        case 'daisytek':
                           return await [];
                         case '99minutos':
                           const shipment = new Shipment();
@@ -1093,7 +1099,7 @@ export class ExternalAuthService extends ApiService {
     }
   }
 
-  async getPedidosAPI(supplier: ISupplier, apiSelect: IApis, order: any): Promise<any> {
+  async getPedidosAPIX(supplier: ISupplier, apiSelect: IApis, order: any): Promise<any> {
     let token = '';
     switch (supplier.slug) {
       case 'ct':
@@ -1154,7 +1160,7 @@ export class ExternalAuthService extends ApiService {
   //#endregion Pedidos
 
   //#region Confirmacion
-  async getConfirmacionAPI(supplier: ISupplier, apiSelect: IApis, confirm: any): Promise<any> {
+  async getConfirmacionAPIX(supplier: ISupplier, apiSelect: IApis, confirm: any): Promise<any> {
     let token = '';
     switch (supplier.slug) {
       case 'ct':
@@ -1530,6 +1536,23 @@ export class ExternalAuthService extends ApiService {
       this.get(EXISTENCIAPRODUCTOSSYSCOM_LIST_QUERY, existenciaProducto, {}).subscribe(
         (result: any) => {
           resolve(result.existenciaProductoSyscom);
+        },
+        (error: any) => {
+          reject(error);
+        });
+    });
+  }
+  //#endregion
+
+  //#region Daistytek
+  async getExistenciaProductoDaisytek(suppliersProd: ISupplierProd): Promise<any> {
+    const existenciaProducto = {
+      "existenciaProducto": suppliersProd
+    }
+    return new Promise<any>((resolve, reject) => {
+      this.get(EXISTENCIAPRODUCTOSDAISYTEK_LIST_QUERY, existenciaProducto, {}).subscribe(
+        (result: any) => {
+          resolve(result.existenciaProductoDaisytek);
         },
         (error: any) => {
           reject(error);

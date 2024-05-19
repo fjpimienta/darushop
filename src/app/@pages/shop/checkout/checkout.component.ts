@@ -660,6 +660,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 }
               });
               break;
+            case 'daisytek':
+              this.externalAuthService.getExistenciaProductoDaisytek(
+                this.cartItems[idS].suppliersProd
+              ).then(result => {
+                if (result && result.existenciaProductoDaisytek) {
+                  const updatedSuppliersProd: ISupplierProd = {
+                    ...item.suppliersProd,
+                    branchOffices: result.existenciaProductoDaisytek.branchOffices
+                  };
+                  const suppliersProd = {
+                    ...item,
+                    suppliersProd: updatedSuppliersProd,
+                  };
+                  // Accede a branchOffices después de resolver la promesa
+                  this.cartItems[idS] = suppliersProd;
+                  console.log('branchOffices daisytek:', result.existenciaProductoDaisytek.branchOffices);
+                }
+              });
+              break;
           }
         }
       });
@@ -1577,6 +1596,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
                         shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                       } else if (supplier.slug === 'syscom') {
+                        shipment.empresa = resultShip.data.empresa.toString();
+                        shipment.costo = resultShip.data.costo * 1.16;
+                        shipment.metodoShipping = resultShip.data.metodoShipping;
+                        shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
+                        shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
+                        shipment.orderSyscom = resultShip.data.orderSyscom;
+                      } else if (supplier.slug === 'daisytek') {
                         shipment.empresa = resultShip.data.empresa.toString();
                         shipment.costo = resultShip.data.costo * 1.16;
                         shipment.metodoShipping = resultShip.data.metodoShipping;
