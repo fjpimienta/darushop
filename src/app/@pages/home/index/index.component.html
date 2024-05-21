@@ -1,27 +1,25 @@
 <main class="main home-page skeleton-body">
   <!-- Seccion 1 Banner Principal -->
   <section class="intro-section">
-    <div class="container">
-      <div class="banner">
-        <owl-carousel [options]="customOptions" [carouselClasses]="'owl-theme'">
-          <ng-container *ngFor="let banner of bannerSlider">
-            <figure>
-              <img [src]="banner.imageUrl" width="1903" height="780" alt="Image Desc" />
-              <div class="banner-content">
-                <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">{{banner.title1}}<br>
-                  {{banner.title2}}
-                </h2>
-                <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">{{banner.subtitle}}</h3>
-                <p>&nbsp;<br></p>
-                <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-                  <a routerLink="/register" class="btn btn-primary btn-round btn-cart-home">Reg&iacute;strate en DARU
-                    TEAM</a>
-                </div>
+    <div class="banner">
+      <owl-carousel [options]="customOptions" [carouselClasses]="'owl-theme'">
+        <ng-container *ngFor="let banner of bannerSlider">
+          <figure>
+            <img [src]="banner.imageUrl" width="1903" height="780" alt="Image Desc" />
+            <div class="banner-content">
+              <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">{{banner.title1}}<br>
+                {{banner.title2}}
+              </h2>
+              <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">{{banner.subtitle}}</h3>
+              <p>&nbsp;<br></p>
+              <div class="banner-action" contentAnim aniName="fadeInUpShorter">
+                <a routerLink="/register" class="btn btn-primary btn-round btn-cart-home">Reg&iacute;strate en DARU
+                  TEAM</a>
               </div>
-            </figure>
-          </ng-container>
-        </owl-carousel>
-      </div>
+            </div>
+          </figure>
+        </ng-container>
+      </owl-carousel>
     </div>
   </section>
   <!-- End Seccion 1 -->
