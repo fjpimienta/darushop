@@ -62,27 +62,27 @@ export class IndexComponent implements OnInit {
   bannerSlider = [
     {
       imageUrl: 'assets/images/home/banners/01.jpg',
-      title1: 'Descubre todo',
-      title2: 'lo que DARU',
-      subtitle: 'tiene para ti',
+      title1: 'ATENCIÓN PERSONALIZADA',
+      title2: '',
+      subtitle: 'Entérate de nuestros lanzamientos',
     },
     {
       imageUrl: 'assets/images/home/banners/02.jpg',
-      title1: '',
+      title1: 'Envíos a todo el País',
       title2: '',
-      subtitle: '',
+      subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
     },
     {
       imageUrl: 'assets/images/home/banners/03.jpg',
-      title1: '',
+      title1: 'ATENCIÓN PERSONALIZADA',
       title2: '',
-      subtitle: '',
+      subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
     },
     {
       imageUrl: 'assets/images/home/banners/04.jpg',
-      title1: '',
+      title1: 'Envíos a todo el País',
       title2: '',
-      subtitle: '',
+      subtitle: 'Estamos para ayudarte',
     },
     // Agrega más objetos de banner según sea necesario
   ];
