@@ -17,7 +17,7 @@
     "@angular/compiler": "13.4.0",
     "@angular/core": "13.4.0",
     "@angular/forms": "13.4.0",
-    "@angular/google-maps": "^11.0.0",
+    "@angular/google-maps": "13.3.9",
     "@angular/localize": "13.4.0",
     "@angular/platform-browser": "13.4.0",
     "@angular/platform-browser-dynamic": "13.4.0",
