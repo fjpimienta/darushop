@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ModalService } from '@core/services/modal.service';
 import { UtilsService } from '@core/services/utils.service';
 import { CartService } from '@core/services/cart.service';
@@ -49,11 +49,32 @@ export class IndexComponent implements OnInit {
   @ViewChild('customDots') customDots: any;
   @ViewChild(OwlCarousel) owlCarousel: OwlCarousel;
 
+  currentBannerImage1: string;
+  currentBannerImage2: string;
+  currentBannerImage3: string;
+  currentBannerImage4: string;
+
+  // Definir las rutas de las imágenes para dispositivos móviles
+  mobileBannerImages = [
+    'assets/images/home/banners/mobile/01.jpg',
+    'assets/images/home/banners/mobile/02.jpg',
+    'assets/images/home/banners/mobile/03.jpg',
+    'assets/images/home/banners/mobile/04.jpg'
+  ];
+
+  // Definir las rutas de las imágenes para pantallas de escritorio
+  desktopBannerImages = [
+    'assets/images/home/banners/01.jpg',
+    'assets/images/home/banners/02.jpg',
+    'assets/images/home/banners/03.jpg',
+    'assets/images/home/banners/04.jpg'
+  ];
+
   customOptions: any = {
     loop: true,
     margin: 10,
     nav: true, // Habilita los botones de navegación
-    dots: false, // Deshabilita los puntos indicadores
+    dots: true, // Deshabilita los puntos indicadores
     items: 1,
     autoplay: true, // Habilita el desplazamiento automático
     autoplayTimeout: 6000, // Establece el tiempo entre diapositivas (en milisegundos)
@@ -61,31 +82,39 @@ export class IndexComponent implements OnInit {
   };
   bannerSlider = [
     {
-      imageUrl: 'assets/images/home/banners/01.jpg',
-      title1: 'ATENCIÓN PERSONALIZADA',
-      title2: '',
-      subtitle: 'Entérate de nuestros lanzamientos',
+      imageUrl: 'assets/images/home/banners/mobile/01.jpg',
+      title1: '+10,000 artículos',
+      title2: 'disponibles en DARU',
+      subtitle: 'Conoce nuestras ofertas',
+      url: '/ofertas',
+      urlTitle: 'Conoce las Ofertas Destacadas'
     },
     {
-      imageUrl: 'assets/images/home/banners/02.jpg',
+      imageUrl: 'assets/images/home/banners/mobile/02.jpg',
       title1: 'Envíos a todo el País',
       title2: '',
-      subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
+      subtitle: '¿Ya tienes cuenta en Daru?',
+      url: '/register',
+      urlTitle: 'Regístrate en DARU'
     },
     {
-      imageUrl: 'assets/images/home/banners/03.jpg',
-      title1: 'ATENCIÓN PERSONALIZADA',
+      imageUrl: 'assets/images/home/banners/mobile/03.jpg',
+      title1: 'Atencion Personalizada',
       title2: '',
       subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
+      url: '/comocomprar',
+      urlTitle: '¿Cómo comprar?'
     },
     {
-      imageUrl: 'assets/images/home/banners/04.jpg',
+      imageUrl: 'assets/images/home/banners/mobile/04.jpg',
       title1: 'Envíos a todo el País',
       title2: '',
-      subtitle: 'Estamos para ayudarte',
+      subtitle: '¿Ya tienes cuenta en Daru?',
+      url: '/register',
+      urlTitle: 'Regístrate en DARU'
     },
-    // Agrega más objetos de banner según sea necesario
   ];
+
 
   constructor(
     private modalService: ModalService,
@@ -145,6 +174,72 @@ export class IndexComponent implements OnInit {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  // Función para cambiar la imagen cuando el tamaño de la pantalla cambia
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    // Obtener el ancho de la pantalla
+    const screenWidth = window.innerWidth;
+    console.log('screenWidth: ', screenWidth);
+    // Determinar si la pantalla es móvil o de escritorio
+    if (screenWidth <= 767) { // Dispositivo móvil
+      console.log('Dispositivo móvil');
+      this.currentBannerImage1 = this.mobileBannerImages[0];
+      this.currentBannerImage2 = this.mobileBannerImages[1];
+      this.currentBannerImage3 = this.mobileBannerImages[2];
+      this.currentBannerImage4 = this.mobileBannerImages[3];
+    } else { // Escritorio
+      console.log('Escritorio');
+      this.currentBannerImage1 = this.desktopBannerImages[0];
+      this.currentBannerImage2 = this.desktopBannerImages[1];
+      this.currentBannerImage3 = this.desktopBannerImages[2];
+      this.currentBannerImage4 = this.desktopBannerImages[3];
+    }
+    this.customOptions = {
+      loop: true,
+      margin: 10,
+      nav: true, // Habilita los botones de navegación
+      dots: true, // Deshabilita los puntos indicadores
+      items: 1,
+      autoplay: true, // Habilita el desplazamiento automático
+      autoplayTimeout: 6000, // Establece el tiempo entre diapositivas (en milisegundos)
+      autoplaySpeed: 1500,  // Velocidad de desplazamiento (en milisegundos)
+    };
+    this.bannerSlider = [
+      {
+        imageUrl: this.currentBannerImage1,
+        title1: '+10,000 artículos',
+        title2: 'disponibles en DARU',
+        subtitle: 'Conoce nuestras ofertas',
+        url: '/ofertas',
+        urlTitle: 'Conoce las Ofertas Destacadas'
+      },
+      {
+        imageUrl: this.currentBannerImage2,
+        title1: 'Envíos a todo el País',
+        title2: '',
+        subtitle: '¿Ya tienes cuenta en Daru?',
+        url: '/register',
+        urlTitle: 'Regístrate en DARU'
+      },
+      {
+        imageUrl: this.currentBannerImage3,
+        title1: 'Atencion Personalizada',
+        title2: '',
+        subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
+        url: '/comocomprar',
+        urlTitle: '¿Cómo comprar?'
+      },
+      {
+        imageUrl: this.currentBannerImage4,
+        title1: 'Envíos a todo el País',
+        title2: '',
+        subtitle: '¿Ya tienes cuenta en Daru?',
+        url: '/register',
+        urlTitle: 'Regístrate en DARU'
+      },
+    ];
   }
 
   initializeProducts(): void {

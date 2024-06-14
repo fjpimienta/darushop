@@ -18,7 +18,7 @@
 .bottom {
   color: white !important;
   font-weight: 700 !important;
-  padding-top: 6rem !important;
+  padding-top: 7rem !important;
 }
 
 .soon {
@@ -85,6 +85,10 @@ select.form-control:not([size]):not([multiple]) {
 
 .strong {
   font-weight: 700 !important;
+}
+
+.mobile-only {
+  display: none;
 }
 
 /* Estilos específicos para pantallas más pequeñas (768px o menos) */
@@ -156,5 +160,15 @@ select.form-control:not([size]):not([multiple]) {
     /* Firefox */
     -ms-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     /* Microsoft browsers (Edge) */
+  }
+
+  .modal-dialog {
+    max-width: 84% !important;
+    top: 4rem !important;
+  }
+
+  .mobile-only {
+    display: block;
+    color: #fff !important;
   }
 }
