@@ -83,27 +83,35 @@ export class IndexComponent implements OnInit {
   bannerSlider = [
     {
       imageUrl: 'assets/images/home/banners/mobile/01.jpg',
-      title1: 'Atencion Personalizada',
-      title2: '',
-      subtitle: 'Entérate de nuestros lanzamientos',
+      title1: '+10,000 artículos',
+      title2: 'disponibles en DARU',
+      subtitle: 'Conoce nuestras ofertas',
+      url: '/ofertas',
+      urlTitle: 'Conoce las Ofertas Destacadas'
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/02.jpg',
       title1: 'Envíos a todo el País',
       title2: '',
-      subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
+      subtitle: '¿Ya tienes cuenta en Daru?',
+      url: '/register',
+      urlTitle: 'Regístrate en DARU'
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/03.jpg',
-      title1: 'Atencion',
-      title2: 'Personalizada',
+      title1: 'Atencion Personalizada',
+      title2: '',
       subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
+      url: '/comocomprar',
+      urlTitle: '¿Cómo comprar?'
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/04.jpg',
       title1: 'Envíos a todo el País',
       title2: '',
-      subtitle: 'Estamos para ayudarte',
+      subtitle: '¿Ya tienes cuenta en Daru?',
+      url: '/register',
+      urlTitle: 'Regístrate en DARU'
     },
   ];
 
@@ -201,27 +209,35 @@ export class IndexComponent implements OnInit {
     this.bannerSlider = [
       {
         imageUrl: this.currentBannerImage1,
-        title1: 'ATENCIÓN PERSONALIZADA',
-        title2: '',
-        subtitle: 'Entérate de nuestros lanzamientos',
+        title1: '+10,000 artículos',
+        title2: 'disponibles en DARU',
+        subtitle: 'Conoce nuestras ofertas',
+        url: '/ofertas',
+        urlTitle: 'Conoce las Ofertas Destacadas'
       },
       {
         imageUrl: this.currentBannerImage2,
         title1: 'Envíos a todo el País',
         title2: '',
-        subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
+        subtitle: '¿Ya tienes cuenta en Daru?',
+        url: '/register',
+        urlTitle: 'Regístrate en DARU'
       },
       {
         imageUrl: this.currentBannerImage3,
-        title1: 'ATENCIÓN PERSONALIZADA',
+        title1: 'Atencion Personalizada',
         title2: '',
         subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
+        url: '/comocomprar',
+        urlTitle: '¿Cómo comprar?'
       },
       {
         imageUrl: this.currentBannerImage4,
         title1: 'Envíos a todo el País',
         title2: '',
-        subtitle: 'Estamos para ayudarte',
+        subtitle: '¿Ya tienes cuenta en Daru?',
+        url: '/register',
+        urlTitle: 'Regístrate en DARU'
       },
     ];
   }
