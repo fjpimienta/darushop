@@ -59,16 +59,14 @@ export class IndexComponent implements OnInit {
   mobileBannerImages = [
     'assets/images/home/banners/mobile/01.jpg',
     'assets/images/home/banners/mobile/02.jpg',
-    'assets/images/home/banners/mobile/03.jpg',
-    'assets/images/home/banners/mobile/04.jpg'
+    'assets/images/home/banners/mobile/03.jpg'
   ];
 
   // Definir las rutas de las imágenes para pantallas de escritorio
   desktopBannerImages = [
     'assets/images/home/banners/01.jpg',
     'assets/images/home/banners/02.jpg',
-    'assets/images/home/banners/03.jpg',
-    'assets/images/home/banners/04.jpg'
+    'assets/images/home/banners/03.jpg'
   ];
 
   customOptions: any = {
@@ -106,14 +104,6 @@ export class IndexComponent implements OnInit {
       subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
       url: '/comocomprar',
       urlTitle: '¿Cómo comprar?'
-    },
-    {
-      imageUrl: 'assets/images/home/banners/mobile/04.jpg',
-      title1: 'Envíos a todo el País.',
-      title2: '',
-      subtitle: '¿Ya tienes cuenta en Daru?',
-      url: '/register',
-      urlTitle: 'Regístrate en DARU'
     },
   ];
 
