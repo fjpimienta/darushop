@@ -86,14 +86,14 @@ export class IndexComponent implements OnInit {
     {
       imageUrl: 'assets/images/home/banners/mobile/01.jpg',
       title1: '+10,000 artículos',
-      title2: 'disponibles en DARU',
+      title2: 'disponibles en DARU.',
       subtitle: 'Conoce nuestras ofertas',
       url: '/ofertas',
       urlTitle: 'Conoce las Ofertas Destacadas'
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/02.jpg',
-      title1: 'Envíos a todo el País',
+      title1: 'Envíos a todo el País.',
       title2: '',
       subtitle: '¿Ya tienes cuenta en Daru?',
       url: '/register',
@@ -101,7 +101,7 @@ export class IndexComponent implements OnInit {
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/03.jpg',
-      title1: 'Atencion Personalizada',
+      title1: 'Atencion Personalizada.',
       title2: '',
       subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
       url: '/comocomprar',
@@ -109,7 +109,7 @@ export class IndexComponent implements OnInit {
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/04.jpg',
-      title1: 'Envíos a todo el País',
+      title1: 'Envíos a todo el País.',
       title2: '',
       subtitle: '¿Ya tienes cuenta en Daru?',
       url: '/register',
