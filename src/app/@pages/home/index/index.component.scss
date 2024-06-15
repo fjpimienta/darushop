@@ -22,7 +22,7 @@
   text-align: left;
 
   @media (max-width: 767px) {
-    font-size: 4rem; // Cambia el tamaño de la fuente para dispositivos móviles
+    font-size: 3rem; // Cambia el tamaño de la fuente para dispositivos móviles
   }
 }
 
@@ -110,6 +110,14 @@
 .banner-content {
   position: absolute; /* Debe ser 'absolute' para superponerse */
   top: 100%; /* Puedes ajustar la posición vertical */
+  left: 50%; /* Puedes ajustar la posición horizontal */
+  transform: translate(-50%, -50%); /* Centra el contenido vertical y horizontalmente */
+  z-index: 1; /* Asegúrate de que esté por encima de la imagen (puedes ajustar este valor) */
+}
+
+.banner-content-2 {
+  position: absolute; /* Debe ser 'absolute' para superponerse */
+  top: 30%; /* Puedes ajustar la posición vertical */
   left: 50%; /* Puedes ajustar la posición horizontal */
   transform: translate(-50%, -50%); /* Centra el contenido vertical y horizontalmente */
   z-index: 1; /* Asegúrate de que esté por encima de la imagen (puedes ajustar este valor) */
