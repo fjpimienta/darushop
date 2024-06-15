@@ -53,6 +53,7 @@ export class IndexComponent implements OnInit {
   currentBannerImage2: string;
   currentBannerImage3: string;
   currentBannerImage4: string;
+  currentBannerImages: string[];
 
   // Definir las rutas de las imágenes para dispositivos móviles
   mobileBannerImages = [
@@ -73,25 +74,26 @@ export class IndexComponent implements OnInit {
   customOptions: any = {
     loop: true,
     margin: 10,
-    nav: true, // Habilita los botones de navegación
-    dots: true, // Deshabilita los puntos indicadores
+    nav: true,
+    dots: true,
     items: 1,
-    autoplay: true, // Habilita el desplazamiento automático
-    autoplayTimeout: 6000, // Establece el tiempo entre diapositivas (en milisegundos)
-    autoplaySpeed: 1500,  // Velocidad de desplazamiento (en milisegundos)
+    autoplay: true,
+    autoplayTimeout: 6000,
+    autoplaySpeed: 1500,
   };
+
   bannerSlider = [
     {
       imageUrl: 'assets/images/home/banners/mobile/01.jpg',
       title1: '+10,000 artículos',
-      title2: 'disponibles en DARU',
+      title2: 'disponibles en DARU.',
       subtitle: 'Conoce nuestras ofertas',
       url: '/ofertas',
       urlTitle: 'Conoce las Ofertas Destacadas'
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/02.jpg',
-      title1: 'Envíos a todo el País',
+      title1: 'Envíos a todo el País.',
       title2: '',
       subtitle: '¿Ya tienes cuenta en Daru?',
       url: '/register',
@@ -99,7 +101,7 @@ export class IndexComponent implements OnInit {
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/03.jpg',
-      title1: 'Atencion Personalizada',
+      title1: 'Atencion Personalizada.',
       title2: '',
       subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
       url: '/comocomprar',
@@ -107,14 +109,13 @@ export class IndexComponent implements OnInit {
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/04.jpg',
-      title1: 'Envíos a todo el País',
+      title1: 'Envíos a todo el País.',
       title2: '',
       subtitle: '¿Ya tienes cuenta en Daru?',
       url: '/register',
       urlTitle: 'Regístrate en DARU'
     },
   ];
-
 
   constructor(
     private modalService: ModalService,
@@ -126,18 +127,15 @@ export class IndexComponent implements OnInit {
     public utilsService: UtilsService,
     public productService: ProductsService
   ) {
-    // Mostrar el Newsletter
     this.modalService.openNewsletter();
-    // Fin
+    this.onResize = this.onResize.bind(this);
     combineLatest([
       this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
       this.activeRoute.data
     ])
-      .pipe(takeUntil(this.unsubscribe$)) // Unsubscribe cuando el componente se destruye
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe(([navigationEnd, data]: [NavigationEnd, { title: string }]) => {
-        // Obtener el título de la página actual a través de activeRoute.data
         this.pageTitle = data.title || '';
-        // Obtener el título de la página anterior del historial de navegación
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.previousNavigation) {
           const url = navigation.previousNavigation.finalUrl.toString();
@@ -162,6 +160,8 @@ export class IndexComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
     this.formData = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email, this.customEmailValidator]]
     });
@@ -174,72 +174,29 @@ export class IndexComponent implements OnInit {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    window.removeEventListener('resize', this.onResize);
   }
 
-  // Función para cambiar la imagen cuando el tamaño de la pantalla cambia
   @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    // Obtener el ancho de la pantalla
+  onResize(event?: any) {
     const screenWidth = window.innerWidth;
-    console.log('screenWidth: ', screenWidth);
-    // Determinar si la pantalla es móvil o de escritorio
-    if (screenWidth <= 767) { // Dispositivo móvil
-      console.log('Dispositivo móvil');
-      this.currentBannerImage1 = this.mobileBannerImages[0];
-      this.currentBannerImage2 = this.mobileBannerImages[1];
-      this.currentBannerImage3 = this.mobileBannerImages[2];
-      this.currentBannerImage4 = this.mobileBannerImages[3];
-    } else { // Escritorio
-      console.log('Escritorio');
-      this.currentBannerImage1 = this.desktopBannerImages[0];
-      this.currentBannerImage2 = this.desktopBannerImages[1];
-      this.currentBannerImage3 = this.desktopBannerImages[2];
-      this.currentBannerImage4 = this.desktopBannerImages[3];
-    }
-    this.customOptions = {
-      loop: true,
-      margin: 10,
-      nav: true, // Habilita los botones de navegación
-      dots: true, // Deshabilita los puntos indicadores
-      items: 1,
-      autoplay: true, // Habilita el desplazamiento automático
-      autoplayTimeout: 6000, // Establece el tiempo entre diapositivas (en milisegundos)
-      autoplaySpeed: 1500,  // Velocidad de desplazamiento (en milisegundos)
-    };
-    this.bannerSlider = [
-      {
-        imageUrl: this.currentBannerImage1,
-        title1: '+10,000 artículos',
-        title2: 'disponibles en DARU',
-        subtitle: 'Conoce nuestras ofertas',
-        url: '/ofertas',
-        urlTitle: 'Conoce las Ofertas Destacadas'
-      },
-      {
-        imageUrl: this.currentBannerImage2,
-        title1: 'Envíos a todo el País',
-        title2: '',
-        subtitle: '¿Ya tienes cuenta en Daru?',
-        url: '/register',
-        urlTitle: 'Regístrate en DARU'
-      },
-      {
-        imageUrl: this.currentBannerImage3,
-        title1: 'Atencion Personalizada',
-        title2: '',
-        subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
-        url: '/comocomprar',
-        urlTitle: '¿Cómo comprar?'
-      },
-      {
-        imageUrl: this.currentBannerImage4,
-        title1: 'Envíos a todo el País',
-        title2: '',
-        subtitle: '¿Ya tienes cuenta en Daru?',
-        url: '/register',
-        urlTitle: 'Regístrate en DARU'
-      },
-    ];
+    const isMobile = screenWidth <= 767;
+    this.currentBannerImages = isMobile ? this.mobileBannerImages : this.desktopBannerImages;
+    this.updateBannerSlider();
+  }
+
+  updateBannerSlider() {
+    this.bannerSlider = this.currentBannerImages.map((imageUrl, index) => ({
+      imageUrl,
+      title1: this.bannerSlider[index]?.title1 || '',
+      title2: this.bannerSlider[index]?.title2 || '',
+      subtitle: this.bannerSlider[index]?.subtitle || '',
+      url: this.bannerSlider[index]?.url || '',
+      urlTitle: this.bannerSlider[index]?.urlTitle || ''
+    }));
+    setTimeout(() => {
+      this.owlCarousel.refresh();
+    }, 0);
   }
 
   initializeProducts(): void {
@@ -249,7 +206,6 @@ export class IndexComponent implements OnInit {
         if (result.products.category) {
           this.products.forEach(p => {
             p.category.forEach(c => {
-              // this.renameKey(c.pivot, 'product_category_id', 'product-category-id');
             });
           });
         }
@@ -261,17 +217,16 @@ export class IndexComponent implements OnInit {
         this.saleProducts.forEach(sale => {
           if (sale.top) {
             j += 1;
-            if (j <= 2) {                                                     // Ofertas Top Exclusivas 2
+            if (j <= 2) {
               this.saleProductsExclusive.push(sale);
             }
           } else {
             i += 1;
-            if (i <= 3) {                                                     // Ofertas de Inicio 3
+            if (i <= 3) {
               this.saleProducts3.push(sale);
             }
           }
-
-          if (sale.until === this.today()) {                                  // Oferta del día
+          if (sale.until === this.today()) {
             this.existSaleToday = true;
             this.saleToday = sale;
           }
@@ -313,7 +268,6 @@ export class IndexComponent implements OnInit {
         price: this.products[0].variants[this.index].price
       };
     }
-
     this.cartService.addToCart(
       newProduct, 1
     );

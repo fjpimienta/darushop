@@ -261,7 +261,7 @@ p {
 
 .home-page .intro-section {
   .banner img {
-    min-height: 500px;
+    min-height: 400px;
     object-fit: cover;
   }
 
@@ -276,6 +276,7 @@ p {
     flex-flow: wrap;
 
     .btn {
+      font-size: 1.5rem;
       font-weight: 600;
       letter-spacing: -.025em;
       text-decoration: none;

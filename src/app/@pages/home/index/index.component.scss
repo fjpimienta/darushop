@@ -119,3 +119,36 @@
   left: 35%;
   top: 50%;
 }
+
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.action .btn {
+  background-color: green; /* Color de fondo */
+  border: 1px solid green; /* Borde */
+  color: white; /* Color del texto */
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s; /* Transición suave */
+}
+
+.action .btn:hover {
+  background-color: darkgreen; /* Color de fondo al pasar el ratón */
+  border-color: darkgreen; /* Borde al pasar el ratón */
+}
+
+.action a.btn {
+  background-color: green; /* Color de fondo para el enlace */
+  border: 1px solid green; /* Borde para el enlace */
+  color: white; /* Color del texto para el enlace */
+  text-decoration: none; /* Quitar subrayado del enlace */
+  padding: 10px 20px; /* Ajustar el espacio interno */
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s; /* Transición suave */
+}
+
+.action a.btn:hover {
+  background-color: darkgreen; /* Color de fondo al pasar el ratón sobre el enlace */
+  border-color: darkgreen; /* Borde al pasar el ratón sobre el enlace */
+}
