@@ -77,7 +77,7 @@ export class IndexComponent implements OnInit {
     items: 1,
     autoplay: true,
     autoplayTimeout: 6000,
-    autoplaySpeed: 1500,
+    autoplaySpeed: 3000,
   };
 
   bannerSlider = [
@@ -99,7 +99,7 @@ export class IndexComponent implements OnInit {
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/03.jpg',
-      title1: 'Atencion Personalizada.',
+      title1: 'Atención Personalizada.',
       title2: '',
       subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
       url: '/comocomprar',
