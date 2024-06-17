@@ -76,8 +76,8 @@ export class IndexComponent implements OnInit {
     dots: true,
     items: 1,
     autoplay: true,
-    autoplayTimeout: 6000,
-    autoplaySpeed: 3000,
+    autoplayTimeout: 10000,
+    autoplaySpeed: 1000,
   };
 
   bannerSlider = [
