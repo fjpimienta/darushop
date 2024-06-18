@@ -22,7 +22,13 @@
   text-align: left;
 
   @media (max-width: 767px) {
-    font-size: 3rem; // Cambia el tamaño de la fuente para dispositivos móviles
+    font-size: 2.5rem; // Cambia el tamaño de la fuente para dispositivos móviles
+  }
+}
+
+.price .text-white .btn .btn-primary .btn-round .btn-cart-home {
+  @media (max-width: 767px) {
+    font-size: 2.5rem; // Cambia el tamaño de la fuente para dispositivos móviles
   }
 }
 
@@ -98,36 +104,47 @@
 
 .container .banner figure {
   position: relative; /* Debe ser 'relative' para que actúe como un contenedor */
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
   height: 520px; /* Ajusta la altura según tus necesidades */
   margin-top: 5em;
   margin-bottom: -2em;
+  overflow: hidden; /* Asegura que no haya desbordamiento */
 }
 
 .banner {
   position: relative;
+  width: 100%;
+}
+
+.banner img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto; /* Centra la imagen horizontalmente */
 }
 
 .banner-content {
   position: absolute; /* Debe ser 'absolute' para superponerse */
-  top: 100%; /* Puedes ajustar la posición vertical */
-  left: 50%; /* Puedes ajustar la posición horizontal */
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%); /* Centra el contenido vertical y horizontalmente */
-  z-index: 1; /* Asegúrate de que esté por encima de la imagen (puedes ajustar este valor) */
+  z-index: 1; /* Asegúrate de que esté por encima de la imagen */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .banner-content-2 {
-  position: absolute; /* Debe ser 'absolute' para superponerse */
-  top: 30%; /* Puedes ajustar la posición vertical */
-  left: 50%; /* Puedes ajustar la posición horizontal */
-  transform: translate(-50%, -50%); /* Centra el contenido vertical y horizontalmente */
-  z-index: 1; /* Asegúrate de que esté por encima de la imagen (puedes ajustar este valor) */
+  top: 30%; /* Ajusta la posición vertical */
 }
 
 .home-page .banner .banner-content {
   left: 35%;
   top: 50%;
 }
-
 
 .action {
   display: flex;
