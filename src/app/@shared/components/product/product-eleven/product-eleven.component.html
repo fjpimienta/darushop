@@ -1,4 +1,6 @@
 <div class="product product-7 text-center">
+  {{SERVER_URL + product.sm_pictures[0].url}}
+  {{getImageUrl(product.sm_pictures[0].url)}}
   <figure class="product-media">
     <span class="product-label label-new" *ngIf="product.new">Nuevo</span>
     <span class="product-label label-sale" *ngIf="product.featured">Oferta</span>
@@ -6,10 +8,10 @@
     <span class="product-label label-out" *ngIf="!product.stock || product.stock == 0">No Disponible</span>
 
     <a [routerLink]="['/product/default/'+ product.id]">
-      <app-image [src]="SERVER_URL + product.sm_pictures[0].url" alt="Product" class="product-image">
+      <app-image [src]="getImageUrl(product.sm_pictures[0].url)" alt="Product" title="Product" class="product-image">
       </app-image>
-      <app-image [src]="SERVER_URL + product.sm_pictures[1].url" alt="Product" class="product-image-hover"
-        *ngIf="product.sm_pictures[1]"></app-image>
+      <app-image [src]="SERVER_URL + product.sm_pictures[1].url" alt="Product" title="Product"
+        class="product-image-hover" *ngIf="product.sm_pictures[1]"></app-image>
     </a>
 
     <div class="product-action-vertical">
@@ -34,6 +36,7 @@
       </ng-template>
     </div>
   </figure>
+  {{SERVER_URL + product.pictures[0].url}}
 
   <div class="product-body">
     <div class="product-cat">
