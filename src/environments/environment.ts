@@ -9,7 +9,7 @@ export const environment = {
   OPENPAY_MERCHANT_ID: "mbhvpztgt3rqse7zvxrc",
   OPENPAY_CLIENT_SECRET: "pk_411efcdb08c148ceb97b36f146e42beb",
   demo: 'demo30',
-  SERVER_URL: '',
+  SERVER_URL: 'https://apidev.daru.mx',
   KEY_SECRET: 'DARU2023##!!..',
   SENDMAIL: 'francisco.pimienta@daru.mx'
 };
