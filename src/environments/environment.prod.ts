@@ -7,6 +7,6 @@ export const environment = {
   uploadsUrl: 'https://apidev.daru.mx:3002/uploads',
   checkoutUrl: 'https://dev.daru.mx/checkout?idOrder=',
   demo: 'demo30',
-  SERVER_URL: '',
+  SERVER_URL: 'https://apidev.daru.mx',
   KEY_SECRET: 'DARU2023##!!..'
 };

@@ -1,4 +1,5 @@
 <div class="product product-7 text-center">
+  {{product.pictures[0].url}}
   <figure class="product-media">
     <span class="product-label label-new" *ngIf="product.new">Nuevo</span>
     <span class="product-label label-sale" *ngIf="product.featured">Oferta</span>
@@ -34,6 +35,7 @@
       </ng-template>
     </div>
   </figure>
+  {{product.sm_pictures[0].url}}
 
   <div class="product-body">
     <div class="product-cat">
