@@ -91,6 +91,10 @@ select.form-control:not([size]):not([multiple]) {
   display: none;
 }
 
+.form-check-label {
+  color: #fff; /* Cambiar color del texto a blanco */
+}
+
 /* Estilos específicos para pantallas más pequeñas (768px o menos) */
 @media only screen and (max-width: 768px) {
   .logo h3 {
