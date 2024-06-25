@@ -152,19 +152,19 @@
   justify-content: space-between;
 }
 
-.action .btn {
+.action .btngreen {
   background-color: green; /* Color de fondo */
   border: 1px solid green; /* Borde */
   color: white; /* Color del texto */
   transition: background-color 0.3s, border-color 0.3s, color 0.3s; /* Transición suave */
 }
 
-.action .btn:hover {
+.action .btngreen:hover {
   background-color: darkgreen; /* Color de fondo al pasar el ratón */
   border-color: darkgreen; /* Borde al pasar el ratón */
 }
 
-.action a.btn {
+.action a.btngreen {
   background-color: green; /* Color de fondo para el enlace */
   border: 1px solid green; /* Borde para el enlace */
   color: white; /* Color del texto para el enlace */
@@ -173,7 +173,7 @@
   transition: background-color 0.3s, border-color 0.3s, color 0.3s; /* Transición suave */
 }
 
-.action a.btn:hover {
+.action a.btngreen:hover {
   background-color: darkgreen; /* Color de fondo al pasar el ratón sobre el enlace */
   border-color: darkgreen; /* Borde al pasar el ratón sobre el enlace */
 }
