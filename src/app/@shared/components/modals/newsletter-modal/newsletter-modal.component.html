@@ -1,7 +1,7 @@
 <div class="modal-dialog modal-dialog-centered modal-lg soon" role="document">
   <div class="modal-content">
     <div class="d-flex align-items-center justify-content-center">
-      <h4 class="text-center logo bottom">Forma parte de DARU
+      <h4 class="text-center logo bottom">Suscríbete a nuestro newsletter
         <a href="javascript:;" class="mobile-only" (click)="closeModal()"><i class="icon-close"></i></a>
       </h4>
       <span class="mobile-menu-close" (click)="closeModal()"><i class="icon-close"></i></span>
@@ -59,12 +59,20 @@
             </div>
           </div>
           <div class="row send">
-            <div class="col-md-6 form-group">
+            <div class="col-md-4 form-group">
               <input type="email" name="email" formControlName="email" class="form-control rounded"
                 placeholder="Correo Electr&oacute;nico" autocomplete="off" required>
             </div>
-            <div class="col-md-6 form-group text-center">
-              <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid || !emailValid">
+            <div class="col-md-4 form-group text-center">
+              <div class="form-check text-white">
+                <input class="form-check-input" type="checkbox" id="confirmSubscription" (change)="onoffSubscription()">
+                <label class="form-check-label" for="confirmSubscription">
+                  Acepto suscribirme aunque el correo no sea válido.
+                </label>
+              </div>
+            </div>
+            <div class="col-md-4 form-group text-center">
+              <button class="btn btn-success btn-round" type="submit" [disabled]="!formData.valid">
                 <span>¡Suscríbete!</span>
                 <i class="icon-long-arrow-right"></i>
               </button>
