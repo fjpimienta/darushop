@@ -27,6 +27,7 @@ export class NewsletterModalComponent implements OnInit {
   checkState = false;
   formData!: FormGroup;
   emailValid = false;
+  confirmSubscription = false;
 
   constructor(
     private modalService: NgbActiveModal,
@@ -44,11 +45,10 @@ export class NewsletterModalComponent implements OnInit {
       sexo: [''],
       fecha_de_nacimiento: ['', this.fechaValida]
     });
-
+    this.confirmSubscription = false;
     const emailControl = this.formData.get('email');
     if (emailControl) {
       emailControl.valueChanges.subscribe(newValue => {
-        console.log('Nuevo valor del correo electrónico:', newValue);
         this.checkEmailValidity(newValue);
       });
 
@@ -64,14 +64,10 @@ export class NewsletterModalComponent implements OnInit {
 
   checkEmailValidity(email: string): void {
     const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${HUNTER_API_KEY}`;
-    console.log('url: ', url);
     this.http.get(url).pipe(
       map((response: any) => {
-        console.log('responseL: ', response);
-        return response.data.result === 'deliverable';
       }),
       catchError(error => {
-        console.error('Error al verificar el dominio:', error);
         return of(false);
       })
     ).subscribe((isValid: boolean) => {
@@ -101,8 +97,12 @@ export class NewsletterModalComponent implements OnInit {
   }
 
   async onSubmit() {
-    if (!this.formData.valid || !this.emailValid) {
-      infoEventAlert('Revisar los campos requeridos o el correo electrónico.', '');
+    if (!this.formData.valid) {
+      infoEventAlert('Revisar los campos requeridos.', '');
+      return;
+    }
+    if (!this.confirmSubscription) {
+      infoEventAlert('El correo electrónico no es válido. Confirma para suscribirte de todas formas.', '');
       return;
     }
 
@@ -154,7 +154,6 @@ export class NewsletterModalComponent implements OnInit {
       }
     }
     const respuesta = await this.welcomesService.add(welcome);
-    console.log('respuesta: ', respuesta);
     if (!respuesta.status) {
       infoEventAlert(respuesta.message, '', TYPE_ALERT.WARNING);
       this.formData.controls.email.setValue('');
@@ -163,6 +162,7 @@ export class NewsletterModalComponent implements OnInit {
 
     this.onCleanForm();
     infoEventAlert(respuesta.message, '', TYPE_ALERT.SUCCESS);
+    this.closeModal();
   }
 
   onCleanForm() {
@@ -182,6 +182,7 @@ export class NewsletterModalComponent implements OnInit {
     const inputValue = event.target.value;
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(inputValue)) {
       console.log('Formato de fecha no válido');
+      infoEventAlert('Formato de fecha no válido.', '');
     }
   }
 
@@ -192,5 +193,9 @@ export class NewsletterModalComponent implements OnInit {
     const anio = fechaObj.getUTCFullYear();
     const fechaFormateada = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
     return fechaFormateada;
+  }
+
+  onoffSubscription() {
+    this.confirmSubscription = !this.confirmSubscription;
   }
 }

@@ -37,6 +37,8 @@ export class ProductElevenComponent implements OnInit {
     let min = this.minPrice;
     let max = this.maxPrice;
 
+    console.log(this.SERVER_URL + this.product.sm_pictures[0].url);
+
     this.product.variants.map(item => {
       if (min > item.price) { min = item.price; }
       if (max < item.price) { max = item.price; }
@@ -85,5 +87,9 @@ export class ProductElevenComponent implements OnInit {
 
   isInWishlist(): boolean {
     return this.wishlistService.isInWishlist(this.product);
+  }
+
+  getImageUrl(relativeUrl: string): string {
+    return this.SERVER_URL + relativeUrl;
   }
 }
