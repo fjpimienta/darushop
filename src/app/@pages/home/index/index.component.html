@@ -189,7 +189,7 @@
               <span class="price text-white">
                 <strong>
                   <a href="mailto:ventas@daru.mx?subject=Contacto online&body=Sitio Web"
-                    class="btn btn-primary btn-round btn-cart-home">
+                    class="btngreen btn-primary btn-round btn-cart-home">
                     <strong>ventas@daru.mx</strong>
                   </a>
                 </strong>
@@ -203,6 +203,99 @@
   <!-- End Seccion 3  -->
 
   <!-- Seccion 4 Beneficios -->
+  <section class="gallery pt-2">
+    <div class="heading mb-0 text-center">
+      <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
+        Ofertas <span class="subtitle-home" contentAnim aniName="blurIn">Relámpago</span>
+      </h2>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-left">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <a routerLink="product/default/24637">
+                  <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="472" height="530"
+                    fixedPt="90.17%"></app-image>
+                </a>
+              </figure>
+              <div class="action text-center">
+                <!-- <span class="text-primary">
+                  <h6><strong>Gaming</strong></h6>
+                </span> -->
+                <a routerLink="/ofertas/" [queryParams]="{ category: 'accesorios-gaming' }"
+                  class="btn btn-primary btn-round">
+                  Ver ofertas de Gaming</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-left">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <a routerLink="product/default/28565">
+                  <app-image src="assets/images/home/products/2.jpg" alt="Banner" width="472" height="530"
+                    fixedPt="90.17%"></app-image>
+                </a>
+              </figure>
+              <div class="action text-center">
+                <!-- <span class="text-primary">
+                  <h6><strong>Computo</strong></h6>
+                </span> -->
+                <a routerLink="/ofertas/" [queryParams]="{ category: 'computadoras' }"
+                  class="btn btn-primary btn-round">
+                  Ver ofertas de Cómputo</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-right">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <a routerLink="product/default/28220">
+                  <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                    fixedPt="90.17%"></app-image>
+                </a>
+              </figure>
+              <div class="action text-center">
+                <!-- <span class="text-primary">
+                  <h6><strong>Telefonía</strong></h6>
+                </span> -->
+                <a routerLink="/ofertas/" [queryParams]="{ category: 'telefonos' }" class="btn btn-primary btn-round">
+                  Ver ofertas de Telefonía</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+          <div class="content-right">
+            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+              <figure class="mb-md-2 media-2">
+                <a routerLink="product/default/27022">
+                  <app-image src="assets/images/home/products/4.jpg" alt="Banner" width="472" height="530"
+                    fixedPt="90.17%"></app-image>
+                </a>
+              </figure>
+              <div class="action text-center">
+                <!-- <span class="text-primary">
+                  <h6><strong>Audio</strong></h6>
+                </span> -->
+                <a routerLink="/ofertas/" [queryParams]="{ category: 'auriculares-y-diademas' }"
+                  class="btn btn-primary btn-round">
+                  Ver ofertas de Audio</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End Seccion 4 Beneficios -->
+
+  <!-- Seccion 5 Ofertas Relampagos -->
   <section class="sound-section hub-home">
     <!-- <section class="sound-section" style="background-image: url(assets/images/home/banners/02.jpg)"> -->
     <div class="icon-boxes-container mb-2">
@@ -287,103 +380,61 @@
       </div>
     </div>
   </section>
-  <!-- End Seccion 4 Beneficios -->
+  <!-- End Seccion 5 Ofertas Relampagos -->
 
-  <!-- Seccion 5 Ofertas Relampagos
-  <section class="gallery pt-2">
-    <div class="heading mb-0 text-center">
-      <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
-        Ofertas <span class="subtitle-home" contentAnim aniName="blurIn">Relámpago</span>
-      </h2>
-    </div>
+  <!--  Seccion 7 Marcas destacadas -->
+  <section class="gallery pt-2" style="background-image: url(assets/images/home/bg-2-back.jpg)">
     <div class="container">
       <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+        <div class="col-md-4">
           <div class="content-left">
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <figure class="mb-md-2 media-2">
-                <a routerLink="product/default/24637">
-                  <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="472" height="530"
-                    fixedPt="90.17%"></app-image>
-                </a>
-              </figure>
-              <div class="action text-center">
-                <span class="text-primary">
-                  <h6><strong>Gaming</strong></h6>
-                </span>
-                <a routerLink="/ofertas/" [queryParams]="{ category: 'accesorios-gaming' }"
-                  class="btn btn-primary btn-round">
-                  Ver ofertas</a>
+              <h4 class="subtitle">Oferta 1</h4>
+              <h2 class="title mb-2">Producto 1</h2>
+              <p class="content mb-6">Descripcion 1</p>
+            </div>
+            <figure class="mb-md-12 media-2">
+              <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="590" height="532" fixedPt="112.3%"
+                class="image-daru" style="padding-top: 112.3%"></app-image>
+            </figure>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="content-center">
+            <div class="content-right">
+              <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
+                <h4 class="subtitle">Oferta 2</h4>
+                <h2 class="title mb-2">Producto 2</h2>
+                <p class="content mb-6">Descripcion 2</p>
               </div>
+              <figure class="mb-md-12 media-2">
+                <app-image src="assets/images/home/products/2.jpg" alt="Banner" width="590" height="532"
+                  fixedPt="112.3%" class="image-daru" style="padding-top: 112.3%"></app-image>
+              </figure>
             </div>
           </div>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
-          <div class="content-left">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <figure class="mb-md-2 media-2">
-                <a routerLink="product/default/28565">
-                  <app-image src="assets/images/home/products/2.jpg" alt="Banner" width="472" height="530"
-                    fixedPt="90.17%"></app-image>
-                </a>
-              </figure>
-              <div class="action text-center">
-                <span class="text-primary">
-                  <h6><strong>Computo</strong></h6>
-                </span>
-                <a routerLink="/ofertas/" [queryParams]="{ category: 'computadoras' }"
-                  class="btn btn-primary btn-round">
-                  Ver ofertas</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
+        <div class="col-md-4 p-md-0">
           <div class="content-right">
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <figure class="mb-md-2 media-2">
-                <a routerLink="product/default/28220">
-                  <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
-                    fixedPt="90.17%"></app-image>
-                </a>
-              </figure>
-              <div class="action text-center">
-                <span class="text-primary">
-                  <h6><strong>Telefonía</strong></h6>
-                </span>
-                <a routerLink="/ofertas/" [queryParams]="{ category: 'telefonos' }" class="btn btn-primary btn-round">
-                  Ver ofertas</a>
-              </div>
+              <h4 class="subtitle">Oferta 3</h4>
+              <h2 class="title mb-2">Producto 3</h2>
+              <p class="content mb-6">Descripcion 3</p>
             </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-xs-2">
-          <div class="content-right">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <figure class="mb-md-2 media-2">
-                <a routerLink="product/default/27022">
-                  <app-image src="assets/images/home/products/4.jpg" alt="Banner" width="472" height="530"
-                    fixedPt="90.17%"></app-image>
-                </a>
-              </figure>
-              <div class="action text-center">
-                <span class="text-primary">
-                  <h6><strong>Audio</strong></h6>
-                </span>
-                <a routerLink="/ofertas/" [queryParams]="{ category: 'auriculares-y-diademas' }"
-                  class="btn btn-primary btn-round">
-                  Ver ofertas</a>
-              </div>
-            </div>
+            <figure class="media-3 mb-6">
+              <app-image src="assets/images/home/products/4.jpg" alt="Banner" width="590" height="532" fixedPt="112.3%"
+                class="image-daru" style="padding-top: 112.3%"></app-image>
+            </figure>
           </div>
         </div>
       </div>
     </div>
-  </section> -->
-  <!-- End Seccion 5 Ofertas Relampagos -->
+  </section>
+  <!-- End Seccion 7 Marcas -->
 
-  <!-- Seccion 6 Oferta espacial
-  <section class="video-banner bg-parallax" bgParallax>
+  <!-- Seccion 6 Oferta espacial-->
+  <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
+    <!-- <section class="choose-color mb-5 video-banner bg-parallax" bgParallax> -->
     <div class="container">
       <div class="row">
         <div class="col-md-4"></div>
@@ -396,81 +447,11 @@
         <div class="col-md-4"></div>
       </div>
     </div>
-  </section>-->
-
+  </section>
   <!-- End Seccion 6 Oferta especial-->
 
-  <!--  Seccion 7 Marcas destacadas -->
-  <!-- <section
-    class="gallery pt-15"
-    style="background-image: url(assets/images/home/bg-2-back.jpg)"
-  >
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="content-left">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <h4 class="subtitle">Marcas</h4>
-              <h2 class="title mb-2">destacadas</h2>
-              <p class="content mb-6">texto</p>
-            </div>
-            <figure class="mb-md-12 media-2">
-              <app-image
-                src="assets/images/home/products/3.jpg"
-                alt="Banner"
-                width="590"
-                height="532"
-                fixedPt="112.3%"
-                class="image-daru"
-                style="padding-top: 112.3%"
-              ></app-image>
-            </figure>
-          </div>
-        </div>
-        <div class="col-md-6 p-md-0">
-          <div class="content-right">
-            <figure class="mb-md-12 media-2">
-              <app-image
-                src="assets/images/home/products/3.jpg"
-                alt="Banner"
-                width="472"
-                height="530"
-                fixedPt="90.17%"
-                class="lazyloaded image-daru"
-                style="padding-top: 90.17%"
-              ></app-image>
-            </figure>
-            <figure class="media-3 mb-6">
-              <app-image
-                src="assets/images/home/products/3.jpg"
-                alt="Banner"
-                width="471"
-                height="300"
-                fixedPt="63.7%"
-                class="lazyloaded image-daru"
-                style="padding-top: 63.7%"
-              ></app-image>
-            </figure>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section> -->
-  <!-- End Seccion 7 Marcas -->
-
-
-
-  <!-- Seccion 5 -->
-  <!-- <section class="video-banner bg-parallax mb-20" style="background-image: url(assets/images/home/banners/06.jpg)"
-    bgParallax>
-    <a href="https://www.youtube.com/watch?v=75-Mau54H4E&ab_channel=aTechES" (click)="showModal($event)"
-      class="btn-iframe d-flex justify-content-center">
-       <i class="icon-play-outline"></i>
-    </a>
-  </section> -->
-
-  <!-- Seccion 9 -->
-  <!-- <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
+  <!-- Seccion 9
+  <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
     <div class="container">
       <div class="heading mb-6 text-center">
         <h4 class="subtitle">Material &amp; Design</h4>
