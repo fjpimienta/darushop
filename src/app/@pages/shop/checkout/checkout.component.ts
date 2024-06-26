@@ -686,15 +686,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // Validar Correo
       const emailControl = this.formData.get('email');
       if (emailControl) {
-        emailControl.valueChanges.subscribe(newValue => {
-          console.log('Nuevo valor del correo electrónico:', newValue);
-          this.checkEmailValidity(newValue);
-        });
+        // ----> Se quita validacion @david.silva
+        // emailControl.valueChanges.subscribe(newValue => {
+        //   console.log('Nuevo valor del correo electrónico:', newValue);
+        //   this.checkEmailValidity(newValue);
+        // });
 
-        // Verificar la validez del correo electrónico inicialmente
-        if (emailControl.valid) {
-          this.checkEmailValidity(emailControl.value);
-        }
+        // // Verificar la validez del correo electrónico inicialmente
+        // if (emailControl.valid) {
+        //   this.checkEmailValidity(emailControl.value);
+        // }
       } else {
         console.error('Control de correo electrónico no encontrado en el formulario.');
       }
