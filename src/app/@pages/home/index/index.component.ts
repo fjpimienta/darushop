@@ -59,14 +59,16 @@ export class IndexComponent implements OnInit {
   mobileBannerImages = [
     'assets/images/home/banners/mobile/01.jpg',
     'assets/images/home/banners/mobile/02.jpg',
-    'assets/images/home/banners/mobile/03.jpg'
+    'assets/images/home/banners/mobile/03.jpg',
+    'assets/images/home/banners/mobile/04.jpg'
   ];
 
   // Definir las rutas de las imágenes para pantallas de escritorio
   desktopBannerImages = [
     'assets/images/home/banners/01.jpg',
     'assets/images/home/banners/02.jpg',
-    'assets/images/home/banners/03.jpg'
+    'assets/images/home/banners/03.jpg',
+    'assets/images/home/banners/04.jpg'
   ];
 
   customOptions: any = {
@@ -83,27 +85,35 @@ export class IndexComponent implements OnInit {
   bannerSlider = [
     {
       imageUrl: 'assets/images/home/banners/mobile/01.jpg',
-      title1: '+10,000 artículos',
-      title2: 'disponibles en DARU.',
+      title1: '',
+      title2: '+10,000 artículos disponibles.',
       subtitle: 'Conoce nuestras ofertas',
       url: '/ofertas',
       urlTitle: 'Conoce las Ofertas Destacadas'
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/02.jpg',
-      title1: 'Envíos a todo el País.',
-      title2: '',
+      title1: '',
+      title2: 'Envíos a todo el País.',
       subtitle: '¿Ya tienes cuenta en Daru?',
       url: '/register',
       urlTitle: 'Regístrate en DARU'
     },
     {
       imageUrl: 'assets/images/home/banners/mobile/03.jpg',
-      title1: 'Atención Personalizada.',
-      title2: '',
+      title1: '',
+      title2: 'Atención Personalizada.',
       subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
       url: '/comocomprar',
       urlTitle: '¿Cómo comprar?'
+    },
+    {
+      imageUrl: 'assets/images/home/banners/mobile/04.jpg',
+      title1: '',
+      title2: 'Envíos a todo el País.',
+      subtitle: '¿Ya tienes cuenta en Daru?',
+      url: '/register',
+      urlTitle: 'Regístrate en DARU'
     },
   ];
 

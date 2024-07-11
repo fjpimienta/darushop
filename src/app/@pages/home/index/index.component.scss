@@ -128,7 +128,7 @@
 .banner-content {
   position: absolute; /* Debe ser 'absolute' para superponerse */
   top: 50%;
-  left: 50%;
+  left: 55%;
   transform: translate(-50%, -50%); /* Centra el contenido vertical y horizontalmente */
   z-index: 1; /* Asegúrate de que esté por encima de la imagen */
   display: flex;
@@ -142,7 +142,7 @@
 }
 
 .home-page .banner .banner-content {
-  left: 35%;
+  left: 65%;
   top: 50%;
 }
 
