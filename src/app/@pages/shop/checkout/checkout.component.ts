@@ -850,8 +850,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onSubmit(): Promise<any> {
     if (!this.isSubmitting) {
-      if (!this.formData.valid || !this.emailValid) {
-        infoEventAlert('Revisar los campos requeridos o el correo electrónico.', '');
+      if (!this.formData.valid) {
+        infoEventAlert('Revisar los campos requeridos.', '');
         return;
       }
       this.isSubmitting = true;
