@@ -75,7 +75,7 @@ export class IndexComponent implements OnInit {
     loop: true,
     margin: 10,
     nav: true,
-    dots: true,
+    dots: false,
     items: 1,
     autoplay: true,
     autoplayTimeout: 10000,

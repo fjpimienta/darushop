@@ -31,7 +31,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 1420px;
+  max-width: 1520px;
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -52,13 +52,18 @@ p {
 
 // general
 .header-top {
-  background-color: #f8f8f8;
+  background-color: #212121;
+  padding: 6px 0;
 }
 
 .header-top a {
-  color: $primary-color;
+  color: #00ff76;
   font-weight: lighter;
   text-transform: uppercase;
+}
+
+.header-top a:hover {
+  color: #FFF;
 }
 
 //Menu
@@ -72,8 +77,8 @@ p {
   li.show,
   li.active {
     >a {
-      color: #fff;
-      text-shadow: 2px 1px 4px rgba(0, 0, 0, 0.56);
+      color: #FFF;
+      /* text-shadow: 2px 1px 4px rgba(255, 255, 255, 0.56); */
       zoom: 1;
     }
   }
@@ -83,7 +88,7 @@ p {
 .menu ul {
 
   li:hover {
-    background-color: $primary-color;
+    background-color: #00ff76;
   }
 }
 
@@ -140,18 +145,19 @@ p {
 }
 
 .header-middle {
-  background: #1C2833 !important;
+  /* background: #1C2833 !important; */
+  background: #303030 !important;
 }
 
 .header-middle .menu>li:not(:hover):not(.active):not(.show)>a {
-  color: #FFF;
+  color: #00ff76;
 }
 
 .header-search .form-control,
 .header-search select,
 .header-search-wrapper .form-control {
   color: #FFF;
-  background-color: #1C2833;
+  background-color: #303030;
 }
 
 .cart-dropdown .cart-count {

@@ -66,6 +66,10 @@
   margin-bottom: 0.9rem;
 }
 
+.icon-box-title:hover {
+  color: #00ff76;
+}
+
 .intro-section {
   background-color: white !important;
 
@@ -74,19 +78,21 @@
   }
 
   .subtitle-home {
-    color: #5bef97 !important;
+    color: #00ff76 !important;
   }
 }
 
 .popular-section {
   background-color: #333333 !important;
+  padding: 40px 0;
 
   .subtitle {
     color: white !important;
   }
 
   .subtitle-home {
-    color: #5bef97 !important;
+    color: #00ff76 !important;
+    font-weight: normal;
   }
 }
 
@@ -147,7 +153,7 @@
 }
 
 .action {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   justify-content: space-between;
 }
