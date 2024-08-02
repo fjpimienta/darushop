@@ -22,6 +22,7 @@ import { OwlCarousel } from 'angular-owl-carousel';
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
+
 export class IndexComponent implements OnInit {
   itemsProducts: any = demo30;
   formData: FormGroup;
@@ -49,6 +50,7 @@ export class IndexComponent implements OnInit {
   @ViewChild('customDots') customDots: any;
   @ViewChild(OwlCarousel) owlCarousel: OwlCarousel;
 
+  // Owl Carousel
   currentBannerImage1: string;
   currentBannerImage2: string;
   currentBannerImage3: string;
@@ -57,18 +59,12 @@ export class IndexComponent implements OnInit {
 
   // Definir las rutas de las imágenes para dispositivos móviles
   mobileBannerImages = [
-    'assets/images/home/banners/mobile/01.jpg',
-    /* 'assets/images/home/banners/mobile/02.jpg',
-    'assets/images/home/banners/mobile/03.jpg',
-    'assets/images/home/banners/mobile/04.jpg' */
+    'assets/images/home/banners/mobile/01.jpg'
   ];
 
   // Definir las rutas de las imágenes para pantallas de escritorio
   desktopBannerImages = [
-    'assets/images/home/banners/hero-landing.jpg',
-    /* 'assets/images/home/banners/02.jpg',
-    'assets/images/home/banners/03.jpg',
-    'assets/images/home/banners/04.jpg' */
+    'assets/images/home/banners/hero-landing.jpg'
   ];
 
   customOptions: any = {
@@ -92,30 +88,6 @@ export class IndexComponent implements OnInit {
       sub_url: '/ofertas',
       urlTitle: 'Ver Más'
     },
-    /* {
-      imageUrl: 'assets/images/home/banners/mobile/02.jpg',
-      title1: '',
-      title2: 'Envíos a todo el País.',
-      subtitle: '¿Ya tienes cuenta en Daru?',
-      url: '/register',
-      urlTitle: 'Regístrate en DARU'
-    },
-    {
-      imageUrl: 'assets/images/home/banners/mobile/03.jpg',
-      title1: '',
-      title2: 'Atención Personalizada.',
-      subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
-      url: '/comocomprar',
-      urlTitle: '¿Cómo comprar?'
-    },
-    {
-      imageUrl: 'assets/images/home/banners/mobile/04.jpg',
-      title1: '',
-      title2: 'Envíos a todo el País.',
-      subtitle: '¿Ya tienes cuenta en Daru?',
-      url: '/register',
-      urlTitle: 'Regístrate en DARU'
-    }, */
   ];
 
   constructor(
