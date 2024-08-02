@@ -280,9 +280,11 @@ p {
   .banner-action {
     display: flex;
     flex-flow: wrap;
+    margin-top: 15px;
+    margin-left: -785px;
 
     .btn {
-      font-size: 1.5rem;
+      font-size: 3rem;
       font-weight: 600;
       letter-spacing: -.025em;
       text-decoration: none;
@@ -1197,6 +1199,16 @@ p {
 .btn-primary {
   background-color: $primary-color;
   border-color: $primary-color;
+}
+
+.btn-green {
+  background-color: #00ff76;
+  color: #212121;
+}
+
+.btn-green:hover {
+  background-color: #212121;
+  color: #00ff76;
 }
 
 // boton scroll

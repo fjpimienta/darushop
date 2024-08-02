@@ -58,21 +58,21 @@ export class IndexComponent implements OnInit {
   // Definir las rutas de las imágenes para dispositivos móviles
   mobileBannerImages = [
     'assets/images/home/banners/mobile/01.jpg',
-    'assets/images/home/banners/mobile/02.jpg',
+    /* 'assets/images/home/banners/mobile/02.jpg',
     'assets/images/home/banners/mobile/03.jpg',
-    'assets/images/home/banners/mobile/04.jpg'
+    'assets/images/home/banners/mobile/04.jpg' */
   ];
 
   // Definir las rutas de las imágenes para pantallas de escritorio
   desktopBannerImages = [
-    'assets/images/home/banners/01.jpg',
-    'assets/images/home/banners/02.jpg',
+    'assets/images/home/banners/hero-landing.jpg',
+    /* 'assets/images/home/banners/02.jpg',
     'assets/images/home/banners/03.jpg',
-    'assets/images/home/banners/04.jpg'
+    'assets/images/home/banners/04.jpg' */
   ];
 
   customOptions: any = {
-    loop: true,
+    loop: false,
     margin: 10,
     nav: true,
     dots: false,
@@ -86,12 +86,13 @@ export class IndexComponent implements OnInit {
     {
       imageUrl: 'assets/images/home/banners/mobile/01.jpg',
       title1: '',
-      title2: '+10,000 artículos disponibles.',
-      subtitle: 'Conoce nuestras ofertas',
+      title2: 'Descubre todo lo que DARÚ tiene para ti.',
+      subtitle: 'Más información sobre categorías >',
       url: '/ofertas',
-      urlTitle: 'Conoce las Ofertas Destacadas'
+      sub_url: '/ofertas',
+      urlTitle: 'Ver Más'
     },
-    {
+    /* {
       imageUrl: 'assets/images/home/banners/mobile/02.jpg',
       title1: '',
       title2: 'Envíos a todo el País.',
@@ -114,7 +115,7 @@ export class IndexComponent implements OnInit {
       subtitle: '¿Ya tienes cuenta en Daru?',
       url: '/register',
       urlTitle: 'Regístrate en DARU'
-    },
+    }, */
   ];
 
   constructor(
@@ -192,6 +193,7 @@ export class IndexComponent implements OnInit {
       title2: this.bannerSlider[index]?.title2 || '',
       subtitle: this.bannerSlider[index]?.subtitle || '',
       url: this.bannerSlider[index]?.url || '',
+      sub_url: this.bannerSlider[index]?.url || '',
       urlTitle: this.bannerSlider[index]?.urlTitle || ''
     }));
     setTimeout(() => {

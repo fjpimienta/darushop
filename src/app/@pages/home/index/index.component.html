@@ -10,11 +10,10 @@
               <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">{{banner.title1}}<br>
                 {{banner.title2}}
               </h2>
-              <!-- <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">{{banner.subtitle}}</h3> -->
-              <!-- <p>&nbsp;<br></p> -->
               <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-                <a [routerLink]="[banner.url]" class="btn btn-primary btn-round btn-cart-home">{{banner.urlTitle}}</a>
+                <a [routerLink]="[banner.url]" class="btn btn-green btn-round btn-cart-home">{{banner.urlTitle}}</a>
               </div>
+              <a [routerLink]="[banner.sub_url]" class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">{{banner.subtitle}}</a>
             </div>
           </figure>
         </ng-container>
@@ -154,7 +153,7 @@
   <!-- End Seccion 2 -->
 
   <!-- Seccion 3 Mecanica Compra -->
-  <section class="overview">
+  <!-- <section class="overview">
     <div class="container">
       <figure class="bg-image">
         <img src="assets/images/home/bg-circle.png" alt="Background" width="799" height="760" />
@@ -199,7 +198,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- End Seccion 3  -->
 
   <!-- Seccion 4 Beneficios -->

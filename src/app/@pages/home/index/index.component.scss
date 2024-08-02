@@ -14,11 +14,11 @@
 }
 
 .home-page .banner .banner-title {
-  font-size: 6rem;
-  font-weight: 700;
+  font-size: 12rem;
+  font-weight: 900;
   line-height: 1;
   letter-spacing: -.025em;
-  color: #5bef97 !important;
+  color: #212121 !important;
   text-align: left;
 
   @media (max-width: 767px) {
@@ -34,11 +34,21 @@
 
 .home-page .banner .banner-subtitle {
   font-size: 2.4rem;
-  font-weight: 700;
+  font-weight: normal;
   line-height: 1.1;
   letter-spacing: -.025em;
-  color: white !important;
-  margin-bottom: 0.5rem;
+  color: #4c95f7 !important;
+  margin: 10px 0 0 -650px;
+}
+
+.home-page .banner .banner-subtitle:hover {
+  text-decoration: none !important;
+  color: #4b02fc !important;
+}
+
+.home-page[_ngcontent-ljw-c67] .banner[_ngcontent-ljw-c67] .banner-subtitle[_ngcontent-ljw-c67]:hover {
+  text-decoration: none !important;
+  color: #4b02fc !important;
 }
 
 .home-page .banner .banner-info {
@@ -66,8 +76,8 @@
   margin-bottom: 0.9rem;
 }
 
-.icon-box-title:hover {
-  color: #00ff76;
+h6.icon-box-title:hover {
+  color: #00ff76 !important;
 }
 
 .intro-section {
@@ -148,8 +158,9 @@
 }
 
 .home-page .banner .banner-content {
-  left: 65%;
-  top: 50%;
+  left: 35%;
+  top: 42%;
+  padding: 0 100px;
 }
 
 .action {
