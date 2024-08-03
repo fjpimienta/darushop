@@ -1,4 +1,4 @@
-<main class="main home-page skeleton-body">
+d<main class="main home-page skeleton-body">
   <!-- Seccion 1 Banner Principal -->
   <section class="intro-section">
     <div class="banner">
@@ -154,7 +154,129 @@
 
   <!-- Seccion X Banners Promocionales -->
   <section id="banners-section">
-    
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-sm-12 col-lg-2">
+          
+          <a href="#">
+            <img class="mx-auto d-block" src="assets/images/home/banners/apple-music.jpg">
+          </a>
+
+        </div>
+
+        <div class="col-sm-12 col-lg-8">
+
+          <swiper-container
+            id="mainPromosBanners"
+            pagination="true"
+            slides-per-view="1"
+            loop="true"
+            autoplay="true"
+            style="--swiper-pagination-color: #00FF76;--swiper-pagination-bullet-inactive-color: #cecece;"
+          >
+            <swiper-slide>
+              <a href="#">
+                <picture>
+                  <source media="(min-width: 576px)" srcset="assets/images/home/banners/asus.jpg" />
+                  <img class="center-banners mx-auto d-block" src="assets/images/home/banners/mobile/asus-sm.jpg" />
+                </picture>
+              </a>
+            </swiper-slide>
+            <swiper-slide>
+              <a href="#">
+                <picture>
+                  <source media="(min-width: 576px)" srcset="assets/images/home/banners/asus.jpg" />
+                  <img class="center-banners mx-auto d-block" src="assets/images/home/banners/mobile/asus-sm.jpg" />
+                </picture>
+              </a>
+            </swiper-slide>
+          </swiper-container>
+
+          <div id="suscribirse-container">
+
+            <div id="sc-izq">
+              <p id="sc-izq-title">¡Suscríbete con nosotros <br>
+              y obtén 10% de descuento!</p>
+              <p id="sc-izq-subtitle">Haz clic aquí para saber como.</p>
+            </div>
+
+            <div id="sc-der">
+              <p id="sc-der-title">Código de descuento</p>
+              <div id="sc-der-btn">DARU2024</div>
+            </div>
+
+          </div>
+
+          <div id="marcas-favoritas">
+
+            <p id="mf-title">Tus Marcas Favoritas</p>
+
+            <swiper-container
+              id="mf-slider-container"
+              slides-per-view="4"
+              loop="true"
+              autoplay="true"
+            >
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/alienware-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/asus-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/bose-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/dell-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/hp-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/logi-logo.png">
+              </swiper-slide>
+            </swiper-container>
+
+          </div>
+
+        </div>
+
+        <div class="col-sm-12 col-lg-2">
+
+          <div id="metodos-pago">
+            <p id="mp-text">Métodos de Pago</p>
+
+            <swiper-container
+              id="pay-options"
+              slides-per-view="3"
+              loop="true"
+              autoplay="true"
+              direction="vertical"
+            >
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/amex.png" />
+              </swiper-slide>
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/nu.png" />
+              </swiper-slide>
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/paypal.png" />
+              </swiper-slide>
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/spei.png" />
+              </swiper-slide>
+            </swiper-container>
+
+            <a href="#">
+              <img id="hp-banner" src="https://via.assets.so/img.jpg?w=280&h=240&tc=blue&bg=#cecece">
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
   </section>
   <!-- End Seccion X Banners Promocionales -->
 

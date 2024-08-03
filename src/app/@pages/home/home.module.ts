@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -21,7 +21,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     OwlModule,
     SharedModule,
     ReactiveFormsModule
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 
 export class HomeModule { }
