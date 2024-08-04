@@ -1,32 +1,5 @@
 <footer class="footer">
 
-  <div class="footer-bottom">
-    <div [ngClass]="containerClass">
-      <p class="text-bg-primary">Los precios ya incluyen IVA.</p>
-    </div>
-  </div>
-  <!-- <section class="newsletter">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-sm-10 col-md-8 col-lg-6">
-                    <div class="cta-heading text-center">
-                        <h3 class="cta-title text-white">Get The Latest Deals</h3>
-                        <p class="cta-desc">and receive <span class="font-weight-normal">$20 coupon</span> for first shopping</p>
-                    </div>
-
-                    <form action="#">
-                        <div class="input-group input-group-round">
-                            <input type="email" class="form-control form-control-white" placeholder="Enter your Email Address" aria-label="Email Adress" required="">
-                            <div class="input-group-append">
-                                <button class="btn" type="submit">Subscribe</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
   <div class="footer-middle">
     <div [ngClass]="containerClass">
       <div class="row">
@@ -34,7 +7,7 @@
         <div class="col-sm-6 col-lg-3">
           <div class="widget widget-about">
             <a routerLink="/">
-              <img src="assets/images/logocolor-footer.png" class="footer-logo" alt="Footer Logo" width="208"
+              <img src="assets/images/logo-green.png" class="footer-logo" alt="Footer Logo" width="208"
                 height="57">
             </a>
             <br>
@@ -46,30 +19,17 @@
           <div class="widget widget-about">
             <h4 class="widget-title">Línea de soporte</h4>
             <div class="widget-call">
-              <a>Las 24 horas del día</a>
+              <span>Las 24 horas del día</span>
             </div>
             <div class="widget-call">
-              <a href="tel:#">+52 993 347 2094</a>
+              <a href="tel:9933472094">993 347 2094</a>
             </div>
-            <div class="social-icons mt-5">
+            <div class="social-icons mt-4">
               <a href="https://www.facebook.com/profile.php?id=100090580084843" class="social-icon" title="Facebook" target="_blank" rel="noopener"><i class="fa-brands fa-facebook"></i></a>
               <a href="https://www.instagram.com/mx_daru" class="social-icon" title="Instagram" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i></a>
             </div>
           </div>
         </div>
-
-        <!--<div class="col-sm-6 col-lg-3">
-          <div class="widget story-box" id="story">
-            <figure>
-              <img class="swipe-up" src="assets/images/payments.png" />
-            </figure>
-          </div>
-           <div class="widget footerbotton">
-            <figure>
-              <img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
-            </figure>
-          </div>
-        </div>-->
 
         <div class="col-sm-6 col-lg-3">
           <div class="widget">
@@ -99,6 +59,12 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div [ngClass]="containerClass">
+      <p class="text-bg-primary">Los precios ya incluyen IVA.</p>
     </div>
   </div>
 

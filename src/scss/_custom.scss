@@ -11,6 +11,28 @@ body {
   font-family: 'futuramedium', Arial, Verdana, sans-serif;
 }
 
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #00ff76 #303030;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 18px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #303030;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #00ff76;
+    border-radius: 16px;
+    border: 5px solid #303030;
+  }
+
 /* Header 30 */
 @keyframes modalFadeOut1 {
   0% {
@@ -147,6 +169,7 @@ p {
 .header-middle {
   /* background: #1C2833 !important; */
   background: #303030 !important;
+  margin-top: -1px;
 }
 
 .header-middle .menu>li:not(:hover):not(.active):not(.show)>a {
@@ -281,7 +304,7 @@ p {
     display: flex;
     flex-flow: wrap;
     margin-top: 15px;
-    margin-left: -785px;
+    margin-left: -77%;
 
     .btn {
       font-size: 3rem;

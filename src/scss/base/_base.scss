@@ -26,13 +26,13 @@ body {
 }
 
 ::-moz-selection {
-  color: #fff;
-  background-color: $primary-color;
+  color: #212121;
+  background-color: #00FF76;
 }
 
 ::selection {
-  color: #fff;
-  background-color: $primary-color;
+  color: #212121;
+  background-color: #00FF76;
 }
 
 :focus {
