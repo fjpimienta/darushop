@@ -4,7 +4,7 @@
   "homepage": "https://daru.mx/",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.json --host 192.168.1.100 --open --port 4200",
+    "start": "ng serve --proxy-config proxy.conf.json --host 192.168.1.85 --open --port 4200",
     "build": "ng build --configuration production",
     "test": "ng test",
     "lint": "ng lint",

@@ -26,10 +26,10 @@
         </div>
       </div>
 
-      <div *ngIf="access" class="header-center">
+      <!-- <div *ngIf="access" class="header-center">
         <a href="#"><i class="icon-user"></i></a>
         <span class="login"><a href="javascript:;" (click)="showInfoUser($event)">{{ userName }}</a></span>
-      </div>
+      </div> -->
 
       <div class="header-right">
         <ul class="top-menu">
@@ -38,7 +38,7 @@
             <ul class="dropdown-links">
               <li *ngIf="access && sistema">
                 <div class="header-dropdown">
-                  <a href="javascript:;">Exclusivo DARU</a>
+                  <a href="javascript:;"><i class="icon-user"></i> {{ userName }}</a>
                   <div class="header-menu">
                     <ul>
                       <li><a class="nav-link" href="javascript:;">Tablero</a></li>
