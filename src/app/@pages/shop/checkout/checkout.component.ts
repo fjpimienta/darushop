@@ -189,6 +189,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   checkoutUrl: string = '';
   emailValid = false;
+  confirmed = false;
 
   constructor(
     private router: Router,
@@ -361,10 +362,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     try {
       console.clear();
       if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
+        this.confirmed = false;
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
           console.log('result: ', result);
           if (result && result.delivery && result.delivery.delivery) {
             let deliveryTmp = result.delivery.delivery;
+            if (deliveryTmp.status === 'PEDIDO CONFIRMADO CON PROVEEDOR') {
+              this.confirmed = true;
+            }
             this.delivery = deliveryTmp;
             this.onSetDelivery(this.formData, deliveryTmp);
             const discount = deliveryTmp.discount;
