@@ -1,12 +1,12 @@
-<main class="main">
-  <app-page-header [title]="title" [subtitle]="userToken.user.email"
-    image="assets/images/banners/banner-category.jpg"></app-page-header>
+<main class="main" id="main-active-section">
   <div class="page-content">
     <div class="container">
-      <div class="form-box">
-        <form (ngSubmit)="onSubmit()" #forma="ngForm">
+      <h4 id="active-title">Activa Tu Cuenta</h4>
+      <app-page-header id="active-subtitle" [subtitle]="userToken.user.email"></app-page-header>
+      <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg'); background-repeat: no-repeat; background-size: cover;">
+        <form (ngSubmit)="onSubmit()" #forma="ngForm" id="active-form">
           <div class="form-group">
-            <label for="activePassword">Clave *</label>
+            <label for="activePassword">Contraseña (<span class="form-item-required">*</span>)</label>
             <input type="password" class="form-control" id="activePassword" name="activePassword"
               #activePassword="ngModel" [(ngModel)]="active.password"
               [ngClass]="{'is-valid': !activePassword.invalid, 'is-invalid': activePassword.invalid}" required>
@@ -18,7 +18,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="activePasswordTwo">Repetir Clave *</label>
+            <label for="activePasswordTwo">Repetir Contraseña (<span class="form-item-required">*</span>)</label>
             <input type="password" class="form-control" id="activePasswordTwo" name="activePasswordTwo"
               #activePasswordTwo="ngModel" [(ngModel)]="active.passwordTwo"
               [ngClass]="{'is-valid': !activePasswordTwo.invalid, 'is-invalid': activePasswordTwo.invalid}" required>
@@ -46,7 +46,7 @@
                   <div class="form-group">
                     <button type="button" [disabled]="forma.valid" class="btn btn-outline-primary-2"
                       (click)="onActivar()">
-                      <span>Volver a enviar la solicitud</span>
+                      <span>Reenviar Correo De Activación</span>
                       <i class="icon-long-arrow-right"></i>
                     </button>
                   </div>

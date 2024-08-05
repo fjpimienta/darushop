@@ -422,8 +422,159 @@ a > .btn-producto {
 }
 
 @media only screen and (max-width: 768px) {
-  *::-webkit-scrollbar {
-    width: 0px !important;
-    background: transparent !important; 
+  #heroBanners {
+    height: calc(100vh - 119px);
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-left: -10%;
+  }
+
+  .home-page .banner .banner-content {
+    padding: 0px;
+    top: 49%;
+  }
+
+  .home-page .intro-section .banner-action .btn {
+    font-size: 2rem;
+    letter-spacing: 0;
+    text-decoration: none;
+    padding-left: 4.1rem;
+    padding-right: 4.1rem;
+    margin: 1rem auto;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 5rem;
+    margin-left: 15%;
+    margin-bottom: -5%;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 1.7rem;
+    margin: 10px 0 0 -750px;
+    padding-top: 40px;
+  }
+
+  #promoBannerLeft, #mp-bottom-banner, #pay-options {
+    display: none;
+  }
+
+  #banners-section {
+    padding-bottom: 40px;
+  }
+
+  #sc-izq-title {
+    margin-left: 0;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  #sc-izq-subtitle {
+    text-align: center;
+    margin-bottom: 35px;
+    margin-left: 0;
+  }
+
+  #sc-der {
+    float: none;
+    margin: 0 75px;
+  }
+
+  #marcas-favoritas {
+    margin-top: 0;
+  }
+
+  #mf-title {
+    font-size: 30px;
+  }
+
+  #mf-slider-container {
+    margin: 30px 20px 35px;
+  }
+
+  .pay-options-sm-img {
+    width: 90%;      
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #pay-options-mobile > div:nth-child(1) > img, #pay-options-mobile > div:nth-child(3) > img {
+    margin-left: 22px;
+    margin-bottom: 10px;
+  }
+
+  #pay-options-mobile > div:nth-child(2) > img, #pay-options-mobile > div:nth-child(4) > img {
+    margin-right: 22px;
+    margin-bottom: 10px;
+  }
+
+  #pay-options-mobile > div:nth-child(1) > img, #pay-options-mobile > div:nth-child(2) > img {
+    margin-bottom: 10px;
+
+  }
+
+  #metodos-pago {
+    height: 240px;
+    margin: 0 8px;
+  }
+
+  #mp-text {
+    padding: 10px 0 5px;
+  }
+
+  .gallery {
+    padding-top: 30px;
+    padding-bottom: 20px;
+  }
+
+  .relampago-img-container {
+    width: 100%;
+  }
+
+  .action {
+    padding-top: 20px;
+  }
+
+  #productos-destacados {
+    height: 100%;
+    padding-top: 40px;
+    padding-bottom: 30px;
+  }
+
+  .shadow-destacado {
+    height: 36rem;
+    box-shadow: 8px 8px 8px 2px #000;
+  }
+
+  a > .btn-producto {
+    padding: 8px 30px;
+    margin-top: 18px;
+    margin-bottom: 24px;
+    box-shadow: 6px 6px 10px 2px #000;
+    font-size: 16px;
+  }
+
+  .footer-info-item {
+    padding-bottom: 20px;
+    padding-left: 25px;
+  }
+
+  #footer-info {
+    padding: 30px 20px;
+  }
+
+  .footer-info-titulo {
+    font-size: 20px;
+  }
+
+  .footer-info-subtitulo {
+    font-size: 13px;
+  }
+
+  #fit-envio {
+    margin-left: 58px;
   }
 }

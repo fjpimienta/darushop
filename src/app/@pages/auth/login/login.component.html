@@ -1,10 +1,11 @@
-<main class="main">
+<main class="main" id="main-login-section">
   <div class="page-content">
     <div class="container">
-      <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg'); background-repeat: no-repeat;">
+      <h4 id="login-title">Inicia Sesión</h4>
+      <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg'); background-repeat: no-repeat; background-size: cover;">
         <form (ngSubmit)="onSubmit()" #forma="ngForm">
           <div class="form-group">
-            <label for="singinEmail">Correo Electrónico *</label>
+            <label for="singinEmail">Correo Electrónico (<span class="form-item-required">*</span>)</label>
             <input type="text" class="form-control" id="singinEmail" name="singinEmail" #singinEmail="ngModel"
               [(ngModel)]="login.email"
               [ngClass]="{'is-valid': !singinEmail.invalid, 'is-invalid': singinEmail.invalid}" [pattern]="pattern"
@@ -19,7 +20,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="singinPassword">Clave *</label>
+            <label for="singinPassword">Contraseña (<span class="form-item-required">*</span>)</label>
             <input type="password" class="form-control" id="singinPassword" name="singinPassword"
               #singinPassword="ngModel" [(ngModel)]="login.password"
               [ngClass]="{'is-valid': !singinPassword.invalid, 'is-invalid': singinPassword.invalid}" required>
@@ -43,15 +44,15 @@
             </div>
             <div class="form-choice">
               <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-12">
                   <div class="custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="signinRemember" name="signinRemember"
                       #signinRemember="ngModel" [(ngModel)]="login.remember">
-                    <label class="custom-control-label" for="signinRemember">Recuerdame</label>
+                    <label id="main-login-remember-box" class="custom-control-label" for="signinRemember">Recuérdame</label>
                   </div>
                 </div>
-                <div class="col-sm-6">
-                  <a href="javascript:;" (click)="onRecover()">Olvidaste la clave?</a>
+                <div class="col-sm-12" style="margin-top:10px;">
+                  <a href="javascript:;" (click)="onRecover()">¿Olvidaste Tu Contraseña?</a>
                 </div>
               </div>
             </div>

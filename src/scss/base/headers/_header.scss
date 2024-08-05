@@ -1177,7 +1177,8 @@
       visibility: hidden;
       opacity: 0;
       margin-top: 1px;
-      background-color: #fff;
+      background-color: #212121;
+      border: 1px solid #00ff76;
       box-shadow: 2px 5px 8px rgba(51, 51, 51, 0.05), -2px 5px 8px rgba(51, 51, 51, 0.05);
       text-transform: capitalize;
 
@@ -1205,6 +1206,10 @@
     a {
       padding: .3rem 1.5rem;
     }
+  }
+
+  .login {
+    padding: 20px 15px;
   }
 
   .header-left {

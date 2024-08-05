@@ -18,7 +18,7 @@
   background-color: #fafafa;
   border: 1px solid #ebebeb;
   border-radius: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   transition: all 0.3s;
   outline-width: 0;
 }
@@ -183,7 +183,7 @@ input::-webkit-inner-spin-button {
 }
 
 .custom-control-label::before {
-  left: 0;
+  left: 17.5rem;
   top: .6rem;
   width: 1.6rem;
   height: 1.6rem;
@@ -321,5 +321,11 @@ input::-webkit-inner-spin-button {
   select:focus::-ms-value {
     background: transparent;
     color: currentColor;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .custom-control-label::before {
+    left: 12.5rem;
   }
 }

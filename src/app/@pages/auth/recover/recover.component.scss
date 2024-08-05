@@ -1,0 +1,31 @@
+#recover-title {
+  text-align: center;
+  font-weight: bold;
+  color: #4b02fc;
+  margin-bottom: 25px;
+}
+
+#main-recover-section {
+  margin-top: 15rem;
+  margin-bottom: 9.5rem;
+}
+
+.form-item-required {
+  color: #FF0000;
+}
+
+#recover-btn {
+  margin-top: 2rem;
+}
+
+#recover-container {
+  padding-bottom: 0px;
+  padding-top: 40px;
+}
+
+@media only screen and (max-width: 768px) {
+  #main-recover-section {
+    margin-top: 12rem;
+    margin-bottom: 3.5rem;
+  }
+}

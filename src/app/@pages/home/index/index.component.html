@@ -10,7 +10,7 @@
         navigation="true"
         slides-per-view="1"
         loop="true"
-        autoplay="true"
+        autoplay="false"
       >
 
         <!-- <ng-container *ngFor="let slide of heroSlider">
@@ -207,7 +207,7 @@
     <div class="container-fluid">
       <div class="row">
 
-        <div class="col-sm-12 col-lg-2">
+        <div class="col-sm-12 col-lg-2" id="promoBannerLeft">
           
           <a href="#">
             <img class="mx-auto d-block" src="assets/images/home/banners/apple-music.jpg">
@@ -298,10 +298,11 @@
 
             <swiper-container
               id="pay-options"
-              slides-per-view="3"
+              
               loop="true"
               autoplay="true"
               direction="vertical"
+              slides-per-view="3"
             >
               <swiper-slide class="mp-ss">
                 <img src="assets/images/home/payoptions/amex.png" />
@@ -317,7 +318,22 @@
               </swiper-slide>
             </swiper-container>
 
-            <a href="#">
+            <div class="row d-md-none d-lg-none d-xl-none" id="pay-options-mobile">
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/amex.png" />
+              </div>
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/nu.png" />
+              </div>
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/paypal.png" />
+              </div>
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/spei.png" />
+              </div>
+            </div>
+
+            <a href="#" id="mp-bottom-banner">
               <img id="hp-banner" src="https://via.assets.so/img.jpg?w=280&h=240&tc=blue&bg=#cecece">
             </a>
           </div>
@@ -343,7 +359,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/24637">
-                  <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/1.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -363,7 +379,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/28565">
-                  <app-image src="assets/images/home/products/2.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/2.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -383,7 +399,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/28220">
-                  <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -402,7 +418,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/27022">
-                  <app-image src="assets/images/home/products/4.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/4.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -450,7 +466,7 @@
   <!-- Seccion 6 Cintillo -->
   <section id="footer-info">
     <div class="row">
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-3 footer-info-item">
         <div class="footer-info-icon">
           <i class="fa-solid fa-truck fa-2lg"></i>
         </div>
@@ -463,7 +479,7 @@
           </p>
         </div>
       </div>
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-3 footer-info-item">
         <div class="footer-info-icon">
           <i class="fa-solid fa-arrow-rotate-left fa-2lg"></i>
         </div>
@@ -476,7 +492,7 @@
           </p>
         </div>
       </div>
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-3 footer-info-item">
         <div class="footer-info-icon">
           <i class="fa-solid fa-circle-info fa-2lg"></i>
         </div>
@@ -489,7 +505,7 @@
           </p>
         </div>
       </div>
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-3 footer-info-item">
         <div class="footer-info-icon">
           <i class="fa-regular fa-credit-card fa-2lg"></i>
         </div>
