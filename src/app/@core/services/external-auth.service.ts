@@ -482,6 +482,8 @@ export class ExternalAuthService extends ApiService {
           resultSyscom.status = orderSyscom.status;
           resultSyscom.message = orderSyscom.message;
           return await resultSyscom;
+        case 'ingram':
+          break;
         case '99minutos':
           break;
         default:

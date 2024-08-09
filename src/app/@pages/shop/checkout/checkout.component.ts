@@ -1613,7 +1613,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                         shipment.metodoShipping = resultShip.data.metodoShipping;
                         shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
                         shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
-                        shipment.orderSyscom = resultShip.data.orderSyscom;
+                      } else if (supplier.slug === 'ingram') {
+                        shipment.empresa = resultShip.data.empresa.toString();
+                        shipment.costo = resultShip.data.costo * 1.16;
+                        shipment.metodoShipping = resultShip.data.metodoShipping;
+                        shipment.lugarEnvio = resultShip.data.lugarEnvio.toLocaleUpperCase();
+                        shipment.lugarRecepcion = this.selectEstado.d_estado.toLocaleUpperCase();
                       }
                     }
                     return await shipment;

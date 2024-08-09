@@ -36,6 +36,7 @@ export class OffersComponent implements OnInit {
   categories = [];
   subCategories = [];
   offer: boolean;
+  withImages: boolean;
   brandsProd: Catalog[] = [];
   categoriesProd: Catalog[] = [];
   minPrice = 0;
@@ -89,6 +90,7 @@ export class OffersComponent implements OnInit {
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
       this.offer = true;
+      this.withImages = true;
 
       this.pageTitle = 'Ofertas';
       if (params.description) {
@@ -144,7 +146,8 @@ export class OffersComponent implements OnInit {
         this.offer,
         this.brands,
         this.categories,
-        this.subCategories
+        this.subCategories,
+        this.withImages
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;
