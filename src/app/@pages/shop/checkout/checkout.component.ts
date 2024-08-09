@@ -630,10 +630,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.externalAuthService.getExistenciaProductoIngram(
                 this.cartItems[idS].suppliersProd
               ).then(result => {
-                if (result && result.existenciaProductoIngram) {
+                if (result && result.existenciaProductoBDI) {
                   const updatedSuppliersProd: ISupplierProd = {
                     ...item.suppliersProd,
-                    branchOffices: result.existenciaProductoIngram.branchOffices
+                    branchOffices: result.existenciaProductoBDI.branchOffices
                   };
                   const suppliersProd = {
                     ...item,
@@ -641,7 +641,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   };
                   // Accede a branchOffices después de resolver la promesa
                   this.cartItems[idS] = suppliersProd;
-                  console.log('branchOffices ingram:', result.existenciaProductoIngram.branchOffices);
+                  console.log('branchOffices ingram:', result.existenciaProductoBDI.branchOffices);
                 }
               });
               break;
