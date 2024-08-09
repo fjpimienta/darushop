@@ -364,13 +364,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.idDelivery) {                              // Validar si existe un delivery para recuperar
         this.confirmed = false;
         const delivery = this.deliverysService.getDelivery(this.idDelivery).then(result => {
-          console.log('result: ', result);
           if (result && result.delivery && result.delivery.delivery) {
             let deliveryTmp = result.delivery.delivery;
             if (deliveryTmp.status === 'PEDIDO CONFIRMADO CON PROVEEDOR') {
               this.confirmed = true;
             }
             this.delivery = deliveryTmp;
+            if (deliveryTmp.status === 'PEDIDO CONFIRMADO CON PROVEEDOR') {
+              this.confirmed = true;
+            }
             this.onSetDelivery(this.formData, deliveryTmp);
             const discount = deliveryTmp.discount;
             const totalEnvios = parseFloat(this.totalEnvios);
@@ -631,10 +633,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               this.externalAuthService.getExistenciaProductoIngram(
                 this.cartItems[idS].suppliersProd
               ).then(result => {
-                if (result && result.existenciaProductoIngram) {
+                if (result && result.existenciaProductoBDI) {
                   const updatedSuppliersProd: ISupplierProd = {
                     ...item.suppliersProd,
-                    branchOffices: result.existenciaProductoIngram.branchOffices
+                    branchOffices: result.existenciaProductoBDI.branchOffices
                   };
                   const suppliersProd = {
                     ...item,
@@ -642,7 +644,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                   };
                   // Accede a branchOffices después de resolver la promesa
                   this.cartItems[idS] = suppliersProd;
-                  console.log('branchOffices ingram:', result.existenciaProductoIngram.branchOffices);
+                  console.log('branchOffices ingram:', result.existenciaProductoBDI.branchOffices);
                 }
               });
               break;
