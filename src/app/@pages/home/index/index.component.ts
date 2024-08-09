@@ -200,7 +200,7 @@ export class IndexComponent implements OnInit {
   }
 
   initializeProducts(): void {
-    this.productService.getProducts(1, -1).subscribe(result => {
+    this.productService.getProducts(1, -1, '', false, [], [], [], true).subscribe(result => {
       if (result && result.products && result.products.length > 0) {
         this.products = result.products;
         if (result.products.category) {

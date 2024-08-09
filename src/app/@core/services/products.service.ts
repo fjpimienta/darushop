@@ -20,13 +20,14 @@ export class ProductsService extends ApiService {
     offer: boolean = false,
     brands: string[] = null,
     categories: string[] = null,
-    subCategories: string[] = null
+    subCategories: string[] = null,
+    withImages: boolean = false
   ) {
     if (filterName.toLowerCase().endsWith('s')) {
       filterName = filterName.slice(0, -1);
     }
     return this.get(PRODUCTS_LIST_QUERY, {
-      itemsPage, page, filterName, offer, brands, categories, subCategories
+      itemsPage, page, filterName, offer, brands, categories, subCategories, withImages
     }).pipe(map((result: any) => {
       return result.products;
     }));

@@ -32,6 +32,7 @@ export class CategoryComponent implements OnInit {
   categories = [];
   subCategories = [];
   offer: boolean = false;
+  withImages: boolean = false;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -75,6 +76,7 @@ export class CategoryComponent implements OnInit {
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
       this.offer = false;
+      this.withImages = true;
 
       this.searchTerm = params.searchTerm || '';
       this.orderBy = params.orderBy || '';
@@ -109,7 +111,8 @@ export class CategoryComponent implements OnInit {
         this.offer,
         this.brands,
         this.categories,
-        this.subCategories
+        this.subCategories,
+        this.withImages
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;

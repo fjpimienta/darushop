@@ -11,7 +11,8 @@ export const PRODUCTS_LIST_QUERY = gql`
     $offer: Boolean = false,
     $brands: [String] = null,
     $categories: [String] = null,
-    $subCategories: [String] = null
+    $subCategories: [String] = null,
+    $withImages: Boolean = false
   ) {
     products(
       page: $page,
@@ -21,7 +22,8 @@ export const PRODUCTS_LIST_QUERY = gql`
       offer: $offer,
       brands: $brands,
       categories: $categories,
-      subCategories: $subCategories
+      subCategories: $subCategories,
+      withImages: $withImages
     ) {
       info {
         ...ResultInfoObject
