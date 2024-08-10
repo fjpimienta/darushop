@@ -7,11 +7,13 @@
 $link-color: $primary-color  !default;
 
 ::-moz-selection {
-  background-color: $primary-color;
+  background-color: #00FF76;
+  color: #212121;
 }
 
 ::selection {
-  background-color: $primary-color;
+  background-color: #00FF76;
+  color: #212121;
 }
 
 .bg-primary {

@@ -15,13 +15,15 @@ import { TYPE_ALERT } from '@shared/alert/values.config';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { OwlCarousel } from 'angular-owl-carousel';
+/* import { OwlCarousel } from 'angular-owl-carousel'; */
+import Swiper from 'swiper';
 
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
+
 export class IndexComponent implements OnInit {
   itemsProducts: any = demo30;
   formData: FormGroup;
@@ -44,78 +46,27 @@ export class IndexComponent implements OnInit {
   previousPageTitle: string = '';
   queryParams: object = {};
   private unsubscribe$: Subject<void> = new Subject<void>();
-
-  @ViewChild('singleSlider') singleSlider: any;
-  @ViewChild('customDots') customDots: any;
-  @ViewChild(OwlCarousel) owlCarousel: OwlCarousel;
-
-  currentBannerImage1: string;
-  currentBannerImage2: string;
-  currentBannerImage3: string;
-  currentBannerImage4: string;
-  currentBannerImages: string[];
-
-  // Definir las rutas de las imágenes para dispositivos móviles
-  mobileBannerImages = [
-    'assets/images/home/banners/mobile/01.jpg',
-    'assets/images/home/banners/mobile/02.jpg',
-    'assets/images/home/banners/mobile/03.jpg',
-    'assets/images/home/banners/mobile/04.jpg'
-  ];
-
-  // Definir las rutas de las imágenes para pantallas de escritorio
-  desktopBannerImages = [
-    'assets/images/home/banners/01.jpg',
-    'assets/images/home/banners/02.jpg',
-    'assets/images/home/banners/03.jpg',
-    'assets/images/home/banners/04.jpg'
-  ];
-
-  customOptions: any = {
-    loop: true,
-    margin: 10,
-    nav: true,
-    dots: true,
-    items: 1,
-    autoplay: true,
-    autoplayTimeout: 10000,
-    autoplaySpeed: 1000,
-  };
-
-  bannerSlider = [
+  
+  /* heroSlider = [
     {
-      imageUrl: 'assets/images/home/banners/mobile/01.jpg',
-      title1: '',
-      title2: '+10,000 artículos disponibles.',
-      subtitle: 'Conoce nuestras ofertas',
-      url: '/ofertas',
-      urlTitle: 'Conoce las Ofertas Destacadas'
+      desktopImgUrl: 'assets/images/home/banners/hero-landing.jpg',
+      mobileImgURL: 'assets/images/home/banners/mobile/asus-sm.jpg',
+      title1: 'Descubre todo lo que DARÚ tiene para ti.',
+      subtitle: 'Más información sobre categorías >',
+      subtitleUrl: '#',
+      actionUrl: '#',
+      actionUrlTitle: 'Ver Más',
     },
     {
-      imageUrl: 'assets/images/home/banners/mobile/02.jpg',
-      title1: '',
-      title2: 'Envíos a todo el País.',
-      subtitle: '¿Ya tienes cuenta en Daru?',
-      url: '/register',
-      urlTitle: 'Regístrate en DARU'
+      desktopImgUrl: 'assets/images/home/banners/hero-landing.jpg',
+      mobileImgURL: 'assets/images/home/banners/mobile/asus-sm.jpg',
+      title1: 'Otro Slide Más Para Probar.',
+      subtitle: 'Más información sobre categorías >',
+      subtitleUrl: '#',
+      actionUrl: '#',
+      actionUrlTitle: 'Ver Más',
     },
-    {
-      imageUrl: 'assets/images/home/banners/mobile/03.jpg',
-      title1: '',
-      title2: 'Atención Personalizada.',
-      subtitle: '¿Tienes alguna duda? Estamos para ayudarte',
-      url: '/comocomprar',
-      urlTitle: '¿Cómo comprar?'
-    },
-    {
-      imageUrl: 'assets/images/home/banners/mobile/04.jpg',
-      title1: '',
-      title2: 'Envíos a todo el País.',
-      subtitle: '¿Ya tienes cuenta en Daru?',
-      url: '/register',
-      urlTitle: 'Regístrate en DARU'
-    },
-  ];
+  ]; */
 
   constructor(
     private modalService: ModalService,
@@ -177,27 +128,33 @@ export class IndexComponent implements OnInit {
     window.removeEventListener('resize', this.onResize);
   }
 
+  /* ngAfterViewInit() {
+    const swiperSliders = new Swiper('.swiper-container');
+    swiperSliders.enable();
+  } */
+
   @HostListener('window:resize', ['$event'])
   onResize(event?: any) {
     const screenWidth = window.innerWidth;
     const isMobile = screenWidth <= 767;
-    this.currentBannerImages = isMobile ? this.mobileBannerImages : this.desktopBannerImages;
-    this.updateBannerSlider();
+    /* this.currentBannerImages = isMobile ? this.mobileBannerImages : this.desktopBannerImages;
+    this.updateBannerSlider(); */
   }
 
-  updateBannerSlider() {
+  /* updateBannerSlider() {
     this.bannerSlider = this.currentBannerImages.map((imageUrl, index) => ({
       imageUrl,
       title1: this.bannerSlider[index]?.title1 || '',
       title2: this.bannerSlider[index]?.title2 || '',
       subtitle: this.bannerSlider[index]?.subtitle || '',
       url: this.bannerSlider[index]?.url || '',
+      sub_url: this.bannerSlider[index]?.url || '',
       urlTitle: this.bannerSlider[index]?.urlTitle || ''
     }));
     setTimeout(() => {
       this.owlCarousel.refresh();
     }, 0);
-  }
+  } */
 
   initializeProducts(): void {
     this.productService.getProducts(1, -1, '', false, [], [], [], true).subscribe(result => {
@@ -273,17 +230,17 @@ export class IndexComponent implements OnInit {
     );
   }
 
-  itemChange(e: any, self: any): void {
+  /* itemChange(e: any, self: any): void {
     this.customDots.nativeElement.querySelector('.custom-dot.active').classList.remove('active');
     this.customDots.nativeElement.querySelectorAll('.custom-dot')[e.item.index].classList.add('active');
     self.index = e.item.index;
-  }
+  } */
 
-  changeImage($event: Event, i = 0): void {
+  /* changeImage($event: Event, i = 0): void {
     this.index = i;
     this.singleSlider.to(i);
     $event.preventDefault();
-  }
+  } */
 
   showModal(event: Event): void {
     event.preventDefault();
@@ -339,11 +296,11 @@ export class IndexComponent implements OnInit {
     );
   }
 
-  prevSlide() {
+  /* prevSlide() {
     this.owlCarousel.previous();
   }
 
   nextSlide() {
     this.owlCarousel.next();
-  }
+  } */
 }

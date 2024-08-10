@@ -14,11 +14,12 @@
   .mobile-menu {
     li {
       a {
-        border-bottom-color: #efefef;
+        border-bottom-color: #afafaf61;
       }
 
       a:not(:hover):not(:focus) {
         color: #666;
+        background-color: #F8F8FF;
       }
 
       &.open,
@@ -29,7 +30,7 @@
       }
 
       ul {
-        border-bottom-color: #efefef;
+        border-bottom-color: #afafaf61;
 
         li a {
           &:not(:hover):not(:focus) {
@@ -42,6 +43,10 @@
 
   .mmenu-btn:not(:hover):not(:focus) {
     color: #666;
+  }
+
+  .mmenu-btn:hover, .mmenu-btn:focus {
+    color: #212121;
   }
 
   .mobile-search {
@@ -77,7 +82,7 @@
       }
 
       a:not(:hover):not(:focus) {
-        color: #666;
+        color: #afafaf;
 
         &.mobile-cats-lead {
           color: #333;

@@ -70,8 +70,8 @@
   .container,
   .container-fluid {
     position: relative;
-    padding-top: 6.1rem;
-    padding-bottom: 3.2rem;
+    padding-top: 3.5rem;
+    padding-bottom: 3rem;
     border: none;
 
     &:before {
@@ -87,7 +87,8 @@
 }
 
 .footer-logo {
-  margin: 0;
+  width: 150px;
+  height: auto;
 }
 
 .widget-about p {
@@ -291,7 +292,7 @@
   height: 5rem;
   position: fixed;
   right: 50px;
-  bottom: 10rem;
+  bottom: 5rem;
   z-index: 11;
   color: #999;
   display: none;

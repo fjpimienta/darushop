@@ -1,13 +1,14 @@
-<main class="main">
+<main class="main" id="main-register-section">
   <div class="page-content">
     <div class="container">
-      <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg'); background-repeat: no-repeat;">
-        <form (ngSubmit)="registerUser()" #forma="ngForm">
+      <h4 id="register-title">Regístrate</h4>
+      <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg'); background-repeat: no-repeat; background-size: cover;">
+        <form (ngSubmit)="registerUser()" #forma="ngForm" id="register-form-section">
           <div class="form-group">
             <div class="grid">
               <div class="row">
                 <div class="col-6">
-                  <label for="registerName">Nombre(s) *</label>
+                  <label for="registerName">Nombre(s) (<span class="form-item-required">*</span>)</label>
                   <input type="text" class="form-control" id="registerName" name="registerName" #registerName="ngModel"
                     [(ngModel)]="register.name" required>
                   <div class="alert alert-danger"
@@ -18,7 +19,7 @@
                   </div>
                 </div>
                 <div class="col-6">
-                  <label for="registerName">Apellido(s) *</label>
+                  <label for="registerName">Apellido(s) (<span class="form-item-required">*</span>)</label>
                   <input type="text" class="form-control" id="registerLastname" name="registerLastname"
                     #registerLastname="ngModel" [(ngModel)]="register.lastname" required>
                   <div class="alert alert-danger"
@@ -35,7 +36,7 @@
             <div class="row">
               <div class="col-12">
                 <div class="form-group">
-                  <label for="registerEmail">Correo electrónico *</label>
+                  <label for="registerEmail">Correo Electrónico (<span class="form-item-required">*</span>)</label>
                   <input type="text" class="form-control" id="registerEmail" name="registerEmail"
                     #registerEmail="ngModel" [(ngModel)]="register.email" required>
                   <div class="alert alert-danger"
@@ -68,8 +69,7 @@
             <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="registerPolicy" name="registerPolicy"
                 #registerPolicy="ngModel" [(ngModel)]="register.policy" required>
-              <label class="custom-control-label" for="registerPolicy">Estoy de acuerdo con las
-                politicas de privacidad</label>
+              <label id="register-agreed" class="custom-control-label" for="registerPolicy">Estoy de acuerdo con las políticas de privacidad</label>
             </div>
             <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
               <span>REGISTRAR</span>

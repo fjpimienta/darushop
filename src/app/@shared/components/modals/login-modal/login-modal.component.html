@@ -1,5 +1,5 @@
 <div class="modal-body">
-  <button type="button" class="close" (click)="closeModal()">
+  <button id="login-btn-green" type="button" class="close" (click)="closeModal()">
     <span aria-hidden="true"><i class="icon-close"></i></span>
   </button>
   <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg')">
@@ -10,7 +10,7 @@
           <ng-template ngbNavContent>
             <form (ngSubmit)="onSubmit()" #forma="ngForm">
               <div class="form-group">
-                <label for="singinEmail">Correo Electrónico *</label>
+                <label for="singinEmail">Correo Electrónico (<span class="form-item-required">*</span>)</label>
                 <input type="text" class="form-control" id="singinEmail" name="singinEmail" #singinEmail="ngModel"
                   [(ngModel)]="login.email"
                   [ngClass]="{'is-valid': !singinEmail.invalid, 'is-invalid': singinEmail.invalid}" [pattern]="pattern"
@@ -27,7 +27,7 @@
               </div>
 
               <div class="form-group">
-                <label for="singinPassword">Clave *</label>
+                <label for="singinPassword">Contraseña (<span class="form-item-required">*</span>)</label>
                 <input type="password" class="form-control" id="singinPassword" name="singinPassword"
                   #singinPassword="ngModel" [(ngModel)]="login.password"
                   [ngClass]="{'is-valid': !singinPassword.invalid, 'is-invalid': singinPassword.invalid}" required>
@@ -52,14 +52,14 @@
                 </div>
                 <div class="form-choice">
                   <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                       <div class="custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="signinRemember" name="signinRemember"
                           #signinRemember="ngModel" [(ngModel)]="login.remember">
                         <label class="custom-control-label" for="signinRemember">Recuerdame</label>
                       </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                       <a href="javascript:;" (click)="onRecover()">Olvidaste la clave?</a>
                     </div>
                   </div>
@@ -105,24 +105,24 @@
                 <div class="grid">
                   <div class="row">
                     <div class="col-6">
-                      <label for="registerName">Nombre(s) *</label>
+                      <label for="registerName">Nombre(s) (<span class="form-item-required">*</span>)</label>
                       <input type="text" class="form-control" id="registerName" name="registerName"
                         #registerName="ngModel" [(ngModel)]="register.name" required>
                       <div class="alert alert-danger"
                         *ngIf="registerName.invalid && (registerName.dirty || registerName.touched)">
                         <div *ngIf="registerName.errors.required">
-                          Introduzca un nombre valido por favor.
+                          Introduzca un nombre válido por favor.
                         </div>
                       </div>
                     </div>
                     <div class="col-6">
-                      <label for="registerName">Apellido(s) *</label>
+                      <label for="registerName">Apellido(s) (<span class="form-item-required">*</span>)</label>
                       <input type="text" class="form-control" id="registerLastname" name="registerLastname"
                         #registerLastname="ngModel" [(ngModel)]="register.lastname" required>
                       <div class="alert alert-danger"
                         *ngIf="registerLastname.invalid && (registerLastname.dirty || registerLastname.touched)">
                         <div *ngIf="registerLastname.errors.required">
-                          Introduzca un apellido valido por favor.
+                          Introduzca un apellido válido por favor.
                         </div>
                       </div>
                     </div>
@@ -133,16 +133,16 @@
                 <div class="row">
                   <div class="col-12">
                     <div class="form-group">
-                      <label for="registerEmail">Correo electrónico *</label>
+                      <label for="registerEmail">Correo Electrónico (<span class="form-item-required">*</span>)</label>
                       <input type="text" class="form-control" id="registerEmail" name="registerEmail"
                         #registerEmail="ngModel" [(ngModel)]="register.email" required>
                       <div class="alert alert-danger"
                         *ngIf="registerEmail.invalid && (registerEmail.dirty || registerEmail.touched)">
                         <div *ngIf="registerEmail.errors.required">
-                          Introduzca un correo electronico valido por favor.
+                          Introduzca un correo electrónico válido por favor.
                         </div>
                         <div *ngIf="registerEmail.errors && registerEmail.errors.pattern">
-                          El corrreo electronico no tiene el formato correcto.
+                          El corrreo electrónico no tiene el formato correcto.
                         </div>
                       </div>
                     </div>
@@ -163,11 +163,10 @@
                 </div>
               </div>
               <div class="text-center">
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox" id="register-agreed">
                   <input type="checkbox" class="custom-control-input" id="registerPolicy" name="registerPolicy"
                     #registerPolicy="ngModel" [(ngModel)]="register.policy" required>
-                  <label class="custom-control-label" for="registerPolicy">Estoy de acuerdo con las
-                    politicas de privacidad</label>
+                  <label id="register-legend" class="custom-control-label" for="registerPolicy">Estoy de acuerdo con las políticas de privacidad</label>
                 </div>
                 <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
                   <span>REGISTRARSE</span>

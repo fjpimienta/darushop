@@ -16,6 +16,7 @@
   .nav.nav-pills {
     color: $dark-text;
     border-bottom: .1rem solid #ebebeb;
+    padding-top: 22px;
 
     .nav-item {
       margin-bottom: -.1rem;
@@ -100,6 +101,7 @@
   font-size: 1.6rem;
   line-height: 1.5;
   letter-spacing: -.025em;
+  padding-bottom: 4px;
 
   p {
     margin-bottom: 2.7rem;

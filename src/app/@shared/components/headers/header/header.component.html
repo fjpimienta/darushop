@@ -26,19 +26,19 @@
         </div>
       </div>
 
-      <div *ngIf="access" class="header-center">
+      <!-- <div *ngIf="access" class="header-center">
         <a href="#"><i class="icon-user"></i></a>
         <span class="login"><a href="javascript:;" (click)="showInfoUser($event)">{{ userName }}</a></span>
-      </div>
+      </div> -->
 
       <div class="header-right">
         <ul class="top-menu">
           <li>
-            <a href="javascript:;">Sesión</a>
+            <a href="javascript:;">Tu Cuenta</a>
             <ul class="dropdown-links">
               <li *ngIf="access && sistema">
                 <div class="header-dropdown">
-                  <a href="javascript:;">Exclusivo DARU</a>
+                  <a href="javascript:;"><i class="icon-user"></i> {{ userName }}</a>
                   <div class="header-menu">
                     <ul>
                       <li><a class="nav-link" href="javascript:;">Tablero</a></li>
@@ -67,7 +67,7 @@
           <div class="header-left">
             <app-mobile-button></app-mobile-button>
             <a routerLink="/" class="logo">
-              <img src="assets/images/logo.png" class="bg-transparent" alt="DARU Logo" width="82" height="20">
+              <img src="assets/images/logo-green.png" class="bg-transparent" alt="DARU Logo" style="width:120px;height:auto;">
             </a>
           </div>
 

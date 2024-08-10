@@ -1,13 +1,12 @@
-<main class="main">
-  <app-page-header title="Recuperar Clave" subtitle=""
-    image="assets/images/banners/banner-terms.jpg"></app-page-header>
+<main class="main" id="main-recover-section">
   <div class="page-content">
     <div class="container">
-      <div class="form-box">
-        <div class="form-choice">
+      <h4 id="recover-title">Recuperar Contraseña</h4>
+      <div class="form-box" style="background-image: url('../../../../../assets/images/loggin.jpg'); background-repeat: no-repeat; background-size: cover;">
+        <div class="form-choice" id="recover-container">
           <form (ngSubmit)="onSubmit()" #forma="ngForm">
             <div class="form-group">
-              <label for="recoverEmail">Correo Electrónico *</label>
+              <label for="recoverEmail">Correo Electrónico (<span class="form-item-required">*</span>)</label>
               <input type="recoverEmail" class="form-control" id="recoverEmail" name="recoverEmail"
                 #recoverEmail="ngModel" [(ngModel)]="recover.email"
                 [ngClass]="{'is-valid': !recoverEmail.invalid, 'is-invalid': recoverEmail.invalid}" [pattern]="pattern"
@@ -15,10 +14,10 @@
               <div class="alert alert-danger"
                 *ngIf="recoverEmail.invalid && (recoverEmail.dirty || recoverEmail.touched)">
                 <div *ngIf="recoverEmail.errors.required">
-                  Introduzca un correo electronico valido por favor.
+                  Introduzca un correo electrónico válido por favor.
                 </div>
                 <div *ngIf="recoverEmail.errors && recoverEmail.errors.pattern">
-                  El corrreo electronico no tiene el formato correcto.
+                  El corrreo electrónico no tiene el formato correcto.
                 </div>
               </div>
             </div>
@@ -26,8 +25,8 @@
               <div class="row">
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <button type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
-                      <span>Enviar para Recuperar</span>
+                    <button id="recover-btn" type="submit" [disabled]="!forma.valid" class="btn btn-outline-primary-2">
+                      <span>Recuperar Contraseña</span>
                       <i class="icon-long-arrow-right"></i>
                     </button>
                   </div>

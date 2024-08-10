@@ -10,4 +10,16 @@
 
 .header-middle.sticky-header.fixed {
   background-color: #333333 !important;
+  padding: 16px 0px;
+}
+
+@media only screen and (max-width: 768px) {
+  .notification {
+    padding: 1rem 0 !important;
+  }
+
+  .header-top {
+    background-color: #212121;
+    padding: 8px 0;
+  }
 }

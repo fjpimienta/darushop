@@ -1,0 +1,10 @@
+@media only screen and (max-width: 768px) {
+  .notification {
+    padding: 1rem 0 !important;
+  }
+
+  .notification .notify-action {
+    right: 2rem;
+    top: 28%;
+  }
+}
