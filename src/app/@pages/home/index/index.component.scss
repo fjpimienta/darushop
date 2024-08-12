@@ -421,6 +421,12 @@ a > .btn-producto {
   color: #acacac;
 }
 
+@media only screen and (max-width: 576px) {
+
+
+  
+}
+
 @media only screen and (max-width: 768px) {
   #heroBanners {
     height: calc(100vh - 119px);
@@ -577,4 +583,20 @@ a > .btn-producto {
   #fit-envio {
     margin-left: 58px;
   }
+}
+
+@media only screen and (max-width: 992px) {
+  
+}
+
+@media only screen and (max-width: 1200px) {
+  
+}
+
+@media only screen and (max-width: 1400px) {
+  
+}
+
+@media only screen and (min-width: 1920px) {
+
 }
