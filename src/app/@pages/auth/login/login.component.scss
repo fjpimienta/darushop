@@ -47,4 +47,16 @@
     margin-top: 250px;
     margin-bottom: 127px;
   }
+
+  .custom-control-label {
+    margin-left: -5.6rem;
+  }
+
+  #register-legend {
+    margin-left: -12rem !important;
+  }
+
+  #register-legend::before {
+    margin-left: 6rem;
+  }
 }
