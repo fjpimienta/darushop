@@ -24,10 +24,34 @@
   padding-left: 0.8rem;
   padding-right: 0.8rem;
   height: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .filter-item a {
-  color: #000;
+  color: #212121;
   font-size: larger;
+}
+
+@media only screen and (min-width: 2200px) {
+  .sidebar-shop .widget {
+    overflow-y: auto;
+    margin-bottom: 6rem;
+  }
+
+  .filter-item a {
+    color: #212121;
+    font-size: 2.3rem;
+  }
+
+  .filter-item a:hover {
+    color: #4b02fc;
+  }
+
+  .filter-item:hover {
+    color: #00FF76;
+  }
+
+  #widget-2 {
+    overflow-x: hidden;
+  }
 }

@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 export class FooterComponent implements OnInit, OnDestroy {
 
 	@Input() containerClass = "container";
-	@Input() isBottomSticky = false;
+	@Input() isBottomSticky = true;
 
 	isHome: boolean;
 	year: any;

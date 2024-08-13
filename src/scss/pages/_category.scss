@@ -503,3 +503,25 @@
     justify-content: flex-end;
   }
 }
+
+@media only screen and (min-width: 2200px) {
+  .custom-control {
+    padding-left: 1.7rem;
+  }
+
+  .custom-control-label {
+    font-size: 2rem;
+  }
+
+  .custom-control-label:before {
+    left: 29rem;
+    border: 1px solid #6f42c1;
+  }
+
+  .toolbox .select-custom .form-control {
+    max-width: 160px;
+    color: #212121 !important;
+    background-color: #fff;
+    border-color: #6f42c1 !important;
+  }
+}

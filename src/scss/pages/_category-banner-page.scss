@@ -61,10 +61,10 @@
   top: 0;
   bottom: 0;
   z-index: 10002;
-  background-color: #fff;
+  background-color: #f2f2f2;
   width: 100%;
   max-width: 270px;
-  overflow-y: scroll;
+  overflow-y: auto;
   box-shadow: .1rem 0 .6rem 0 rgba(51, 51, 51, 0.5);
   will-change: transform;
   visibility: hidden;
@@ -207,5 +207,20 @@
   .sidebar-filter-wrapper {
     padding-left: 1.7rem;
     padding-right: 1.7rem;
+  }
+}
+
+@media only screen and (min-width: 2200px) {
+  .sidebar-filter {
+    overflow-y: hidden;
+    max-width: 400px;
+  }
+
+  .widget-clean {
+    font-size: 1.8rem;
+  }
+
+  .sidebar-filter .widget-clean a {
+    font-size: 1.8rem;
   }
 }

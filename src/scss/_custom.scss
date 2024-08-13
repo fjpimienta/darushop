@@ -968,7 +968,6 @@ p {
 
 .toolbox .select-custom {
   background-color: #fff;
-  ;
 }
 
 .custom-checkbox .custom-control-input:checked~.custom-control-label:before {
@@ -1464,5 +1463,11 @@ p {
 }
 
 @media only screen and (min-width: 2200px) {
+  .breadcrumb-nav {
+    margin-top: 125px;
+  }
 
+  .page-content {
+    margin-top: -5rem;
+  }
 }

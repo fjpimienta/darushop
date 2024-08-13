@@ -1367,4 +1367,21 @@
   .logo img {
     width: 16% !important;
   }
+
+  .cart-dropdown .dropdown-toggle {
+    font-size: 4em;
+  }
+
+  .cart-dropdown .cart-txt {
+    font-size: 2rem;
+    margin-top: 8px;
+  }
+
+  .dropdown-menu.dropdown-menu-right p, .dropdown-cart-products p {
+    font-size: 1.6rem !important;
+  }
+
+  .header-top a {
+    font-size: 1.4rem;
+  }
 }

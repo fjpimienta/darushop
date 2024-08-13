@@ -600,3 +600,50 @@ a > .btn-producto {
 @media only screen and (min-width: 1920px) {
 
 }
+
+@media only screen and (min-width: 2200px) {
+  .hero-banners {
+    padding-top: 100px;
+    padding-left: 225px;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 13rem;
+    padding: 0 90px;
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-top: 25px;
+    margin-left: -66%;
+  }
+
+  .home-page .intro-section .banner-action .btn {
+    font-size: 3.5rem;
+  }
+
+  .btn-round {
+    border-radius: 4rem;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 2.7rem;
+    margin: 15px 0 0 -720px;
+  }
+
+  .home-page .heading .subtitle {
+    font-size: 3.5rem;
+    padding-bottom: 20px;
+  }
+
+  .cat-block > figure > img, .cat-block > figure > span > img {
+    width: 150px !important;
+  }
+
+  .ofer-rel-btn {
+    font-size: 17px;
+  }
+
+  #footer-info {
+    padding: 60px 130px 60px 180px;
+  }
+}
