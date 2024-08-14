@@ -421,6 +421,18 @@ a > .btn-producto {
   color: #acacac;
 }
 
+@media only screen and (max-width: 400px) {
+  .hero-banners {
+    padding-top: 90px;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 1.5rem !important;
+    margin: 10px 0 0 -673px !important;
+    display: none !important;
+  }
+}
+
 @media only screen and (max-width: 768px) {
   #heroBanners {
     height: calc(100vh - 119px);
@@ -576,5 +588,289 @@ a > .btn-producto {
 
   #fit-envio {
     margin-left: 58px;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  
+}
+
+@media only screen and (min-width: 1200px) {
+  .hero-banners {
+    padding-top: 0px;
+    padding-left: 130px;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 7rem;
+    padding: 60px 80px 0 0;
+    top: 60%;
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-top: 5px;
+    margin-left: -67%;
+  }
+
+  .home-page .intro-section .banner-action .btn {
+    font-size: 2rem;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 1.7rem;
+    margin: 5px 0 0 -375px;
+  }
+
+  .home-page .heading .subtitle {
+    font-size: 2.5rem;
+    padding-bottom: 20px;
+  }
+
+  .cat-block > figure > img, .cat-block > figure > span > img {
+    width: 100px !important;
+  }
+
+  .icon-box-title {
+    font-size: 1.7rem;
+  }
+
+  #promoBannerLeft > a > img {
+    height: 100%;
+    width: auto;
+  }
+
+  #metodos-pago {
+    height: 565px;
+  }
+
+  #hp-banner {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 1320px) {
+  .home-page .intro-section .banner-action {
+    margin-left: -70%;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 1.7rem;
+    margin: 5px 0 0 -435px;
+  }
+
+  #metodos-pago {
+    height: 588px;
+  }
+}
+
+@media only screen and (min-width: 1400px) {
+  .hero-banners {
+    padding-top: 20px;
+    padding-left: 225px;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 7rem;
+    padding: 0 80px 0 0;
+    top: 60%;
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-top: 5px;
+    margin-left: -70%;
+  }
+
+  .home-page .intro-section .banner-action .btn {
+    font-size: 2.5rem;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 1.7rem;
+    margin: 5px 0 0 -485px;
+  }
+
+  .home-page .heading .subtitle {
+    font-size: 2.5rem;
+    padding-bottom: 20px;
+  }
+
+  .cat-block > figure > img, .cat-block > figure > span > img {
+    width: 100px !important;
+  }
+
+  .icon-box-title {
+    font-size: 1.7rem;
+  }
+
+  #promoBannerLeft > a > img {
+    height: 100%;
+    width: auto;
+  }
+
+  #hp-banner {
+    width: 280px;
+    height: 210px;
+    display: block;
+  }
+
+  #metodos-pago {
+    height: 375px;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .hero-banners {
+    padding-top: 0px;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 10rem;
+    padding: 0 100px;
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-top: 5px;
+    margin-left: -60%;
+  }
+
+  .home-page .intro-section .banner-action .btn {
+    font-size: 2.5rem;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 2rem;
+    margin: 5px 0 0 -560px;
+  }
+
+  .home-page .heading .subtitle {
+    font-size: 2.5rem;
+    padding-bottom: 20px;
+  }
+
+  .cat-block > figure > img, .cat-block > figure > span > img {
+    width: 100px !important;
+  }
+
+  .icon-box-title {
+    font-size: 1.7rem;
+  }
+
+  #promoBannerLeft > a > img {
+    height: 100%;
+    width: auto;
+  }
+
+  #hp-banner {
+    width: 280px;
+    height: 240px;
+    display: block;
+  }
+
+  #metodos-pago {
+    height: 460px;
+  }
+}
+
+@media only screen and (min-width: 2200px) {
+  .hero-banners {
+    padding-top: 100px;
+    padding-left: 225px;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 13rem;
+    padding: 0 90px;
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-top: 25px;
+    margin-left: -66%;
+  }
+
+  .home-page .intro-section .banner-action .btn {
+    font-size: 3.5rem;
+  }
+
+  .btn-round {
+    border-radius: 4rem;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 2.7rem;
+    margin: 15px 0 0 -720px;
+  }
+
+  .home-page .heading .subtitle {
+    font-size: 3.5rem;
+    padding-bottom: 20px;
+  }
+
+  .cat-block > figure > img, .cat-block > figure > span > img {
+    width: 150px !important;
+  }
+
+  .ofer-rel-btn {
+    font-size: 17px;
+  }
+
+  #footer-info {
+    padding: 60px 130px 60px 180px;
+  }
+}
+
+@media only screen and (min-width: 2500px) {
+  .hero-banners {
+    padding-top: 175px;
+    padding-left: 300px;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 14rem;
+    padding: 0 80px;
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-left: -71%;
+  }
+
+  .home-page .banner .banner-subtitle {
+    margin: 15px 0 0 -900px;
+  }
+
+  .cat-block > figure > img, .cat-block > figure > span > img {
+    width: 190px !important;
+  }
+
+  .icon-box-title {
+    font-size: 2.4rem;
+  }
+
+  #footer-info {
+    padding: 60px 110px 60px 250px;
+  }
+}
+
+@media only screen and (min-width: 2500px) {
+  .hero-banners {
+    padding-top: 225px;
+    padding-left: 600px;
+  }
+
+  .home-page .banner .banner-title {
+    font-size: 16rem;
+    padding: 0 110px;
+  }
+
+  .home-page .intro-section .banner-action .btn {
+    font-size: 4.5rem;
+  }
+
+  .home-page .intro-section .banner-action {
+    margin-left: -69%;
+  }
+
+  .home-page .banner .banner-subtitle {
+    font-size: 3.5rem;
+    margin: 15px 0 0 -930px;
   }
 }

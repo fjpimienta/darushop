@@ -968,7 +968,6 @@ p {
 
 .toolbox .select-custom {
   background-color: #fff;
-  ;
 }
 
 .custom-checkbox .custom-control-input:checked~.custom-control-label:before {
@@ -1427,4 +1426,48 @@ p {
 
 .swal2-content {
   font-size: 1.5em !important;;
+}
+
+// Media Queries
+
+@media only screen and (max-width: 1200px) {
+  /* .header-middle {
+    padding-left: 0px;
+    padding-right: 0px;
+  } */
+}
+
+@media only screen and (max-width: 1400px) {
+  /* .header-middle {
+    padding-left: 30px;
+    padding-right: 30px;
+  } */
+}
+
+@media only screen and (min-width: 1920px) {
+  /* .notification .notify-content h3 {
+    font-size: 1.9rem;
+  } */
+
+  .header-search .form-control,
+  .header-search select,
+  .header-search-wrapper .form-control {
+    border: 1px solid #f2f2f2;
+    color: #212121 !important;
+    background-color: #00FF76;
+  }
+
+  .header-search-wrapper .form-control::placeholder {
+    color: #212121;
+  }
+}
+
+@media only screen and (min-width: 2200px) {
+  .breadcrumb-nav {
+    margin-top: 125px;
+  }
+
+  .page-content {
+    margin-top: -5rem;
+  } 
 }

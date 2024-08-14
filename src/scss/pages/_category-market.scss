@@ -487,3 +487,10 @@
     text-align: right;
   }
 }
+
+@media only screen and (min-width: 2200px) {
+  .shop-market .sidebar ul a {
+    font-size: 2rem;
+    text-transform: uppercase;
+  }
+}

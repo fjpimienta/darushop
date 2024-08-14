@@ -17,5 +17,28 @@
   padding-left: 0.8rem;
   padding-right: 0.8rem;
   height: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+
+@media only screen and (min-width: 2200px) {
+  .sidebar-filter {
+    overflow-y: hidden !important;
+  }
+
+  .sidebar-shop {
+    overflow-y: auto !important;
+  }
+
+  .filter-item {
+    color: #212121 !important;
+    font-size: 1.75rem !important;
+  }
+
+  .filter-item:hover {
+    color: #00FF76 !important;
+  }
+
+  #widget-2 {
+    overflow-x: hidden;
+  }
 }
