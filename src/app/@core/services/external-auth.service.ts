@@ -18,7 +18,7 @@ import { ADD_ORDER_SYSCOM } from '@graphql/operations/mutation/suppliers/syscom'
 import { FormGroup } from '@angular/forms';
 import { OrderSyscom, ProductoSyscom } from '@core/models/suppliers/ordersyscom.models';
 import { EXISTENCIAPRODUCTOSDAISYTEK_LIST_QUERY } from '@graphql/operations/query/suppliers/daisytek';
-import { IOrderIngramInput, IShippingBDIInput } from '@core/models/suppliers/orderingram.models';
+import { IShippingBDIInput, OrderIngram } from '@core/models/suppliers/orderingram.models';
 
 declare const require;
 const axios = require('axios');
@@ -783,7 +783,7 @@ export class ExternalAuthService extends ApiService {
     });
   }
 
-  async setorderIngramBDI(orderIngramBdi: IOrderIngramInput): Promise<any> {
+  async setorderIngramBDI(orderIngramBdi: OrderIngram): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.get(ORDERINGRAM_DATA_QUERY, {
         "orderIngramBdi": orderIngramBdi

@@ -1,4 +1,4 @@
-export class IOrderIngramInput {
+export class OrderIngram {
   orderNumberClient: string;
   company: string;
   note: string;
@@ -11,11 +11,11 @@ export class IOrderIngramInput {
   cp: string;
   email: string;
   branch: string;
-  products: IProductOrderIngram[];
+  products: ProductOrder[];
   carrier: string;
 }
 
-export class IProductOrderIngram {
+export class ProductOrder {
   sku: string;
   qty: number;
 }
