@@ -830,7 +830,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     }
-    console.log('updateWarehouses/warehouses: ', warehouses)
     return await warehouses;
   }
 
@@ -838,9 +837,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     try {
       const cpValue = this.formData.controls.codigoPostal.value;
       if (cpValue !== '') {
-        console.log('onSetCps cpValue: ', cpValue);
         const result = await this.onSetCps(undefined, cpValue);
-        console.log('onSetCps result: ', result);
         // Verifica si result es un booleano y devuélvelo, de lo contrario, devuelve false
         return await result;
       } else {
@@ -895,7 +892,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const invoiceConfig = await this.onSetInvoiceConfig(this.formDataInvoice);
               // Validar Si hay pedidos Syscom
               this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
-              console.log('this.warehouses: ', this.warehouses);
               const ordersSyscom: OrderSyscom[] = [];
               ordersSyscom.push(this.warehouse.ordersSyscom);
               const delivery: Delivery = {
@@ -941,7 +937,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               const invoiceConfigT = await this.onSetInvoiceConfig(this.formDataInvoice);
               // Validar Si hay pedidos Syscom
               this.warehouses = await this.updateWarehouses(this.warehouses, this.formData);
-              console.log('this.warehouses: ', this.warehouses);
               const ordersSyscomT: OrderSyscom[] = [];
               ordersSyscomT.push(this.warehouse.ordersSyscom);
               const deliveryT: Delivery = {
@@ -1271,8 +1266,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async getCotizacionEnvios(cp, estado): Promise<any> {
     const cotizacionEnvios = await this.onCotizarEnvios(cp, estado);
-    console.log('cotizacionEnvios: ', cotizacionEnvios);
-    console.log('this.warehouses: ', this.warehouses);
     if (cotizacionEnvios.status) {
       //  > 0 && cotizacionEnvios.shipmentsEnd[0].costo <= 0
       if (cotizacionEnvios.shipmentsEnd && cotizacionEnvios.shipmentsEnd.length) {
@@ -2272,10 +2265,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   //#region Emails
   checkEmailValidity(email: string): void {
     const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${HUNTER_API_KEY}`;
-    console.log('url: ', url);
     this.http.get(url).pipe(
       map((response: any) => {
-        console.log('responseL: ', response);
         return response.data.result === 'deliverable';
       }),
       catchError(error => {
