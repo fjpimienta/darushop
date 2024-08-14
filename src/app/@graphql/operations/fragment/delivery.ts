@@ -558,8 +558,9 @@ export const DELIVERY_FRAGMENT = gql`
       }
       carrier
       orderResponseIngram {
+        statuscode
         orderNumberClient
-        orderNumberIngram
+        ingramNumberOrder
         message
       }
     }

@@ -22,8 +22,9 @@ export const SHIPMENTS_INGRAM_RATES_FRAGMENT = gql`
 
 export const ORDERINGRAM_FRAGMENT = gql`
   fragment orderBDIObject on OrderBDI {
+    statuscode
     orderNumberClient
-    orderNumberIngram
+    ingramNumberOrder
     message
   }
 `;
