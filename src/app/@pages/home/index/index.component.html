@@ -1,24 +1,73 @@
 <main class="main home-page skeleton-body">
+
   <!-- Seccion 1 Banner Principal -->
   <section class="intro-section">
     <div class="banner">
-      <owl-carousel [options]="customOptions" [carouselClasses]="'owl-theme'">
-        <ng-container *ngFor="let banner of bannerSlider">
-          <figure>
-            <img [src]="banner.imageUrl" width="1224" height="500" alt="Image Desc" />
+
+      <swiper-container
+        id="heroBanners"
+        class="swiper-container"
+        navigation="true"
+        slides-per-view="1"
+        loop="true"
+        autoplay="false"
+      >
+
+        <!-- <ng-container *ngFor="let slide of heroSlider">
+          <swiper-slide contentAnim aniName="fadeInUpShorter">
+            <picture>
+              <source media="(min-width: 576px)" srcset="{{slide.desktopImgUrl}}" />
+              <img class="center-banners mx-auto d-block" src="{{slide.mobileImgURL}}" />
+            </picture>
+
             <div class="banner-content">
-              <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">{{banner.title1}}<br>
-                {{banner.title2}}
+              <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">
+                {{slide.title1}}
               </h2>
-              <!-- <h3 class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">{{banner.subtitle}}</h3> -->
-              <!-- <p>&nbsp;<br></p> -->
               <div class="banner-action" contentAnim aniName="fadeInUpShorter">
-                <a [routerLink]="[banner.url]" class="btn btn-primary btn-round btn-cart-home">{{banner.urlTitle}}</a>
+                <a [routerLink]="[slide.actionUrl]" class="btn btn-green btn-round btn-cart-home">{{slide.actionUrlTitle}}</a>
               </div>
+              <a [routerLink]="[slide.subtitleUrl]" class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">{{slide.subtitle}}</a>
             </div>
-          </figure>
-        </ng-container>
-      </owl-carousel>
+          </swiper-slide>
+        </ng-container> -->
+
+        <swiper-slide contentAnim aniName="fadeInUpShorter">
+          <picture>
+            <source media="(min-width: 576px)" srcset="assets/images/home/banners/hero-landing.jpg" />
+            <img class="center-banners hero-banners mx-auto d-block" src="assets/images/home/banners/mobile/hero-mobile-1.jpg" />
+          </picture>
+
+          <div class="banner-content">
+            <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">
+              Descubre todo lo que DARÚ tiene para ti.
+            </h2>
+            <div class="banner-action" contentAnim aniName="fadeInUpShorter">
+              <a href="#" class="btn btn-green btn-round btn-cart-home">Ver Más</a>
+            </div>
+            <a href="#" class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">Más información sobre categorías ></a>
+          </div>
+        </swiper-slide>
+
+        <swiper-slide contentAnim aniName="fadeInUpShorter">
+          <picture>
+            <source media="(min-width: 576px)" srcset="assets/images/home/banners/hero-landing.jpg" />
+            <img class="center-banners hero-banners mx-auto d-block" src="assets/images/home/banners/mobile/hero-mobile-1.jpg" />
+          </picture>
+
+          <div class="banner-content">
+            <h2 class="banner-title text-white" contentAnim aniName="fadeInUpShorter">
+              Otro Slide Para Probar
+            </h2>
+            <div class="banner-action" contentAnim aniName="fadeInUpShorter">
+              <a href="#" class="btn btn-green btn-round btn-cart-home">Ver Más</a>
+            </div>
+            <a href="#" class="banner-subtitle text-white" contentAnim aniName="fadeInUpShorter">Más información sobre categorías ></a>
+          </div>
+        </swiper-slide>
+
+      </swiper-container>
+
     </div>
   </section>
   <!-- End Seccion 1 -->
@@ -81,7 +130,7 @@
                   </figure>
                   <div class="action text-center">
                     <span>
-                      <h6 class="icon-box-title">Tel&eacute;fonos</h6>
+                      <h6 class="icon-box-title">Celulares & Accesorios</h6>
                     </span>
                   </div>
                 </a>
@@ -153,57 +202,151 @@
   </section>
   <!-- End Seccion 2 -->
 
-  <!-- Seccion 3 Mecanica Compra -->
-  <section class="overview">
-    <div class="container">
-      <figure class="bg-image">
-        <img src="assets/images/home/bg-circle.png" alt="Background" width="799" height="760" />
-      </figure>
-    </div>
-    <div class="container banner-container">
-      <div class="banner row d-flex">
-        <div class="col-lg-4 order-lg-last" contentAnim aniName="fadeInLeftShorter">
-          <figure class="banner-img">
-            <img src="assets/images/home/comunidad/comunidad-daru-2.png" alt="Product" width="901" height="532" />
-          </figure>
+  <!-- Seccion 3 Banners Promocionales -->
+  <section id="banners-section">
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-sm-12 col-lg-2" id="promoBannerLeft">
+          
+          <a href="#">
+            <img class="mx-auto d-block" src="assets/images/home/banners/apple-music.jpg">
+          </a>
+
         </div>
-        <div class="col-lg-8" contentAnim aniName="fadeInRightShorter">
-          <div class="banner-content-2">
-            <h2 class="banner-title" contentAnim aniName="fadeInUpShorter">S&eacute; parte de DARU</h2>
-            <h3 class="banner-info" contentAnim aniName="fadeInUpShorter">Disfruta de grandes beneficios
-            </h3>
-            <span class="banner-info">&nbsp;</span>
-            <div class="banner-info mb-2">
-              <ul class="info-list text-white">
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Descuentos por apertura</span>
-                </li>
-                <li>
-                  <span class="info-icon"><i class="icon-check"></i></span>
-                  <span class="info-content">Ofertas todo el tiempo</span>
-                </li>
-              </ul>
+
+        <div class="col-sm-12 col-lg-8">
+
+          <swiper-container
+            id="mainPromosBanners"
+            pagination="true"
+            slides-per-view="1"
+            loop="true"
+            autoplay="true"
+          >
+            <swiper-slide>
+              <a href="#">
+                <picture>
+                  <source media="(min-width: 576px)" srcset="assets/images/home/banners/asus.jpg" />
+                  <img class="center-banners mx-auto d-block" src="assets/images/home/banners/mobile/asus-sm.jpg" />
+                </picture>
+              </a>
+            </swiper-slide>
+            <swiper-slide>
+              <a href="#">
+                <picture>
+                  <source media="(min-width: 576px)" srcset="assets/images/home/banners/asus.jpg" />
+                  <img class="center-banners mx-auto d-block" src="assets/images/home/banners/mobile/asus-sm.jpg" />
+                </picture>
+              </a>
+            </swiper-slide>
+          </swiper-container>
+
+          <div id="suscribirse-container">
+
+            <div id="sc-izq">
+              <p id="sc-izq-title">¡Suscríbete con nosotros <br>
+              y obtén 10% de descuento!</p>
+              <p id="sc-izq-subtitle">Haz clic aquí para saber como.</p>
             </div>
-            <div class="action">
-              <span class="price text-white">
-                <strong>
-                  <a href="mailto:ventas@daru.mx?subject=Contacto online&body=Sitio Web"
-                    class="btngreen btn-primary btn-round btn-cart-home">
-                    <strong>ventas@daru.mx</strong>
-                  </a>
-                </strong>
-              </span>
+
+            <div id="sc-der">
+              <p id="sc-der-title">Código de descuento</p>
+              <div id="sc-der-btn">DARU2024</div>
             </div>
+
           </div>
+
+          <div id="marcas-favoritas">
+
+            <p id="mf-title">Tus Marcas Favoritas</p>
+
+            <swiper-container
+              id="mf-slider-container"
+              slides-per-view="4"
+              loop="true"
+              autoplay="true"
+            >
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/alienware-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/asus-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/bose-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/dell-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/hp-logo.png">
+              </swiper-slide>
+              <swiper-slide class="mf-sc-ss">
+                <img src="assets/images/home/prov-slider/logi-logo.png">
+              </swiper-slide>
+            </swiper-container>
+
+          </div>
+
         </div>
+
+        <div class="col-sm-12 col-lg-2">
+
+          <div id="metodos-pago">
+            <p id="mp-text">Métodos de Pago</p>
+
+            <swiper-container
+              id="pay-options"
+              
+              loop="true"
+              autoplay="true"
+              direction="vertical"
+              slides-per-view="3"
+            >
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/amex.png" />
+              </swiper-slide>
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/nu.png" />
+              </swiper-slide>
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/paypal.png" />
+              </swiper-slide>
+              <swiper-slide class="mp-ss">
+                <img src="assets/images/home/payoptions/spei.png" />
+              </swiper-slide>
+            </swiper-container>
+
+            <div class="row d-md-none d-lg-none d-xl-none" id="pay-options-mobile">
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/amex.png" />
+              </div>
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/nu.png" />
+              </div>
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/paypal.png" />
+              </div>
+              <div class="col-6">
+                <img class="pay-options-sm-img" src="assets/images/home/payoptions/spei.png" />
+              </div>
+            </div>
+
+            <a href="#" id="mp-bottom-banner">
+              <img id="hp-banner" src="https://via.assets.so/img.jpg?w=280&h=240&tc=blue&bg=#cecece">
+            </a>
+          </div>
+
+        </div>
+
       </div>
     </div>
   </section>
-  <!-- End Seccion 3  -->
+  <!-- End Seccion 3 Banners Promocionales -->
 
   <!-- Seccion 4 Beneficios -->
-  <section class="gallery pt-2">
+  <section class="gallery">
     <div class="heading mb-0 text-center">
       <h2 class="subtitle mb-1" contentAnim aniName="blurIn">
         Ofertas <span class="subtitle-home" contentAnim aniName="blurIn">Relámpago</span>
@@ -216,7 +359,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/24637">
-                  <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/1.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -225,7 +368,7 @@
                   <h6><strong>Gaming</strong></h6>
                 </span> -->
                 <a routerLink="/ofertas/" [queryParams]="{ category: 'accesorios-gaming' }"
-                  class="btn btn-primary btn-round">
+                  class="btn btn-primary btn-round ofer-rel-btn">
                   Ver ofertas de Gaming</a>
               </div>
             </div>
@@ -236,7 +379,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/28565">
-                  <app-image src="assets/images/home/products/2.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/2.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -245,7 +388,7 @@
                   <h6><strong>Computo</strong></h6>
                 </span> -->
                 <a routerLink="/ofertas/" [queryParams]="{ category: 'computadoras' }"
-                  class="btn btn-primary btn-round">
+                  class="btn btn-primary btn-round ofer-rel-btn">
                   Ver ofertas de Cómputo</a>
               </div>
             </div>
@@ -256,7 +399,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/28220">
-                  <app-image src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/3.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -264,7 +407,7 @@
                 <!-- <span class="text-primary">
                   <h6><strong>Telefonía</strong></h6>
                 </span> -->
-                <a routerLink="/ofertas/" [queryParams]="{ category: 'telefonos' }" class="btn btn-primary btn-round">
+                <a routerLink="/ofertas/" [queryParams]="{ category: 'telefonos' }" class="btn btn-primary btn-round ofer-rel-btn">
                   Ver ofertas de Telefonía</a>
               </div>
             </div>
@@ -275,7 +418,7 @@
             <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
               <figure class="mb-md-2 media-2">
                 <a routerLink="product/default/27022">
-                  <app-image src="assets/images/home/products/4.jpg" alt="Banner" width="472" height="530"
+                  <app-image class="relampago-img-container" src="assets/images/home/products/4.jpg" alt="Banner" width="472" height="530"
                     fixedPt="90.17%"></app-image>
                 </a>
               </figure>
@@ -284,7 +427,7 @@
                   <h6><strong>Audio</strong></h6>
                 </span> -->
                 <a routerLink="/ofertas/" [queryParams]="{ category: 'auriculares-y-diademas' }"
-                  class="btn btn-primary btn-round">
+                  class="btn btn-primary btn-round ofer-rel-btn">
                   Ver ofertas de Audio</a>
               </div>
             </div>
@@ -295,236 +438,88 @@
   </section>
   <!-- End Seccion 4 Beneficios -->
 
-  <!-- Seccion 5 Ofertas Relampagos -->
-  <section class="sound-section hub-home">
-    <!-- <section class="sound-section" style="background-image: url(assets/images/home/banners/02.jpg)"> -->
-    <div class="icon-boxes-container mb-2">
-      <div class="container">
-        <!-- <div class="row">
-          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-            <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-secondary">
-                <i class="icon-truck"></i>
-              </span>
-              <div classs="icon-box-content">
-                <a [routerLink]="['/terms']" fragment="envios">
-                  <h3 class="icon-box-title">Envíos Gratis en compras mayores de $1,000.00</h3>
-                </a>
-                <p>*Aplican restricciones</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-            <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-secondary">
-                <i class="icon-rotate-left"></i>
-              </span>
-              <div classs="icon-box-content">
-                <a [routerLink]="['/terms']" fragment="devolucion">
-                  <h3 class="icon-box-title">Devolución gratuita</h3>
-                </a>
-                <p>en 30 días</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-            <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-secondary">
-                <i class="icon-info-circle"></i>
-              </span>
-              <div classs="icon-box-content">
-                <h3 class="icon-box-title">Obtén un 20%</h3>
-                <p>en 1 artículo en tu primera compra</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-            <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-secondary">
-                <i class="icon-cc-visa"></i>
-                <i class="icon-cc-mastercard"></i>
-              </span>
-              <div classs="icon-box-content">
-                <a [routerLink]="['/terms']" fragment="pagos">
-                  <h3 class="icon-box-title">Pago</h3>
-                </a>
-                <p>Aceptamos todas las tarjetas bancarias</p>
-              </div>
-            </div>
-          </div>
-        </div> -->
-        <div class="row">
-          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-            &nbsp;
-          </div>
-          <div class="col-sm-6 col-lg-6" contentAnim aniName="fadeInUpShorter">
-            <div class="icon-box icon-box-side">
-              <span class="icon-box-icon text-secondary">
-                <i class="icon-cc-visa"></i>
-                &nbsp;
-                <i class="icon-cc-mastercard"></i>
-                &nbsp;
-              </span>
-              <div classs="icon-box-content">
-                <a [routerLink]="['/terms']" fragment="pagos">
-                  <h3 class="icon-box-title">Pago</h3>
-                </a>
-                <p>Aceptamos todas las tarjetas bancarias</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-lg-3" contentAnim aniName="fadeInUpShorter">
-            &nbsp;
-          </div>
+  <!-- Seccion 5 Productos Favoritos -->
+  <section id="productos-destacados">
+    <div class="row">
+      <div class="col-sm-12 col-lg-4">
+        <div class="destacado" contentAnim aniName="blurIn">
+          <a href="#"><img src="assets/images/home/banners/airpods.jpg" class="shadow-destacado mx-auto d-block"></a>
+          <a contentAnim aniName="blurIn" href="#"><button type="button" class="btn btn-light btn-producto mx-auto d-block">Ver Producto</button></a>
+        </div>
+      </div>
+      <div class="col-sm-12 col-lg-4" contentAnim aniName="blurIn">
+        <div class="destacado">
+          <a href="#"><img src="assets/images/home/banners/airpods.jpg" class="shadow-destacado mx-auto d-block"></a>
+          <a contentAnim aniName="blurIn" href="#"><button type="button" class="btn btn-light btn-producto mx-auto d-block">Ver Producto</button></a>
+        </div>
+      </div>
+      <div class="col-sm-12 col-lg-4">
+        <div class="destacado" contentAnim aniName="blurIn">
+          <a href="#"><img src="assets/images/home/banners/airpods.jpg" class="shadow-destacado mx-auto d-block"></a>
+          <a contentAnim aniName="blurIn" href="#"><button type="button" class="btn btn-light btn-producto mx-auto d-block">Ver Producto</button></a>
         </div>
       </div>
     </div>
   </section>
-  <!-- End Seccion 5 Ofertas Relampagos -->
+  <!-- End Seccion 5 Productos Favoritos -->
 
-  <!--  Seccion 7 Marcas destacadas -->
-  <section class="gallery pt-2" style="background-image: url(assets/images/home/bg-2-back.jpg)">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="content-left">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <h4 class="subtitle">Oferta 1</h4>
-              <h2 class="title mb-2">Producto 1</h2>
-              <p class="content mb-6">Descripcion 1</p>
-            </div>
-            <figure class="mb-md-12 media-2">
-              <app-image src="assets/images/home/products/1.jpg" alt="Banner" width="590" height="532" fixedPt="112.3%"
-                class="image-daru" style="padding-top: 112.3%"></app-image>
-            </figure>
-          </div>
+  <!-- Seccion 6 Cintillo -->
+  <section id="footer-info">
+    <div class="row">
+      <div class="col-sm-6 col-lg-3 footer-info-item">
+        <div class="footer-info-icon">
+          <i class="fa-solid fa-truck fa-2lg"></i>
         </div>
-        <div class="col-md-4">
-          <div class="content-center">
-            <div class="content-right">
-              <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-                <h4 class="subtitle">Oferta 2</h4>
-                <h2 class="title mb-2">Producto 2</h2>
-                <p class="content mb-6">Descripcion 2</p>
-              </div>
-              <figure class="mb-md-12 media-2">
-                <app-image src="assets/images/home/products/2.jpg" alt="Banner" width="590" height="532"
-                  fixedPt="112.3%" class="image-daru" style="padding-top: 112.3%"></app-image>
-              </figure>
-            </div>
-          </div>
+        <div class="footer-info-right">
+          <p class="footer-info-titulo" id="fit-envio">
+            Envío Gratis * Aplican Restricciones
+            <span class="footer-info-subtitulo">
+              en compras mayores de $1,000 MXN
+            </span>
+          </p>
         </div>
-        <div class="col-md-4 p-md-0">
-          <div class="content-right">
-            <div class="heading mt-3" contentAnim aniName="fadeInRightShorter">
-              <h4 class="subtitle">Oferta 3</h4>
-              <h2 class="title mb-2">Producto 3</h2>
-              <p class="content mb-6">Descripcion 3</p>
-            </div>
-            <figure class="media-3 mb-6">
-              <app-image src="assets/images/home/products/4.jpg" alt="Banner" width="590" height="532" fixedPt="112.3%"
-                class="image-daru" style="padding-top: 112.3%"></app-image>
-            </figure>
-          </div>
+      </div>
+      <div class="col-sm-6 col-lg-3 footer-info-item">
+        <div class="footer-info-icon">
+          <i class="fa-solid fa-arrow-rotate-left fa-2lg"></i>
+        </div>
+        <div class="footer-info-right">
+          <p class="footer-info-titulo">
+            Devolución Gratuita
+            <span class="footer-info-subtitulo fit-mg">
+            en 30 días
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3 footer-info-item">
+        <div class="footer-info-icon">
+          <i class="fa-solid fa-circle-info fa-2lg"></i>
+        </div>
+        <div class="footer-info-right">
+          <p class="footer-info-titulo">
+            Obtén un 20%
+            <span class="footer-info-subtitulo fit-mg">
+            en 1 artículo en tu primera compra
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3 footer-info-item">
+        <div class="footer-info-icon">
+          <i class="fa-regular fa-credit-card fa-2lg"></i>
+        </div>
+        <div class="footer-info-right">
+          <p class="footer-info-titulo">
+            Pago
+            <span class="footer-info-subtitulo fit-mg">
+            Aceptamos todas las tarjetas bancarias
+            </span>
+          </p>
         </div>
       </div>
     </div>
   </section>
-  <!-- End Seccion 7 Marcas -->
+  <!-- End Seccion 6 Cintillo-->
 
-  <!-- Seccion 6 Oferta espacial-->
-  <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
-    <!-- <section class="choose-color mb-5 video-banner bg-parallax" bgParallax> -->
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-          <video autoplay muted loop style="width: 100%; height: auto;">
-            <source src="assets/images/home/banners/DARU_04.mp4" type="video/mp4">
-            Tu navegador no soporta el elemento de video.
-          </video>
-        </div>
-        <div class="col-md-4"></div>
-      </div>
-    </div>
-  </section>
-  <!-- End Seccion 6 Oferta especial-->
-
-  <!-- Seccion 9
-  <section class="choose-color mb-5" style="background-image: url(assets/images/home/banners/02.jpg)">
-    <div class="container">
-      <div class="heading mb-6 text-center">
-        <h4 class="subtitle">Material &amp; Design</h4>
-        <h2 class="title mb-2" contentAnim aniName="blurIn">Find Your Color</h2>
-        <p class="content">
-          Featuring Active Noise Cancelling that gives you the space to create with <br>
-          fully immersive sound.
-        </p>
-      </div>
-      <div class="color-content" *ngIf="loaded">
-        <owl-carousel carouselClasses="owl-simple owl-nav-outside" [options]="brandSlider" #singleSlider>
-          <app-image class="d-block position-relative" *ngFor="let item of products[0].pictures;"
-            [src]="SERVER_URL + item.url" [width]="item.width" [height]="item.height">
-          </app-image>
-        </owl-carousel>
-        <div class="custom-dots" #customDots>
-          <button class="custom-dot active" (click)="changeImage( $event, 0 )">
-            <span style="background-color: rgb(51, 51, 51);"></span>
-          </button>
-          <button class="custom-dot" (click)="changeImage( $event, 1 )">
-            <span style="background-color: rgb(235, 235, 235);"></span>
-          </button>
-          <button class="custom-dot" (click)="changeImage( $event, 2 )">
-            <span style="background-color: rgb(203, 80, 80);"></span>
-          </button>
-        </div>
-      </div>
-      <div class="desc text-center mt-2">
-        <p>
-          Lorem ipsum dolor sit amet, consectetue elit.
-          Donec odio. Quisque volutpat mattis eros.
-        </p>
-      </div>
-      <div class="action text-center mt-2">
-        <span class="price text-primary">
-          <sup>$</sup><strong>{{ loaded ? products[0].variants[index].price.toFixed(0) : '252' }}</strong><sup>.99</sup>
-        </span>
-
-        <a href="javascript:;" class="btn btn-cart btn-primary btn-round btn-cart-home" (click)="addCart($event)">Add to
-          Cart</a>
-      </div>
-    </div>
-  </section> -->
-
-  <div class="cta bg-image bg-dark pt-4 pb-5 mb-0"
-    style="background-image: url('assets/images/banners/banner-newsletter.jpg')">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-sm-10 col-md-8 col-lg-6">
-          <div class="cta-heading text-center">
-            <h3 class="cta-title text-primary">Ent&eacute;rate de nuestras ofertas</h3>
-            <p class="cta-title text-primary">
-              Primero que Todos
-              <!-- and receive <span class="font-weight-normal">$20 coupon</span> for
-              first shopping -->
-            </p>
-          </div>
-
-          <form (ngSubmit)="onSubmit()" [formGroup]="formData">
-            <div class="input-group input-group-round">
-              <input type="email" name="email" class="form-control" formControlName="email"
-                class="form-control form-control-white border-0"
-                placeholder="Reg&iacute;strate con tu correo electr&oacute;nico - Subscribirme"
-                aria-label="Correo Electrónico" autocomplete="off" required />
-              <div class="input-group-append">
-                <button class="btn btn-primary" type="submit" [disabled]="!formData.valid">
-                  <span>Subscribe</span><i class="icon-long-arrow-right"></i>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
 </main>

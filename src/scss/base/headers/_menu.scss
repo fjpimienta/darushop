@@ -74,8 +74,8 @@
     }
 
     &.submenu {
-      margin-left: 19rem;
-      margin-top: -3rem;
+      margin-left: 23.42rem;
+      margin-top: -3.6rem;
     }
 
     >ul,
@@ -150,7 +150,7 @@
     >a {
       color: #333;
       font-weight: 500;
-      font-size: 1.6rem;
+      font-size: 2.1rem;
       letter-spacing: -.01em;
       padding: 3.95rem 3rem;
       text-transform: uppercase;
@@ -204,7 +204,7 @@
   }
 
   ul {
-    min-width: 218px;
+    min-width: 250px;
     padding: 1.6rem 0 2rem;
   }
 
@@ -474,14 +474,57 @@
 .menu.sf-arrows ul .sf-with-ul {
   padding-right: 3rem;
   padding-left: 2rem;
+  text-transform: uppercase;
+  font-size: 1.7rem;
 }
 
 .menu .megamenu li a {
   padding-right: 0;
   padding-left: 2rem;
+  text-transform: uppercase;
+  font-size: 1.75rem;
 }
 
 .menu .megamenu, .menu ul {
   background-color: #333;
   box-shadow: 5px 10px 16px #3333330d, -5px 10px 16px #3333330d;
+}
+
+.menu .megamenu.megamenu-sm::-webkit-scrollbar {
+  display: none;
+}
+
+.menu .megamenu.megamenu-sm {
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.first-level-links:active {
+  color: #FFF !important;
+}
+
+.dropdown-first-level-links:active, .dropdown-second-level-links:active, .dropdown-first-level-links:hover, .dropdown-second-level-links:hover {
+  color: #212121 !important;
+}
+
+@media only screen and (max-width: 1200px) {
+  
+}
+
+@media only screen and (min-width: 1400px) {
+  .menu > li > a {
+    font-size: 1.8rem;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  /* .menu > li > a {
+    font-size: 2.2rem;
+  } */
+}
+
+@media only screen and (min-width: 2200px) {
+  /* .menu > li > a {
+    font-size: 2.4rem;
+  } */
 }

@@ -1,6 +1,6 @@
 <div class="page-wrapper">
   <div class="notification" *ngIf="showTopNotice">
-    <div class="notify-content">
+    <div class="notify-content mx-auto d-block">
       <h3>{{mensaje}}</h3>
     </div>
     <div class="notify-action">
@@ -14,5 +14,5 @@
     <router-outlet #outlet="outlet"></router-outlet>
   </div>
 
-  <app-footer [containerClass]="containerClass" [isBottomSticky]="isBottomSticky"></app-footer>
+  <app-footer [containerClass]="containerClass" [isBottomSticky]="isBottomSticky" class="d-flex flex-column max-vh-10"></app-footer>
 </div>

@@ -11,6 +11,28 @@ body {
   font-family: 'futuramedium', Arial, Verdana, sans-serif;
 }
 
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #00ff76 #303030;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 18px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #303030;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #00ff76;
+    border-radius: 16px;
+    border: 5px solid #303030;
+  }
+
 /* Header 30 */
 @keyframes modalFadeOut1 {
   0% {
@@ -31,7 +53,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 1420px;
+  max-width: 1520px;
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -52,13 +74,18 @@ p {
 
 // general
 .header-top {
-  background-color: #f8f8f8;
+  background-color: #212121;
+  padding: 6px 0;
 }
 
 .header-top a {
-  color: $primary-color;
+  color: #00ff76;
   font-weight: lighter;
   text-transform: uppercase;
+}
+
+.header-top a:hover {
+  color: #FFF;
 }
 
 //Menu
@@ -72,8 +99,8 @@ p {
   li.show,
   li.active {
     >a {
-      color: #fff;
-      text-shadow: 2px 1px 4px rgba(0, 0, 0, 0.56);
+      color: #FFF;
+      /* text-shadow: 2px 1px 4px rgba(255, 255, 255, 0.56); */
       zoom: 1;
     }
   }
@@ -83,18 +110,18 @@ p {
 .menu ul {
 
   li:hover {
-    background-color: $primary-color;
+    background-color: #00ff76;
   }
 }
 
 //menu mobile
 .mobile-menu-container {
-  background-color: $primary-color;
-  color: #fff;
+  background-color: #F8F8FF;
+  color: #212121;
 }
 
 .mobile-menu-light .mobile-menu li a:not(:hover):not(:focus) {
-  color: #fff;
+  color: #4b02fc;
 }
 
 .mobile-menu-light .mobile-menu li a {
@@ -102,12 +129,17 @@ p {
 }
 
 .mobile-menu-container .social-icon {
-  background-color: $secondary-color;
-  color: $primary-color;
+  background-color: #4b02fc;
+  color: #FFF;
+}
+
+.mobile-menu-container .social-icon:hover {
+  background-color: #00FF76;
+  color: #212121;
 }
 
 .mobile-menu-light .mmenu-btn:not(:hover):not(:focus) {
-  color: #fff;
+  color: #4b02fc;
 }
 
 .mmenu-btn:hover,
@@ -121,7 +153,7 @@ p {
 
 .mobile-menu-light .mobile-menu li ul {
   background-color: #fff;
-  ;
+  text-transform: uppercase;
 }
 
 .mobile-menu-light .mobile-menu li a {
@@ -129,29 +161,45 @@ p {
 }
 
 .mobile-menu-light .mobile-menu li a:hover {
-  color: #fff;
-  zoom: 1;
-  text-shadow: 4px 2px 10px rgba(0, 0, 0, 0.64);
-  background-color: $primary-color;
+  color: #FFF;
+  text-shadow: none;
+  background-color: #4b02fc;
+  font-weight: bold;
+}
+
+.mmenu-btn:hover {
+  color: #212121;
 }
 
 .mobile-menu-light .mobile-menu-close:not(:hover):not(:focus) {
-  color: #fff;
+  color: #4b02fc;
+  font-size: 2.5rem;
+}
+
+#super-container > app-root > app-mobile-menu > div > div > nav > ul > li.open > ul > li.open > a > span:hover, #super-container > app-root > app-mobile-menu > div > div > nav > ul > li.open > ul > li.open > a > span:focus {
+  color: #FFF;
 }
 
 .header-middle {
-  background: #1C2833 !important;
+  /* background: #1C2833 !important; */
+  background: #303030 !important;
+  margin-top: -1px;
 }
 
 .header-middle .menu>li:not(:hover):not(.active):not(.show)>a {
-  color: #FFF;
+  color: #00ff76;
 }
 
 .header-search .form-control,
 .header-search select,
 .header-search-wrapper .form-control {
+  border: 1px solid #4B02FC;
+  color: #FFF !important;
+  background-color: #4b02fca1;
+}
+
+.header-search-wrapper .form-control::placeholder {
   color: #FFF;
-  background-color: #1C2833;
 }
 
 .cart-dropdown .cart-count {
@@ -274,9 +322,11 @@ p {
   .banner-action {
     display: flex;
     flex-flow: wrap;
+    margin-top: 15px;
+    margin-left: -77%;
 
     .btn {
-      font-size: 1.5rem;
+      font-size: 3rem;
       font-weight: 600;
       letter-spacing: -.025em;
       text-decoration: none;
@@ -918,7 +968,6 @@ p {
 
 .toolbox .select-custom {
   background-color: #fff;
-  ;
 }
 
 .custom-checkbox .custom-control-input:checked~.custom-control-label:before {
@@ -1193,9 +1242,19 @@ p {
   border-color: $primary-color;
 }
 
+.btn-green {
+  background-color: #00ff76;
+  color: #212121;
+}
+
+.btn-green:hover {
+  background-color: #212121;
+  color: #00ff76;
+}
+
 // boton scroll
 #scroll-top {
-  background-color: $secondary-color;
+  background-color: #00ff76;
   color: $primary-color;
 }
 
@@ -1367,4 +1426,48 @@ p {
 
 .swal2-content {
   font-size: 1.5em !important;;
+}
+
+// Media Queries
+
+@media only screen and (max-width: 1200px) {
+  /* .header-middle {
+    padding-left: 0px;
+    padding-right: 0px;
+  } */
+}
+
+@media only screen and (max-width: 1400px) {
+  /* .header-middle {
+    padding-left: 30px;
+    padding-right: 30px;
+  } */
+}
+
+@media only screen and (min-width: 1920px) {
+  /* .notification .notify-content h3 {
+    font-size: 1.9rem;
+  } */
+
+  .header-search .form-control,
+  .header-search select,
+  .header-search-wrapper .form-control {
+    border: 1px solid #f2f2f2;
+    color: #212121 !important;
+    background-color: #00FF76;
+  }
+
+  .header-search-wrapper .form-control::placeholder {
+    color: #212121;
+  }
+}
+
+@media only screen and (min-width: 2200px) {
+  .breadcrumb-nav {
+    margin-top: 125px;
+  }
+
+  .page-content {
+    margin-top: -5rem;
+  } 
 }

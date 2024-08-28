@@ -3,11 +3,46 @@
   margin-bottom: 0;
   margin-top: 0.5rem;
   font-size: 1.6rem;
-  padding-left: 2.6rem;
-  margin-left: -12.6rem;
+  padding-left: 4.6rem;
   color: #3c02c9;
 }
 
 .close {
   background-color: black;
+}
+
+.form-item-required {
+  color: #FF0000;
+}
+
+#register-legend {
+  font-size: 1.2rem !important;
+}
+
+#register-legend::before {
+  margin-left: -85px;
+}
+
+#register-agreed {
+  margin-left: -15px;
+}
+
+#login-btn-green {
+  margin-top: -6px;
+  background-color: #4b02fc;
+  color: #FFF;
+}
+
+@media only screen and (min-width: 2200px) {
+  .custom-control-label {
+    margin-left: -5.6rem;
+  }
+
+  #register-legend {
+    margin-left: -12rem !important;
+  }
+
+  #register-legend::before {
+    margin-left: 6rem;
+  }
 }

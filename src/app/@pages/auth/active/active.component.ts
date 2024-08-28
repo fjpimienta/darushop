@@ -49,7 +49,7 @@ export class ActiveComponent implements OnInit {
     this.submitted = true;
 
     if (this.active.password !== this.active.passwordTwo) {
-      basicAlert(TYPE_ALERT.WARNING, 'Las contrasenas no coinciden. Asegurate que las contrasenas sean iguales.');
+      basicAlert(TYPE_ALERT.WARNING, 'Las contrasenas no coinciden. Asegúrate que las contrase&ntilde;as sean iguales.');
       return;
     }
     // Todo validado, enviar a la api de graphql

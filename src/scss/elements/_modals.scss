@@ -86,7 +86,8 @@
   width: 100% !important;
   height: 90% !important;
   overflow: hidden;
-  outline: 0
+  outline: 0;
+  overflow-y: hidden !important;
 }
 
 .vb-modal .modal-content {
@@ -169,7 +170,8 @@
 
 @include mq('620px', 'max') {
   .login-modal .modal-dialog {
-    width: calc(100% - 2rem);
+    background-color: transparent;
+    width: calc(100% - 3rem);
     margin: 0 auto;
   }
 }

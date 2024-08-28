@@ -20,7 +20,7 @@ import { ConfigsService } from '@core/services/config.service';
 export class LayoutComponent implements OnInit, OnDestroy {
 
   containerClass = 'container';
-  isBottomSticky = false;
+  isBottomSticky = true;
   current = '/';
   showTopNotice = !Cookie.get('closeTopNotice-' + environment.demo);
   mensaje = 'Mensaje de Promocion';
