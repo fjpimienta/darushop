@@ -35,6 +35,7 @@ export class ProductsComponent implements OnInit {
   categories = [];
   subCategories = [];
   offer: boolean;
+  withImages: boolean;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -92,6 +93,7 @@ export class ProductsComponent implements OnInit {
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
       this.offer = false;
+      this.withImages = true;
 
       this.searchTerm = params.searchTerm || '';
       this.orderBy = params.orderBy || '';
@@ -140,7 +142,8 @@ export class ProductsComponent implements OnInit {
         this.offer,
         this.brands,
         this.categories,
-        this.subCategories
+        this.subCategories,
+        this.withImages
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;
@@ -290,7 +293,7 @@ export class ProductsComponent implements OnInit {
       setTimeout(() => {
         this.perPage += 4;
         this.productService.getProducts(
-          this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories
+          this.page, this.perPage, this.searchTerm.toLowerCase(), this.offer, this.brands, this.categories, [], this.withImages
         ).subscribe(result => {
           if (result && result.products && result.products.length > 0) {
             this.products = result.products;

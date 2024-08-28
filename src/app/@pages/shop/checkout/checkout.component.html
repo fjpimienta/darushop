@@ -19,7 +19,7 @@
   <div class="page-content">
     <div class="checkout">
       <div class="container">
-        <div class="checkout-discount">
+        <div *ngIf="!isPagado" class="checkout-discount">
           <form action="#" id="checkout-discount-form">
             <input type="text" class="form-control" (input)="convertToUppercaseCupon($event)" [(ngModel)]="cuponInput"
               id="checkout-discount-input" maxlength="15" (click)="addOpacity($event)" (blur)="validateDiscount($event)"
@@ -586,17 +586,17 @@
                 <div class="row">&nbsp;</div>
                 <div class="row">
                   <div class="col-2"></div>
-                  <div class="col-8 text-center">
+                  <div *ngIf="!confirmed" class="col-8 text-center">
                     <!-- [disabled]="!formData.valid" -->
-                    <button *ngIf="!idDelivery || !emailValid" type="submit" class="btn btn-primary btn-round btn-shadow"
+                    <button *ngIf="(!idDelivery || !emailValid) && !isPagado" type="submit" class="btn btn-primary btn-round btn-shadow"
                       (click)="onSubmit()">
                       <span class="btn-text btn-primary">Realizar Pedido</span>
-                      <span class="btn-hover-text">Realizando Pedido</span>
+                      <span class="btn-hover-text">Realizar Pedido</span>
                     </button>
                     <button *ngIf="idDelivery && isPagado" type="button" class="btn btn-primary btn-round btn-shadow"
                       (click)="onSubmitCapture()">
                       <span class="btn-text btn-primary">Confirmar Pedido</span>
-                      <span class="btn-hover-text">Confirmando Pedido</span>
+                      <span class="btn-hover-text">Confirmar Pedido</span>
                     </button>
                   </div>
                   <div class="col-2"></div>

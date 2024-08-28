@@ -26,6 +26,8 @@ export class SidebarPageComponent implements OnInit {
   brands = [];
   categories = [];
   subCategories = [];
+  offer: boolean;
+  withImages: boolean;
   pageTitle: string = '';
   previousPageUrl: string = '';
   previousPageTitle: string = '';
@@ -75,6 +77,8 @@ export class SidebarPageComponent implements OnInit {
 
     this.activeRoute.queryParams.subscribe(params => {
       this.loaded = false;
+      this.offer = true;
+      this.withImages = true;
 
       this.pageTitle = params.description;
 
@@ -114,10 +118,11 @@ export class SidebarPageComponent implements OnInit {
         this.page,
         this.perPage,
         this.searchTerm.toLowerCase(),
-        null,
+        this.offer,
         this.brands,
         this.categories,
-        this.subCategories
+        this.subCategories,
+        this.withImages
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;

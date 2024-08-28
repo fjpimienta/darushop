@@ -4,20 +4,21 @@ import { ILoginCTForm, ILoginSyscomForm } from '@core/interfaces/extern-login.in
 import { IApis, ISupplier } from '@core/interfaces/supplier.interface';
 import { Warehouse } from '@core/models/warehouse.models';
 import { Shipment, ShipmentSyscom } from '@core/models/shipment.models';
-import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA } from '@core/models/productShipment.models';
+import { ISupplierProd, ProductShipment, ProductShipmentCT, ProductShipmentCVA, ProductShipmentIngram } from '@core/models/productShipment.models';
 import { ErroresCT, OrderCtResponse } from '@core/models/suppliers/orderctresponse.models';
 import { CONFIRM_ORDER_CT, EXISTENCIAPRODUCTOSCT_LIST_QUERY, SHIPMENTS_CT_RATES_QUERY, STATUS_ORDER_CT } from '@graphql/operations/query/suppliers/ct';
 import { EXISTENCIAPRODUCTOSCVA_LIST_QUERY, SHIPMENTS_CVA_RATES_QUERY } from '@graphql/operations/query/suppliers/cva';
 import { ApiService } from '@graphql/services/api.service';
 import { Apollo } from 'apollo-angular';
 import { Result } from '@core/models/result.models';
-import { EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY } from '@graphql/operations/query/suppliers/ingram';
+import { EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY, ORDERINGRAM_DATA_QUERY, SHIPMENTS_INGRAM_RATES_QUERY } from '@graphql/operations/query/suppliers/ingram';
 import { EXISTENCIAPRODUCTOSSYSCOM_LIST_QUERY } from '@graphql/operations/query/suppliers/syscom';
 import { IDireccionSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
 import { ADD_ORDER_SYSCOM } from '@graphql/operations/mutation/suppliers/syscom';
 import { FormGroup } from '@angular/forms';
 import { OrderSyscom, ProductoSyscom } from '@core/models/suppliers/ordersyscom.models';
 import { EXISTENCIAPRODUCTOSDAISYTEK_LIST_QUERY } from '@graphql/operations/query/suppliers/daisytek';
+import { IShippingBDIInput, OrderIngram } from '@core/models/suppliers/orderingram.models';
 
 declare const require;
 const axios = require('axios');
@@ -482,6 +483,45 @@ export class ExternalAuthService extends ApiService {
           resultSyscom.status = orderSyscom.status;
           resultSyscom.message = orderSyscom.message;
           return await resultSyscom;
+        case 'ingram':
+          const productosIngram: ProductShipmentIngram[] = [];
+          for (const id of Object.keys(warehouse.productShipments)) {
+            const pS: ProductShipment = warehouse.productShipments[id];
+            const newPS: ProductShipmentIngram = new ProductShipmentIngram();
+            newPS.sku = pS.producto;
+            newPS.qty = pS.cantidad;
+            newPS.branch = pS.almacen;
+            newPS.carrier = 'E1';
+            productosIngram.push(newPS);
+          }
+          const shippingBdiInput: IShippingBDIInput = {
+            street: colonia,
+            colony: colonia,
+            phoneNumber: formData && formData.controls.phone ? formData.controls.phone.value : '',
+            city: ciudad,
+            state: estado,
+            cp: warehouse.cp.padStart(5, '0'),
+            products: productosIngram
+          }
+          const shippmentsIngram = await this.getShippingIngramRates(shippingBdiInput);
+          const resultIngram: Result = new Result();
+          //if (!shippmentsIngram.status) {
+          if (shippmentsIngram && shippmentsIngram.status && shippmentsIngram.shippingIngramRates) {
+            const shipmentIngram = new Shipment();
+            shipmentIngram.empresa = 'ESTAFETA';
+            shipmentIngram.costo = shippmentsIngram.shippingIngramRates.totalFreightAmount;
+            shipmentIngram.metodoShipping = '';
+            shipmentIngram.lugarEnvio = (warehouse.estado).toLocaleUpperCase();
+            resultIngram.status = shippmentsIngram.status;
+            resultIngram.message = shippmentsIngram.message;
+            resultIngram.data = shipmentIngram;
+            return await resultIngram;
+          }
+          shipments.push(shippmentsIngram.shippingIngramRates);
+          resultIngram.status = shippmentsIngram.status
+          resultIngram.message = shippmentsIngram.message
+          console.log('resultIngram.Error: ', resultIngram);
+          return await resultIngram;
         case '99minutos':
           break;
         default:
@@ -720,13 +760,44 @@ export class ExternalAuthService extends ApiService {
     return new Promise<any>((resolve, reject) => {
       this.get(EXISTENCIAPRODUCTOSINGRAM_LIST_QUERY, existenciaProducto, {}).subscribe(
         (result: any) => {
-          resolve(result.existenciaProductoIngram);
+          resolve(result.existenciaProductoBDI);
         },
         (error: any) => {
           reject(error);
         });
     });
   }
+
+  async getShippingIngramRates(shippingBdiInput: IShippingBDIInput): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(SHIPMENTS_INGRAM_RATES_QUERY, {
+        "shippingBdiInput": shippingBdiInput
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.shippingIngramRates);
+        },
+        (error: any) => {
+          console.log('async.getShippingCvaRates.error: ', error);
+          reject(error);
+        });
+    });
+  }
+
+  async setorderIngramBDI(orderIngramBdi: OrderIngram): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(ORDERINGRAM_DATA_QUERY, {
+        "orderIngramBdi": orderIngramBdi
+      }, {}).subscribe(
+        (result: any) => {
+          resolve(result.orderIngramBDI);
+        },
+        (error: any) => {
+          console.log('async.setorderIngramBDI.error: ', error);
+          reject(error);
+        });
+    });
+  }
+
   //#endregion
 
   //#region Syscom

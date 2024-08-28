@@ -1,4 +1,3 @@
-import { IOrderSyscom } from '@core/interfaces/suppliers/orderSyscom.interface';
 import { Cupon } from './cupon.models';
 import { InvoiceConfigInput } from './invoiceConfig.models';
 import { ChargeOpenpayInput } from './openpay/_openpay.models';
@@ -7,6 +6,7 @@ import { OrderCva } from './suppliers/ordercva.models';
 import { OrderSyscom } from './suppliers/ordersyscom.models';
 import { UserInput } from './user.models';
 import { Warehouse } from './warehouse.models';
+import { OrderIngram } from './suppliers/orderingram.models';
 
 /**
  * Clase de Envios
@@ -25,6 +25,7 @@ export class Delivery {
   ordersCt?: OrderCt[];
   ordersCva?: OrderCva[];
   ordersSyscom?: OrderSyscom[];
+  ordersIngram?: OrderIngram[];
   invoiceConfig?: InvoiceConfigInput;
   statusError?: boolean;
   messageError?: string;

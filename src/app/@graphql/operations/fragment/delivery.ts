@@ -539,6 +539,31 @@ export const DELIVERY_FRAGMENT = gql`
         }
       }
     }
+    ordersIngram {
+      orderNumberClient
+      company
+      note
+      nameClient
+      street
+      colony
+      phoneNumber
+      city
+      state
+      cp
+      email
+      branch
+      products {
+        sku
+        qty
+      }
+      carrier
+      orderResponseIngram {
+        statuscode
+        orderNumberClient
+        ingramNumberOrder
+        message
+      }
+    }
     invoiceConfig {
       factura
       nombres
