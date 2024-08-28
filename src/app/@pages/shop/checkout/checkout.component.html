@@ -19,7 +19,7 @@
   <div class="page-content">
     <div class="checkout">
       <div class="container">
-        <div class="checkout-discount">
+        <div *ngIf="!isPagado" class="checkout-discount">
           <form action="#" id="checkout-discount-form">
             <input type="text" class="form-control" (input)="convertToUppercaseCupon($event)" [(ngModel)]="cuponInput"
               id="checkout-discount-input" maxlength="15" (click)="addOpacity($event)" (blur)="validateDiscount($event)"

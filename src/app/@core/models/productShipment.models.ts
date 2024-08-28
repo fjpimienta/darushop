@@ -1,6 +1,15 @@
 /**
  * Clase de Productos Enviados.
  */
+
+export class ProductShipmentIngram {
+  sku: string;
+  qty: number;
+  branch: string;
+  carrier: string;
+}
+
+
 export class ProductShipmentCVA {
   clave: string;
   cantidad: number;
