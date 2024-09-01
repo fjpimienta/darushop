@@ -15,8 +15,10 @@ export class InfoOneComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    const text = this.product.generalInfo.SummaryDescription.LongSummaryDescription;
-    this.fragments = text.split('. ');
+    if (this.product.generalInfo && this.product.generalInfo.SummaryDescription && this.product.generalInfo.SummaryDescription.LongSummaryDescription) {
+      const text = this.product.generalInfo.SummaryDescription.LongSummaryDescription;
+      this.fragments = text.split('. ');
+    }
   }
 
   setRating = (event: any) => {

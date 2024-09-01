@@ -6,7 +6,9 @@
       </a>
       <ng-template ngbNavContent>
         <div class="product-desc-content">
-          <div class="row">
+          <div
+            *ngIf="product.generalInfo && product.generalInfo.SummaryDescription && product.generalInfo.SummaryDescription.ShortSummaryDescription"
+            class="row">
             <h5>{{product.generalInfo.SummaryDescription.ShortSummaryDescription}}</h5>
           </div>
           <div class="row">
