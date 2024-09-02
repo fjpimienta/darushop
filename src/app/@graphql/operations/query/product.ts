@@ -12,7 +12,7 @@ export const PRODUCTS_LIST_QUERY = gql`
     $brands: [String] = null,
     $categories: [String] = null,
     $subCategories: [String] = null,
-    $withImages: Boolean = false
+    $withImages: Boolean = true
   ) {
     products(
       page: $page,
