@@ -32,7 +32,7 @@ export class CategoryComponent implements OnInit {
   categories = [];
   subCategories = [];
   offer: boolean = false;
-  withImages: boolean = false;
+  withImages: boolean = true;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(

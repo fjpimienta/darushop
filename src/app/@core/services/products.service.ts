@@ -21,7 +21,7 @@ export class ProductsService extends ApiService {
     brands: string[] = null,
     categories: string[] = null,
     subCategories: string[] = null,
-    withImages: boolean = false
+    withImages: boolean = true
   ) {
     if (filterName.toLowerCase().endsWith('s')) {
       filterName = filterName.slice(0, -1);
