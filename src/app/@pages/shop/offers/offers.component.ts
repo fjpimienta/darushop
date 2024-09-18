@@ -151,7 +151,6 @@ export class OffersComponent implements OnInit {
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;
-          console.log('this.products: ', this.products);
           const category = [[]];
           const subCategory = [[]];
           let brands: string[] = [];

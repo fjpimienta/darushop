@@ -181,7 +181,6 @@ export class NewsletterModalComponent implements OnInit {
   validarFecha(event: any) {
     const inputValue = event.target.value;
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(inputValue)) {
-      console.log('Formato de fecha no válido');
       infoEventAlert('Formato de fecha no válido.', '');
     }
   }
