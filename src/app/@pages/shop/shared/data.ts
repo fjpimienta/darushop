@@ -132,28 +132,33 @@ export const shopData = {
   prices: [
     {
       min: '0',
-      max: '100',
-      name: 'Debajo de $100'
-    },
-    {
-      min: '101',
       max: '200',
-      name: '$1010 to $200'
+      name: 'Debajo de $200'
     },
     {
       min: '201',
-      max: '200',
-      name: '$201 to $300'
+      max: '500',
+      name: '$201 a $500'
     },
     {
-      min: '301',
-      max: '400',
-      name: '$301 to $400'
+      min: '501',
+      max: '1,000',
+      name: '$501 a $1,000'
     },
     {
-      min: '401',
-      max: '99999',
-      name: 'Arriba de $401'
+      min: '1001',
+      max: '2000',
+      name: '$1,001 to $2,000'
+    },
+    {
+      min: '2001',
+      max: '5000',
+      name: '$2,001 to $5,000'
+    },
+    {
+      min: '5001',
+      max: '9999999',
+      name: 'Arriba de $5,001'
     },
   ]
 };
