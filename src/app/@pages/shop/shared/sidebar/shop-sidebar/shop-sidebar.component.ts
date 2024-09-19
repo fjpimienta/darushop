@@ -14,14 +14,14 @@ export class ShopSidebarComponent implements OnInit, OnChanges {
 
   @Input() toggle = false;
   @Input() products = [];
+  @Input() productsTmp = [];
 
-  productsTmp = [];
   shopData = shopData;
   params = {};
   @Input() offer: boolean;
   brands: any[] = [];
   categories: Catalog[] = [];
-  brandsTmp: Catalog[] = [];
+  brandsTmp: any[] = [];
   categoriesTmp: Catalog[] = [];
   searchQuery: string = '';
   searchQueryCat: string = '';
@@ -90,18 +90,17 @@ export class ShopSidebarComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.productsTmp = this.products;
     this.brands = [];
+    this.brandsTmp = [];
     this.brands = this.extractUniqueBrands();
-    this.brands = this.formatBrandsForHTML(this.brands);
+    this.brandsTmp = this.formatBrandsForHTML(this.brands);
     this.contarCategoriasYSubacategorias();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.products) {
-      this.productsTmp = this.products;
       this.brands = this.extractUniqueBrands();
-      this.brands = this.formatBrandsForHTML(this.brands);
+      this.brandsTmp = this.formatBrandsForHTML(this.brands);
       this.contarCategoriasYSubacategorias();
     }
   }
