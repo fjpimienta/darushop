@@ -36,6 +36,8 @@ export class BrandComponent implements OnInit {
   subCategories = [];
   offer: boolean;
   withImages: boolean;
+  minPrice = 0;
+  maxPrice = 0;
   private unsubscribe$: Subject<void> = new Subject<void>();
   private isFirstLoad: boolean = true;
 
@@ -103,6 +105,9 @@ export class BrandComponent implements OnInit {
 
       this.orderBy = params.orderBy || '';
 
+      this.minPrice = params.minPrice || 0;
+      this.maxPrice = params.maxPrice || 0;
+
       this.brands = null;
       if (params.brand) {
         this.brands = [];
@@ -159,6 +164,9 @@ export class BrandComponent implements OnInit {
           if (params.subCategory) {
             subCategory.push(params.subCategory);
             this.products = utilsService.subCatFilter(this.products, subCategory);
+          }
+          if (this.minPrice > 0 || this.maxPrice > 0) {
+            this.products = utilsService.priceFilter(this.products, this.minPrice, this.maxPrice);
           }
           if (this.orderBy) {
             switch (this.orderBy) {

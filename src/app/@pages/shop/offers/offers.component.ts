@@ -107,17 +107,8 @@ export class OffersComponent implements OnInit {
 
       this.orderBy = params.orderBy || '';
 
-      if (params.minPrice) {
-        this.minPrice = params.minPrice;
-      } else {
-        this.minPrice = 0;
-      }
-
-      if (params.maxPrice) {
-        this.maxPrice = params.maxPrice;
-      } else {
-        this.maxPrice = 0;
-      }
+      this.minPrice = params.minPrice || 0;
+      this.maxPrice = params.maxPrice || 0;
 
       this.brands = null;
       if (params.brand) {
@@ -175,6 +166,9 @@ export class OffersComponent implements OnInit {
           if (params.subCategory) {
             subCategory.push(params.subCategory);
             this.products = utilsService.subCatFilter(this.products, subCategory);
+          }
+          if (this.minPrice > 0 || this.maxPrice > 0) {
+            this.products = utilsService.priceFilter(this.products, this.minPrice, this.maxPrice);
           }
           if (this.orderBy) {
             switch (this.orderBy) {
