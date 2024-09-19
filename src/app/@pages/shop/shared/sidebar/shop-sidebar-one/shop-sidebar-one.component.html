@@ -240,9 +240,10 @@
                     </li>
                   </ul>
                 </li>
-                <li *ngIf="totalAccesorios>0 || totalTeclados>0 || totalMouses>0 || totalAudifonos>0 || totalBocinas>0 || totalMochilas>0 || totalHubs>0 || totalMousepads>0 || totalDiscosDurosA>0 || totalAudioyVideo>0">
+                <li
+                  *ngIf="totalAccesorios>0 || totalTeclados>0 || totalMouses>0 || totalAudifonos>0 || totalBocinas>0 || totalMochilas>0 || totalHubs>0 || totalMousepads>0 || totalDiscosDurosA>0 || totalAudioyVideo>0">
                   <a [routerLink]=" []" [queryParams]="{category: 'accesorios'}" queryParamsHandling="merge"
-                  routerLinkActive="active">Accesorios</a>
+                    routerLinkActive="active">Accesorios</a>
                   <ul class="detail-ul">
                     <li *ngIf="totalTeclados>0">
                       <a [routerLink]="[]" [queryParams]="{category: 'accesorios', subCategory: 'teclados'}"
@@ -289,7 +290,7 @@
       </div>
     </div>
 
-    <!-- <div class="widget">
+    <div class="widget">
       <h3 class="widget-title mb-2"><span>Precio</span></h3>
       <div class="collapse show" id="widget-3">
         <div class="widget-body">
@@ -306,6 +307,7 @@
       </div>
     </div>
 
+    <!--
     <div class="widget">
       <h3 class="widget-title mb-2"><span>Rating</span></h3>
       <div class="collapse show" id="widget-4">
@@ -331,6 +333,7 @@
         </div>
       </div>
     </div>
+    -->
 
     <div class="widget">
       <h3 class="widget-title mb-2"><span>Colores</span></h3>
@@ -345,6 +348,6 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </div>
