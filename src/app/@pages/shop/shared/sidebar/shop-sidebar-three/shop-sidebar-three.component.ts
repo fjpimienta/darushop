@@ -253,9 +253,8 @@ export class ShopSidebarThreeComponent implements OnInit, OnChanges {
     if (event.currentTarget.checked) {
       queryParams = { ...queryParams, minPrice: value.min, maxPrice: value.max, page: 1 };
     } else {
-      queryParams = { ...queryParams, minPrice: 0, maxPrice: 9999, page: 1 };
+      queryParams = { ...queryParams, minPrice: 0, maxPrice: 999999, page: 1 };
     }
-
     this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
   }
 }

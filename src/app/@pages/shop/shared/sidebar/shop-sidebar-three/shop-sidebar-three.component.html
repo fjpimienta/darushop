@@ -272,7 +272,7 @@
       </div>
     </div>
 
-    <div class="widget">
+    <!-- <div class="widget">
       <h3 class="widget-title mb-2"><span>Marcas</span></h3>
       <div class="collapse show" id="widget-2">
         <div class="widget-body">
@@ -282,6 +282,23 @@
                 <input type="checkbox" class="custom-control-input" [id]="item.slug" title="Marca"
                   [checked]="containsAttrInUrl('brand', item.slug)" (change)="onAttrClick('brand', item.slug)">
                 <label class="custom-control-label" [for]="item.slug">{{ item.description }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <div class="widget">
+      <h3 class="widget-title mb-2"><span>Precio</span></h3>
+      <div class="collapse show" id="widget-3">
+        <div class="widget-body">
+          <div class="filter-items">
+            <div class="filter-item" *ngFor="let item of shopData.prices; let index = index;">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" [id]="'price-' + index"
+                  [checked]="containsPriceInUrl(item)" (change)="onPriceChange($event, item)">
+                <label class="custom-control-label" [for]="'price-' + index">{{ item.name }}</label>
               </div>
             </div>
           </div>
