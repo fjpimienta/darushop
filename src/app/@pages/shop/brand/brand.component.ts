@@ -13,6 +13,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 export class BrandComponent implements OnInit {
 
   products = [];
+  productsTmp = [];
   perPage = 48;
   type = 'boxed';
   totalCount = 0;
@@ -36,6 +37,7 @@ export class BrandComponent implements OnInit {
   offer: boolean;
   withImages: boolean;
   private unsubscribe$: Subject<void> = new Subject<void>();
+  private isFirstLoad: boolean = true;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -135,6 +137,10 @@ export class BrandComponent implements OnInit {
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;
+          if (this.isFirstLoad) {
+            this.productsTmp = result.products;
+            this.isFirstLoad = false;
+          }
           const category = [[]];
           const subCategory = [[]];
           let brands: string[] = [];

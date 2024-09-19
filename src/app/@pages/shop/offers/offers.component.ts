@@ -18,6 +18,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 export class OffersComponent implements OnInit {
 
   products = [];
+  productsTmp = [];
   page = 1;
   perPage = 48;
   type: '4cols';
@@ -42,6 +43,7 @@ export class OffersComponent implements OnInit {
   minPrice = 0;
   maxPrice = 0;
   private unsubscribe$: Subject<void> = new Subject<void>();
+  private isFirstLoad: boolean = true;
 
   constructor(
     public router: Router,
@@ -151,6 +153,10 @@ export class OffersComponent implements OnInit {
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;
+          if (this.isFirstLoad) {
+            this.productsTmp = result.products;
+            this.isFirstLoad = false;
+          }
           const category = [[]];
           const subCategory = [[]];
           let brands: string[] = [];
