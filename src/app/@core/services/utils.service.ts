@@ -201,4 +201,10 @@ export class UtilsService {
       return item[attr] === true;
     });
   }
+
+  priceFilter(products = [], minPrice: number, maxPrice: number) {
+    return products.filter(item => {
+      return item.price >= minPrice && item.price <= maxPrice;
+    });
+  }
 }
