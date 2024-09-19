@@ -47,7 +47,6 @@ export class DetailOneComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('this.product: ', this.product);
     let min = this.minPrice;
     let max = this.maxPrice;
     this.variationGroup = this.product.variants.reduce((acc, cur) => {

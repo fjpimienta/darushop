@@ -14,6 +14,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 export class CategoryComponent implements OnInit {
 
   products = [];
+  productsTmp = [];
   page = 1;
   perPage = 0;
   type: 'list';
@@ -34,6 +35,7 @@ export class CategoryComponent implements OnInit {
   offer: boolean = false;
   withImages: boolean = true;
   private unsubscribe$: Subject<void> = new Subject<void>();
+  private isFirstLoad: boolean = true;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -116,6 +118,10 @@ export class CategoryComponent implements OnInit {
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
           this.products = result.products;
+          if (this.isFirstLoad) {
+            this.productsTmp = result.products;
+            this.isFirstLoad = false;
+          }
           let brands: string[] = [];
           if (params.brand) {
             brands = params.brand.split(',');
