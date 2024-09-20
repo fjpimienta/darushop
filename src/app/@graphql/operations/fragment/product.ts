@@ -118,6 +118,10 @@ export const PRODUCT_FRAGMENT = gql`
       vencimiento_promocion
       disponible_en_promocion
     }
+    especificaciones {
+      tipo
+      valor
+    }
     generalInfo {
       IcecatId
       ReleaseDate

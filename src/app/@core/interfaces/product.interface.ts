@@ -30,6 +30,7 @@ export interface IProduct {
   suppliersProd: ISupplierProd;
   descuentos: IDescuentos;
   promociones: IPromociones;
+  especificaciones: IEspecificaiones;
 }
 
 export interface ICategorys {
@@ -129,4 +130,9 @@ export interface IPromociones {
   descripcion_promocion: string;
   vencimiento_promocion: string;
   disponible_en_promocion: number;
+}
+
+export interface IEspecificaiones {
+  tipo: string;
+  valor: string;
 }
