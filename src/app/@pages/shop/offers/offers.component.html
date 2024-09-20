@@ -20,7 +20,13 @@
 
   <div class="page-content">
     <div class="container">
-      <div class="row">
+      <div *ngIf="products && products.length <= 0" class="row">
+        <div class="col-lg-9 col-xl-4-5col">
+          <div class="mb-2"></div>
+          <h3>En este momento no hay productos en esta b&uacute;squeda</h3>
+        </div>
+      </div>
+      <div class="row" *ngIf="products && products.length > 0">
         <div class="col-lg-9 col-xl-4-5col">
           <div class="mb-2"></div>
 
