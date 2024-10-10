@@ -207,4 +207,19 @@ export class UtilsService {
       return item.price >= minPrice && item.price <= maxPrice;
     });
   }
+
+  specificationFilter(products: any[], especificaciones: { tipo: string, valor: string }[]): any[] {
+    return products.filter(product => {
+      if (!product.especificaciones) {
+        return false;
+      }
+      // Verifica que todas las especificaciones proporcionadas coincidan
+      return especificaciones.every(espec =>
+        product.especificaciones.some(pEspec =>
+          pEspec.tipo.toLowerCase() === espec.tipo.toLowerCase() &&
+          pEspec.valor.toLowerCase() === espec.valor.toLowerCase()
+        )
+      );
+    });
+  }
 }

@@ -19,6 +19,7 @@ export class OffersComponent implements OnInit {
 
   products = [];
   productsTmp = [];
+  especificaciones = [];
   page = 1;
   perPage = 48;
   type: '4cols';
@@ -143,6 +144,12 @@ export class OffersComponent implements OnInit {
         this.withImages
       ).subscribe(result => {
         if (result && result.products && result.products.length > 0) {
+
+          // this.especificaciones = [
+          //   { tipo: 'Impresión Color', valor: 'Azul ciánico' },
+          //   { tipo: 'Tecnología de Impresión', valor: 'Inyección de tinta' }
+          // ];
+
           this.products = result.products;
           if (this.isFirstLoad) {
             this.productsTmp = result.products;
@@ -170,6 +177,9 @@ export class OffersComponent implements OnInit {
           if (this.minPrice > 0 || this.maxPrice > 0) {
             this.products = utilsService.priceFilter(this.products, this.minPrice, this.maxPrice);
           }
+          // if (this.especificaciones && this.especificaciones.length > 0) {
+          //   this.products = utilsService.specificationFilter(this.products, this.especificaciones);
+          // }
           if (this.orderBy) {
             switch (this.orderBy) {
               case 'name':
