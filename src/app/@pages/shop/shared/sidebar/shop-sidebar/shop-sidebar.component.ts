@@ -15,11 +15,12 @@ export class ShopSidebarComponent implements OnInit, OnChanges {
   @Input() toggle = false;
   @Input() products = [];
   @Input() productsTmp = [];
+  @Input() offer: boolean;
 
   shopData = shopData;
   params = {};
-  @Input() offer: boolean;
   brands: any[] = [];
+  especificaciones: any[] = [];
   categories: Catalog[] = [];
   brandsTmp: any[] = [];
   categoriesTmp: Catalog[] = [];
@@ -89,33 +90,115 @@ export class ShopSidebarComponent implements OnInit, OnChanges {
     });
   }
 
+  // ngOnInit(): void {
+  //   this.brands = [];
+  //   this.brandsTmp = [];
+  //   this.brands = this.extractUniqueBrands();
+  //   this.especificaciones = this.extractUniqueSpecifications();
+  //   console.log('this.especificaciones: ', this.especificaciones);
+  //   this.brandsTmp = this.formatBrandsForHTML(this.brands);
+  //   this.contarCategoriasYSubacategorias();
+  // }
+
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (changes.products) {
+  //     this.brands = this.extractUniqueBrands();
+  //     this.brandsTmp = this.formatBrandsForHTML(this.brands);
+  //     this.contarCategoriasYSubacategorias();
+  //   }
+  // }
+
+  // extractUniqueBrands(): string[] {
+  //   const uniqueBrands: string[] = [];
+  //   // Recorre la lista de productos y agrega las marcas únicas a uniqueBrands
+  //   for (const product of this.productsTmp) {
+  //     for (const brand of product.brands) {
+  //       if (!uniqueBrands.includes(brand.name.toUpperCase())) {
+  //         uniqueBrands.push(brand.name.toUpperCase());
+  //       }
+  //     }
+  //   }
+  //   return uniqueBrands;
+  // }
+
+  // extractUniqueSpecifications(): { tipo: string, valor: string }[] {
+  //   const uniqueSpecifications: { tipo: string, valor: string }[] = [];
+  //   // Recorre la lista de productos
+  //   for (const product of this.productsTmp) {
+  //     // Verifica si el producto tiene especificaciones
+  //     if (product.especificaciones && product.especificaciones.length > 0) {
+  //       for (const espec of product.especificaciones) {
+  //         // Verifica si ya existe una especificación con el mismo 'tipo' y 'valor'
+  //         const exists = uniqueSpecifications.some(
+  //           uniqueEspec => uniqueEspec.tipo.toLowerCase() === espec.tipo.toLowerCase() &&
+  //             uniqueEspec.valor.toLowerCase() === espec.valor.toLowerCase()
+  //         );
+  //         // Si no existe, lo agrega a la lista de especificaciones únicas
+  //         if (!exists) {
+  //           uniqueSpecifications.push({
+  //             tipo: espec.tipo,
+  //             valor: espec.valor
+  //           });
+  //         }
+  //       }
+  //     }
+  //   }
+  //   // Ordenar las especificaciones por tipo alfabéticamente
+  //   uniqueSpecifications.sort((a, b) => a.tipo.toLowerCase().localeCompare(b.tipo.toLowerCase()));
+  //   return uniqueSpecifications;
+  // }
+
   ngOnInit(): void {
     this.brands = [];
     this.brandsTmp = [];
-    this.brands = this.extractUniqueBrands();
+    this.especificaciones = [];
+    const { uniqueBrands, uniqueSpecifications } = this.extractBrandsAndSpecifications();
+    this.brands = uniqueBrands;
+    this.especificaciones = uniqueSpecifications;
+    console.log('this.especificaciones: ', this.especificaciones);
     this.brandsTmp = this.formatBrandsForHTML(this.brands);
     this.contarCategoriasYSubacategorias();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.products) {
-      this.brands = this.extractUniqueBrands();
+      const { uniqueBrands } = this.extractBrandsAndSpecifications();
+      this.brands = uniqueBrands;
       this.brandsTmp = this.formatBrandsForHTML(this.brands);
       this.contarCategoriasYSubacategorias();
     }
   }
 
-  extractUniqueBrands(): string[] {
+  extractBrandsAndSpecifications(): { uniqueBrands: string[], uniqueSpecifications: { tipo: string, valor: string }[] } {
     const uniqueBrands: string[] = [];
-    // Recorre la lista de productos y agrega las marcas únicas a uniqueBrands
+    const uniqueSpecifications: { tipo: string, valor: string }[] = [];
     for (const product of this.productsTmp) {
+      // Extraer marcas únicas
       for (const brand of product.brands) {
-        if (!uniqueBrands.includes(brand.name.toUpperCase())) {
-          uniqueBrands.push(brand.name.toUpperCase());
+        const upperBrandName = brand.name.toUpperCase();
+        if (!uniqueBrands.includes(upperBrandName)) {
+          uniqueBrands.push(upperBrandName);
+        }
+      }
+      // Extraer especificaciones únicas
+      if (product.especificaciones && product.especificaciones.length > 0) {
+        for (const espec of product.especificaciones) {
+          const exists = uniqueSpecifications.some(
+            uniqueEspec => uniqueEspec.tipo.toLowerCase() === espec.tipo.toLowerCase() &&
+              uniqueEspec.valor.toLowerCase() === espec.valor.toLowerCase()
+          );
+          if (!exists) {
+            uniqueSpecifications.push({
+              tipo: espec.tipo,
+              valor: espec.valor
+            });
+          }
         }
       }
     }
-    return uniqueBrands;
+    // Ordenar especificaciones por tipo alfabéticamente
+    uniqueSpecifications.sort((a, b) => a.tipo.toLowerCase().localeCompare(b.tipo.toLowerCase()));
+    return { uniqueBrands, uniqueSpecifications };
   }
 
   formatBrandsForHTML(brands: string[]): any[] {

@@ -18,7 +18,13 @@
   </nav>
 
   <div class="page-content">
-    <div [class]="containerClass">
+    <div *ngIf="products && products.length <= 0" class="row">
+      <div class="col-lg-9 col-xl-4-5col">
+        <div class="mb-2"></div>
+        <h3>En este momento no hay productos en esta b&uacute;squeda</h3>
+      </div>
+    </div>
+    <div *ngIf="products && products.length > 0" [class]="containerClass">
       <div class="toolbox">
         <div class="toolbox-left d-none d-lg-flex">
           <a href="javascript:;" class="sidebar-toggler mr-0 mr-md-5" (click)="toggleSidebar()">

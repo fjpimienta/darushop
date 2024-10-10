@@ -33,6 +33,7 @@ export class Product {
   suppliersProd: SupplierProd;
   descuentos: Descuentos;
   promociones: Promociones;
+  especificaciones: Especificaiones;
 }
 
 /**
@@ -165,4 +166,9 @@ export class AddProduct {
   list: Product[];
   suppliersProd?: SupplierProd;
   files?: File[];
+}
+
+export class Especificaiones {
+  tipo: string;
+  valor: string;
 }
